@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  pg:
+    image: bitnami/postgresql:latest
+    ports:
+      - "5437:5432"
+    environment:
+      - POSTGRESQL_USER=finax
+      - POSTGRESQL_PASSWORD=finax
+      - POSTGRESQL_DB=finax

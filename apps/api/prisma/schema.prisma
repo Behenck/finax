@@ -1,0 +1,299 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String?
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  avatarUrl    String?  @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tokens             Token[]
+  accounts           Account[]
+  invites            Invite[]
+  member_on          Member[]
+  refreshTokens      RefreshToken[]
+  owns_organizations Organization[]
+  transactions       Transaction[]
+  employees          Employee[]
+
+  @@map("users")
+}
+
+enum TokenType {
+  PASSWORD_RECOVERY
+}
+
+enum RefreshTokenStatus {
+  ACTIVE
+  REVOKED
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  type      TokenType
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@map("tokens")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
+
+  @@map("refresh_tokens")
+}
+
+enum AccountProvider {
+  GITHUB
+  GOOGLE
+}
+
+model Account {
+  id                String          @id @default(uuid())
+  provider          AccountProvider
+  providerAccountId String          @unique @map("provider_account_id")
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model Invite {
+  id             String       @id @default(uuid())
+  email          String
+  role           Role
+  createdAt      DateTime     @default(now()) @map("created_at")
+  author         User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId       String?      @map("author_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String       @map("organization_id")
+
+  @@unique([email, organizationId])
+  @@index([email])
+  @@map("invites")
+}
+
+model Member {
+  id             String       @id @default(uuid())
+  role           Role         @default(MEMBER)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String       @map("organization_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("members")
+}
+
+model Organization {
+  id                       String   @id @default(uuid())
+  name                     String
+  slug                     String   @unique
+  domain                   String?  @unique
+  shouldAttachUserByDomain Boolean  @default(false) @map("should_attach_user_by_domain")
+  avatarUrl                String?  @map("avatar_url")
+  ownerId                  String   @map("owner_id")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+  owner                    User?    @relation(fields: [ownerId], references: [id])
+
+  invites      Invite[]
+  members      Member[]
+  categories   Category[]
+  companies    Company[]
+  transactions Transaction[]
+  costCenters  CostCenter[]
+  employees    Employee[]
+
+  @@index([slug])
+  @@map("organizations")
+}
+
+model Company {
+  id             String @id @default(uuid())
+  name           String
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  units        Unit[]
+  transactions Transaction[]
+  employees    Employee[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("companies")
+}
+
+model Unit {
+  id        String @id @default(uuid())
+  name      String
+  companyId String @map("company_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  company      Company       @relation(fields: [companyId], references: [id])
+  transactions Transaction[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("units")
+}
+
+model Category {
+  id             String          @id @default(uuid())
+  name           String
+  color          String
+  icon           String
+  type           TransactionType
+  organizationId String?         @map("organization_id")
+  parentId       String?         @map("parent_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+
+  transactions     Transaction[]
+  transactionItens TransactionItem[]
+
+  @@unique([organizationId, parentId, name])
+  @@index([organizationId])
+  @@index([parentId])
+  @@map("categories")
+}
+
+model CostCenter {
+  id             String @id @default(uuid())
+  name           String
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  transactions Transaction[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("cost_centers")
+}
+
+model Employee {
+  id             String  @id @default(uuid())
+  name           String
+  department     String
+  userId         String  @map("user_id")
+  organizationId String
+  companyId      String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  company      Company?     @relation(fields: [companyId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([companyId])
+  @@map("employees")
+}
+
+enum TransactionType {
+  INCOME
+  OUTCOME
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum TransactionNature {
+  FIXED
+  VARIABLE
+}
+
+model Transaction {
+  id                  String            @id @default(uuid())
+  code                Int
+  title               String
+  description         String?
+  totalAmount         Int               @map("total_amount")
+  type                TransactionType
+  status              TransactionStatus
+  nature              TransactionNature
+  dueDate             DateTime          @map("due_date")
+  expectedPaymentDate DateTime?         @map("expected_payment_date")
+  paymentDate         DateTime?         @map("payment_date")
+  costCenterId        String            @map("cost_center_id")
+  organizationId      String            @map("organization_id")
+  companyId           String            @map("company_id")
+  unitId              String?           @map("unit_id")
+  userId              String            @map("user_id")
+  categoryId          String            @map("category_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user             User              @relation(fields: [userId], references: [id])
+  costCenter       CostCenter        @relation(fields: [costCenterId], references: [id])
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  category         Category          @relation(fields: [categoryId], references: [id])
+  company          Company           @relation(fields: [companyId], references: [id])
+  unit             Unit?             @relation(fields: [unitId], references: [id])
+  transactionItens TransactionItem[]
+
+  @@index([organizationId, companyId])
+  @@index([companyId, unitId])
+  @@index([organizationId, dueDate])
+  @@index([organizationId, type])
+  @@index([organizationId, status])
+  @@index([categoryId])
+  @@index([userId])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            String @id @default(uuid())
+  description   String
+  transactionId String @map("transaction_id")
+  amount        Int
+  categoryId    String @map("category_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
+
+  @@index([transactionId])
+  @@index([categoryId])
+  @@map("transaction_itens")
+}

@@ -1,0 +1,17 @@
+{
+  "name": "finax",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "turbo": "^2.7.3",
+    "typescript": "^5.9.3"
+  }
+}

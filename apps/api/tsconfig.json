@@ -1,0 +1,28 @@
+{
+  "$schema": "https://www.schemastore.org/tsconfig",
+  "_version": "22.0.0",
+  "include": [
+    "src/**/*",
+    "@types/**/*.d.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "lib": [
+      "es2024",
+      "ESNext.Array",
+      "ESNext.Collection",
+      "ESNext.Iterator"
+    ],
+    "module": "ESNext",
+    "target": "es2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node"
+  }
+}
