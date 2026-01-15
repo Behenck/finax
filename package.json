@@ -20,5 +20,8 @@
     "@kubb/swagger": "^2.28.4",
     "turbo": "^2.7.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "pnpm": "^10.28.0"
   }
 }
