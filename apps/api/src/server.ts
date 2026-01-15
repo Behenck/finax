@@ -43,19 +43,7 @@ app.register(fastifySwagger, {
       }
     }
   },
-  transform: jsonSchemaTransform
-})
-
-const jwtSecret = process.env.JWT_SECRET
-if (!jwtSecret) {
-  throw new Error('🚨 variável de ambiente JWT_SECRET não definida!')
-}
-
-app.register(fastifyJwt, {
-  secret: jwtSecret,
-  sign: {
-    expiresIn: '1d'
-  }
+  transform: jsonSchemaTransform,
 })
 
 app.register(ScalarApiReference, {
@@ -67,11 +55,27 @@ app.register(ScalarApiReference, {
   },
 })
 
+app.get("/docs/json", async () => {
+  return app.swagger();
+});
+
 app.get('/health', async () => {
   return {
     status: 'ok',
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
+  }
+})
+
+const jwtSecret = process.env.JWT_SECRET
+if (!jwtSecret) {
+  throw new Error('🚨 variável de ambiente JWT_SECRET não definida!')
+}
+
+app.register(fastifyJwt, {
+  secret: jwtSecret,
+  sign: {
+    expiresIn: '1d'
   }
 })
 

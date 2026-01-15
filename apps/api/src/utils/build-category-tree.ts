@@ -1,17 +1,20 @@
-type FlatCategory = {
+import type { TransactionType } from "generated/prisma/enums"
+
+type CategoryBase = {
   id: string
   name: string
+  type: TransactionType
+  color: string
+  icon: string
   parentId: string | null
-  color: string | null
-  icon: string | null
 }
 
-type CategoryTree = FlatCategory & {
+type CategoryTree = CategoryBase & {
   children: CategoryTree[]
 }
 
 export function buildCategoryTree(
-  flatCategories: FlatCategory[],
+  flatCategories: CategoryBase[],
 ): CategoryTree[] {
   const categoryById = new Map<string, CategoryTree>()
 
