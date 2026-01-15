@@ -5,31 +5,46 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
+import { TransactionNature, TransactionStatus, TransactionType } from "generated/prisma/enums";
+import { generateHexCode } from "@/utils/generate-hex-code";
 
 export async function createTransaction(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .post("/organizations/:slug/companies", {
+    .post("/organizations/:slug/transactions", {
       schema: {
-        tags: ["companies"],
-        summary: "Create a new company",
+        tags: ["transactions"],
+        summary: "Create a new transaction",
         security: [{ bearerAuth: [] }],
         params: z.object({
           slug: z.string()
         }),
         body: z.object({
-          name: z.string(),
+          title: z.string(),
+          description: z.string().optional(),
+          totalAmount: z.number(),
+          type: z.enum(TransactionType),
+          status: z.enum(TransactionStatus),
+          nature: z.enum(TransactionNature),
+          dueDate: z.date(),
+          expectedPaymentDate: z.date().optional(),
+          paymentDate: z.string().optional(),
+          costCenterId: z.uuid(),
+          companyId: z.uuid(),
+          unitId: z.uuid().optional(),
+          categoryId: z.uuid(),
         }),
         response: {
           201: z.object({
-            companyId: z.uuid()
+            transactionId: z.uuid()
           })
         }
       }
     },
       async (request, reply) => {
         const { slug } = request.params
-        const { name } = request.body
+        const data = request.body
+        const userId = await request.getCurrentUserId()
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -44,17 +59,31 @@ export async function createTransaction(app: FastifyInstance) {
           throw new BadRequestError("Organization not found")
         }
 
-        const company = await db(() =>
-          prisma.company.create({
+        const transaction = await db(() =>
+          prisma.transaction.create({
             data: {
-              name,
+              code: generateHexCode(),
+              title: data.title,
+              description: data.description,
+              totalAmount: data.totalAmount,
+              type: data.type,
+              status: data.status,
+              nature: data.nature,
+              dueDate: data.dueDate,
+              expectedPaymentDate: data.expectedPaymentDate,
+              paymentDate: data.paymentDate,
+              costCenterId: data.costCenterId,
+              companyId: data.companyId,
+              unitId: data.unitId,
+              categoryId: data.categoryId,
               organizationId: organization.id,
+              userId,
             },
           })
         )
 
         return reply.status(201).send({
-          companyId: company.id,
+          transactionId: transaction.id,
         })
       }
     )

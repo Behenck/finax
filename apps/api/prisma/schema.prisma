@@ -242,7 +242,7 @@ enum TransactionNature {
 
 model Transaction {
   id                  String            @id @default(uuid())
-  code                Int
+  code                String
   title               String
   description         String?
   totalAmount         Int               @map("total_amount")

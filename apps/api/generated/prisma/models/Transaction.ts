@@ -27,18 +27,16 @@ export type AggregateTransaction = {
 }
 
 export type TransactionAvgAggregateOutputType = {
-  code: number | null
   totalAmount: number | null
 }
 
 export type TransactionSumAggregateOutputType = {
-  code: number | null
   totalAmount: number | null
 }
 
 export type TransactionMinAggregateOutputType = {
   id: string | null
-  code: number | null
+  code: string | null
   title: string | null
   description: string | null
   totalAmount: number | null
@@ -60,7 +58,7 @@ export type TransactionMinAggregateOutputType = {
 
 export type TransactionMaxAggregateOutputType = {
   id: string | null
-  code: number | null
+  code: string | null
   title: string | null
   description: string | null
   totalAmount: number | null
@@ -105,12 +103,10 @@ export type TransactionCountAggregateOutputType = {
 
 
 export type TransactionAvgAggregateInputType = {
-  code?: true
   totalAmount?: true
 }
 
 export type TransactionSumAggregateInputType = {
-  code?: true
   totalAmount?: true
 }
 
@@ -269,7 +265,7 @@ export type TransactionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type TransactionGroupByOutputType = {
   id: string
-  code: number
+  code: string
   title: string
   description: string | null
   totalAmount: number
@@ -314,7 +310,7 @@ export type TransactionWhereInput = {
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   id?: Prisma.StringFilter<"Transaction"> | string
-  code?: Prisma.IntFilter<"Transaction"> | number
+  code?: Prisma.StringFilter<"Transaction"> | string
   title?: Prisma.StringFilter<"Transaction"> | string
   description?: Prisma.StringNullableFilter<"Transaction"> | string | null
   totalAmount?: Prisma.IntFilter<"Transaction"> | number
@@ -375,7 +371,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
-  code?: Prisma.IntFilter<"Transaction"> | number
+  code?: Prisma.StringFilter<"Transaction"> | string
   title?: Prisma.StringFilter<"Transaction"> | string
   description?: Prisma.StringNullableFilter<"Transaction"> | string | null
   totalAmount?: Prisma.IntFilter<"Transaction"> | number
@@ -434,7 +430,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
   OR?: Prisma.TransactionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TransactionScalarWhereWithAggregatesInput | Prisma.TransactionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
-  code?: Prisma.IntWithAggregatesFilter<"Transaction"> | number
+  code?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   title?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   totalAmount?: Prisma.IntWithAggregatesFilter<"Transaction"> | number
@@ -456,7 +452,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
 
 export type TransactionCreateInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -479,7 +475,7 @@ export type TransactionCreateInput = {
 
 export type TransactionUncheckedCreateInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -502,7 +498,7 @@ export type TransactionUncheckedCreateInput = {
 
 export type TransactionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -525,7 +521,7 @@ export type TransactionUpdateInput = {
 
 export type TransactionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -548,7 +544,7 @@ export type TransactionUncheckedUpdateInput = {
 
 export type TransactionCreateManyInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -570,7 +566,7 @@ export type TransactionCreateManyInput = {
 
 export type TransactionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -586,7 +582,7 @@ export type TransactionUpdateManyMutationInput = {
 
 export type TransactionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -639,7 +635,6 @@ export type TransactionCountOrderByAggregateInput = {
 }
 
 export type TransactionAvgOrderByAggregateInput = {
-  code?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
 }
 
@@ -688,7 +683,6 @@ export type TransactionMinOrderByAggregateInput = {
 }
 
 export type TransactionSumOrderByAggregateInput = {
-  code?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
 }
 
@@ -985,7 +979,7 @@ export type TransactionUpdateOneRequiredWithoutTransactionItensNestedInput = {
 
 export type TransactionCreateWithoutUserInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1007,7 +1001,7 @@ export type TransactionCreateWithoutUserInput = {
 
 export type TransactionUncheckedCreateWithoutUserInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1058,7 +1052,7 @@ export type TransactionScalarWhereInput = {
   OR?: Prisma.TransactionScalarWhereInput[]
   NOT?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
   id?: Prisma.StringFilter<"Transaction"> | string
-  code?: Prisma.IntFilter<"Transaction"> | number
+  code?: Prisma.StringFilter<"Transaction"> | string
   title?: Prisma.StringFilter<"Transaction"> | string
   description?: Prisma.StringNullableFilter<"Transaction"> | string | null
   totalAmount?: Prisma.IntFilter<"Transaction"> | number
@@ -1080,7 +1074,7 @@ export type TransactionScalarWhereInput = {
 
 export type TransactionCreateWithoutOrganizationInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1102,7 +1096,7 @@ export type TransactionCreateWithoutOrganizationInput = {
 
 export type TransactionUncheckedCreateWithoutOrganizationInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1150,7 +1144,7 @@ export type TransactionUpdateManyWithWhereWithoutOrganizationInput = {
 
 export type TransactionCreateWithoutCompanyInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1172,7 +1166,7 @@ export type TransactionCreateWithoutCompanyInput = {
 
 export type TransactionUncheckedCreateWithoutCompanyInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1220,7 +1214,7 @@ export type TransactionUpdateManyWithWhereWithoutCompanyInput = {
 
 export type TransactionCreateWithoutUnitInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1242,7 +1236,7 @@ export type TransactionCreateWithoutUnitInput = {
 
 export type TransactionUncheckedCreateWithoutUnitInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1290,7 +1284,7 @@ export type TransactionUpdateManyWithWhereWithoutUnitInput = {
 
 export type TransactionCreateWithoutCategoryInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1312,7 +1306,7 @@ export type TransactionCreateWithoutCategoryInput = {
 
 export type TransactionUncheckedCreateWithoutCategoryInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1360,7 +1354,7 @@ export type TransactionUpdateManyWithWhereWithoutCategoryInput = {
 
 export type TransactionCreateWithoutCostCenterInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1382,7 +1376,7 @@ export type TransactionCreateWithoutCostCenterInput = {
 
 export type TransactionUncheckedCreateWithoutCostCenterInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1430,7 +1424,7 @@ export type TransactionUpdateManyWithWhereWithoutCostCenterInput = {
 
 export type TransactionCreateWithoutTransactionItensInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1452,7 +1446,7 @@ export type TransactionCreateWithoutTransactionItensInput = {
 
 export type TransactionUncheckedCreateWithoutTransactionItensInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1490,7 +1484,7 @@ export type TransactionUpdateToOneWithWhereWithoutTransactionItensInput = {
 
 export type TransactionUpdateWithoutTransactionItensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1512,7 +1506,7 @@ export type TransactionUpdateWithoutTransactionItensInput = {
 
 export type TransactionUncheckedUpdateWithoutTransactionItensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1534,7 +1528,7 @@ export type TransactionUncheckedUpdateWithoutTransactionItensInput = {
 
 export type TransactionCreateManyUserInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1555,7 +1549,7 @@ export type TransactionCreateManyUserInput = {
 
 export type TransactionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1577,7 +1571,7 @@ export type TransactionUpdateWithoutUserInput = {
 
 export type TransactionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1599,7 +1593,7 @@ export type TransactionUncheckedUpdateWithoutUserInput = {
 
 export type TransactionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1620,7 +1614,7 @@ export type TransactionUncheckedUpdateManyWithoutUserInput = {
 
 export type TransactionCreateManyOrganizationInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1641,7 +1635,7 @@ export type TransactionCreateManyOrganizationInput = {
 
 export type TransactionUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1663,7 +1657,7 @@ export type TransactionUpdateWithoutOrganizationInput = {
 
 export type TransactionUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1685,7 +1679,7 @@ export type TransactionUncheckedUpdateWithoutOrganizationInput = {
 
 export type TransactionUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1706,7 +1700,7 @@ export type TransactionUncheckedUpdateManyWithoutOrganizationInput = {
 
 export type TransactionCreateManyCompanyInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1727,7 +1721,7 @@ export type TransactionCreateManyCompanyInput = {
 
 export type TransactionUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1749,7 +1743,7 @@ export type TransactionUpdateWithoutCompanyInput = {
 
 export type TransactionUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1771,7 +1765,7 @@ export type TransactionUncheckedUpdateWithoutCompanyInput = {
 
 export type TransactionUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1792,7 +1786,7 @@ export type TransactionUncheckedUpdateManyWithoutCompanyInput = {
 
 export type TransactionCreateManyUnitInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1813,7 +1807,7 @@ export type TransactionCreateManyUnitInput = {
 
 export type TransactionUpdateWithoutUnitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1835,7 +1829,7 @@ export type TransactionUpdateWithoutUnitInput = {
 
 export type TransactionUncheckedUpdateWithoutUnitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1857,7 +1851,7 @@ export type TransactionUncheckedUpdateWithoutUnitInput = {
 
 export type TransactionUncheckedUpdateManyWithoutUnitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1878,7 +1872,7 @@ export type TransactionUncheckedUpdateManyWithoutUnitInput = {
 
 export type TransactionCreateManyCategoryInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1899,7 +1893,7 @@ export type TransactionCreateManyCategoryInput = {
 
 export type TransactionUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1921,7 +1915,7 @@ export type TransactionUpdateWithoutCategoryInput = {
 
 export type TransactionUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1943,7 +1937,7 @@ export type TransactionUncheckedUpdateWithoutCategoryInput = {
 
 export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1964,7 +1958,7 @@ export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
 
 export type TransactionCreateManyCostCenterInput = {
   id?: string
-  code: number
+  code: string
   title: string
   description?: string | null
   totalAmount: number
@@ -1985,7 +1979,7 @@ export type TransactionCreateManyCostCenterInput = {
 
 export type TransactionUpdateWithoutCostCenterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2007,7 +2001,7 @@ export type TransactionUpdateWithoutCostCenterInput = {
 
 export type TransactionUncheckedUpdateWithoutCostCenterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2029,7 +2023,7 @@ export type TransactionUncheckedUpdateWithoutCostCenterInput = {
 
 export type TransactionUncheckedUpdateManyWithoutCostCenterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2228,7 +2222,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    code: number
+    code: string
     title: string
     description: string | null
     totalAmount: number
@@ -2677,7 +2671,7 @@ export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runt
  */
 export interface TransactionFieldRefs {
   readonly id: Prisma.FieldRef<"Transaction", 'String'>
-  readonly code: Prisma.FieldRef<"Transaction", 'Int'>
+  readonly code: Prisma.FieldRef<"Transaction", 'String'>
   readonly title: Prisma.FieldRef<"Transaction", 'String'>
   readonly description: Prisma.FieldRef<"Transaction", 'String'>
   readonly totalAmount: Prisma.FieldRef<"Transaction", 'Int'>

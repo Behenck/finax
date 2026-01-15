@@ -5,34 +5,21 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
-import { TransactionNature, TransactionStatus, TransactionType } from "generated/prisma/enums";
 
-export async function updateTransaction(app: FastifyInstance) {
+export async function paymentTransaction(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .patch("/organizations/:slug/transactions/:transactionId", {
+    .put("/organizations/:slug/transactions/:transactionId", {
       schema: {
         tags: ["transactions"],
-        summary: "Update transaction",
+        summary: "Payment transaction",
         security: [{ bearerAuth: [] }],
         params: z.object({
           slug: z.string(),
           transactionId: z.uuid(),
         }),
         body: z.object({
-          title: z.string(),
-          description: z.string().optional(),
-          totalAmount: z.number(),
-          type: z.enum(TransactionType),
-          status: z.enum(TransactionStatus),
-          nature: z.enum(TransactionNature),
-          dueDate: z.date(),
-          expectedPaymentDate: z.date().optional(),
           paymentDate: z.date().optional(),
-          costCenterId: z.uuid(),
-          companyId: z.uuid(),
-          unitId: z.uuid().optional(),
-          categoryId: z.uuid(),
         }),
         response: {
           204: z.null()
@@ -41,7 +28,11 @@ export async function updateTransaction(app: FastifyInstance) {
     },
       async (request, reply) => {
         const { slug, transactionId } = request.params
-        const data = request.body
+        const { paymentDate } = request.body
+
+        const parsedPaymentDate = paymentDate
+          ? new Date(paymentDate)
+          : new Date()
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -61,11 +52,15 @@ export async function updateTransaction(app: FastifyInstance) {
             id: transactionId,
             organizationId: organization.id,
           },
-          select: { id: true },
+          select: { id: true, status: true },
         })
 
         if (!transaction) {
           throw new BadRequestError("Transaction not found")
+        }
+
+        if (transaction.status === "PAID") {
+          throw new BadRequestError("Transaction already paid")
         }
 
         await db(() => prisma.transaction.update({
@@ -73,19 +68,8 @@ export async function updateTransaction(app: FastifyInstance) {
             id: transactionId
           },
           data: {
-            title: data.title,
-            description: data.description,
-            totalAmount: data.totalAmount,
-            type: data.type,
-            status: data.status,
-            nature: data.nature,
-            dueDate: data.dueDate,
-            expectedPaymentDate: data.expectedPaymentDate,
-            paymentDate: data.paymentDate,
-            costCenterId: data.costCenterId,
-            companyId: data.companyId,
-            unitId: data.unitId,
-            categoryId: data.categoryId,
+            paymentDate: parsedPaymentDate,
+            status: "PAID"
           }
         })
         )

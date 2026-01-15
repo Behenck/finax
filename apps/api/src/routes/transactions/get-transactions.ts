@@ -6,6 +6,24 @@ import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { TransactionNature, TransactionStatus, TransactionType } from "generated/prisma/enums";
 
+type CategoryTree = {
+  id: string
+  name: string
+  icon: string
+  color: string
+  children: CategoryTree[]
+}
+
+const CategorySchema: z.ZodType<CategoryTree> = z.lazy(() =>
+  z.object({
+    id: z.uuid(),
+    name: z.string(),
+    icon: z.string(),
+    color: z.string(),
+    children: z.array(CategorySchema),
+  })
+)
+
 export async function getTransactions(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
@@ -22,7 +40,7 @@ export async function getTransactions(app: FastifyInstance) {
             transactions: z.array(
               z.object({
                 id: z.uuid(),
-                code: z.number(),
+                code: z.string(),
                 title: z.string(),
                 description: z.string().nullable(),
                 totalAmount: z.number(),
@@ -49,13 +67,15 @@ export async function getTransactions(app: FastifyInstance) {
                   name: z.string().nullable(),
                   avatarUrl: z.url().nullable(),
                 }),
-                category: z.object({
-                  id: z.uuid(),
-                  name: z.string(),
-                  icon: z.string(),
-                  color: z.string(),
-                  // children
-                })
+                category: CategorySchema,
+                transactionItens: z.array(
+                  z.object({
+                    id: z.uuid(),
+                    description: z.string(),
+                    amount: z.number(),
+                    category: CategorySchema
+                  })
+                )
               }),
             )
           })
@@ -125,6 +145,21 @@ export async function getTransactions(app: FastifyInstance) {
                 name: true,
                 icon: true,
                 color: true,
+              }
+            },
+            transactionItens: {
+              select: {
+                id: true,
+                description: true,
+                amount: true,
+                category: {
+                  select: {
+                    id: true,
+                    name: true,
+                    icon: true,
+                    color: true,
+                  }
+                },
               }
             }
           }
