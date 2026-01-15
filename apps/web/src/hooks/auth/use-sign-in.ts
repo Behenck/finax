@@ -1,6 +1,6 @@
-import { postSessionsPassword } from '@sass/api-client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
+import { postSessionsPassword } from "@/http/generated/hooks"
 
 type SignInInput = {
   email: string
@@ -12,7 +12,7 @@ export function useSignIn() {
 
   return useMutation({
     mutationFn: async (payload: SignInInput) => {
-      const { data } = await postSessionsPassword({ data: payload })
+      const data = await postSessionsPassword(payload)
       return data
     },
 

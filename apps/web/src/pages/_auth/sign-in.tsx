@@ -1,16 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Mail, Lock } from 'lucide-react'
 import z from "zod"
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -50,7 +47,7 @@ function SignIn() {
   const { email } = Route.useSearch()
   const navigate = useNavigate()
   const signInMutation = auth.useSignIn()
-  const { data: session, isPending: isSessionPending } = auth.useSession()
+  // const { data: session, isPending: isSessionPending } = auth.useSession()
 
   const {
     handleSubmit,

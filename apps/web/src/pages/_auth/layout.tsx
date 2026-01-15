@@ -40,7 +40,7 @@ function AuthLayout() {
               </div>
             </div>
           </div>
-          <p className="text-sm text-white/50">© 2024 FluxoCaixa. Todos os direitos reservados.</p>
+          <p className="text-sm text-white/50">© 2026 Finax. Todos os direitos reservados.</p>
         </div>
       </div>
       <div className='flex-1 flex items-center justify-center p-8 bg-background'>
