@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PutOrganizationsSlugCategoriesIdMutationRequest, PutOrganizationsSlugCategoriesIdMutationResponse, PutOrganizationsSlugCategoriesIdPathParams } from "../types/PutOrganizationsSlugCategoriesId.ts";
+import type { PutOrganizationsSlugCategoriesIdMutationRequest, PutOrganizationsSlugCategoriesIdMutationResponse, PutOrganizationsSlugCategoriesIdPathParams } from "../models/PutOrganizationsSlugCategoriesId.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

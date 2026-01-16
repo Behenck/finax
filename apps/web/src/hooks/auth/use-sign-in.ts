@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
-import { postSessionsPassword } from "@/http/generated/hooks"
+import { postSessionsPassword } from "@/http/generated"
 
 type SignInInput = {
   email: string

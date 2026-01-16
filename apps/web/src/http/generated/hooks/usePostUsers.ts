@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostUsersMutationRequest, PostUsersMutationResponse, PostUsers400 } from "../types/PostUsers.ts";
+import type { PostUsersMutationRequest, PostUsersMutationResponse, PostUsers400 } from "../models/PostUsers.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

@@ -7,22 +7,20 @@ import { TransactionType } from "generated/prisma/enums";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 
-const CategoryBaseSchema = z.object({
+const CategoryChildSchema = z.object({
   id: z.uuid(),
   name: z.string(),
+  code: z.string().nullable(),
   type: z.enum(TransactionType),
   color: z.string(),
   icon: z.string(),
-  parentId: z.uuid().nullable(),
-});
+  parentId: z.uuid(),
+})
 
-type Category = z.infer<typeof CategoryBaseSchema> & {
-  children: Category[];
-};
-
-const CategoryTreeSchema: z.ZodType<Category> = CategoryBaseSchema.extend({
-  children: z.array(z.lazy(() => CategoryTreeSchema)),
-});
+const CategorySchema = CategoryChildSchema.extend({
+  parentId: z.null(),
+  children: z.array(CategoryChildSchema),
+})
 
 export async function getCategories(app: FastifyInstance) {
   app
@@ -40,7 +38,7 @@ export async function getCategories(app: FastifyInstance) {
           }),
           response: {
             200: z.object({
-              categories: z.array(CategoryBaseSchema),
+              categories: z.array(CategorySchema),
             }),
           },
         },
@@ -61,6 +59,7 @@ export async function getCategories(app: FastifyInstance) {
           select: {
             id: true,
             name: true,
+            code: true,
             parentId: true,
             color: true,
             icon: true,

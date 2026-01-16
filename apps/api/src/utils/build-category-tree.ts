@@ -1,47 +1,58 @@
-import type { TransactionType } from "generated/prisma/enums"
+// utils/build-category-tree.ts
 
-type CategoryBase = {
+type FlatCategory = {
   id: string
-  name: string
-  type: TransactionType
-  color: string
-  icon: string
   parentId: string | null
 }
 
-type CategoryTree = CategoryBase & {
-  children: CategoryTree[]
+export type CategoryChild<T> = T & {
+  parentId: string
 }
 
-export function buildCategoryTree(
-  flatCategories: CategoryBase[],
-): CategoryTree[] {
-  const categoryById = new Map<string, CategoryTree>()
+export type CategoryRoot<T> = T & {
+  parentId: null
+  children: CategoryChild<T>[]
+}
 
-  flatCategories.forEach((category) => {
-    categoryById.set(category.id, {
-      ...category,
-      children: [],
-    })
-  })
+/**
+ * Monta uma árvore de categorias com APENAS 2 níveis:
+ * - Raiz (parentId = null)
+ * - Filhos (parentId = raiz.id)
+ *
+ * Netos NÃO são permitidos.
+ */
+export function buildCategoryTree<T extends FlatCategory>(
+  items: T[]
+): CategoryRoot<T>[] {
+  const roots = new Map<string, CategoryRoot<T>>()
+  const children = new Map<string, CategoryChild<T>>()
 
-  return flatCategories.reduce<CategoryTree[]>(
-    (rootCategories, category) => {
-      const currentCategory = categoryById.get(category.id)!
+  for (const item of items) {
+    if (item.parentId === null) {
+      roots.set(item.id, {
+        ...item,
+        parentId: null,
+        children: [],
+      })
+    } else {
+      children.set(item.id, {
+        ...item,
+        parentId: item.parentId,
+      })
+    }
+  }
 
-      if (!category.parentId) {
-        rootCategories.push(currentCategory)
-        return rootCategories
-      }
+  for (const child of children.values()) {
+    const parent = roots.get(child.parentId)
 
-      const parentCategory = categoryById.get(category.parentId)
+    if (!parent) {
+      throw new Error(
+        `Categoria filha ${child.id} possui parent inválido ou é neto (não permitido).`
+      )
+    }
 
-      if (parentCategory) {
-        parentCategory.children.push(currentCategory)
-      }
+    parent.children.push(child)
+  }
 
-      return rootCategories
-    },
-    [],
-  )
+  return Array.from(roots.values())
 }

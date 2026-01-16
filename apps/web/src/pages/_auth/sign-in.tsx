@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Mail, Lock } from 'lucide-react'
 import z from "zod"
 import {
@@ -14,6 +14,8 @@ import { Controller, useForm } from "react-hook-form";
 import LogoBranco from "@/assets/logo-finax-branco.png"
 import { auth } from '@/hooks/auth'
 import { toast } from 'sonner'
+import { normalizeApiError } from '@/errors/api-error'
+import { resolveErrorMessage } from '@/errors'
 
 const SignInSchema = z
   .object({
@@ -45,9 +47,8 @@ export const Route = createFileRoute('/_auth/sign-in')({
 
 function SignIn() {
   const { email } = Route.useSearch()
-  const navigate = useNavigate()
   const signInMutation = auth.useSignIn()
-  // const { data: session, isPending: isSessionPending } = auth.useSession()
+  const { data: session, isPending: isSessionPending } = auth.useSession()
 
   const {
     handleSubmit,
@@ -65,10 +66,19 @@ function SignIn() {
     try {
       await signInMutation.mutateAsync(data)
       toast.success("Login realizado com sucesso!")
-    } catch (error) {
-      console.log(error)
-      toast.error("Erro ao fazer login")
+    } catch (err) {
+      const apiError = normalizeApiError(err)
+      const message = resolveErrorMessage(apiError)
+
+      console.error("API Error:", apiError)
+      toast.error(message)
     }
+
+    resetField("password")
+  }
+
+  if (!isSessionPending && session) {
+    return <Navigate to="/" replace />;
   }
 
   return (

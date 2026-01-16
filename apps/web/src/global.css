@@ -34,7 +34,7 @@
   --color-chart-3: hsl(var(--chart-3));
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
-  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar: hsl(var(--sidebar-background));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
   --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
@@ -73,8 +73,8 @@
   --muted-foreground: 215 16% 47%;
 
   /* Accent */
-  --accent: 152 100% 95%;
-  --accent-foreground: 152 100% 25%;
+  --accent: 210 20% 96%;
+  --accent-foreground: 204 35% 9%;
 
   /* Destructive - For expenses/debts */
   --destructive: 0 84% 60%;
@@ -144,8 +144,8 @@
   --muted: 204 35% 15%;
   --muted-foreground: 215 20% 65%;
 
-  --accent: 152 100% 15%;
-  --accent-foreground: 152 100% 70%;
+  --accent: 204 35% 15%;
+  --accent-foreground: 210 20% 98%;
 
   --destructive: 0 63% 31%;
   --destructive-foreground: 210 40% 98%;
@@ -170,7 +170,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
   }
 }
 

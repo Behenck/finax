@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { DeleteOrganizationsSlugCompaniesCompanyidMutationResponse, DeleteOrganizationsSlugCompaniesCompanyidPathParams } from "../types/DeleteOrganizationsSlugCompaniesCompanyid.ts";
+import type { DeleteOrganizationsSlugCompaniesCompanyidMutationResponse, DeleteOrganizationsSlugCompaniesCompanyidPathParams } from "../models/DeleteOrganizationsSlugCompaniesCompanyid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

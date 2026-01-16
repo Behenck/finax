@@ -23,6 +23,7 @@ export async function createCategory(app: FastifyInstance) {
           }),
           body: z.object({
             name: z.string(),
+            code: z.string().optional(),
             type: z.enum(TransactionType),
             icon: z.string(),
             parentId: z.string().optional(),
@@ -71,6 +72,7 @@ export async function createCategory(app: FastifyInstance) {
           prisma.category.create({
             data: {
               name: data.name,
+              code: data.code,
               type: data.type,
               organizationId: organization.id,
               color: data.color,

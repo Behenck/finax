@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 export async function updateUnit(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .patch("/organizations/:slug/companies/:companyId/units/:unitId", {
+    .put("/organizations/:slug/companies/:companyId/units/:unitId", {
       schema: {
         tags: ["units"],
         summary: "Update unit",

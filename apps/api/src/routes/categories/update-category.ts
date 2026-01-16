@@ -25,6 +25,7 @@ export async function updateCategory(app: FastifyInstance) {
           }),
           body: z.object({
             name: z.string(),
+            code: z.string().optional(),
             type: z.enum(TransactionType),
             icon: z.string(),
             color: z.string(),
@@ -60,15 +61,27 @@ export async function updateCategory(app: FastifyInstance) {
         }
 
         await db(() =>
-          prisma.category.update({
-            where: { id },
-            data: {
-              name: data.name,
-              type: data.type,
-              color: data.color,
-              icon: data.icon,
-            },
-          })
+          prisma.$transaction([
+            prisma.category.update({
+              where: { id },
+              data: {
+                name: data.name,
+                code: data.code,
+                type: data.type,
+                color: data.color,
+                icon: data.icon,
+              },
+            }),
+
+            prisma.category.updateMany({
+              where: {
+                parentId: id,
+              },
+              data: {
+                color: data.color,
+              },
+            }),
+          ])
         )
 
         return reply.status(204).send()

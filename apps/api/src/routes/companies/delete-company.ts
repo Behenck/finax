@@ -50,11 +50,20 @@ export async function deleteCompany(app: FastifyInstance) {
           throw new BadRequestError("Company not found")
         }
 
-        await db(() => prisma.company.delete({
-          where: {
-            id: companyId
-          }
-        })
+        await db(() =>
+          prisma.$transaction([
+            prisma.unit.deleteMany({
+              where: {
+                companyId
+              }
+            }),
+            prisma.company.delete({
+              where: {
+                id: companyId
+              }
+            }),
+          ])
+
         )
 
         return reply.status(204).send()

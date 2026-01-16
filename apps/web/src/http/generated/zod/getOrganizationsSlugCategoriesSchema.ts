@@ -16,10 +16,20 @@ export const getOrganizationsSlugCategories200Schema = z.object({
     "categories": z.array(z.object({
     "id": z.uuid(),
 "name": z.string(),
+"code": z.nullable(z.string()),
 "type": z.enum(["INCOME", "OUTCOME"]),
 "color": z.string(),
 "icon": z.string(),
-"parentId": z.nullable(z.uuid())
+"parentId": z.nullable(z.enum([])),
+"children": z.array(z.object({
+    "id": z.uuid(),
+"name": z.string(),
+"code": z.nullable(z.string()),
+"type": z.enum(["INCOME", "OUTCOME"]),
+"color": z.string(),
+"icon": z.string(),
+"parentId": z.uuid()
+    }))
     }))
     })
 

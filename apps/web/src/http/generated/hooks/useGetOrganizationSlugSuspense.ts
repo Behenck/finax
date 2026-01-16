@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetOrganizationSlugQueryResponse, GetOrganizationSlugPathParams } from "../types/GetOrganizationSlug.ts";
+import type { GetOrganizationSlugQueryResponse, GetOrganizationSlugPathParams } from "../models/GetOrganizationSlug.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, UseSuspenseQueryOptions, UseSuspenseQueryResult } from "@tanstack/react-query";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";

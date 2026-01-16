@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401 } from "../types/PostSessionsPassword.ts";
+import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401 } from "../models/PostSessionsPassword.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

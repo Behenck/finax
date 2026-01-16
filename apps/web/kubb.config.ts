@@ -28,7 +28,9 @@ export default defineConfig({
   plugins: [
     pluginOas(),
     pluginTs({
-      enumType: "asConst",
+      output: {
+        path: "models"
+      }
     }),
     pluginZod(),
     pluginReactQuery({

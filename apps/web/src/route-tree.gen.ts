@@ -10,11 +10,19 @@
 
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as AuthLayoutRouteImport } from './pages/_auth/layout'
+import { Route as AppLayoutRouteImport } from './pages/_app/layout'
 import { Route as AuthSignUpRouteImport } from './pages/_auth/sign-up'
+import { Route as AuthSignOutRouteImport } from './pages/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './pages/_auth/sign-in'
+import { Route as AppRegistersIndexRouteImport } from './pages/_app/registers/index'
+import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppLayoutRoute = AppLayoutRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -22,35 +30,69 @@ const AuthSignUpRoute = AuthSignUpRouteImport.update({
   path: '/sign-up',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
+const AuthSignOutRoute = AuthSignOutRouteImport.update({
+  id: '/sign-out',
+  path: '/sign-out',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
+const AppRegistersIndexRoute = AppRegistersIndexRouteImport.update({
+  id: '/registers/',
+  path: '/registers/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+  id: '/_dashboard/',
+  path: '/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
+  '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/': typeof AppDashboardIndexRoute
+  '/registers': typeof AppRegistersIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
+  '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/': typeof AppDashboardIndexRoute
+  '/registers': typeof AppRegistersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_app': typeof AppLayoutRouteWithChildren
   '/_auth': typeof AuthLayoutRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
+  '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
+  '/_app/_dashboard/': typeof AppDashboardIndexRoute
+  '/_app/registers/': typeof AppRegistersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/sign-in' | '/sign-up'
+  fullPaths: '/sign-in' | '/sign-out' | '/sign-up' | '/' | '/registers'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-up'
-  id: '__root__' | '/_auth' | '/_auth/sign-in' | '/_auth/sign-up'
+  to: '/sign-in' | '/sign-out' | '/sign-up' | '/' | '/registers'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_auth'
+    | '/_auth/sign-in'
+    | '/_auth/sign-out'
+    | '/_auth/sign-up'
+    | '/_app/_dashboard/'
+    | '/_app/registers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppLayoutRoute: typeof AppLayoutRouteWithChildren
   AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
 }
 
@@ -63,11 +105,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
       path: '/sign-up'
       fullPath: '/sign-up'
       preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/_auth/sign-out': {
+      id: '/_auth/sign-out'
+      path: '/sign-out'
+      fullPath: '/sign-out'
+      preLoaderRoute: typeof AuthSignOutRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
     '/_auth/sign-in': {
@@ -77,16 +133,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
+    '/_app/registers/': {
+      id: '/_app/registers/'
+      path: '/registers'
+      fullPath: '/registers'
+      preLoaderRoute: typeof AppRegistersIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/_dashboard/': {
+      id: '/_app/_dashboard/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
   }
 }
 
+interface AppLayoutRouteChildren {
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppRegistersIndexRoute: typeof AppRegistersIndexRoute
+}
+
+const AppLayoutRouteChildren: AppLayoutRouteChildren = {
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppRegistersIndexRoute: AppRegistersIndexRoute,
+}
+
+const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
+  AppLayoutRouteChildren,
+)
+
 interface AuthLayoutRouteChildren {
   AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignOutRoute: typeof AuthSignOutRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthSignInRoute: AuthSignInRoute,
+  AuthSignOutRoute: AuthSignOutRoute,
   AuthSignUpRoute: AuthSignUpRoute,
 }
 
@@ -95,6 +181,7 @@ const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AppLayoutRoute: AppLayoutRouteWithChildren,
   AuthLayoutRoute: AuthLayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport

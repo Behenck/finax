@@ -327,11 +327,6 @@ export type CompanyScalarRelationFilter = {
   isNot?: Prisma.CompanyWhereInput
 }
 
-export type CompanyNullableScalarRelationFilter = {
-  is?: Prisma.CompanyWhereInput | null
-  isNot?: Prisma.CompanyWhereInput | null
-}
-
 export type CompanyCreateNestedManyWithoutOrganizationInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutOrganizationInput, Prisma.CompanyUncheckedCreateWithoutOrganizationInput> | Prisma.CompanyCreateWithoutOrganizationInput[] | Prisma.CompanyUncheckedCreateWithoutOrganizationInput[]
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutOrganizationInput | Prisma.CompanyCreateOrConnectWithoutOrganizationInput[]
@@ -394,12 +389,10 @@ export type CompanyCreateNestedOneWithoutEmployeesInput = {
   connect?: Prisma.CompanyWhereUniqueInput
 }
 
-export type CompanyUpdateOneWithoutEmployeesNestedInput = {
+export type CompanyUpdateOneRequiredWithoutEmployeesNestedInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutEmployeesInput, Prisma.CompanyUncheckedCreateWithoutEmployeesInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutEmployeesInput
   upsert?: Prisma.CompanyUpsertWithoutEmployeesInput
-  disconnect?: Prisma.CompanyWhereInput | boolean
-  delete?: Prisma.CompanyWhereInput | boolean
   connect?: Prisma.CompanyWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutEmployeesInput, Prisma.CompanyUpdateWithoutEmployeesInput>, Prisma.CompanyUncheckedUpdateWithoutEmployeesInput>
 }

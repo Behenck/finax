@@ -187,6 +187,7 @@ export type UnitScalarFieldEnum = (typeof UnitScalarFieldEnum)[keyof typeof Unit
 export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  code: 'code',
   color: 'color',
   icon: 'icon',
   type: 'type',
@@ -212,6 +213,8 @@ export const EmployeeScalarFieldEnum = {
   id: 'id',
   name: 'name',
   department: 'department',
+  email: 'email',
+  role: 'role',
   userId: 'userId',
   organizationId: 'organizationId',
   companyId: 'companyId',

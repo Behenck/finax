@@ -8,14 +8,13 @@ import { BadRequestError } from "../_errors/bad-request-error";
 export async function getEmployees(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .get("/organizations/:slug/companies/:companyId/employees", {
+    .get("/organizations/:slug/employees", {
       schema: {
         tags: ["employees"],
         summary: "Get employees",
         security: [{ bearerAuth: [] }],
         params: z.object({
           slug: z.string(),
-          companyId: z.uuid(),
         }),
         response: {
           200: z.object({
@@ -23,7 +22,14 @@ export async function getEmployees(app: FastifyInstance) {
               z.object({
                 id: z.uuid(),
                 name: z.string(),
-                department: z.string(),
+                role: z.string().nullable(),
+                email: z.string(),
+                department: z.string().nullable(),
+                userId: z.uuid().nullable(),
+                company: z.object({
+                  id: z.uuid(),
+                  name: z.string(),
+                })
               }),
             )
           })
@@ -31,7 +37,7 @@ export async function getEmployees(app: FastifyInstance) {
       }
     },
       async (request) => {
-        const { slug, companyId } = request.params
+        const { slug } = request.params
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -46,29 +52,23 @@ export async function getEmployees(app: FastifyInstance) {
           throw new BadRequestError("Organization not found")
         }
 
-        const company = await prisma.company.findFirst({
-          where: {
-            id: companyId,
-            organizationId: organization.id
-          },
-          select: {
-            id: true
-          }
-        })
-
-        if (!company) {
-          throw new BadRequestError("Company not found")
-        }
-
         const employees = await prisma.employee.findMany({
           where: {
-            companyId,
             organizationId: organization.id
           },
           select: {
             id: true,
             name: true,
-            department: true
+            email: true,
+            role: true,
+            department: true,
+            userId: true,
+            company: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
           }
         })
 

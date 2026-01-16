@@ -168,6 +168,7 @@ model Unit {
 model Category {
   id             String          @id @default(uuid())
   name           String
+  code           String?
   color          String
   icon           String
   type           TransactionType
@@ -207,16 +208,18 @@ model CostCenter {
 model Employee {
   id             String  @id @default(uuid())
   name           String
-  department     String
-  userId         String  @map("user_id")
+  department     String?
+  email          String
+  role           String?
+  userId         String? @map("user_id")
   organizationId String
-  companyId      String?
+  companyId      String
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  user         User         @relation(fields: [userId], references: [id])
+  user         User?        @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
-  company      Company?     @relation(fields: [companyId], references: [id])
+  company      Company      @relation(fields: [companyId], references: [id])
 
   @@unique([organizationId, userId])
   @@index([organizationId])

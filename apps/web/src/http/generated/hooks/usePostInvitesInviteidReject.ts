@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostInvitesInviteidRejectMutationResponse, PostInvitesInviteidRejectPathParams } from "../types/PostInvitesInviteidReject.ts";
+import type { PostInvitesInviteidRejectMutationResponse, PostInvitesInviteidRejectPathParams } from "../models/PostInvitesInviteidReject.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest, PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, PostOrganizationsSlugCompaniesCompanyidUnitsPathParams } from "../types/PostOrganizationsSlugCompaniesCompanyidUnits.ts";
+import type { PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest, PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, PostOrganizationsSlugCompaniesCompanyidUnitsPathParams } from "../models/PostOrganizationsSlugCompaniesCompanyidUnits.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

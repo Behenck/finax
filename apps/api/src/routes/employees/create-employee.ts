@@ -9,18 +9,21 @@ import { db } from "@/lib/db";
 export async function createEmployee(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .post("/organizations/:slug/companies/:companyId/employees", {
+    .post("/organizations/:slug/employees", {
       schema: {
         tags: ["employees"],
         summary: "Create a new employee",
         security: [{ bearerAuth: [] }],
         params: z.object({
           slug: z.string(),
-          companyId: z.uuid(),
         }),
         body: z.object({
           name: z.string(),
-          department: z.string(),
+          role: z.string().optional(),
+          email: z.string(),
+          department: z.string().optional(),
+          userId: z.string().optional(),
+          companyId: z.uuid()
         }),
         response: {
           201: z.object({
@@ -30,9 +33,8 @@ export async function createEmployee(app: FastifyInstance) {
       }
     },
       async (request, reply) => {
-        const { slug, companyId } = request.params
-        const { name, department } = request.body
-        const userId = await request.getCurrentUserId()
+        const { slug } = request.params
+        const { name, department, userId, role, email, companyId } = request.body
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -65,6 +67,8 @@ export async function createEmployee(app: FastifyInstance) {
           prisma.employee.create({
             data: {
               name,
+              role,
+              email,
               department,
               userId,
               companyId: company.id,
