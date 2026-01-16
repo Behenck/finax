@@ -9,8 +9,7 @@ import { useCreateEmployee } from "@/hooks/employees/use-create-employee";
 import { useUpdateEmployee } from "@/hooks/employees/use-update-employee";
 import { employeeSchema, type EmployeeFormData } from "@/schemas/employee-schema";
 import type { Employee } from "@/schemas/types/employee";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SelectItem } from "@radix-ui/react-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCompanies } from "@/hooks/companies/use-companies";
 
 export type CreateEmployeeType = z.infer<typeof employeeSchema>;
@@ -185,7 +184,7 @@ export function EmployeeForm({ onSuccess, mode, initialData }: CreateEmployeeFor
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
 
-                <SelectContent position="popper">
+                <SelectContent>
                   {companies?.map((company) => (
                     <SelectItem key={company.id} value={company.id}>
                       {company.name}

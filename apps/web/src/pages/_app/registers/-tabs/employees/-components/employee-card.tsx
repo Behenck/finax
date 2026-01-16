@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useDeleteEmployee } from "@/hooks/employees/use-delete-employee";
 import type { Employee } from "@/schemas/types/employee";
-import { Building2, Trash2 } from "lucide-react";
+import { Briefcase, Building2, Trash2 } from "lucide-react";
 import { UpdateEmployee } from "./update-employee";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface EmployeeCardProps {
   employee: Employee
@@ -22,11 +23,28 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
     <Card className="px-6 py-4 rounded-lg flex-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-md bg-green-100 text-green-500">
-            <Building2 className="size-5" />
-          </div>
+          <Avatar>
+            <AvatarImage />
+            <AvatarFallback>DB</AvatarFallback>
+          </Avatar>
 
-          <span className="font-medium ">{employee.name}</span>
+          <div className="space-y-1">
+            <span className="font-medium ">{employee.name}</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1 text-gray-500 text-xs">
+                <Briefcase className="size-3" />
+                <span>{employee.role}</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500 text-xs">
+                <Building2 className="size-3" />
+                <span>{employee.department}</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500 text-xs">
+                <Briefcase className="size-3" />
+                <span>{employee.email}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-1">
@@ -42,6 +60,6 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
           </Button>
         </div>
       </div>
-    </Card>
+    </Card >
   )
 }
