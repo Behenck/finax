@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useDeleteEmployee } from "@/hooks/employees/use-delete-employee";
 import type { Employee } from "@/schemas/types/employee";
-import { Briefcase, Building2, Trash2 } from "lucide-react";
+import { Briefcase, Building2, Mail, Trash2 } from "lucide-react";
 import { UpdateEmployee } from "./update-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -28,19 +28,23 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
             <AvatarFallback>DB</AvatarFallback>
           </Avatar>
 
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1">
             <span className="font-medium ">{employee.name}</span>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-gray-500 text-xs">
-                <Briefcase className="size-3" />
+              {employee.role && (
+                <div className="flex items-center gap-1 text-gray-500 text-xs">
+                  <Briefcase className="size-3" />
                 <span>{employee.role}</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-500 text-xs">
-                <Building2 className="size-3" />
+              )}
+              {employee.department && (
+                <div className="flex items-center gap-1 text-gray-500 text-xs">
+                  <Building2 className="size-3" />
                 <span>{employee.department}</span>
               </div>
+              )}
               <div className="flex items-center gap-1 text-gray-500 text-xs">
-                <Briefcase className="size-3" />
+                <Mail className="size-3" />
                 <span>{employee.email}</span>
               </div>
             </div>

@@ -4,9 +4,13 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CompanyCard } from "./-components/company-card";
 import { CreateCompany } from "./-components/create-company";
-import { isNotNull } from "@/utils/is-not-null";
+import { createFileRoute } from "@tanstack/react-router";
 
-export function Companies() {
+export const Route = createFileRoute('/_app/registers/companies/')({
+  component: Companies,
+})
+
+function Companies() {
   const [search, setSearch] = useState('')
   const { data: companies, isLoading, isError } = useCompanies()
 

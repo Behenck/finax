@@ -4,8 +4,13 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CreateCostCenter } from "./-components/create-cost-center";
 import { CostCenterCard } from "./-components/cost-center-card";
+import { createFileRoute } from "@tanstack/react-router";
 
-export function CostCenters() {
+export const Route = createFileRoute('/_app/registers/cost-centers/')({
+  component: CostCenters,
+})
+
+function CostCenters() {
   const [search, setSearch] = useState('')
   const { data: costCenters, isLoading, isError } = useCostCenters()
 

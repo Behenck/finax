@@ -15,17 +15,17 @@ function AppLayout() {
   if (isPending) {
     return <Skeleton />
   }
-
+  
   if (data == null) {
-    return <Navigate to='/sign-in' replace />
+    return <Navigate to="/sign-in" replace />
   }
-
   return (
     <AppContext.Provider value={{ auth: data }}>
       <SidebarProvider>
         <AppSidebar />
-        <main className='w-full'>
-          <div className='p-10 h-full'>
+
+        <main className="w-full">
+          <div className="p-10 h-full">
             <Outlet />
           </div>
         </main>
@@ -33,3 +33,4 @@ function AppLayout() {
     </AppContext.Provider>
   )
 }
+

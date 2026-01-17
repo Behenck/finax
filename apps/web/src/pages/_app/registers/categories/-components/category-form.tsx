@@ -15,6 +15,7 @@ import { useUpdateCategory } from "@/hooks/categories/use-update-category";
 import type { Category, CategoryChild } from "@/schemas/types/category";
 import { formatTitleCase } from "@/utils/format-title-case";
 import { formatCategoryCode } from "@/utils/format-category-code";
+import type { CategoriesTypeEnumKey } from "@/http/generated";
 
 export type CreateCategoryType = z.infer<typeof categorySchema>;
 
@@ -22,6 +23,7 @@ interface CreateCategoryFormProps {
   onSuccess?: () => void
   mode?: "create" | "edit"
   initialData?: Category | CategoryChild
+  type?: CategoriesTypeEnumKey
   parentId?: string
   parentColor?: string
 }
@@ -49,7 +51,7 @@ const PRESET_COLORS = [
   "#10B981", // Emerald
 ];
 
-export function CategoryForm({ onSuccess, mode, initialData, parentId, parentColor }: CreateCategoryFormProps) {
+export function CategoryForm({ onSuccess, mode, initialData, type, parentId, parentColor }: CreateCategoryFormProps) {
   const { mutateAsync: createCategory } = useCreateCategory()
   const { mutateAsync: updateCategory } = useUpdateCategory()
 
@@ -63,7 +65,7 @@ export function CategoryForm({ onSuccess, mode, initialData, parentId, parentCol
       code: initialData?.code ?? "",
       icon: initialData?.icon ?? "",
       color: initialData?.color ?? parentColor ?? "#000000",
-      type: initialData?.type ?? "OUTCOME",
+      type: initialData?.type ?? type ?? "OUTCOME",
     },
   });
 

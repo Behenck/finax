@@ -33,6 +33,10 @@ export function EmployeeForm({ onSuccess, mode, initialData }: CreateEmployeeFor
     resolver: zodResolver(employeeSchema as any),
     defaultValues: {
       name: initialData?.name ?? "",
+      email: initialData?.email ?? "",
+      role: initialData?.role ?? "",
+      department: initialData?.department ?? "",
+      companyId: initialData?.company.id ?? "",
     },
   });
 

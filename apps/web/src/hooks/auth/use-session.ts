@@ -6,9 +6,13 @@ export function useSession() {
   return useQuery({
     queryKey: ['session'],
     retry: false,
+    staleTime: Infinity,         
+    gcTime: Infinity,            
+    refetchOnMount: false,       
+    refetchOnWindowFocus: false, 
+
     queryFn: async () => {
       const token = Cookies.get("token")
-
       if (!token) return null
 
       const { data } = await api.get('/profile', {

@@ -12,9 +12,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import { ChartPie, ChevronRight, Circle, CreditCard, Database, Home, Target, TriangleAlert, User, Users, type LucideIcon } from "lucide-react"
+import { Building2, ChartPie, ChevronRight, Circle, CreditCard, Database, Home, IdCardLanyard, Network, Tags, Target, TriangleAlert, User, Users, type LucideIcon } from "lucide-react"
 import LogoBranco from "@/assets/logo-finax-branco.png"
 import { Separator } from "@/components/ui/separator"
+import { useEffect } from "react"
+import { Link } from "@tanstack/react-router"
 
 interface ItemsProps {
   title: string
@@ -36,7 +38,29 @@ const items: ItemsProps[] = [
   {
     title: "Cadastros",
     icon: Database,
-    url: "/registers",
+    url: "/",
+    children: [
+      {
+        icon: Building2,
+        title: "Empresas",
+        url: "/registers/companies"
+      },
+      {
+        icon: Tags,
+        title: "Categorias",
+        url: "/registers/categories"
+      },
+      {
+        icon: Network,
+        title: "Centro de Custos",
+        url: "/registers/cost-centers"
+      },
+      {
+        icon: IdCardLanyard,
+        title: "Funcionários",
+        url: "/registers/employees"
+      }
+    ]
   },
   {
     title: "Transações",
@@ -76,6 +100,10 @@ const items: ItemsProps[] = [
 ]
 
 export function AppSidebar() {
+  useEffect(() => {
+    console.log("Sidebar montou")
+    return () => console.log("Sidebar desmontou")
+  }, [])
   return (
     <Sidebar>
       <SidebarHeader className="p-6">
@@ -95,10 +123,10 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url} className="p-6">
+                      <Link to={item.url} className="p-6">
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -108,7 +136,7 @@ export function AppSidebar() {
                 <Collapsible key={item.title} defaultOpen={false}>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton>
+                      <SidebarMenuButton className="p-6 cursor-pointer">
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
                         <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]:rotate-90" />
@@ -120,10 +148,10 @@ export function AppSidebar() {
                         {item.children.map((child) => (
                           <SidebarMenuSubItem key={child.title}>
                             <SidebarMenuSubButton asChild>
-                              <a href={child.url}>
+                              <Link to={child.url} className="p-4">
                                 <child.icon className="size-4" />
                                 <span>{child.title}</span>
-                              </a>
+                              </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}

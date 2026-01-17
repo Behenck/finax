@@ -4,8 +4,13 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CreateEmployee } from "./-components/create-employee";
 import { EmployeeCard } from "./-components/employee-card";
+import { createFileRoute } from "@tanstack/react-router";
 
-export function Employees() {
+export const Route = createFileRoute('/_app/registers/employees/')({
+  component: Employees,
+})
+
+function Employees() {
   const [search, setSearch] = useState('')
   const { data: employees, isLoading, isError } = useEmployees()
 

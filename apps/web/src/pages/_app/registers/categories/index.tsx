@@ -1,3 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { CreateCategory } from './-components/create-category'
 import { useCategories } from '@/hooks/categories/use-category'
 import { useMemo, useState } from 'react'
@@ -6,7 +7,11 @@ import { Input } from '@/components/ui/input'
 import { isNotNull } from '@/utils/is-not-null'
 import { Search } from 'lucide-react'
 
-export function Categories() {
+export const Route = createFileRoute('/_app/registers/categories/')({
+  component: Categories,
+})
+
+function Categories() {
   const { data: categories, isError, isLoading } = useCategories()
   const [search, setSearch] = useState('')
 
@@ -85,4 +90,5 @@ export function Categories() {
     </main>
   )
 }
+
 

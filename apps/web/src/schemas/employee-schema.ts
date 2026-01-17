@@ -7,7 +7,7 @@ export const employeeSchema = z
     email: z.email({ error: "Defina o email do funcionário" }),
     department: z.string().optional(),
     userId: z.uuid().optional(),
-    companyId: z.uuid()
+    companyId: z.uuid({ error: "Selecione uma empresa" })
   });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>
