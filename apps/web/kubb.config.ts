@@ -5,41 +5,41 @@ import { pluginZod } from "@kubb/plugin-zod";
 import { pluginReactQuery } from "@kubb/plugin-react-query";
 
 export default defineConfig({
-  /**
-   * Cache interno do Kubb
-   */
-  root: ".",
+	/**
+	 * Cache interno do Kubb
+	 */
+	root: ".",
 
-  /**
-   * Fonte do contrato
-   */
-  input: {
-    path: "http://localhost:3333/docs/json",
-  },
+	/**
+	 * Fonte do contrato
+	 */
+	input: {
+		path: "http://localhost:3333/docs/json",
+	},
 
-  /**
-   * Onde o client será gerado
-   */
-  output: {
-    path: "./src/http/generated",
-    clean: true,
-  },
+	/**
+	 * Onde o client será gerado
+	 */
+	output: {
+		path: "./src/http/generated",
+		clean: true,
+	},
 
-  plugins: [
-    pluginOas(),
-    pluginTs({
-      output: {
-        path: "models"
-      }
-    }),
-    pluginZod(),
-    pluginReactQuery({
-      client: {
-        baseURL: "http://localhost:3333",
-        dataReturnType: 'data',
-      },
-      paramsType: "inline",
-      pathParamsType: "object",
-    }),
-  ],
+	plugins: [
+		pluginOas(),
+		pluginTs({
+			output: {
+				path: "models",
+			},
+		}),
+		pluginZod(),
+		pluginReactQuery({
+			client: {
+				baseURL: "http://localhost:3333",
+				dataReturnType: "data",
+			},
+			paramsType: "inline",
+			pathParamsType: "object",
+		}),
+	],
 });

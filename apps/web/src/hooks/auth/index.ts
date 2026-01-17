@@ -3,7 +3,7 @@ import { useSignIn } from "./use-sign-in";
 import { useSignOut } from "./use-sign-out";
 
 export const auth = {
-  useSession,
-  useSignIn,
-  useSignOut
-}
+	useSession,
+	useSignIn,
+	useSignOut,
+};

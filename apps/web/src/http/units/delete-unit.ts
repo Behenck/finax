@@ -1,11 +1,15 @@
-import { deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "../generated"
+import { deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "../generated";
 
 interface DeleteUnitProps {
-  companyId: string,
-  unitId: string
+	companyId: string;
+	unitId: string;
 }
 
 export async function deleteUnit({ companyId, unitId }: DeleteUnitProps) {
-  const slug = "behenck"
-  await deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid({ slug, companyId, unitId })
+	const slug = "behenck";
+	await deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid({
+		slug,
+		companyId,
+		unitId,
+	});
 }

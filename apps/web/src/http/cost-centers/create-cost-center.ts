@@ -1,6 +1,11 @@
-import { postOrganizationsSlugCostcenters, type PostOrganizationsSlugCostcentersMutationRequest } from '../generated'
+import {
+	postOrganizationsSlugCostcenters,
+	type PostOrganizationsSlugCostcentersMutationRequest,
+} from "../generated";
 
-export async function createCostCenter(data: PostOrganizationsSlugCostcentersMutationRequest) {
-  const slug = "behenck"
-  await postOrganizationsSlugCostcenters({ slug }, data)
+export async function createCostCenter(
+	data: PostOrganizationsSlugCostcentersMutationRequest,
+) {
+	const slug = "behenck";
+	await postOrganizationsSlugCostcenters({ slug }, data);
 }

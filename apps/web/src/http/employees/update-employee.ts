@@ -1,15 +1,18 @@
-import { putOrganizationsSlugEmployeesEmployeeid, type PutOrganizationsSlugEmployeesEmployeeidMutationRequest } from '../generated'
+import {
+	putOrganizationsSlugEmployeesEmployeeid,
+	type PutOrganizationsSlugEmployeesEmployeeidMutationRequest,
+} from "../generated";
 
 interface UpdateEmployeeRequest {
-  employeeId: string
-  data: PutOrganizationsSlugEmployeesEmployeeidMutationRequest
+	employeeId: string;
+	data: PutOrganizationsSlugEmployeesEmployeeidMutationRequest;
 }
 
 export async function updateEmployee({
-  employeeId,
-  data,
+	employeeId,
+	data,
 }: UpdateEmployeeRequest) {
-  const slug = "behenck"
+	const slug = "behenck";
 
-  await putOrganizationsSlugEmployeesEmployeeid({ employeeId, slug }, data)
+	await putOrganizationsSlugEmployeesEmployeeid({ employeeId, slug }, data);
 }

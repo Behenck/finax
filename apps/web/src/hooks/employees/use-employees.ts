@@ -1,9 +1,9 @@
-import { getEmployees } from '@/http/employees/get-employees'
-import { useQuery } from '@tanstack/react-query'
+import { getEmployees } from "@/http/employees/get-employees";
+import { useQuery } from "@tanstack/react-query";
 
 export function useEmployees() {
-  return useQuery({
-    queryKey: ["employees"],
-    queryFn: getEmployees,
-  })
+	return useQuery({
+		queryKey: ["employees"],
+		queryFn: getEmployees,
+	});
 }

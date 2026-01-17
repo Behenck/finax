@@ -7,63 +7,65 @@ import { UpdateEmployee } from "./update-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface EmployeeCardProps {
-  employee: Employee
+	employee: Employee;
 }
 
 export function EmployeeCard({ employee }: EmployeeCardProps) {
-  const { mutateAsync: handleDeleteEmployee, isPending } = useDeleteEmployee()
+	const { mutateAsync: handleDeleteEmployee, isPending } = useDeleteEmployee();
 
-  async function onDelete(employee: Employee) {
-    const confirmed = window.confirm(`Deseja realmente excluir o Funcionário ${employee.name} ?`)
-    if (!confirmed) return
-    await handleDeleteEmployee(employee.id)
-  }
+	async function onDelete(employee: Employee) {
+		const confirmed = window.confirm(
+			`Deseja realmente excluir o Funcionário ${employee.name} ?`,
+		);
+		if (!confirmed) return;
+		await handleDeleteEmployee(employee.id);
+	}
 
-  return (
-    <Card className="px-6 py-4 rounded-lg flex-1">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarImage />
-            <AvatarFallback>DB</AvatarFallback>
-          </Avatar>
+	return (
+		<Card className="px-6 py-4 rounded-lg flex-1">
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-3">
+					<Avatar>
+						<AvatarImage />
+						<AvatarFallback>DB</AvatarFallback>
+					</Avatar>
 
-          <div className="flex flex-col gap-1">
-            <span className="font-medium ">{employee.name}</span>
-            <div className="flex items-center gap-4">
-              {employee.role && (
-                <div className="flex items-center gap-1 text-gray-500 text-xs">
-                  <Briefcase className="size-3" />
-                <span>{employee.role}</span>
-              </div>
-              )}
-              {employee.department && (
-                <div className="flex items-center gap-1 text-gray-500 text-xs">
-                  <Building2 className="size-3" />
-                <span>{employee.department}</span>
-              </div>
-              )}
-              <div className="flex items-center gap-1 text-gray-500 text-xs">
-                <Mail className="size-3" />
-                <span>{employee.email}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+					<div className="flex flex-col gap-1">
+						<span className="font-medium ">{employee.name}</span>
+						<div className="flex items-center gap-4">
+							{employee.role && (
+								<div className="flex items-center gap-1 text-gray-500 text-xs">
+									<Briefcase className="size-3" />
+									<span>{employee.role}</span>
+								</div>
+							)}
+							{employee.department && (
+								<div className="flex items-center gap-1 text-gray-500 text-xs">
+									<Building2 className="size-3" />
+									<span>{employee.department}</span>
+								</div>
+							)}
+							<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<Mail className="size-3" />
+								<span>{employee.email}</span>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        <div className="flex items-center gap-1">
-          <UpdateEmployee employee={employee} />
+				<div className="flex items-center gap-1">
+					<UpdateEmployee employee={employee} />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={isPending}
-            onClick={() => onDelete(employee)}
-          >
-            <Trash2 className='text-red-600' />
-          </Button>
-        </div>
-      </div>
-    </Card >
-  )
+					<Button
+						variant="ghost"
+						size="icon"
+						disabled={isPending}
+						onClick={() => onDelete(employee)}
+					>
+						<Trash2 className="text-red-600" />
+					</Button>
+				</div>
+			</div>
+		</Card>
+	);
 }

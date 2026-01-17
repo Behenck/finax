@@ -1,18 +1,18 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext } from "react";
 
 type User = {
-  id: string
-  name: string
-  email: string
-  avatarUrl: string
-}
+	id: string;
+	name: string;
+	email: string;
+	avatarUrl: string;
+};
 
 type AppContextType = {
-  auth: User | null
-}
+	auth: User | null;
+};
 
 export const AppContext = createContext<AppContextType>({
-  auth: null,
-})
+	auth: null,
+});
 
-export const useApp = () => useContext(AppContext)
+export const useApp = () => useContext(AppContext);

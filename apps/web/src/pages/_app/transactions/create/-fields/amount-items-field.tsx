@@ -1,0 +1,139 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useCategories } from "@/hooks/categories/use-category";
+import type { TransactionFormData } from "@/schemas/transaction-schema";
+import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Controller, useFieldArray, useWatch, type Control } from "react-hook-form";
+
+interface AmountItemsFieldProps {
+  control: Control<TransactionFormData>
+}
+
+export function AmountItemsField({ control }: AmountItemsFieldProps) {
+  const [multipleItems, setMultipleItems] = useState(false)
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items',
+  })
+
+  function handleAddItem() {
+    append({
+      description: '',
+      amount: 0,
+      categoryId: '',
+      subCategoryId: '',
+    })
+  }
+  return (
+    <Card className="p-5 rounded-sm gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <span className="font-semibold text-md">Valores</span>
+        <div className="flex items-center space-x-2">
+          <Switch id="airplane-mode" checked={multipleItems} onCheckedChange={setMultipleItems} />
+          <Label htmlFor="airplane-mode" className="text-xs">Múltiplos itens</Label>
+        </div>
+      </div>
+      {multipleItems ? (
+        <div className="space-y-4">
+          {fields.map((item, index) => (
+            <div key={item.id} className="flex items-end gap-3">
+              {/* Descrição */}
+              <FieldGroup>
+                <Controller
+                  name={`items.${index}.description`}
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="gap-2">
+                      <FieldLabel className="font-normal">Descrição</FieldLabel>
+                      <Input {...field} placeholder="Ex: Hospedagem" />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+
+              {/* Valor */}
+              <FieldGroup>
+                <Controller
+                  name={`items.${index}.amount`}
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="gap-2">
+                      <FieldLabel className="font-normal">Valor</FieldLabel>
+                      <Input {...field} placeholder="R$ 0,00" />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+
+              {/* Remover */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="text-red-500" />
+              </Button>
+            </div>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 w-fit"
+            onClick={handleAddItem}
+          >
+            <Plus className="w-4 h-4" />
+            Adicionar Item
+          </Button>
+        </div>
+      ) : (
+        <FieldGroup>
+          <Controller
+            name="totalAmount"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid} className="gap-2">
+                <FieldLabel htmlFor="totalAmount" className="font-normal">Valor *</FieldLabel>
+                <div>
+                  <Input
+                    {...field}
+                    id="totalAmount"
+                    type="text"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    aria-invalid={fieldState.invalid}
+                    aria-describedby={
+                      fieldState.invalid ? "totalAmount-error" : undefined
+                    }
+                    placeholder="R$ 0,00"
+                  // onChange={(event) => {
+                  //   const formattedValue = formatTitleCase(event.target.value);
+                  //   field.onChange(formattedValue);
+                  // }}
+                  />
+                </div>
+                {fieldState.invalid && (
+                  <FieldError id="totalAmount-error" errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </FieldGroup>
+      )}
+    </Card>
+  )
+}

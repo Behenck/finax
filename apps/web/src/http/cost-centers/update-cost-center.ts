@@ -1,15 +1,21 @@
-import { putOrganizationsSlugCostcentersCostcenterid, type PutOrganizationsSlugCostcentersCostcenteridMutationRequest } from '../generated'
+import {
+	putOrganizationsSlugCostcentersCostcenterid,
+	type PutOrganizationsSlugCostcentersCostcenteridMutationRequest,
+} from "../generated";
 
 interface UpdateCostCenterRequest {
-  costCenterId: string
-  data: PutOrganizationsSlugCostcentersCostcenteridMutationRequest
+	costCenterId: string;
+	data: PutOrganizationsSlugCostcentersCostcenteridMutationRequest;
 }
 
 export async function updateCostCenter({
-  costCenterId,
-  data,
+	costCenterId,
+	data,
 }: UpdateCostCenterRequest) {
-  const slug = "behenck"
+	const slug = "behenck";
 
-  await putOrganizationsSlugCostcentersCostcenterid({ costCenterId, slug }, data)
+	await putOrganizationsSlugCostcentersCostcenterid(
+		{ costCenterId, slug },
+		data,
+	);
 }
