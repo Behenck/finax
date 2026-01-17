@@ -16,7 +16,8 @@ export const transactionSchema = z.object({
 	categoryId: z.uuid(),
 	subCategoryId: z.uuid(),
 	totalAmount: z.number(),
-	installmentRecurrence: z.enum(["SINGLE", "MONTH", "YEAR", "INSTALLMENTS"]),
+	installmentRecurrenceType: z.enum(["SINGLE", "MONTH", "YEAR", "INSTALLMENTS"]),
+	installmentRecurrenceQuantity: z.number(),
 	userIdReimbursement: z.uuid().optional(),
 	notes: z.string(),
 	items: z.array(

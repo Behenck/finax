@@ -17,6 +17,16 @@ interface AmountItemsFieldProps {
 
 export function AmountItemsField({ control }: AmountItemsFieldProps) {
   const [multipleItems, setMultipleItems] = useState(false)
+  const { data: categories } = useCategories()
+
+  const selectedCategoryId = useWatch({
+    control,
+    name: 'categoryId',
+  })
+  const selectedCategory = categories?.find(
+    (category) => category.id === selectedCategoryId,
+  )
+  const subCategories = selectedCategory?.children ?? []
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -36,7 +46,7 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
       <div className="flex items-center justify-between gap-3">
         <span className="font-semibold text-md">Valores</span>
         <div className="flex items-center space-x-2">
-          <Switch id="airplane-mode" checked={multipleItems} onCheckedChange={setMultipleItems} />
+          <Switch id="airplane-mode" className="cursor-pointer" checked={multipleItems} onCheckedChange={setMultipleItems} />
           <Label htmlFor="airplane-mode" className="text-xs">Múltiplos itens</Label>
         </div>
       </div>
@@ -77,6 +87,60 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
                   )}
                 />
               </FieldGroup>
+              <FieldGroup>
+                <Controller
+                  name="categoryId"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="gap-1">
+                      <FieldLabel className="font-normal">Categoria</FieldLabel>
+                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {categories?.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {fieldState.invalid && (
+                        <FieldError id="categoryId-error" errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+              <FieldGroup>
+                <Controller
+                  name="subCategoryId"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="gap-1">
+                      <FieldLabel className="font-normal">Sub Categoria</FieldLabel>
+                      <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!selectedCategoryId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {subCategories?.map((subCategory) => (
+                            <SelectItem key={subCategory.id} value={subCategory.id}>
+                              {subCategory.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {fieldState.invalid && (
+                        <FieldError id="subCategoryId-error" errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
 
               {/* Remover */}
               <Button
@@ -93,12 +157,19 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
           <Button
             type="button"
             variant="outline"
-            className="flex items-center gap-2 w-fit"
+            className="flex items-center gap-2 w-fit rounded-sm"
             onClick={handleAddItem}
           >
             <Plus className="w-4 h-4" />
             Adicionar Item
           </Button>
+
+          {fields.length > 0 && (
+            <div className="flex items-end justify-end flex-1 bg-green-50 gap-1 p-3 rounded-sm">
+              <span className="text-xs text-gray-500 font-light">Total:</span>
+              <span className="font-bold">R$ 0,00</span>
+            </div>
+          )}
         </div>
       ) : (
         <FieldGroup>

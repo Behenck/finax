@@ -103,7 +103,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} className="gap-1">
               <FieldLabel className="font-normal">Centro de Custo</FieldLabel>
-              <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!selectedCategoryId}>
+              <Select value={field.value ?? ""} onValueChange={field.onChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>

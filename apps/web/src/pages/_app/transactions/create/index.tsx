@@ -15,6 +15,9 @@ import { TypesField } from "./-fields/types-field";
 import { BasicInformationField } from "./-fields/basic-information-field";
 import { ClassificationField } from "./-fields/classification-field";
 import { AmountItemsField } from "./-fields/amount-items-field";
+import { InstallmentsRecurrenceField } from "./-fields/installments-recurrence-field";
+import { RefundField } from "./-fields/refund-field";
+import { NotesField } from "./-fields/notes-field";
 
 export const Route = createFileRoute("/_app/transactions/create/")({
 	component: CreateTransaction,
@@ -24,7 +27,11 @@ function CreateTransaction() {
 	const { handleSubmit, control } = useForm<TransactionFormData>({
 		resolver: zodResolver(transactionSchema as any),
 		defaultValues: {
+			type: "OUTCOME",
+			nature: "VARIABLE",
 			items: [],
+			installmentRecurrenceType: "SINGLE",
+			installmentRecurrenceQuantity: 2,
 		},
 	});
 
@@ -45,33 +52,14 @@ function CreateTransaction() {
 			</header>
 
 			<div className="space-y-6">
-				<TypesField />
+				<TypesField control={control} />
 				<BasicInformationField control={control} />
 				<ClassificationField control={control} />
 				<AmountItemsField control={control} />
-				<Card className="p-5 rounded-sm gap-3">
-					<Label className="font-semibold">Recorrência / Parcelas</Label>
-					<FieldGroup>
-						<Field>
-							<FieldLabel>Tipo</FieldLabel>
-							<Input placeholder="Select Unica Vez" />
-						</Field>
-					</FieldGroup>
-				</Card>
-				<Card className="p-5 rounded-sm gap-3">
-					<div className="flex items-center justify-between">
-						<Label className="font-semibold">Reembolso</Label>
-						<span className="text-xs">Esta despesa tem reembolso</span>
-					</div>
-				</Card>
-				<Card className="p-5 rounded-sm gap-3">
-					<FieldGroup>
-						<Field>
-							<FieldLabel>Observações</FieldLabel>
-							<Input placeholder="Adicione observações sobre esta transação" />
-						</Field>
-					</FieldGroup>
-				</Card>
+				<InstallmentsRecurrenceField control={control} />
+				<RefundField control={control} />
+				<NotesField control={control} />
+
 				<div className="flex gap-3 items-center justify-end">
 					<Button variant="outline" asChild>
 						<Link to="/transactions">Cancelar</Link>
