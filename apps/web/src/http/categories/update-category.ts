@@ -9,5 +9,5 @@ interface UpdateCategoryRequest {
 export async function updateCategory({ id, data }: UpdateCategoryRequest) {
 	const slug = "behenck";
 
-	await putOrganizationsSlugCategoriesId({ id, slug }, data);
+	await putOrganizationsSlugCategoriesId(id, slug, data);
 }

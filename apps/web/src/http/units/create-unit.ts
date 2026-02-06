@@ -10,5 +10,5 @@ interface CreateUnitProps {
 
 export async function createUnit({ companyId, data }: CreateUnitProps) {
 	const slug = "behenck";
-	await postOrganizationsSlugCompaniesCompanyidUnits({ slug, companyId }, data);
+	await postOrganizationsSlugCompaniesCompanyidUnits(slug, companyId, data);
 }

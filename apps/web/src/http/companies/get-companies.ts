@@ -7,7 +7,7 @@ export async function getCompanies(): Promise<
 	GetOrganizationsSlugCompanies200["companies"]
 > {
 	const slug = "behenck";
-	const data = await getOrganizationsSlugCompanies({ slug });
+	const data = await getOrganizationsSlugCompanies(slug);
 
 	return data.companies;
 }

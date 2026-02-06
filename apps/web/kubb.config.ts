@@ -3,6 +3,7 @@ import { pluginOas } from "@kubb/plugin-oas";
 import { pluginTs } from "@kubb/plugin-ts";
 import { pluginZod } from "@kubb/plugin-zod";
 import { pluginReactQuery } from "@kubb/plugin-react-query";
+import { pluginClient } from "@kubb/plugin-client";
 
 export default defineConfig({
 	/**
@@ -33,6 +34,14 @@ export default defineConfig({
 			},
 		}),
 		pluginZod(),
+		pluginClient({
+			baseURL: "http://localhost:3333",
+			output: {
+				path: ".",
+			},
+			importPath: "@/lib/axios", // 👈 vamos criar esse arquivo
+			dataReturnType: "data",
+		}),
 		pluginReactQuery({
 			client: {
 				baseURL: "http://localhost:3333",

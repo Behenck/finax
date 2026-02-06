@@ -64,7 +64,8 @@ export const ModelName = {
   CostCenter: 'CostCenter',
   Employee: 'Employee',
   Transaction: 'Transaction',
-  TransactionItem: 'TransactionItem'
+  TransactionItem: 'TransactionItem',
+  Recurrence: 'Recurrence'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -239,11 +240,14 @@ export const TransactionScalarFieldEnum = {
   organizationId: 'organizationId',
   companyId: 'companyId',
   unitId: 'unitId',
-  userId: 'userId',
+  createdById: 'createdById',
+  refundedByEmployeeId: 'refundedByEmployeeId',
   categoryId: 'categoryId',
   notes: 'notes',
+  parentId: 'parentId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  userId: 'userId'
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
@@ -260,6 +264,32 @@ export const TransactionItemScalarFieldEnum = {
 } as const
 
 export type TransactionItemScalarFieldEnum = (typeof TransactionItemScalarFieldEnum)[keyof typeof TransactionItemScalarFieldEnum]
+
+
+export const RecurrenceScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  type: 'type',
+  totalAmount: 'totalAmount',
+  companyId: 'companyId',
+  unitId: 'unitId',
+  categoryId: 'categoryId',
+  costCenterId: 'costCenterId',
+  interval: 'interval',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  executionDay: 'executionDay',
+  executionDayType: 'executionDayType',
+  adjustmentRule: 'adjustmentRule',
+  lastRunAt: 'lastRunAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  organizationId: 'organizationId'
+} as const
+
+export type RecurrenceScalarFieldEnum = (typeof RecurrenceScalarFieldEnum)[keyof typeof RecurrenceScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,15 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { useCategories } from "@/hooks/categories/use-category";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
-import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Controller, useFieldArray, useWatch, type Control } from "react-hook-form";
+import { Controller, useWatch, type Control } from "react-hook-form";
 
 interface InstallmentsRecurrenceFieldProps {
   control: Control<TransactionFormData>
@@ -66,7 +60,7 @@ export function InstallmentsRecurrenceField({ control }: InstallmentsRecurrenceF
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid} className="gap-2">
                   <FieldLabel className="font-normal">Quantidade</FieldLabel>
-                  <Input {...field} placeholder="1" />
+                  <Input {...field} type="number" placeholder="1" />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

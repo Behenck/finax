@@ -1,15 +1,12 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useEmployees } from "@/hooks/employees/use-employees";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
-import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Controller, useFieldArray, useWatch, type Control } from "react-hook-form";
+import { Controller, type Control } from "react-hook-form";
 
 interface RefundFieldProps {
   control: Control<TransactionFormData>
@@ -32,7 +29,7 @@ export function RefundField({ control }: RefundFieldProps) {
         <div className="space-y-4">
           <FieldGroup>
             <Controller
-              name="userIdReimbursement"
+              name="employeeIdRefunded"
               control={control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid} className="gap-2">

@@ -7,17 +7,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useCategories } from "@/hooks/categories/use-category";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
+import { formatCurrencyBRL, parseBRLCurrencyToNumber } from "@/utils/format-amount";
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Controller, useFieldArray, useWatch, type Control } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 interface AmountItemsFieldProps {
-  control: Control<TransactionFormData>
+  isItems: boolean
 }
 
-export function AmountItemsField({ control }: AmountItemsFieldProps) {
-  const [multipleItems, setMultipleItems] = useState(false)
+export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
+  const [multipleItems, setMultipleItems] = useState(isItems)
   const { data: categories } = useCategories()
+  const { setValue, control } = useFormContext<TransactionFormData>()
 
   const selectedCategoryId = useWatch({
     control,
@@ -36,11 +38,37 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
   function handleAddItem() {
     append({
       description: '',
-      amount: 0,
+      amount: '',
       categoryId: '',
       subCategoryId: '',
     })
   }
+
+  const items = useWatch({
+    control,
+    name: "items",
+  })
+
+  const totalFromItems =
+    items?.reduce((total, item) => {
+      return total + parseBRLCurrencyToNumber(
+        String(item?.amount ?? "")
+      )
+    }, 0) ?? 0
+
+
+  useEffect(() => {
+    if (!multipleItems) return
+
+    setValue(
+      "totalAmount",
+      formatCurrencyBRL(totalFromItems),
+      {
+        shouldDirty: true,
+        shouldValidate: true,
+      }
+    )
+  }, [multipleItems, totalFromItems, setValue])
   return (
     <Card className="p-5 rounded-sm gap-3">
       <div className="flex items-center justify-between gap-3">
@@ -79,7 +107,14 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-2">
                       <FieldLabel className="font-normal">Valor</FieldLabel>
-                      <Input {...field} placeholder="R$ 0,00" />
+                      <Input
+                        {...field}
+                        placeholder="R$ 0,00"
+                        onChange={(event) => {
+                          const formattedValue = formatCurrencyBRL(event.target.value)
+                          field.onChange(formattedValue)
+                        }}
+                      />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
@@ -89,7 +124,7 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
               </FieldGroup>
               <FieldGroup>
                 <Controller
-                  name="categoryId"
+                  name={`items.${index}.categoryId`}
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-1">
@@ -116,7 +151,7 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
               </FieldGroup>
               <FieldGroup>
                 <Controller
-                  name="subCategoryId"
+                  name={`items.${index}.subCategoryId`}
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-1">
@@ -167,7 +202,9 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
           {fields.length > 0 && (
             <div className="flex items-end justify-end flex-1 bg-green-50 gap-1 p-3 rounded-sm">
               <span className="text-xs text-gray-500 font-light">Total:</span>
-              <span className="font-bold">R$ 0,00</span>
+              <span className="font-bold">
+                {formatCurrencyBRL(totalFromItems)}
+              </span>
             </div>
           )}
         </div>
@@ -191,10 +228,10 @@ export function AmountItemsField({ control }: AmountItemsFieldProps) {
                       fieldState.invalid ? "totalAmount-error" : undefined
                     }
                     placeholder="R$ 0,00"
-                  // onChange={(event) => {
-                  //   const formattedValue = formatTitleCase(event.target.value);
-                  //   field.onChange(formattedValue);
-                  // }}
+                    onChange={(event) => {
+                      const formattedValue = formatCurrencyBRL(event.target.value)
+                      field.onChange(formattedValue)
+                    }}
                   />
                 </div>
                 {fieldState.invalid && (

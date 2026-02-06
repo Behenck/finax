@@ -7,5 +7,5 @@ export async function createEmployee(
 	data: PostOrganizationsSlugEmployeesMutationRequest,
 ) {
 	const slug = "behenck";
-	await postOrganizationsSlugEmployees({ slug }, data);
+	await postOrganizationsSlugEmployees(slug, data);
 }

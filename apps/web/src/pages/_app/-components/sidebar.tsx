@@ -26,6 +26,7 @@ import {
 	Home,
 	IdCardLanyard,
 	Network,
+	Settings,
 	Tags,
 	Target,
 	TriangleAlert,
@@ -108,9 +109,9 @@ const items: ItemsProps[] = [
 		icon: Users,
 	},
 	{
-		title: "Whatsapp",
-		url: "#",
-		icon: Circle,
+		title: "Configurações",
+		url: "/settings",
+		icon: Settings,
 	},
 	{
 		title: "Perfil",
@@ -120,10 +121,6 @@ const items: ItemsProps[] = [
 ];
 
 export function AppSidebar() {
-	useEffect(() => {
-		console.log("Sidebar montou");
-		return () => console.log("Sidebar desmontou");
-	}, []);
 	return (
 		<Sidebar>
 			<SidebarHeader className="p-6">

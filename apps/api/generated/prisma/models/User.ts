@@ -204,8 +204,9 @@ export type UserWhereInput = {
   member_on?: Prisma.MemberListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   owns_organizations?: Prisma.OrganizationListRelationFilter
-  transactions?: Prisma.TransactionListRelationFilter
+  createdTransactions?: Prisma.TransactionListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
+  recurrencesCreated?: Prisma.RecurrenceListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -222,8 +223,9 @@ export type UserOrderByWithRelationInput = {
   member_on?: Prisma.MemberOrderByRelationAggregateInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   owns_organizations?: Prisma.OrganizationOrderByRelationAggregateInput
-  transactions?: Prisma.TransactionOrderByRelationAggregateInput
+  createdTransactions?: Prisma.TransactionOrderByRelationAggregateInput
   employees?: Prisma.EmployeeOrderByRelationAggregateInput
+  recurrencesCreated?: Prisma.RecurrenceOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -243,8 +245,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   member_on?: Prisma.MemberListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   owns_organizations?: Prisma.OrganizationListRelationFilter
-  transactions?: Prisma.TransactionListRelationFilter
+  createdTransactions?: Prisma.TransactionListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
+  recurrencesCreated?: Prisma.RecurrenceListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -287,8 +290,9 @@ export type UserCreateInput = {
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -305,8 +309,9 @@ export type UserUncheckedCreateInput = {
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -323,8 +328,9 @@ export type UserUpdateInput = {
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -341,8 +347,9 @@ export type UserUncheckedUpdateInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -535,18 +542,32 @@ export type UserUpdateOneWithoutEmployeesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmployeesInput, Prisma.UserUpdateWithoutEmployeesInput>, Prisma.UserUncheckedUpdateWithoutEmployeesInput>
 }
 
-export type UserCreateNestedOneWithoutTransactionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTransactionsInput, Prisma.UserUncheckedCreateWithoutTransactionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTransactionsInput
+export type UserCreateNestedOneWithoutCreatedTransactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransactionsInput, Prisma.UserUncheckedCreateWithoutCreatedTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTransactionsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutTransactionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTransactionsInput, Prisma.UserUncheckedCreateWithoutTransactionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTransactionsInput
-  upsert?: Prisma.UserUpsertWithoutTransactionsInput
+export type UserUpdateOneRequiredWithoutCreatedTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransactionsInput, Prisma.UserUncheckedCreateWithoutCreatedTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTransactionsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedTransactionsInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTransactionsInput, Prisma.UserUpdateWithoutTransactionsInput>, Prisma.UserUncheckedUpdateWithoutTransactionsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedTransactionsInput, Prisma.UserUpdateWithoutCreatedTransactionsInput>, Prisma.UserUncheckedUpdateWithoutCreatedTransactionsInput>
+}
+
+export type UserCreateNestedOneWithoutRecurrencesCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedCreateWithoutRecurrencesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurrencesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRecurrencesCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedCreateWithoutRecurrencesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurrencesCreatedInput
+  upsert?: Prisma.UserUpsertWithoutRecurrencesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecurrencesCreatedInput, Prisma.UserUpdateWithoutRecurrencesCreatedInput>, Prisma.UserUncheckedUpdateWithoutRecurrencesCreatedInput>
 }
 
 export type UserCreateWithoutTokensInput = {
@@ -562,8 +583,9 @@ export type UserCreateWithoutTokensInput = {
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTokensInput = {
@@ -579,8 +601,9 @@ export type UserUncheckedCreateWithoutTokensInput = {
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTokensInput = {
@@ -612,8 +635,9 @@ export type UserUpdateWithoutTokensInput = {
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTokensInput = {
@@ -629,8 +653,9 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRefreshTokensInput = {
@@ -646,8 +671,9 @@ export type UserCreateWithoutRefreshTokensInput = {
   invites?: Prisma.InviteCreateNestedManyWithoutAuthorInput
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -663,8 +689,9 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   invites?: Prisma.InviteUncheckedCreateNestedManyWithoutAuthorInput
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -696,8 +723,9 @@ export type UserUpdateWithoutRefreshTokensInput = {
   invites?: Prisma.InviteUpdateManyWithoutAuthorNestedInput
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -713,8 +741,9 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   invites?: Prisma.InviteUncheckedUpdateManyWithoutAuthorNestedInput
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -730,8 +759,9 @@ export type UserCreateWithoutAccountsInput = {
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -747,8 +777,9 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -780,8 +811,9 @@ export type UserUpdateWithoutAccountsInput = {
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -797,8 +829,9 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutInvitesInput = {
@@ -814,8 +847,9 @@ export type UserCreateWithoutInvitesInput = {
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutInvitesInput = {
@@ -831,8 +865,9 @@ export type UserUncheckedCreateWithoutInvitesInput = {
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutInvitesInput = {
@@ -864,8 +899,9 @@ export type UserUpdateWithoutInvitesInput = {
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitesInput = {
@@ -881,8 +917,9 @@ export type UserUncheckedUpdateWithoutInvitesInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMember_onInput = {
@@ -898,8 +935,9 @@ export type UserCreateWithoutMember_onInput = {
   invites?: Prisma.InviteCreateNestedManyWithoutAuthorInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMember_onInput = {
@@ -915,8 +953,9 @@ export type UserUncheckedCreateWithoutMember_onInput = {
   invites?: Prisma.InviteUncheckedCreateNestedManyWithoutAuthorInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMember_onInput = {
@@ -948,8 +987,9 @@ export type UserUpdateWithoutMember_onInput = {
   invites?: Prisma.InviteUpdateManyWithoutAuthorNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMember_onInput = {
@@ -965,8 +1005,9 @@ export type UserUncheckedUpdateWithoutMember_onInput = {
   invites?: Prisma.InviteUncheckedUpdateManyWithoutAuthorNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOwns_organizationsInput = {
@@ -982,8 +1023,9 @@ export type UserCreateWithoutOwns_organizationsInput = {
   invites?: Prisma.InviteCreateNestedManyWithoutAuthorInput
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOwns_organizationsInput = {
@@ -999,8 +1041,9 @@ export type UserUncheckedCreateWithoutOwns_organizationsInput = {
   invites?: Prisma.InviteUncheckedCreateNestedManyWithoutAuthorInput
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOwns_organizationsInput = {
@@ -1032,8 +1075,9 @@ export type UserUpdateWithoutOwns_organizationsInput = {
   invites?: Prisma.InviteUpdateManyWithoutAuthorNestedInput
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwns_organizationsInput = {
@@ -1049,8 +1093,9 @@ export type UserUncheckedUpdateWithoutOwns_organizationsInput = {
   invites?: Prisma.InviteUncheckedUpdateManyWithoutAuthorNestedInput
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutEmployeesInput = {
@@ -1067,7 +1112,8 @@ export type UserCreateWithoutEmployeesInput = {
   member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutEmployeesInput = {
@@ -1084,7 +1130,8 @@ export type UserUncheckedCreateWithoutEmployeesInput = {
   member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutEmployeesInput = {
@@ -1117,7 +1164,8 @@ export type UserUpdateWithoutEmployeesInput = {
   member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmployeesInput = {
@@ -1134,10 +1182,11 @@ export type UserUncheckedUpdateWithoutEmployeesInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserCreateWithoutTransactionsInput = {
+export type UserCreateWithoutCreatedTransactionsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1152,9 +1201,10 @@ export type UserCreateWithoutTransactionsInput = {
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserUncheckedCreateWithoutTransactionsInput = {
+export type UserUncheckedCreateWithoutCreatedTransactionsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1169,25 +1219,26 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserCreateOrConnectWithoutTransactionsInput = {
+export type UserCreateOrConnectWithoutCreatedTransactionsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTransactionsInput, Prisma.UserUncheckedCreateWithoutTransactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransactionsInput, Prisma.UserUncheckedCreateWithoutCreatedTransactionsInput>
 }
 
-export type UserUpsertWithoutTransactionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTransactionsInput, Prisma.UserUncheckedUpdateWithoutTransactionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTransactionsInput, Prisma.UserUncheckedCreateWithoutTransactionsInput>
+export type UserUpsertWithoutCreatedTransactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTransactionsInput, Prisma.UserUncheckedUpdateWithoutCreatedTransactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransactionsInput, Prisma.UserUncheckedCreateWithoutCreatedTransactionsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutTransactionsInput = {
+export type UserUpdateToOneWithWhereWithoutCreatedTransactionsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTransactionsInput, Prisma.UserUncheckedUpdateWithoutTransactionsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTransactionsInput, Prisma.UserUncheckedUpdateWithoutCreatedTransactionsInput>
 }
 
-export type UserUpdateWithoutTransactionsInput = {
+export type UserUpdateWithoutCreatedTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1202,9 +1253,10 @@ export type UserUpdateWithoutTransactionsInput = {
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutTransactionsInput = {
+export type UserUncheckedUpdateWithoutCreatedTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1218,6 +1270,95 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
+  recurrencesCreated?: Prisma.RecurrenceUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutRecurrencesCreatedInput = {
+  id?: string
+  name?: string | null
+  email: string
+  passwordHash?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tokens?: Prisma.TokenCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  invites?: Prisma.InviteCreateNestedManyWithoutAuthorInput
+  member_on?: Prisma.MemberCreateNestedManyWithoutUserInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  owns_organizations?: Prisma.OrganizationCreateNestedManyWithoutOwnerInput
+  createdTransactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRecurrencesCreatedInput = {
+  id?: string
+  name?: string | null
+  email: string
+  passwordHash?: string | null
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  invites?: Prisma.InviteUncheckedCreateNestedManyWithoutAuthorInput
+  member_on?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  owns_organizations?: Prisma.OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  createdTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRecurrencesCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedCreateWithoutRecurrencesCreatedInput>
+}
+
+export type UserUpsertWithoutRecurrencesCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedUpdateWithoutRecurrencesCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedCreateWithoutRecurrencesCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecurrencesCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecurrencesCreatedInput, Prisma.UserUncheckedUpdateWithoutRecurrencesCreatedInput>
+}
+
+export type UserUpdateWithoutRecurrencesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  invites?: Prisma.InviteUpdateManyWithoutAuthorNestedInput
+  member_on?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  owns_organizations?: Prisma.OrganizationUpdateManyWithoutOwnerNestedInput
+  createdTransactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecurrencesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  invites?: Prisma.InviteUncheckedUpdateManyWithoutAuthorNestedInput
+  member_on?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  owns_organizations?: Prisma.OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  createdTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1233,8 +1374,9 @@ export type UserCountOutputType = {
   member_on: number
   refreshTokens: number
   owns_organizations: number
-  transactions: number
+  createdTransactions: number
   employees: number
+  recurrencesCreated: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1244,8 +1386,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   member_on?: boolean | UserCountOutputTypeCountMember_onArgs
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   owns_organizations?: boolean | UserCountOutputTypeCountOwns_organizationsArgs
-  transactions?: boolean | UserCountOutputTypeCountTransactionsArgs
+  createdTransactions?: boolean | UserCountOutputTypeCountCreatedTransactionsArgs
   employees?: boolean | UserCountOutputTypeCountEmployeesArgs
+  recurrencesCreated?: boolean | UserCountOutputTypeCountRecurrencesCreatedArgs
 }
 
 /**
@@ -1303,7 +1446,7 @@ export type UserCountOutputTypeCountOwns_organizationsArgs<ExtArgs extends runti
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountCreatedTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TransactionWhereInput
 }
 
@@ -1312,6 +1455,13 @@ export type UserCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Typ
  */
 export type UserCountOutputTypeCountEmployeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EmployeeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRecurrencesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurrenceWhereInput
 }
 
 
@@ -1329,8 +1479,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   member_on?: boolean | Prisma.User$member_onArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   owns_organizations?: boolean | Prisma.User$owns_organizationsArgs<ExtArgs>
-  transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
+  createdTransactions?: boolean | Prisma.User$createdTransactionsArgs<ExtArgs>
   employees?: boolean | Prisma.User$employeesArgs<ExtArgs>
+  recurrencesCreated?: boolean | Prisma.User$recurrencesCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1372,8 +1523,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   member_on?: boolean | Prisma.User$member_onArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   owns_organizations?: boolean | Prisma.User$owns_organizationsArgs<ExtArgs>
-  transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
+  createdTransactions?: boolean | Prisma.User$createdTransactionsArgs<ExtArgs>
   employees?: boolean | Prisma.User$employeesArgs<ExtArgs>
+  recurrencesCreated?: boolean | Prisma.User$recurrencesCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1388,8 +1540,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     member_on: Prisma.$MemberPayload<ExtArgs>[]
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     owns_organizations: Prisma.$OrganizationPayload<ExtArgs>[]
-    transactions: Prisma.$TransactionPayload<ExtArgs>[]
+    createdTransactions: Prisma.$TransactionPayload<ExtArgs>[]
     employees: Prisma.$EmployeePayload<ExtArgs>[]
+    recurrencesCreated: Prisma.$RecurrencePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1799,8 +1952,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   member_on<T extends Prisma.User$member_onArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$member_onArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   owns_organizations<T extends Prisma.User$owns_organizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$owns_organizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  transactions<T extends Prisma.User$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdTransactions<T extends Prisma.User$createdTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   employees<T extends Prisma.User$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$employeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurrencesCreated<T extends Prisma.User$recurrencesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurrencesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2369,9 +2523,9 @@ export type User$owns_organizationsArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * User.transactions
+ * User.createdTransactions
  */
-export type User$transactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$createdTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Transaction
    */
@@ -2414,6 +2568,30 @@ export type User$employeesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EmployeeScalarFieldEnum | Prisma.EmployeeScalarFieldEnum[]
+}
+
+/**
+ * User.recurrencesCreated
+ */
+export type User$recurrencesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Recurrence
+   */
+  select?: Prisma.RecurrenceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Recurrence
+   */
+  omit?: Prisma.RecurrenceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurrenceInclude<ExtArgs> | null
+  where?: Prisma.RecurrenceWhereInput
+  orderBy?: Prisma.RecurrenceOrderByWithRelationInput | Prisma.RecurrenceOrderByWithRelationInput[]
+  cursor?: Prisma.RecurrenceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurrenceScalarFieldEnum | Prisma.RecurrenceScalarFieldEnum[]
 }
 
 /**

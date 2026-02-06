@@ -7,5 +7,5 @@ export async function createCompany(
 	data: PostOrganizationsSlugCompaniesMutationRequest,
 ) {
 	const slug = "behenck";
-	await postOrganizationsSlugCompanies({ slug }, data);
+	await postOrganizationsSlugCompanies(slug, data);
 }

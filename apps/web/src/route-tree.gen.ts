@@ -14,13 +14,18 @@ import { Route as AppLayoutRouteImport } from './pages/_app/layout'
 import { Route as AuthSignUpRouteImport } from './pages/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './pages/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './pages/_auth/sign-in'
+import { Route as AppSettingsLayoutRouteImport } from './pages/_app/settings/layout'
 import { Route as AppTransactionsIndexRouteImport } from './pages/_app/transactions/index'
+import { Route as AppSettingsIndexRouteImport } from './pages/_app/settings/index'
 import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
+import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
+import { Route as AppSettingsMembersIndexRouteImport } from './pages/_app/settings/members/index'
 import { Route as AppRegistersEmployeesIndexRouteImport } from './pages/_app/registers/employees/index'
 import { Route as AppRegistersCostCentersIndexRouteImport } from './pages/_app/registers/cost-centers/index'
 import { Route as AppRegistersCompaniesIndexRouteImport } from './pages/_app/registers/companies/index'
 import { Route as AppRegistersCategoriesIndexRouteImport } from './pages/_app/registers/categories/index'
+import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/_app/transactions/update/$transactionId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -45,10 +50,20 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
+const AppSettingsLayoutRoute = AppSettingsLayoutRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 const AppTransactionsIndexRoute = AppTransactionsIndexRouteImport.update({
   id: '/transactions/',
   path: '/transactions/',
   getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppSettingsLayoutRoute,
 } as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/_dashboard/',
@@ -61,6 +76,17 @@ const AppTransactionsCreateIndexRoute =
     path: '/transactions/create/',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppSettingsOrganizationIndexRoute =
+  AppSettingsOrganizationIndexRouteImport.update({
+    id: '/organization/',
+    path: '/organization/',
+    getParentRoute: () => AppSettingsLayoutRoute,
+  } as any)
+const AppSettingsMembersIndexRoute = AppSettingsMembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => AppSettingsLayoutRoute,
+} as any)
 const AppRegistersEmployeesIndexRoute =
   AppRegistersEmployeesIndexRouteImport.update({
     id: '/registers/employees/',
@@ -85,17 +111,28 @@ const AppRegistersCategoriesIndexRoute =
     path: '/registers/categories/',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppTransactionsUpdateTransactionIdRoute =
+  AppTransactionsUpdateTransactionIdRouteImport.update({
+    id: '/transactions/update/$transactionId',
+    path: '/transactions/update/$transactionId',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
+  '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/': typeof AppDashboardIndexRoute
+  '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
+  '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
+  '/settings/members': typeof AppSettingsMembersIndexRoute
+  '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
 }
 export interface FileRoutesByTo {
@@ -103,40 +140,54 @@ export interface FileRoutesByTo {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/': typeof AppDashboardIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
+  '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
+  '/settings/members': typeof AppSettingsMembersIndexRoute
+  '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppLayoutRouteWithChildren
   '/_auth': typeof AuthLayoutRouteWithChildren
+  '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_app/_dashboard/': typeof AppDashboardIndexRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
+  '/_app/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/_app/registers/categories/': typeof AppRegistersCategoriesIndexRoute
   '/_app/registers/companies/': typeof AppRegistersCompaniesIndexRoute
   '/_app/registers/cost-centers/': typeof AppRegistersCostCentersIndexRoute
   '/_app/registers/employees/': typeof AppRegistersEmployeesIndexRoute
+  '/_app/settings/members/': typeof AppSettingsMembersIndexRoute
+  '/_app/settings/organization/': typeof AppSettingsOrganizationIndexRoute
   '/_app/transactions/create/': typeof AppTransactionsCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/settings'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
     | '/'
+    | '/settings/'
     | '/transactions'
+    | '/transactions/update/$transactionId'
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
     | '/registers/employees'
+    | '/settings/members'
+    | '/settings/organization'
     | '/transactions/create'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -144,25 +195,34 @@ export interface FileRouteTypes {
     | '/sign-out'
     | '/sign-up'
     | '/'
+    | '/settings'
     | '/transactions'
+    | '/transactions/update/$transactionId'
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
     | '/registers/employees'
+    | '/settings/members'
+    | '/settings/organization'
     | '/transactions/create'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
+    | '/_app/settings'
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
     | '/_app/_dashboard/'
+    | '/_app/settings/'
     | '/_app/transactions/'
+    | '/_app/transactions/update/$transactionId'
     | '/_app/registers/categories/'
     | '/_app/registers/companies/'
     | '/_app/registers/cost-centers/'
     | '/_app/registers/employees/'
+    | '/_app/settings/members/'
+    | '/_app/settings/organization/'
     | '/_app/transactions/create/'
   fileRoutesById: FileRoutesById
 }
@@ -208,12 +268,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsLayoutRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/transactions/': {
       id: '/_app/transactions/'
       path: '/transactions'
       fullPath: '/transactions'
       preLoaderRoute: typeof AppTransactionsIndexRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/settings/': {
+      id: '/_app/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
     }
     '/_app/_dashboard/': {
       id: '/_app/_dashboard/'
@@ -228,6 +302,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/transactions/create'
       preLoaderRoute: typeof AppTransactionsCreateIndexRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/settings/organization/': {
+      id: '/_app/settings/organization/'
+      path: '/organization'
+      fullPath: '/settings/organization'
+      preLoaderRoute: typeof AppSettingsOrganizationIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
+    }
+    '/_app/settings/members/': {
+      id: '/_app/settings/members/'
+      path: '/members'
+      fullPath: '/settings/members'
+      preLoaderRoute: typeof AppSettingsMembersIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
     }
     '/_app/registers/employees/': {
       id: '/_app/registers/employees/'
@@ -257,12 +345,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistersCategoriesIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/transactions/update/$transactionId': {
+      id: '/_app/transactions/update/$transactionId'
+      path: '/transactions/update/$transactionId'
+      fullPath: '/transactions/update/$transactionId'
+      preLoaderRoute: typeof AppTransactionsUpdateTransactionIdRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
   }
 }
 
+interface AppSettingsLayoutRouteChildren {
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
+  AppSettingsMembersIndexRoute: typeof AppSettingsMembersIndexRoute
+  AppSettingsOrganizationIndexRoute: typeof AppSettingsOrganizationIndexRoute
+}
+
+const AppSettingsLayoutRouteChildren: AppSettingsLayoutRouteChildren = {
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
+  AppSettingsMembersIndexRoute: AppSettingsMembersIndexRoute,
+  AppSettingsOrganizationIndexRoute: AppSettingsOrganizationIndexRoute,
+}
+
+const AppSettingsLayoutRouteWithChildren =
+  AppSettingsLayoutRoute._addFileChildren(AppSettingsLayoutRouteChildren)
+
 interface AppLayoutRouteChildren {
+  AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppTransactionsIndexRoute: typeof AppTransactionsIndexRoute
+  AppTransactionsUpdateTransactionIdRoute: typeof AppTransactionsUpdateTransactionIdRoute
   AppRegistersCategoriesIndexRoute: typeof AppRegistersCategoriesIndexRoute
   AppRegistersCompaniesIndexRoute: typeof AppRegistersCompaniesIndexRoute
   AppRegistersCostCentersIndexRoute: typeof AppRegistersCostCentersIndexRoute
@@ -271,8 +383,11 @@ interface AppLayoutRouteChildren {
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
+  AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppTransactionsIndexRoute: AppTransactionsIndexRoute,
+  AppTransactionsUpdateTransactionIdRoute:
+    AppTransactionsUpdateTransactionIdRoute,
   AppRegistersCategoriesIndexRoute: AppRegistersCategoriesIndexRoute,
   AppRegistersCompaniesIndexRoute: AppRegistersCompaniesIndexRoute,
   AppRegistersCostCentersIndexRoute: AppRegistersCostCentersIndexRoute,

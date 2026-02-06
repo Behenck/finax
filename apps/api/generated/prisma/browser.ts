@@ -87,3 +87,8 @@ export type Transaction = Prisma.TransactionModel
  * 
  */
 export type TransactionItem = Prisma.TransactionItemModel
+/**
+ * Model Recurrence
+ * 
+ */
+export type Recurrence = Prisma.RecurrenceModel

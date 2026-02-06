@@ -15,7 +15,7 @@ export async function updateCostCenter({
 	const slug = "behenck";
 
 	await putOrganizationsSlugCostcentersCostcenterid(
-		{ costCenterId, slug },
+		costCenterId, slug,
 		data,
 	);
 }

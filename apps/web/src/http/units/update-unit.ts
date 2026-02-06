@@ -16,8 +16,5 @@ export async function updateUnit({
 }: UpdateCompanyRequest) {
 	const slug = "behenck";
 
-	await putOrganizationsSlugCompaniesCompanyidUnitsUnitid(
-		{ slug, companyId, unitId },
-		data,
-	);
+	await putOrganizationsSlugCompaniesCompanyidUnitsUnitid(slug, companyId, unitId, data);
 }

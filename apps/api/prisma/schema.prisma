@@ -16,14 +16,15 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  tokens             Token[]
-  accounts           Account[]
-  invites            Invite[]
-  member_on          Member[]
-  refreshTokens      RefreshToken[]
-  owns_organizations Organization[]
-  transactions       Transaction[]
-  employees          Employee[]
+  tokens              Token[]
+  accounts            Account[]
+  invites             Invite[]
+  member_on           Member[]
+  refreshTokens       RefreshToken[]
+  owns_organizations  Organization[]
+  createdTransactions Transaction[]  @relation("TransactionCreatedBy")
+  employees           Employee[]
+  recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
 
   @@map("users")
 }
@@ -128,6 +129,7 @@ model Organization {
   transactions Transaction[]
   costCenters  CostCenter[]
   employees    Employee[]
+  recurrences  Recurrence[]
 
   @@index([slug])
   @@map("organizations")
@@ -144,6 +146,7 @@ model Company {
   units        Unit[]
   transactions Transaction[]
   employees    Employee[]
+  recurrences  Recurrence[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -159,6 +162,7 @@ model Unit {
 
   company      Company       @relation(fields: [companyId], references: [id])
   transactions Transaction[]
+  recurrences  Recurrence[]
 
   @@unique([companyId, name])
   @@index([companyId])
@@ -183,6 +187,7 @@ model Category {
 
   transactions     Transaction[]
   transactionItens TransactionItem[]
+  recurrences      Recurrence[]
 
   @@unique([organizationId, parentId, name])
   @@index([organizationId])
@@ -199,6 +204,7 @@ model CostCenter {
 
   organization Organization  @relation(fields: [organizationId], references: [id])
   transactions Transaction[]
+  recurrences  Recurrence[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -217,9 +223,10 @@ model Employee {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  user         User?        @relation(fields: [userId], references: [id])
-  organization Organization @relation(fields: [organizationId], references: [id])
-  company      Company      @relation(fields: [companyId], references: [id])
+  user         User?         @relation(fields: [userId], references: [id])
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id])
+  transactions Transaction[]
 
   @@unique([organizationId, userId])
   @@index([organizationId])
@@ -244,34 +251,40 @@ enum TransactionNature {
 }
 
 model Transaction {
-  id                  String            @id @default(uuid())
-  code                String
-  description         String
-  totalAmount         Int               @map("total_amount")
-  type                TransactionType
-  status              TransactionStatus
-  nature              TransactionNature
-  dueDate             DateTime          @map("due_date")
-  expectedPaymentDate DateTime?         @map("expected_payment_date")
-  paymentDate         DateTime?         @map("payment_date")
-  costCenterId        String            @map("cost_center_id")
-  organizationId      String            @map("organization_id")
-  companyId           String            @map("company_id")
-  unitId              String?           @map("unit_id")
-  userId              String            @map("user_id")
-  categoryId          String            @map("category_id")
-  notes               String?
+  id                   String            @id @default(uuid())
+  code                 String
+  description          String
+  totalAmount          Int               @map("total_amount")
+  type                 TransactionType
+  status               TransactionStatus
+  nature               TransactionNature
+  dueDate              DateTime          @map("due_date")
+  expectedPaymentDate  DateTime          @map("expected_payment_date")
+  paymentDate          DateTime?         @map("payment_date")
+  costCenterId         String            @map("cost_center_id")
+  organizationId       String            @map("organization_id")
+  companyId            String            @map("company_id")
+  unitId               String?           @map("unit_id")
+  createdById          String            @map("created_by_id")
+  refundedByEmployeeId String?           @map("refunded_by_employee_id")
+  categoryId           String            @map("category_id")
+  notes                String?
+  parentId             String?           @map("parent_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user             User              @relation(fields: [userId], references: [id])
-  costCenter       CostCenter        @relation(fields: [costCenterId], references: [id])
-  organization     Organization      @relation(fields: [organizationId], references: [id])
-  category         Category          @relation(fields: [categoryId], references: [id])
-  company          Company           @relation(fields: [companyId], references: [id])
-  unit             Unit?             @relation(fields: [unitId], references: [id])
-  transactionItens TransactionItem[]
+  createdBy          User              @relation("TransactionCreatedBy", fields: [createdById], references: [id])
+  refundedByEmployee Employee?         @relation(fields: [refundedByEmployeeId], references: [id])
+  costCenter         CostCenter        @relation(fields: [costCenterId], references: [id])
+  organization       Organization      @relation(fields: [organizationId], references: [id])
+  category           Category          @relation(fields: [categoryId], references: [id])
+  company            Company           @relation(fields: [companyId], references: [id])
+  unit               Unit?             @relation(fields: [unitId], references: [id])
+  transactionItens   TransactionItem[]
+  parent             Transaction?      @relation("TransactionTree", fields: [parentId], references: [id])
+  children           Transaction[]     @relation("TransactionTree")
+  userId             String?
 
   @@index([organizationId, companyId])
   @@index([companyId, unitId])
@@ -279,7 +292,8 @@ model Transaction {
   @@index([organizationId, type])
   @@index([organizationId, status])
   @@index([categoryId])
-  @@index([userId])
+  @@index([createdById])
+  @@index([refundedByEmployeeId])
   @@map("transactions")
 }
 
@@ -299,4 +313,65 @@ model TransactionItem {
   @@index([transactionId])
   @@index([categoryId])
   @@map("transaction_itens")
+}
+
+enum RecurrenceDayType {
+  CALENDAR_DAY // dia normal: 1..31
+  BUSINESS_DAY // n-ésimo dia útil do mês
+}
+
+enum RecurrenceAdjustment {
+  NONE
+  NEXT_BUSINESS_DAY
+  PREVIOUS_BUSINESS_DAY
+}
+
+enum RecurrenceStatus {
+  ACTIVE
+  PAUSED
+}
+
+model Recurrence {
+  id          String          @id @default(uuid())
+  description String
+  type        TransactionType
+  totalAmount Int             @map("total_amount")
+
+  companyId    String  @map("company_id")
+  unitId       String? @map("unit_id")
+  categoryId   String  @map("category_id")
+  costCenterId String  @map("cost_center_id")
+
+  interval Int              @map("interval")
+  status   RecurrenceStatus @default(ACTIVE)
+
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  executionDay     Int                  @map("execution_day")
+  executionDayType RecurrenceDayType    @default(CALENDAR_DAY) @map("execution_day_type")
+  adjustmentRule   RecurrenceAdjustment @default(NONE) @map("adjustment_rule")
+
+  lastRunAt DateTime? @map("last_run_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  createdById    String @map("created_by_id")
+  organizationId String @map("organization_id")
+
+  createdBy    User         @relation("RecurrenceCreatedBy", fields: [createdById], references: [id])
+  costCenter   CostCenter   @relation(fields: [costCenterId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  category     Category     @relation(fields: [categoryId], references: [id])
+  company      Company      @relation(fields: [companyId], references: [id])
+  unit         Unit?        @relation(fields: [unitId], references: [id])
+
+  @@index([status, startDate, endDate, lastRunAt]) // 🚀 scheduler
+  @@index([companyId, status]) // 📊 filtros
+  @@index([costCenterId])
+  @@index([companyId])
+  @@index([unitId])
+  @@index([executionDayType, executionDay])
+  @@index([interval, executionDayType])
+  @@map("recurrences")
 }

@@ -277,6 +277,57 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type EnumRecurrenceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceStatus | Prisma.EnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel> | $Enums.RecurrenceStatus
+}
+
+export type EnumRecurrenceDayTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceDayType | Prisma.EnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel> | $Enums.RecurrenceDayType
+}
+
+export type EnumRecurrenceAdjustmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceAdjustment | Prisma.EnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel> | $Enums.RecurrenceAdjustment
+}
+
+export type EnumRecurrenceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceStatus | Prisma.EnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceStatusWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel>
+}
+
+export type EnumRecurrenceDayTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceDayType | Prisma.EnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceDayTypeWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceDayType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel>
+}
+
+export type EnumRecurrenceAdjustmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceAdjustment | Prisma.EnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceAdjustmentWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceAdjustment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -551,6 +602,57 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumRecurrenceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceStatus | Prisma.EnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel> | $Enums.RecurrenceStatus
+}
+
+export type NestedEnumRecurrenceDayTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceDayType | Prisma.EnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel> | $Enums.RecurrenceDayType
+}
+
+export type NestedEnumRecurrenceAdjustmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceAdjustment | Prisma.EnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel> | $Enums.RecurrenceAdjustment
+}
+
+export type NestedEnumRecurrenceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceStatus | Prisma.EnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceStatus[] | Prisma.ListEnumRecurrenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceStatusWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRecurrenceDayTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceDayType | Prisma.EnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceDayType[] | Prisma.ListEnumRecurrenceDayTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceDayTypeWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceDayType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceDayTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumRecurrenceAdjustmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RecurrenceAdjustment | Prisma.EnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  in?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RecurrenceAdjustment[] | Prisma.ListEnumRecurrenceAdjustmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRecurrenceAdjustmentWithAggregatesFilter<$PrismaModel> | $Enums.RecurrenceAdjustment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRecurrenceAdjustmentFilter<$PrismaModel>
 }
 
 

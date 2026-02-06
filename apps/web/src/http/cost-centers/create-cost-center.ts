@@ -7,5 +7,5 @@ export async function createCostCenter(
 	data: PostOrganizationsSlugCostcentersMutationRequest,
 ) {
 	const slug = "behenck";
-	await postOrganizationsSlugCostcenters({ slug }, data);
+	await postOrganizationsSlugCostcenters(slug, data);
 }

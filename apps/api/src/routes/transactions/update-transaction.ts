@@ -10,7 +10,7 @@ import { TransactionNature, TransactionStatus, TransactionType } from "generated
 export async function updateTransaction(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .patch("/organizations/:slug/transactions/:transactionId", {
+    .put("/organizations/:slug/transactions/:transactionId", {
       schema: {
         tags: ["transactions"],
         summary: "Update transaction",
@@ -20,8 +20,7 @@ export async function updateTransaction(app: FastifyInstance) {
           transactionId: z.uuid(),
         }),
         body: z.object({
-          title: z.string(),
-          description: z.string().optional(),
+          description: z.string(),
           totalAmount: z.number(),
           type: z.enum(TransactionType),
           status: z.enum(TransactionStatus),
@@ -33,6 +32,7 @@ export async function updateTransaction(app: FastifyInstance) {
           companyId: z.uuid(),
           unitId: z.uuid().optional(),
           categoryId: z.uuid(),
+          employeeIdRefunded: z.uuid().optional(),
         }),
         response: {
           204: z.null()
@@ -73,7 +73,6 @@ export async function updateTransaction(app: FastifyInstance) {
             id: transactionId
           },
           data: {
-            title: data.title,
             description: data.description,
             totalAmount: data.totalAmount,
             type: data.type,
@@ -86,6 +85,7 @@ export async function updateTransaction(app: FastifyInstance) {
             companyId: data.companyId,
             unitId: data.unitId,
             categoryId: data.categoryId,
+            refundedByEmployeeId: data.employeeIdRefunded
           }
         })
         )

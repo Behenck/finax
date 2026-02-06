@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 export const api = axios.create({
 	baseURL: import.meta.env.VITE_API_URL,
-	withCredentials: true, // pode manter, não atrapalha
+	withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
@@ -22,3 +22,7 @@ export function isAxiosError(
 ): error is AxiosError<{ message?: string }> {
 	return typeof error === "object" && error !== null && "response" in error;
 }
+
+export const client = api
+
+export default api

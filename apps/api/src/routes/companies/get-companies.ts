@@ -32,7 +32,7 @@ export async function getCompanies(app: FastifyInstance) {
                   z.object({
                     id: z.uuid(),
                     name: z.string(),
-                    department: z.string(),
+                    department: z.string().nullable(),
                   })
                 )
               }),

@@ -14,5 +14,5 @@ export async function updateEmployee({
 }: UpdateEmployeeRequest) {
 	const slug = "behenck";
 
-	await putOrganizationsSlugEmployeesEmployeeid({ employeeId, slug }, data);
+	await putOrganizationsSlugEmployeesEmployeeid(employeeId, slug, data);
 }

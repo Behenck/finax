@@ -217,6 +217,7 @@ export type EmployeeWhereInput = {
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  transactions?: Prisma.TransactionListRelationFilter
 }
 
 export type EmployeeOrderByWithRelationInput = {
@@ -232,6 +233,7 @@ export type EmployeeOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
+  transactions?: Prisma.TransactionOrderByRelationAggregateInput
 }
 
 export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  transactions?: Prisma.TransactionListRelationFilter
 }, "id" | "organizationId_userId">
 
 export type EmployeeOrderByWithAggregationInput = {
@@ -293,6 +296,7 @@ export type EmployeeCreateInput = {
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeUncheckedCreateInput = {
@@ -305,6 +309,7 @@ export type EmployeeUncheckedCreateInput = {
   organizationId: string
   companyId: string
   createdAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeUpdateInput = {
@@ -317,6 +322,7 @@ export type EmployeeUpdateInput = {
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateInput = {
@@ -329,6 +335,7 @@ export type EmployeeUncheckedUpdateInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeCreateManyInput = {
@@ -413,6 +420,11 @@ export type EmployeeMinOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type EmployeeNullableScalarRelationFilter = {
+  is?: Prisma.EmployeeWhereInput | null
+  isNot?: Prisma.EmployeeWhereInput | null
 }
 
 export type EmployeeCreateNestedManyWithoutUserInput = {
@@ -541,6 +553,22 @@ export type EmployeeUncheckedUpdateManyWithoutCompanyNestedInput = {
   deleteMany?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
 }
 
+export type EmployeeCreateNestedOneWithoutTransactionsInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutTransactionsInput, Prisma.EmployeeUncheckedCreateWithoutTransactionsInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutTransactionsInput
+  connect?: Prisma.EmployeeWhereUniqueInput
+}
+
+export type EmployeeUpdateOneWithoutTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutTransactionsInput, Prisma.EmployeeUncheckedCreateWithoutTransactionsInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutTransactionsInput
+  upsert?: Prisma.EmployeeUpsertWithoutTransactionsInput
+  disconnect?: Prisma.EmployeeWhereInput | boolean
+  delete?: Prisma.EmployeeWhereInput | boolean
+  connect?: Prisma.EmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutTransactionsInput, Prisma.EmployeeUpdateWithoutTransactionsInput>, Prisma.EmployeeUncheckedUpdateWithoutTransactionsInput>
+}
+
 export type EmployeeCreateWithoutUserInput = {
   id?: string
   name: string
@@ -550,6 +578,7 @@ export type EmployeeCreateWithoutUserInput = {
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutUserInput = {
@@ -561,6 +590,7 @@ export type EmployeeUncheckedCreateWithoutUserInput = {
   organizationId: string
   companyId: string
   createdAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutUserInput = {
@@ -613,6 +643,7 @@ export type EmployeeCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutOrganizationInput = {
@@ -624,6 +655,7 @@ export type EmployeeUncheckedCreateWithoutOrganizationInput = {
   userId?: string | null
   companyId: string
   createdAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutOrganizationInput = {
@@ -661,6 +693,7 @@ export type EmployeeCreateWithoutCompanyInput = {
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutCompanyInput = {
@@ -672,6 +705,7 @@ export type EmployeeUncheckedCreateWithoutCompanyInput = {
   userId?: string | null
   organizationId: string
   createdAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutRefundedByEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutCompanyInput = {
@@ -700,6 +734,70 @@ export type EmployeeUpdateManyWithWhereWithoutCompanyInput = {
   data: Prisma.XOR<Prisma.EmployeeUpdateManyMutationInput, Prisma.EmployeeUncheckedUpdateManyWithoutCompanyInput>
 }
 
+export type EmployeeCreateWithoutTransactionsInput = {
+  id?: string
+  name: string
+  department?: string | null
+  email: string
+  role?: string | null
+  createdAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
+  company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+}
+
+export type EmployeeUncheckedCreateWithoutTransactionsInput = {
+  id?: string
+  name: string
+  department?: string | null
+  email: string
+  role?: string | null
+  userId?: string | null
+  organizationId: string
+  companyId: string
+  createdAt?: Date | string
+}
+
+export type EmployeeCreateOrConnectWithoutTransactionsInput = {
+  where: Prisma.EmployeeWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutTransactionsInput, Prisma.EmployeeUncheckedCreateWithoutTransactionsInput>
+}
+
+export type EmployeeUpsertWithoutTransactionsInput = {
+  update: Prisma.XOR<Prisma.EmployeeUpdateWithoutTransactionsInput, Prisma.EmployeeUncheckedUpdateWithoutTransactionsInput>
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutTransactionsInput, Prisma.EmployeeUncheckedCreateWithoutTransactionsInput>
+  where?: Prisma.EmployeeWhereInput
+}
+
+export type EmployeeUpdateToOneWithWhereWithoutTransactionsInput = {
+  where?: Prisma.EmployeeWhereInput
+  data: Prisma.XOR<Prisma.EmployeeUpdateWithoutTransactionsInput, Prisma.EmployeeUncheckedUpdateWithoutTransactionsInput>
+}
+
+export type EmployeeUpdateWithoutTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+}
+
+export type EmployeeUncheckedUpdateWithoutTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type EmployeeCreateManyUserInput = {
   id?: string
   name: string
@@ -720,6 +818,7 @@ export type EmployeeUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutUserInput = {
@@ -731,6 +830,7 @@ export type EmployeeUncheckedUpdateWithoutUserInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateManyWithoutUserInput = {
@@ -764,6 +864,7 @@ export type EmployeeUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutOrganizationInput = {
@@ -775,6 +876,7 @@ export type EmployeeUncheckedUpdateWithoutOrganizationInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateManyWithoutOrganizationInput = {
@@ -808,6 +910,7 @@ export type EmployeeUpdateWithoutCompanyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutCompanyInput = {
@@ -819,6 +922,7 @@ export type EmployeeUncheckedUpdateWithoutCompanyInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutRefundedByEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
@@ -832,6 +936,35 @@ export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type EmployeeCountOutputType
+ */
+
+export type EmployeeCountOutputType = {
+  transactions: number
+}
+
+export type EmployeeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  transactions?: boolean | EmployeeCountOutputTypeCountTransactionsArgs
+}
+
+/**
+ * EmployeeCountOutputType without action
+ */
+export type EmployeeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeeCountOutputType
+   */
+  select?: Prisma.EmployeeCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * EmployeeCountOutputType without action
+ */
+export type EmployeeCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransactionWhereInput
+}
 
 
 export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -847,6 +980,8 @@ export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   user?: boolean | Prisma.Employee$userArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  transactions?: boolean | Prisma.Employee$transactionsArgs<ExtArgs>
+  _count?: boolean | Prisma.EmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employee"]>
 
 export type EmployeeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -896,6 +1031,8 @@ export type EmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   user?: boolean | Prisma.Employee$userArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  transactions?: boolean | Prisma.Employee$transactionsArgs<ExtArgs>
+  _count?: boolean | Prisma.EmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Employee$userArgs<ExtArgs>
@@ -914,6 +1051,7 @@ export type $EmployeePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     user: Prisma.$UserPayload<ExtArgs> | null
     organization: Prisma.$OrganizationPayload<ExtArgs>
     company: Prisma.$CompanyPayload<ExtArgs>
+    transactions: Prisma.$TransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1322,6 +1460,7 @@ export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends runtime
   user<T extends Prisma.Employee$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Employee$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  transactions<T extends Prisma.Employee$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Employee$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1772,6 +1911,30 @@ export type Employee$userArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Employee.transactions
+ */
+export type Employee$transactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Transaction
+   */
+  select?: Prisma.TransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Transaction
+   */
+  omit?: Prisma.TransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransactionInclude<ExtArgs> | null
+  where?: Prisma.TransactionWhereInput
+  orderBy?: Prisma.TransactionOrderByWithRelationInput | Prisma.TransactionOrderByWithRelationInput[]
+  cursor?: Prisma.TransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
 }
 
 /**

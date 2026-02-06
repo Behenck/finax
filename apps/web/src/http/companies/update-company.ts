@@ -11,5 +11,5 @@ interface UpdateCompanyRequest {
 export async function updateCompany({ companyId, data }: UpdateCompanyRequest) {
 	const slug = "behenck";
 
-	await putOrganizationsSlugCompaniesCompanyid({ companyId, slug }, data);
+	await putOrganizationsSlugCompaniesCompanyid(companyId, slug, data);
 }

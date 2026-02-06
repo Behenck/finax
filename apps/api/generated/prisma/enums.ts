@@ -63,3 +63,28 @@ export const TransactionNature = {
 } as const
 
 export type TransactionNature = (typeof TransactionNature)[keyof typeof TransactionNature]
+
+
+export const RecurrenceDayType = {
+  CALENDAR_DAY: 'CALENDAR_DAY',
+  BUSINESS_DAY: 'BUSINESS_DAY'
+} as const
+
+export type RecurrenceDayType = (typeof RecurrenceDayType)[keyof typeof RecurrenceDayType]
+
+
+export const RecurrenceAdjustment = {
+  NONE: 'NONE',
+  NEXT_BUSINESS_DAY: 'NEXT_BUSINESS_DAY',
+  PREVIOUS_BUSINESS_DAY: 'PREVIOUS_BUSINESS_DAY'
+} as const
+
+export type RecurrenceAdjustment = (typeof RecurrenceAdjustment)[keyof typeof RecurrenceAdjustment]
+
+
+export const RecurrenceStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED'
+} as const
+
+export type RecurrenceStatus = (typeof RecurrenceStatus)[keyof typeof RecurrenceStatus]

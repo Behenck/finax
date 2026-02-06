@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 export async function paymentTransaction(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .put("/organizations/:slug/transactions/:transactionId", {
+    .patch("/organizations/:slug/transactions/:transactionId", {
       schema: {
         tags: ["transactions"],
         summary: "Payment transaction",
