@@ -37,9 +37,9 @@ function Members() {
             <FieldGroup>
               <Field className='gap-1'>
                 <FieldLabel>Permissão</FieldLabel>
-                <Select>
+                <Select defaultValue="member">
                   <SelectTrigger>
-                    <SelectValue placeholder="Permissão" defaultValue="member" />
+                    <SelectValue placeholder="Permissão" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>
@@ -50,30 +50,30 @@ function Members() {
             </FieldGroup>
 
           </div>
-          <Button variant='outline' className='w-full'>Enviar convite</Button>
+          <Button className='w-full'>Enviar convite</Button>
         </div>
       </div>
 
       <Separator />
 
       <div>
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="overview" className="space-y-2">
           <TabsList variant="underline" className="justify-start p-0 border-b border-gray-200 rounded-none h-auto w-full">
             <TabsTab
               value="members"
               className="
-                group relative rounded-none bg-transparent p-3 border-none
+                group relative rounded-none p-3 border-none
                 text-sm font-medium text-muted-foreground
+                hover:bg-transparent!
                 flex-0
               "
             >Membros da organização (12)</TabsTab>
             <TabsTab
               value="members-pending"
               className="
-                group relative rounded-none bg-transparent p-3 border-none
+                group relative rounded-none p-3 border-none
                 text-sm font-medium text-muted-foreground
-                data-[state=active]:text-foreground
-                data-[state=active]:bg-transparent!
+                hover:bg-transparent!
                 flex-0
               "
             >Convites pendentes (3)</TabsTab>
@@ -82,7 +82,7 @@ function Members() {
             <MembersList />
           </TabsPanel>
           <TabsPanel value="members-pending">
-            <MembersList />
+            <MembersList type='PENDING' />
           </TabsPanel>
         </Tabs>
       </div>
