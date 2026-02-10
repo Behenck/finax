@@ -4,7 +4,6 @@ import {
 	createFileRoute,
 	Link,
 	Navigate,
-	useNavigate,
 } from "@tanstack/react-router";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import z from "zod";

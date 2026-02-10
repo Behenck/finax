@@ -23,7 +23,7 @@ export const getOrganizationsSlugCompanies200Schema = z.object({
 "employees": z.array(z.object({
     "id": z.uuid(),
 "name": z.string(),
-"department": z.string()
+"department": z.nullable(z.string())
     }))
     }))
     })

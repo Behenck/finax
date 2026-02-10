@@ -132,6 +132,8 @@ export const InviteScalarFieldEnum = {
   id: 'id',
   email: 'email',
   role: 'role',
+  type: 'type',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   authorId: 'authorId',
   organizationId: 'organizationId'

@@ -16,7 +16,19 @@ export const putOrganizationsSlugTransactionsTransactionidPathParamsSchema = z.o
 export const putOrganizationsSlugTransactionsTransactionid204Schema = z.enum([]).nullable()
 
 export const putOrganizationsSlugTransactionsTransactionidMutationRequestSchema = z.object({
-    "paymentDate": z.optional(z.any())
+    "description": z.string(),
+"totalAmount": z.number(),
+"type": z.enum(["INCOME", "OUTCOME"]),
+"status": z.enum(["PENDING", "PAID", "CANCELED"]),
+"nature": z.enum(["FIXED", "VARIABLE"]),
+"dueDate": z.any(),
+"expectedPaymentDate": z.optional(z.any()),
+"paymentDate": z.optional(z.any()),
+"costCenterId": z.uuid(),
+"companyId": z.uuid(),
+"unitId": z.optional(z.uuid()),
+"categoryId": z.uuid(),
+"employeeIdRefunded": z.optional(z.uuid())
     })
 
 export const putOrganizationsSlugTransactionsTransactionidMutationResponseSchema = z.lazy(() => putOrganizationsSlugTransactionsTransactionid204Schema)

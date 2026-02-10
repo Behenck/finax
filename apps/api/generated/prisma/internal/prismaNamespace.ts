@@ -1615,6 +1615,8 @@ export const InviteScalarFieldEnum = {
   id: 'id',
   email: 'email',
   role: 'role',
+  type: 'type',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   authorId: 'authorId',
   organizationId: 'organizationId'
@@ -1879,6 +1881,20 @@ export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Role[]'
  */
 export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
+    
+
+
+/**
+ * Reference to a field of type 'InviteType'
+ */
+export type EnumInviteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InviteType'>
+    
+
+
+/**
+ * Reference to a field of type 'InviteType[]'
+ */
+export type ListEnumInviteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InviteType[]'>
     
 
 

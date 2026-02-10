@@ -5,65 +5,68 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Check, Ellipsis, X } from 'lucide-react'
+import { useSession } from '@/hooks/auth/use-session'
+import { useMembers } from '@/hooks/members/use-members'
+import { getInitials } from '@/utils/get-initials'
+import { Ellipsis } from 'lucide-react'
 
-interface MembersListProps {
-  type?: "PENDING"
-}
+export function MembersList() {
+  const { data } = useSession()
 
-export function MembersList({ type }: MembersListProps) {
+  const user = data.user
+
+  const { data: members } = useMembers("behenck")
+
+  const totalMembers = members?.length
+
   return (
     <div className='space-y-2'>
       <div className='flex gap-2'>
-        <Input placeholder={`Buscar ${type === "PENDING" ? "convites" : "membros"}`} />
-        {type !== "PENDING" && (
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Permissão" defaultValue="member" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="member">Membro</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
+        <Input placeholder={`Buscar membros`} />
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Permissão" defaultValue="member" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="member">Membro</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Card className='p-6 rounded-md'>
         <div className='flex gap-2'>
           <Checkbox />
-          <Label className='text-xs text-muted-foreground'>Selecionar todos (2)</Label>
+          <Label className='text-xs text-muted-foreground'>Selecionar todos ({totalMembers})</Label>
         </div>
 
-        <div className='flex items-center justify-between gap-2'>
-          <div className='flex gap-2 items-center'>
-            <Checkbox />
-            <Avatar>
-              <AvatarImage src='https://github.com.br/behenck.png' />
-              <AvatarFallback>DB</AvatarFallback>
-            </Avatar>
-            <div className='flex flex-col'>
-              <span className='font-medium'>Denilson Behenck (eu)</span>
-              <span className='text-xs text-muted-foreground'>denilsontrespa10@gmail.com</span>
+        {members?.map((member) => {
+          const userLogged = !!(user?.id === member.userId)
+          const owner = true
+
+          return (
+            <div className='flex items-center justify-between gap-2' key={member.id}>
+              <div className='flex gap-2 items-center'>
+                <Checkbox />
+                <Avatar>
+                  <AvatarImage src={member.avatarUrl ?? ""} />
+                  <AvatarFallback>{getInitials(member.name ?? "")}</AvatarFallback>
+                </Avatar>
+                <div className='flex flex-col'>
+                  <span className='font-medium'>{member.name} {userLogged && "(eu)"}</span>
+                  <span className='text-xs text-muted-foreground'>{member.email}</span>
+                </div>
+              </div>
+              <div className='flex items-center gap-2'>
+                {owner && (
+                  <span className='text-sm text-muted-foreground'>Dono</span>
+                )}
+                <Button variant="outline" size="icon">
+                  <Ellipsis />
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className='flex items-center gap-2'>
-            <span className='text-sm text-muted-foreground'>Dono</span>
-            {type === "PENDING" ? (
-              <>
-                <Button variant="outline" size="icon">
-                  <Check className='text-green-500' />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <X className='text-red-500' />
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" size="icon">
-                <Ellipsis />
-              </Button>
-            )}
-          </div>
-        </div>
+          )
+        })}
       </Card>
     </div>
   )

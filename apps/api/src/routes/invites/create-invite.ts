@@ -6,6 +6,7 @@ import { UnauthorizedError } from "../_errors/unauthorized-error";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { prisma } from "@/lib/prisma";
 import { roleSchema } from "@/schemas/role";
+import { Resend } from "resend";
 
 export async function createInvite(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -23,9 +24,7 @@ export async function createInvite(app: FastifyInstance) {
           role: roleSchema
         }),
         response: {
-          201: z.object({
-            inviteId: z.uuid()
-          })
+          204: z.null()
         }
       }
     },
@@ -84,9 +83,29 @@ export async function createInvite(app: FastifyInstance) {
           }
         })
 
-        return reply.status(201).send({
-          inviteId: invite.id
-        })
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        const link = `${process.env.APP_WEB_URL}/invites/${invite.id}/validate`
+
+        const { error } =
+          await resend.emails.send({
+            to: ["denilson@arkogrupo.com"],
+            template: {
+              id: "finax-welcome",
+              variables: {
+                organizationName: organization.name,
+                authorName: "Denilson",
+                link
+              }
+            }
+          });
+
+        if (error) {
+          request.log.error({ error }, "Resend failed to send email")
+          throw new BadRequestError(error.message)
+        }
+
+        return reply.status(204).send()
       }
     )
 }

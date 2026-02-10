@@ -55,7 +55,7 @@ export type GetOrganizationsSlugCompanies200 = {
             /**
              * @type string
             */
-            department: string;
+            department: string | null;
         }[];
     }[];
 };

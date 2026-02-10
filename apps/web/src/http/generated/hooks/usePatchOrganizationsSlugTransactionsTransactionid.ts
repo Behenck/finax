@@ -16,7 +16,7 @@ export type PatchOrganizationsSlugTransactionsTransactionidMutationKey = ReturnT
 
 export function patchOrganizationsSlugTransactionsTransactionidMutationOptions<TContext = unknown>(config: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
   const mutationKey = patchOrganizationsSlugTransactionsTransactionidMutationKey()
-  return mutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
+  return mutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, transactionId, data }) => {
       return patchOrganizationsSlugTransactionsTransactionid({ slug, transactionId }, data, config)
@@ -25,12 +25,12 @@ export function patchOrganizationsSlugTransactionsTransactionidMutationOptions<T
 }
 
 /**
- * @summary Update transaction
+ * @summary Payment transaction
  * {@link /organizations/:slug/transactions/:transactionId}
  */
 export function usePatchOrganizationsSlugTransactionsTransactionid<TContext>(options: 
 {
-  mutation?: UseMutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext> & { client?: QueryClient },
+  mutation?: UseMutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext> & { client?: QueryClient },
   client?: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch },
 }
  = {}) {
@@ -38,12 +38,12 @@ export function usePatchOrganizationsSlugTransactionsTransactionid<TContext>(opt
   const { client: queryClient, ...mutationOptions } = mutation;
   const mutationKey = mutationOptions.mutationKey ?? patchOrganizationsSlugTransactionsTransactionidMutationKey()
 
-  const baseOptions = patchOrganizationsSlugTransactionsTransactionidMutationOptions(config) as UseMutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
+  const baseOptions = patchOrganizationsSlugTransactionsTransactionidMutationOptions(config) as UseMutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
 
 
-  return useMutation<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
+  return useMutation<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     ...baseOptions,
     mutationKey,
     ...mutationOptions,
-  }, queryClient) as UseMutationResult<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
+  }, queryClient) as UseMutationResult<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
 }

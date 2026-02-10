@@ -12,13 +12,11 @@ export const postOrganizationsSlugInvitesPathParamsSchema = z.object({
 /**
  * @description Default Response
  */
-export const postOrganizationsSlugInvites201Schema = z.object({
-    "inviteId": z.uuid()
-    })
+export const postOrganizationsSlugInvites204Schema = z.enum([]).nullable()
 
 export const postOrganizationsSlugInvitesMutationRequestSchema = z.object({
     "email": z.email(),
 "role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])])
     })
 
-export const postOrganizationsSlugInvitesMutationResponseSchema = z.lazy(() => postOrganizationsSlugInvites201Schema)
+export const postOrganizationsSlugInvitesMutationResponseSchema = z.lazy(() => postOrganizationsSlugInvites204Schema)

@@ -16,19 +16,7 @@ export const patchOrganizationsSlugTransactionsTransactionidPathParamsSchema = z
 export const patchOrganizationsSlugTransactionsTransactionid204Schema = z.enum([]).nullable()
 
 export const patchOrganizationsSlugTransactionsTransactionidMutationRequestSchema = z.object({
-    "description": z.string(),
-"totalAmount": z.number(),
-"type": z.enum(["INCOME", "OUTCOME"]),
-"status": z.enum(["PENDING", "PAID", "CANCELED"]),
-"nature": z.enum(["FIXED", "VARIABLE"]),
-"dueDate": z.any(),
-"expectedPaymentDate": z.optional(z.any()),
-"paymentDate": z.optional(z.any()),
-"costCenterId": z.uuid(),
-"companyId": z.uuid(),
-"unitId": z.optional(z.uuid()),
-"categoryId": z.uuid(),
-"employeeIdRefunded": z.optional(z.uuid())
+    "paymentDate": z.optional(z.any())
     })
 
 export const patchOrganizationsSlugTransactionsTransactionidMutationResponseSchema = z.lazy(() => patchOrganizationsSlugTransactionsTransactionid204Schema)

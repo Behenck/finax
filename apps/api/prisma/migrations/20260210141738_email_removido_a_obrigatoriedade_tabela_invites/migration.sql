@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "invites" ALTER COLUMN "email" DROP NOT NULL;

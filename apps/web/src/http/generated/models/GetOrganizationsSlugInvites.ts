@@ -43,7 +43,7 @@ export type GetOrganizationsSlugInvites200 = {
         /**
          * @type string, email
         */
-        email: string;
+        email: string | null;
         /**
          * @type object
         */

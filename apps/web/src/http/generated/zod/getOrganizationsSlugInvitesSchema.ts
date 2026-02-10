@@ -17,7 +17,7 @@ export const getOrganizationsSlugInvites200Schema = z.object({
     "id": z.uuid(),
 "createdAt": z.iso.datetime(),
 "role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
-"email": z.email(),
+"email": z.nullable(z.email()),
 "author": z.nullable(z.object({
     "name": z.nullable(z.string()),
 "id": z.uuid()

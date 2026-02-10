@@ -24,8 +24,72 @@ export type PutOrganizationsSlugTransactionsTransactionid204EnumKey = (typeof pu
 */
 export type PutOrganizationsSlugTransactionsTransactionid204 = PutOrganizationsSlugTransactionsTransactionid204EnumKey | null;
 
+export const putOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum = {
+    "INCOME": "INCOME",
+    "OUTCOME": "OUTCOME"
+} as const;
+
+export type PutOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnumKey = (typeof putOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum)[keyof typeof putOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum];
+
+export const putOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum = {
+    "PENDING": "PENDING",
+    "PAID": "PAID",
+    "CANCELED": "CANCELED"
+} as const;
+
+export type PutOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnumKey = (typeof putOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum)[keyof typeof putOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum];
+
+export const putOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum = {
+    "FIXED": "FIXED",
+    "VARIABLE": "VARIABLE"
+} as const;
+
+export type PutOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnumKey = (typeof putOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum)[keyof typeof putOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum];
+
 export type PutOrganizationsSlugTransactionsTransactionidMutationRequest = {
+    /**
+     * @type string
+    */
+    description: string;
+    /**
+     * @type number
+    */
+    totalAmount: number;
+    /**
+     * @type string
+    */
+    type: PutOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnumKey;
+    /**
+     * @type string
+    */
+    status: PutOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnumKey;
+    /**
+     * @type string
+    */
+    nature: PutOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnumKey;
+    dueDate: any;
+    expectedPaymentDate?: any;
     paymentDate?: any;
+    /**
+     * @type string, uuid
+    */
+    costCenterId: string;
+    /**
+     * @type string, uuid
+    */
+    companyId: string;
+    /**
+     * @type string | undefined, uuid
+    */
+    unitId?: string;
+    /**
+     * @type string, uuid
+    */
+    categoryId: string;
+    /**
+     * @type string | undefined, uuid
+    */
+    employeeIdRefunded?: string;
 };
 
 export type PutOrganizationsSlugTransactionsTransactionidMutationResponse = PutOrganizationsSlugTransactionsTransactionid204;

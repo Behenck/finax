@@ -82,10 +82,17 @@ enum Role {
   MEMBER
 }
 
+enum InviteType {
+  EMAIL
+  LINK
+}
+
 model Invite {
   id             String       @id @default(uuid())
-  email          String
+  email          String?
   role           Role
+  type           InviteType   @default(EMAIL)
+  expiresAt      DateTime?
   createdAt      DateTime     @default(now()) @map("created_at")
   author         User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
   authorId       String?      @map("author_id")

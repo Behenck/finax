@@ -29,7 +29,7 @@ export async function getInvites(app: FastifyInstance) {
                   id: z.uuid(),
                   createdAt: z.date(),
                   role: roleSchema,
-                  email: z.email(),
+                  email: z.email().nullable(),
                   author: z
                     .object({
                       name: z.string().nullable(),

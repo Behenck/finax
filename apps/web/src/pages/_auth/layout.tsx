@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Shield, TrendingUp, Zap } from "lucide-react";
+import { Shield, Zap } from "lucide-react";
 import LogoBranco from "@/assets/logo-finax-branco.png";
 
 export const Route = createFileRoute("/_auth")({

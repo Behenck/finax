@@ -1103,10 +1103,6 @@ export type EnumTransactionNatureFieldUpdateOperationsInput = {
   set?: $Enums.TransactionNature
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type TransactionUpdateOneWithoutChildrenNestedInput = {
   create?: Prisma.XOR<Prisma.TransactionCreateWithoutChildrenInput, Prisma.TransactionUncheckedCreateWithoutChildrenInput>
   connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutChildrenInput

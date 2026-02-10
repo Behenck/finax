@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
 import { roleSchema } from '@/schemas/role'
+import { InviteType } from 'generated/prisma/enums'
 
 export async function getInvite(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -21,8 +22,9 @@ export async function getInvite(app: FastifyInstance) {
           200: z.object({
             invite: z.object({
               id: z.uuid(),
-              email: z.email(),
+              email: z.email().nullable(),
               role: roleSchema,
+              type: z.enum(InviteType),
               createdAt: z.date(),
               author: z
                 .object({
@@ -33,6 +35,7 @@ export async function getInvite(app: FastifyInstance) {
                 .nullable(),
               organization: z.object({
                 name: z.string(),
+                slug: z.string(),
               }),
             }),
           }),
@@ -48,6 +51,7 @@ export async function getInvite(app: FastifyInstance) {
           id: true,
           email: true,
           role: true,
+          type: true,
           createdAt: true,
           author: {
             select: {
@@ -59,6 +63,7 @@ export async function getInvite(app: FastifyInstance) {
           organization: {
             select: {
               name: true,
+              slug: true,
             },
           },
         },

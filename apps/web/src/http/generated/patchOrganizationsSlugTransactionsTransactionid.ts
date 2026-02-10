@@ -13,10 +13,10 @@ function getPatchOrganizationsSlugTransactionsTransactionidUrl(slug: PatchOrgani
 }
 
 /**
- * @summary Update transaction
+ * @summary Payment transaction
  * {@link /organizations/:slug/transactions/:transactionId}
  */
-export async function patchOrganizationsSlugTransactionsTransactionid(slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PatchOrganizationsSlugTransactionsTransactionidMutationRequest, config: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function patchOrganizationsSlugTransactionsTransactionid(slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest, config: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

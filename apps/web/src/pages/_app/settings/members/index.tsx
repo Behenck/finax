@@ -1,57 +1,25 @@
-import { Button } from '@/components/ui/button'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs'
 import { createFileRoute } from '@tanstack/react-router'
-import { LinkIcon } from 'lucide-react'
 import { MembersList } from './-components/members-list'
+import { InviteMemberWithEmailAndRole } from './-components/invite-member-with-email-and-role'
+import { InviteMemberLink } from './-components/invite-member-link'
+import { InvitesPendingList } from './-components/invites-pending-list'
+import { useMembers } from '@/hooks/members/use-members'
 
 export const Route = createFileRoute('/_app/settings/members/')({
   component: Members,
 })
 
 function Members() {
+  const { data: members } = useMembers("behenck")
+
+  const totalMembers = members?.length
   return (
     <main className='flex flex-col gap-8'>
       <div className='flex items-center justify-between'>
-        <div className='flex flex-col gap-2'>
-          <div>
-            <h2>Convidar membro</h2>
-            <p className='text-sm text-muted-foreground'>convidar membro via link</p>
-          </div>
-          <Button variant="outline" size="sm">
-            <LinkIcon />
-            Convidas via link
-          </Button>
-        </div>
-        <div className='space-y-2 w-md'>
-          <div className='flex items-center gap-2'>
-            <FieldGroup>
-              <Field className='gap-1'>
-                <FieldLabel>Email</FieldLabel>
-                <Input placeholder="joao.silva@dominio.com" />
-              </Field>
-            </FieldGroup>
-            <FieldGroup>
-              <Field className='gap-1'>
-                <FieldLabel>Permissão</FieldLabel>
-                <Select defaultValue="member">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Permissão" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="member">Membro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-
-          </div>
-          <Button className='w-full'>Enviar convite</Button>
-        </div>
+        <InviteMemberLink />
+        <InviteMemberWithEmailAndRole />
       </div>
 
       <Separator />
@@ -67,7 +35,7 @@ function Members() {
                 hover:bg-transparent!
                 flex-0
               "
-            >Membros da organização (12)</TabsTab>
+            >Membros da organização ({totalMembers})</TabsTab>
             <TabsTab
               value="members-pending"
               className="
@@ -76,13 +44,13 @@ function Members() {
                 hover:bg-transparent!
                 flex-0
               "
-            >Convites pendentes (3)</TabsTab>
+            >Convites pendentes</TabsTab>
           </TabsList>
           <TabsPanel value="members">
             <MembersList />
           </TabsPanel>
           <TabsPanel value="members-pending">
-            <MembersList type='PENDING' />
+            <InvitesPendingList />
           </TabsPanel>
         </Tabs>
       </div>

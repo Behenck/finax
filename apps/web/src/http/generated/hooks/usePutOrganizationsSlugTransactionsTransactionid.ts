@@ -16,7 +16,7 @@ export type PutOrganizationsSlugTransactionsTransactionidMutationKey = ReturnTyp
 
 export function putOrganizationsSlugTransactionsTransactionidMutationOptions<TContext = unknown>(config: Partial<RequestConfig<PutOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
   const mutationKey = putOrganizationsSlugTransactionsTransactionidMutationKey()
-  return mutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
+  return mutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, transactionId, data }) => {
       return putOrganizationsSlugTransactionsTransactionid({ slug, transactionId }, data, config)
@@ -25,12 +25,12 @@ export function putOrganizationsSlugTransactionsTransactionidMutationOptions<TCo
 }
 
 /**
- * @summary Payment transaction
+ * @summary Update transaction
  * {@link /organizations/:slug/transactions/:transactionId}
  */
 export function usePutOrganizationsSlugTransactionsTransactionid<TContext>(options: 
 {
-  mutation?: UseMutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext> & { client?: QueryClient },
+  mutation?: UseMutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext> & { client?: QueryClient },
   client?: Partial<RequestConfig<PutOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch },
 }
  = {}) {
@@ -38,12 +38,12 @@ export function usePutOrganizationsSlugTransactionsTransactionid<TContext>(optio
   const { client: queryClient, ...mutationOptions } = mutation;
   const mutationKey = mutationOptions.mutationKey ?? putOrganizationsSlugTransactionsTransactionidMutationKey()
 
-  const baseOptions = putOrganizationsSlugTransactionsTransactionidMutationOptions(config) as UseMutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
+  const baseOptions = putOrganizationsSlugTransactionsTransactionidMutationOptions(config) as UseMutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
 
 
-  return useMutation<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
+  return useMutation<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     ...baseOptions,
     mutationKey,
     ...mutationOptions,
-  }, queryClient) as UseMutationResult<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
+  }, queryClient) as UseMutationResult<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>
 }

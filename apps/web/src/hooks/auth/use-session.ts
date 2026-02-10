@@ -1,3 +1,4 @@
+import type { GetProfile200 } from "@/http/generated";
 import { api } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
@@ -15,7 +16,7 @@ export function useSession() {
 			const token = Cookies.get("token");
 			if (!token) return null;
 
-			const { data } = await api.get("/profile", {
+			const { data } = await api.get<GetProfile200>("/profile", {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

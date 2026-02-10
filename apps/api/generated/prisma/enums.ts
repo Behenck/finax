@@ -40,6 +40,14 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role]
 
 
+export const InviteType = {
+  EMAIL: 'EMAIL',
+  LINK: 'LINK'
+} as const
+
+export type InviteType = (typeof InviteType)[keyof typeof InviteType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

@@ -24,72 +24,8 @@ export type PatchOrganizationsSlugTransactionsTransactionid204EnumKey = (typeof 
 */
 export type PatchOrganizationsSlugTransactionsTransactionid204 = PatchOrganizationsSlugTransactionsTransactionid204EnumKey | null;
 
-export const patchOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum = {
-    "INCOME": "INCOME",
-    "OUTCOME": "OUTCOME"
-} as const;
-
-export type PatchOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnumKey = (typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum)[keyof typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnum];
-
-export const patchOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum = {
-    "PENDING": "PENDING",
-    "PAID": "PAID",
-    "CANCELED": "CANCELED"
-} as const;
-
-export type PatchOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnumKey = (typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum)[keyof typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum];
-
-export const patchOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum = {
-    "FIXED": "FIXED",
-    "VARIABLE": "VARIABLE"
-} as const;
-
-export type PatchOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnumKey = (typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum)[keyof typeof patchOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum];
-
 export type PatchOrganizationsSlugTransactionsTransactionidMutationRequest = {
-    /**
-     * @type string
-    */
-    description: string;
-    /**
-     * @type number
-    */
-    totalAmount: number;
-    /**
-     * @type string
-    */
-    type: PatchOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnumKey;
-    /**
-     * @type string
-    */
-    status: PatchOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnumKey;
-    /**
-     * @type string
-    */
-    nature: PatchOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnumKey;
-    dueDate: any;
-    expectedPaymentDate?: any;
     paymentDate?: any;
-    /**
-     * @type string, uuid
-    */
-    costCenterId: string;
-    /**
-     * @type string, uuid
-    */
-    companyId: string;
-    /**
-     * @type string | undefined, uuid
-    */
-    unitId?: string;
-    /**
-     * @type string, uuid
-    */
-    categoryId: string;
-    /**
-     * @type string | undefined, uuid
-    */
-    employeeIdRefunded?: string;
 };
 
 export type PatchOrganizationsSlugTransactionsTransactionidMutationResponse = PatchOrganizationsSlugTransactionsTransactionid204;

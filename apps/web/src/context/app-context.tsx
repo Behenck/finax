@@ -2,9 +2,9 @@ import { createContext, useContext } from "react";
 
 type User = {
 	id: string;
-	name: string;
+	name: string | null;
 	email: string;
-	avatarUrl: string;
+	avatarUrl: string | null;
 };
 
 type AppContextType = {

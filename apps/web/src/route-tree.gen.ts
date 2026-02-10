@@ -14,10 +14,13 @@ import { Route as AppLayoutRouteImport } from './pages/_app/layout'
 import { Route as AuthSignUpRouteImport } from './pages/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './pages/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './pages/_auth/sign-in'
+import { Route as AuthInviteLayoutRouteImport } from './pages/_auth/invite/layout'
 import { Route as AppSettingsLayoutRouteImport } from './pages/_app/settings/layout'
+import { Route as AuthInviteIndexRouteImport } from './pages/_auth/invite/index'
 import { Route as AppTransactionsIndexRouteImport } from './pages/_app/transactions/index'
 import { Route as AppSettingsIndexRouteImport } from './pages/_app/settings/index'
 import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
+import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
 import { Route as AppSettingsMembersIndexRouteImport } from './pages/_app/settings/members/index'
@@ -25,6 +28,7 @@ import { Route as AppRegistersEmployeesIndexRouteImport } from './pages/_app/reg
 import { Route as AppRegistersCostCentersIndexRouteImport } from './pages/_app/registers/cost-centers/index'
 import { Route as AppRegistersCompaniesIndexRouteImport } from './pages/_app/registers/companies/index'
 import { Route as AppRegistersCategoriesIndexRouteImport } from './pages/_app/registers/categories/index'
+import { Route as AuthInviteInviteIdAcceptRouteImport } from './pages/_auth/invite/$inviteId/accept'
 import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/_app/transactions/update/$transactionId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
@@ -50,10 +54,20 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
+const AuthInviteLayoutRoute = AuthInviteLayoutRouteImport.update({
+  id: '/invite',
+  path: '/invite',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
 const AppSettingsLayoutRoute = AppSettingsLayoutRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => AppLayoutRoute,
+} as any)
+const AuthInviteIndexRoute = AuthInviteIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthInviteLayoutRoute,
 } as any)
 const AppTransactionsIndexRoute = AppTransactionsIndexRouteImport.update({
   id: '/transactions/',
@@ -69,6 +83,11 @@ const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/_dashboard/',
   path: '/',
   getParentRoute: () => AppLayoutRoute,
+} as any)
+const AuthInviteInviteIdIndexRoute = AuthInviteInviteIdIndexRouteImport.update({
+  id: '/$inviteId/',
+  path: '/$inviteId/',
+  getParentRoute: () => AuthInviteLayoutRoute,
 } as any)
 const AppTransactionsCreateIndexRoute =
   AppTransactionsCreateIndexRouteImport.update({
@@ -111,6 +130,12 @@ const AppRegistersCategoriesIndexRoute =
     path: '/registers/categories/',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AuthInviteInviteIdAcceptRoute =
+  AuthInviteInviteIdAcceptRouteImport.update({
+    id: '/$inviteId/accept',
+    path: '/$inviteId/accept',
+    getParentRoute: () => AuthInviteLayoutRoute,
+  } as any)
 const AppTransactionsUpdateTransactionIdRoute =
   AppTransactionsUpdateTransactionIdRouteImport.update({
     id: '/transactions/update/$transactionId',
@@ -120,13 +145,16 @@ const AppTransactionsUpdateTransactionIdRoute =
 
 export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsLayoutRouteWithChildren
+  '/invite': typeof AuthInviteLayoutRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/': typeof AppDashboardIndexRoute
   '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
+  '/invite/': typeof AuthInviteIndexRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
+  '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
@@ -134,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
+  '/invite/$inviteId': typeof AuthInviteInviteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
@@ -142,7 +171,9 @@ export interface FileRoutesByTo {
   '/': typeof AppDashboardIndexRoute
   '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
+  '/invite': typeof AuthInviteIndexRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
+  '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
@@ -150,19 +181,23 @@ export interface FileRoutesByTo {
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
+  '/invite/$inviteId': typeof AuthInviteInviteIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppLayoutRouteWithChildren
   '/_auth': typeof AuthLayoutRouteWithChildren
   '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
+  '/_auth/invite': typeof AuthInviteLayoutRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_app/_dashboard/': typeof AppDashboardIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
+  '/_auth/invite/': typeof AuthInviteIndexRoute
   '/_app/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
+  '/_auth/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/_app/registers/categories/': typeof AppRegistersCategoriesIndexRoute
   '/_app/registers/companies/': typeof AppRegistersCompaniesIndexRoute
   '/_app/registers/cost-centers/': typeof AppRegistersCostCentersIndexRoute
@@ -170,18 +205,22 @@ export interface FileRoutesById {
   '/_app/settings/members/': typeof AppSettingsMembersIndexRoute
   '/_app/settings/organization/': typeof AppSettingsOrganizationIndexRoute
   '/_app/transactions/create/': typeof AppTransactionsCreateIndexRoute
+  '/_auth/invite/$inviteId/': typeof AuthInviteInviteIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/settings'
+    | '/invite'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
     | '/'
     | '/settings/'
     | '/transactions'
+    | '/invite/'
     | '/transactions/update/$transactionId'
+    | '/invite/$inviteId/accept'
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
@@ -189,6 +228,7 @@ export interface FileRouteTypes {
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
+    | '/invite/$inviteId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
@@ -197,7 +237,9 @@ export interface FileRouteTypes {
     | '/'
     | '/settings'
     | '/transactions'
+    | '/invite'
     | '/transactions/update/$transactionId'
+    | '/invite/$inviteId/accept'
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
@@ -205,18 +247,22 @@ export interface FileRouteTypes {
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
+    | '/invite/$inviteId'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
     | '/_app/settings'
+    | '/_auth/invite'
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
     | '/_app/_dashboard/'
     | '/_app/settings/'
     | '/_app/transactions/'
+    | '/_auth/invite/'
     | '/_app/transactions/update/$transactionId'
+    | '/_auth/invite/$inviteId/accept'
     | '/_app/registers/categories/'
     | '/_app/registers/companies/'
     | '/_app/registers/cost-centers/'
@@ -224,6 +270,7 @@ export interface FileRouteTypes {
     | '/_app/settings/members/'
     | '/_app/settings/organization/'
     | '/_app/transactions/create/'
+    | '/_auth/invite/$inviteId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -268,12 +315,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
+    '/_auth/invite': {
+      id: '/_auth/invite'
+      path: '/invite'
+      fullPath: '/invite'
+      preLoaderRoute: typeof AuthInviteLayoutRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
     '/_app/settings': {
       id: '/_app/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AppSettingsLayoutRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_auth/invite/': {
+      id: '/_auth/invite/'
+      path: '/'
+      fullPath: '/invite/'
+      preLoaderRoute: typeof AuthInviteIndexRouteImport
+      parentRoute: typeof AuthInviteLayoutRoute
     }
     '/_app/transactions/': {
       id: '/_app/transactions/'
@@ -295,6 +356,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppDashboardIndexRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_auth/invite/$inviteId/': {
+      id: '/_auth/invite/$inviteId/'
+      path: '/$inviteId'
+      fullPath: '/invite/$inviteId'
+      preLoaderRoute: typeof AuthInviteInviteIdIndexRouteImport
+      parentRoute: typeof AuthInviteLayoutRoute
     }
     '/_app/transactions/create/': {
       id: '/_app/transactions/create/'
@@ -344,6 +412,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/registers/categories'
       preLoaderRoute: typeof AppRegistersCategoriesIndexRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_auth/invite/$inviteId/accept': {
+      id: '/_auth/invite/$inviteId/accept'
+      path: '/$inviteId/accept'
+      fullPath: '/invite/$inviteId/accept'
+      preLoaderRoute: typeof AuthInviteInviteIdAcceptRouteImport
+      parentRoute: typeof AuthInviteLayoutRoute
     }
     '/_app/transactions/update/$transactionId': {
       id: '/_app/transactions/update/$transactionId'
@@ -399,13 +474,30 @@ const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
   AppLayoutRouteChildren,
 )
 
+interface AuthInviteLayoutRouteChildren {
+  AuthInviteIndexRoute: typeof AuthInviteIndexRoute
+  AuthInviteInviteIdAcceptRoute: typeof AuthInviteInviteIdAcceptRoute
+  AuthInviteInviteIdIndexRoute: typeof AuthInviteInviteIdIndexRoute
+}
+
+const AuthInviteLayoutRouteChildren: AuthInviteLayoutRouteChildren = {
+  AuthInviteIndexRoute: AuthInviteIndexRoute,
+  AuthInviteInviteIdAcceptRoute: AuthInviteInviteIdAcceptRoute,
+  AuthInviteInviteIdIndexRoute: AuthInviteInviteIdIndexRoute,
+}
+
+const AuthInviteLayoutRouteWithChildren =
+  AuthInviteLayoutRoute._addFileChildren(AuthInviteLayoutRouteChildren)
+
 interface AuthLayoutRouteChildren {
+  AuthInviteLayoutRoute: typeof AuthInviteLayoutRouteWithChildren
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignOutRoute: typeof AuthSignOutRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
+  AuthInviteLayoutRoute: AuthInviteLayoutRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignOutRoute: AuthSignOutRoute,
   AuthSignUpRoute: AuthSignUpRoute,

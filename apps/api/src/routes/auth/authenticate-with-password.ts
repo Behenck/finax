@@ -52,9 +52,13 @@ export async function authenticateWithPassword(app: FastifyInstance) {
         return reply.status(401).send({ message: "Credenciais inválidas." })
       }
 
-      const token = await reply.jwtSign({ sub: userFromEmail.id })
+      const token = await reply.jwtSign({
+        sub: userFromEmail.id,
+      })
       // create a refresh token string (random long value) and persist
-      const refreshTokenValue = await reply.jwtSign({ sub: userFromEmail.id }, { expiresIn: '30d' })
+      const refreshTokenValue = await reply.jwtSign({
+        sub: userFromEmail.id,
+      }, { expiresIn: '30d' })
 
       // prisma client might need regeneration after schema change; use any to avoid type errors until generated client is updated
       await prisma.refreshToken.create({

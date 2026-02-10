@@ -11,15 +11,14 @@ export type PostOrganizationsSlugInvitesPathParams = {
     slug: string;
 };
 
+export const postOrganizationsSlugInvites204Enum = {} as const;
+
+export type PostOrganizationsSlugInvites204EnumKey = (typeof postOrganizationsSlugInvites204Enum)[keyof typeof postOrganizationsSlugInvites204Enum];
+
 /**
  * @description Default Response
 */
-export type PostOrganizationsSlugInvites201 = {
-    /**
-     * @type string, uuid
-    */
-    inviteId: string;
-};
+export type PostOrganizationsSlugInvites204 = PostOrganizationsSlugInvites204EnumKey | null;
 
 export const postOrganizationsSlugInvitesMutationRequestRoleEnum = {
     "ADMIN": "ADMIN"
@@ -41,10 +40,10 @@ export type PostOrganizationsSlugInvitesMutationRequest = {
     role: (PostOrganizationsSlugInvitesMutationRequestRoleEnumKey | PostOrganizationsSlugInvitesMutationRequestRoleEnum2Key);
 };
 
-export type PostOrganizationsSlugInvitesMutationResponse = PostOrganizationsSlugInvites201;
+export type PostOrganizationsSlugInvitesMutationResponse = PostOrganizationsSlugInvites204;
 
 export type PostOrganizationsSlugInvitesMutation = {
-    Response: PostOrganizationsSlugInvites201;
+    Response: PostOrganizationsSlugInvites204;
     Request: PostOrganizationsSlugInvitesMutationRequest;
     PathParams: PostOrganizationsSlugInvitesPathParams;
     Errors: any;
