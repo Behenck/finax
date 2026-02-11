@@ -12,6 +12,20 @@ export const postInvitesInviteidAcceptPathParamsSchema = z.object({
 /**
  * @description Default Response
  */
+export const postInvitesInviteidAccept200Schema = z.object({
+    "code": z.string()
+    })
+
+/**
+ * @description Default Response
+ */
 export const postInvitesInviteidAccept204Schema = z.enum([]).nullable()
 
-export const postInvitesInviteidAcceptMutationResponseSchema = z.lazy(() => postInvitesInviteidAccept204Schema)
+export const postInvitesInviteidAcceptMutationRequestSchema = z.object({
+    "name": z.optional(z.string()),
+"email": z.email(),
+"lastName": z.optional(z.string()),
+"password": z.optional(z.string().min(6))
+    })
+
+export const postInvitesInviteidAcceptMutationResponseSchema = z.union([z.lazy(() => postInvitesInviteidAccept200Schema), z.lazy(() => postInvitesInviteidAccept204Schema)])

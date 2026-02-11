@@ -4,7 +4,6 @@ import { AppContext } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { AppSidebar } from "./-components/sidebar";
-
 export const Route = createFileRoute("/_app")({
 	component: AppLayout,
 });
@@ -20,14 +19,12 @@ function AppLayout() {
 		return <Navigate to="/sign-in" replace />;
 	}
 	return (
-		<AppContext.Provider value={{ auth: data }}>
+		<AppContext.Provider value={{ auth: data.user, membership: data.organization.role, organization: data.organization }}>
 			<SidebarProvider>
 				<AppSidebar />
 
-				<main className="w-full">
-					<div className="p-10 h-full">
-						<Outlet />
-					</div>
+				<main className="flex-1 p-10 bg-white">
+					<Outlet />
 				</main>
 			</SidebarProvider>
 		</AppContext.Provider>

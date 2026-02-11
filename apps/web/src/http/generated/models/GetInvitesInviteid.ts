@@ -80,6 +80,10 @@ export type GetInvitesInviteid200 = {
              * @type string
             */
             name: string;
+            /**
+             * @type string
+            */
+            slug: string;
         };
     };
 };

@@ -13,6 +13,6 @@ export interface Invite {
   } | null;
   organization: {
     name: string;
-    slug: string | null
+    slug: string
   };
 };

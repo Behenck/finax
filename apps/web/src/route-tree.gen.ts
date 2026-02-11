@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as AuthLayoutRouteImport } from './pages/_auth/layout'
 import { Route as AppLayoutRouteImport } from './pages/_app/layout'
-import { Route as AuthSignUpRouteImport } from './pages/_auth/sign-up'
+import { Route as AuthVerifyOtpRouteImport } from './pages/_auth/verify-otp'
 import { Route as AuthSignOutRouteImport } from './pages/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './pages/_auth/sign-in'
 import { Route as AuthInviteLayoutRouteImport } from './pages/_auth/invite/layout'
@@ -20,6 +20,9 @@ import { Route as AuthInviteIndexRouteImport } from './pages/_auth/invite/index'
 import { Route as AppTransactionsIndexRouteImport } from './pages/_app/transactions/index'
 import { Route as AppSettingsIndexRouteImport } from './pages/_app/settings/index'
 import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
+import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/reset'
+import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
+import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/forgot'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
@@ -39,9 +42,9 @@ const AppLayoutRoute = AppLayoutRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
+const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
+  id: '/verify-otp',
+  path: '/verify-otp',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 const AuthSignOutRoute = AuthSignOutRouteImport.update({
@@ -83,6 +86,21 @@ const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/_dashboard/',
   path: '/',
   getParentRoute: () => AppLayoutRoute,
+} as any)
+const AuthPasswordResetRoute = AuthPasswordResetRouteImport.update({
+  id: '/password/reset',
+  path: '/password/reset',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthPasswordRecoverRoute = AuthPasswordRecoverRouteImport.update({
+  id: '/password/recover',
+  path: '/password/recover',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthPasswordForgotRoute = AuthPasswordForgotRouteImport.update({
+  id: '/password/forgot',
+  path: '/password/forgot',
+  getParentRoute: () => AuthLayoutRoute,
 } as any)
 const AuthInviteInviteIdIndexRoute = AuthInviteInviteIdIndexRouteImport.update({
   id: '/$inviteId/',
@@ -148,7 +166,10 @@ export interface FileRoutesByFullPath {
   '/invite': typeof AuthInviteLayoutRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
-  '/sign-up': typeof AuthSignUpRoute
+  '/verify-otp': typeof AuthVerifyOtpRoute
+  '/password/forgot': typeof AuthPasswordForgotRoute
+  '/password/recover': typeof AuthPasswordRecoverRoute
+  '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
   '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
@@ -167,7 +188,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
-  '/sign-up': typeof AuthSignUpRoute
+  '/verify-otp': typeof AuthVerifyOtpRoute
+  '/password/forgot': typeof AuthPasswordForgotRoute
+  '/password/recover': typeof AuthPasswordRecoverRoute
+  '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
   '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
@@ -191,7 +215,10 @@ export interface FileRoutesById {
   '/_auth/invite': typeof AuthInviteLayoutRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
-  '/_auth/sign-up': typeof AuthSignUpRoute
+  '/_auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/_auth/password/forgot': typeof AuthPasswordForgotRoute
+  '/_auth/password/recover': typeof AuthPasswordRecoverRoute
+  '/_auth/password/reset': typeof AuthPasswordResetRoute
   '/_app/_dashboard/': typeof AppDashboardIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
@@ -214,7 +241,10 @@ export interface FileRouteTypes {
     | '/invite'
     | '/sign-in'
     | '/sign-out'
-    | '/sign-up'
+    | '/verify-otp'
+    | '/password/forgot'
+    | '/password/recover'
+    | '/password/reset'
     | '/'
     | '/settings/'
     | '/transactions'
@@ -233,7 +263,10 @@ export interface FileRouteTypes {
   to:
     | '/sign-in'
     | '/sign-out'
-    | '/sign-up'
+    | '/verify-otp'
+    | '/password/forgot'
+    | '/password/recover'
+    | '/password/reset'
     | '/'
     | '/settings'
     | '/transactions'
@@ -256,7 +289,10 @@ export interface FileRouteTypes {
     | '/_auth/invite'
     | '/_auth/sign-in'
     | '/_auth/sign-out'
-    | '/_auth/sign-up'
+    | '/_auth/verify-otp'
+    | '/_auth/password/forgot'
+    | '/_auth/password/recover'
+    | '/_auth/password/reset'
     | '/_app/_dashboard/'
     | '/_app/settings/'
     | '/_app/transactions/'
@@ -294,11 +330,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/sign-up': {
-      id: '/_auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
+    '/_auth/verify-otp': {
+      id: '/_auth/verify-otp'
+      path: '/verify-otp'
+      fullPath: '/verify-otp'
+      preLoaderRoute: typeof AuthVerifyOtpRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
     '/_auth/sign-out': {
@@ -356,6 +392,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppDashboardIndexRouteImport
       parentRoute: typeof AppLayoutRoute
+    }
+    '/_auth/password/reset': {
+      id: '/_auth/password/reset'
+      path: '/password/reset'
+      fullPath: '/password/reset'
+      preLoaderRoute: typeof AuthPasswordResetRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/_auth/password/recover': {
+      id: '/_auth/password/recover'
+      path: '/password/recover'
+      fullPath: '/password/recover'
+      preLoaderRoute: typeof AuthPasswordRecoverRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/_auth/password/forgot': {
+      id: '/_auth/password/forgot'
+      path: '/password/forgot'
+      fullPath: '/password/forgot'
+      preLoaderRoute: typeof AuthPasswordForgotRouteImport
+      parentRoute: typeof AuthLayoutRoute
     }
     '/_auth/invite/$inviteId/': {
       id: '/_auth/invite/$inviteId/'
@@ -493,14 +550,20 @@ interface AuthLayoutRouteChildren {
   AuthInviteLayoutRoute: typeof AuthInviteLayoutRouteWithChildren
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignOutRoute: typeof AuthSignOutRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
+  AuthVerifyOtpRoute: typeof AuthVerifyOtpRoute
+  AuthPasswordForgotRoute: typeof AuthPasswordForgotRoute
+  AuthPasswordRecoverRoute: typeof AuthPasswordRecoverRoute
+  AuthPasswordResetRoute: typeof AuthPasswordResetRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthInviteLayoutRoute: AuthInviteLayoutRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignOutRoute: AuthSignOutRoute,
-  AuthSignUpRoute: AuthSignUpRoute,
+  AuthVerifyOtpRoute: AuthVerifyOtpRoute,
+  AuthPasswordForgotRoute: AuthPasswordForgotRoute,
+  AuthPasswordRecoverRoute: AuthPasswordRecoverRoute,
+  AuthPasswordResetRoute: AuthPasswordResetRoute,
 }
 
 const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(

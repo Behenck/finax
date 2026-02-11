@@ -8,13 +8,20 @@ import { z } from "zod/v4";
 /**
  * @description Default Response
  */
-export const getProfile200Schema = z.object({
+export const getMe200Schema = z.object({
     "user": z.object({
     "id": z.uuid(),
 "name": z.nullable(z.string()),
 "email": z.email(),
 "avatarUrl": z.nullable(z.url())
+    }),
+"organization": z.object({
+    "id": z.uuid(),
+"name": z.string(),
+"slug": z.string(),
+"role": z.enum(["ADMIN", "MEMBER"]),
+"ownerId": z.uuid()
     })
     })
 
-export const getProfileQueryResponseSchema = z.lazy(() => getProfile200Schema)
+export const getMeQueryResponseSchema = z.lazy(() => getMe200Schema)

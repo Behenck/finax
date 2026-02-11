@@ -4,45 +4,45 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetProfileQueryResponse } from "../models/GetProfile.ts";
+import type { GetMeQueryResponse } from "../models/GetMe.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryResult } from "@tanstack/react-query";
-import { getProfile } from "../getProfile.ts";
+import { getMe } from "../getMe.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getProfileQueryKey = () => [{ url: '/profile' }] as const
+export const getMeQueryKey = () => [{ url: '/me' }] as const
 
-export type GetProfileQueryKey = ReturnType<typeof getProfileQueryKey>
+export type GetMeQueryKey = ReturnType<typeof getMeQueryKey>
 
-export function getProfileQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getProfileQueryKey()
-  return queryOptions<GetProfileQueryResponse, ResponseErrorConfig<Error>, GetProfileQueryResponse, typeof queryKey>({
+export function getMeQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+  const queryKey = getMeQueryKey()
+  return queryOptions<GetMeQueryResponse, ResponseErrorConfig<Error>, GetMeQueryResponse, typeof queryKey>({
  
    queryKey,
    queryFn: async ({ signal }) => {
       config.signal = signal
-      return getProfile(config)
+      return getMe(config)
    },
   })
 }
 
 /**
  * @summary Get current user's profile
- * {@link /profile}
+ * {@link /me}
  */
-export function useGetProfile<TData = GetProfileQueryResponse, TQueryData = GetProfileQueryResponse, TQueryKey extends QueryKey = GetProfileQueryKey>(options: 
+export function useGetMe<TData = GetMeQueryResponse, TQueryData = GetMeQueryResponse, TQueryKey extends QueryKey = GetMeQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetProfileQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  query?: Partial<QueryObserverOptions<GetMeQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
 }
  = {}) {
   const { query: queryConfig = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getProfileQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getMeQueryKey()
 
 
   const query = useQuery({
-   ...getProfileQueryOptions(config),
+   ...getMeQueryOptions(config),
    queryKey,
    ...queryOptions
   } as unknown as QueryObserverOptions, queryClient) as UseQueryResult<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }

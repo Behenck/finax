@@ -5,17 +5,17 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useSession } from '@/hooks/auth/use-session'
+import { useApp } from '@/context/app-context'
 import { useMembers } from '@/hooks/members/use-members'
 import { getInitials } from '@/utils/get-initials'
 import { Ellipsis } from 'lucide-react'
 
 export function MembersList() {
-  const { data } = useSession()
+  const { auth, organization } = useApp()
 
-  const user = data.user
+  if (!organization) return null
 
-  const { data: members } = useMembers("behenck")
+  const { data: members } = useMembers(organization?.slug)
 
   const totalMembers = members?.length
 
@@ -40,8 +40,8 @@ export function MembersList() {
         </div>
 
         {members?.map((member) => {
-          const userLogged = !!(user?.id === member.userId)
-          const owner = true
+          const userLogged = auth?.id === member.userId
+          const owner = member.userId === organization?.ownerId
 
           return (
             <div className='flex items-center justify-between gap-2' key={member.id}>

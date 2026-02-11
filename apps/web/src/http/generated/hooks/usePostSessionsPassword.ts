@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401 } from "../models/PostSessionsPassword.ts";
+import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401, PostSessionsPassword403 } from "../models/PostSessionsPassword.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { postSessionsPassword } from "../postSessionsPassword.ts";
@@ -16,7 +16,7 @@ export type PostSessionsPasswordMutationKey = ReturnType<typeof postSessionsPass
 
 export function postSessionsPasswordMutationOptions<TContext = unknown>(config: Partial<RequestConfig<PostSessionsPasswordMutationRequest>> & { client?: typeof fetch } = {}) {
   const mutationKey = postSessionsPasswordMutationKey()
-  return mutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, {data: PostSessionsPasswordMutationRequest}, TContext>({
+  return mutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, {data: PostSessionsPasswordMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
       return postSessionsPassword(data, config)
@@ -30,7 +30,7 @@ export function postSessionsPasswordMutationOptions<TContext = unknown>(config: 
  */
 export function usePostSessionsPassword<TContext>(options: 
 {
-  mutation?: UseMutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, {data: PostSessionsPasswordMutationRequest}, TContext> & { client?: QueryClient },
+  mutation?: UseMutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, {data: PostSessionsPasswordMutationRequest}, TContext> & { client?: QueryClient },
   client?: Partial<RequestConfig<PostSessionsPasswordMutationRequest>> & { client?: typeof fetch },
 }
  = {}) {
@@ -38,12 +38,12 @@ export function usePostSessionsPassword<TContext>(options:
   const { client: queryClient, ...mutationOptions } = mutation;
   const mutationKey = mutationOptions.mutationKey ?? postSessionsPasswordMutationKey()
 
-  const baseOptions = postSessionsPasswordMutationOptions(config) as UseMutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, {data: PostSessionsPasswordMutationRequest}, TContext>
+  const baseOptions = postSessionsPasswordMutationOptions(config) as UseMutationOptions<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, {data: PostSessionsPasswordMutationRequest}, TContext>
 
 
-  return useMutation<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, {data: PostSessionsPasswordMutationRequest}, TContext>({
+  return useMutation<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, {data: PostSessionsPasswordMutationRequest}, TContext>({
     ...baseOptions,
     mutationKey,
     ...mutationOptions,
-  }, queryClient) as UseMutationResult<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, {data: PostSessionsPasswordMutationRequest}, TContext>
+  }, queryClient) as UseMutationResult<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, {data: PostSessionsPasswordMutationRequest}, TContext>
 }

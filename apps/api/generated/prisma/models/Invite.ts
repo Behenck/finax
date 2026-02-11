@@ -441,10 +441,6 @@ export type EnumInviteTypeFieldUpdateOperationsInput = {
   set?: $Enums.InviteType
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type InviteCreateNestedManyWithoutOrganizationInput = {
   create?: Prisma.XOR<Prisma.InviteCreateWithoutOrganizationInput, Prisma.InviteUncheckedCreateWithoutOrganizationInput> | Prisma.InviteCreateWithoutOrganizationInput[] | Prisma.InviteUncheckedCreateWithoutOrganizationInput[]
   connectOrCreate?: Prisma.InviteCreateOrConnectWithoutOrganizationInput | Prisma.InviteCreateOrConnectWithoutOrganizationInput[]

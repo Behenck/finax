@@ -25,6 +25,9 @@ export async function authenticateWithPassword(app: FastifyInstance) {
         }),
         401: z.object({
           message: z.string()
+        }),
+        403: z.object({
+          message: z.string()
         })
       }
     },
@@ -50,6 +53,12 @@ export async function authenticateWithPassword(app: FastifyInstance) {
 
       if (!passwordValid) {
         return reply.status(401).send({ message: "Credenciais inválidas." })
+      }
+
+      if (!userFromEmail.emailVerifiedAt) {
+        return reply.status(403).send({
+          message: "Para acessar o sistema, primeiro conclua a verificação."
+        })
       }
 
       const token = await reply.jwtSign({

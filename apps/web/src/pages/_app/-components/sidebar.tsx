@@ -25,6 +25,7 @@ import {
 	Database,
 	Home,
 	IdCardLanyard,
+	LogOut,
 	Network,
 	Settings,
 	Tags,
@@ -36,93 +37,103 @@ import {
 } from "lucide-react";
 import LogoBranco from "@/assets/logo-finax-branco.png";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
+import { auth } from "@/hooks/auth";
 
 interface ItemsProps {
 	title: string;
 	url: string;
 	icon: LucideIcon;
+	action?: () => void;
 	children?: {
 		title: string;
 		url: string;
 		icon: LucideIcon;
+		action?: () => void;
 	}[];
 }
 
-const items: ItemsProps[] = [
-	{
-		title: "Dashboard",
-		url: "/",
-		icon: Home,
-	},
-	{
-		title: "Cadastros",
-		icon: Database,
-		url: "/",
-		children: [
-			{
-				icon: Building2,
-				title: "Empresas",
-				url: "/registers/companies",
-			},
-			{
-				icon: Tags,
-				title: "Categorias",
-				url: "/registers/categories",
-			},
-			{
-				icon: Network,
-				title: "Centro de Custos",
-				url: "/registers/cost-centers",
-			},
-			{
-				icon: IdCardLanyard,
-				title: "Funcionários",
-				url: "/registers/employees",
-			},
-		],
-	},
-	{
-		title: "Transações",
-		url: "/transactions",
-		icon: CreditCard,
-	},
-	{
-		title: "Orçamentos",
-		url: "#",
-		icon: ChartPie,
-	},
-	{
-		title: "Dívidas",
-		url: "#",
-		icon: TriangleAlert,
-	},
-	{
-		title: "Metas",
-		url: "#",
-		icon: Target,
-	},
-	{
-		title: "Família",
-		url: "#",
-		icon: Users,
-	},
-	{
-		title: "Configurações",
-		url: "/settings",
-		icon: Settings,
-	},
-	{
-		title: "Perfil",
-		url: "#",
-		icon: User,
-	},
-];
-
 export function AppSidebar() {
+	const signOut = auth.useSignOut();
+
+	const items: ItemsProps[] = [
+		{
+			title: "Dashboard",
+			url: "/",
+			icon: Home,
+		},
+		{
+			title: "Cadastros",
+			icon: Database,
+			url: "/",
+			children: [
+				{
+					icon: Building2,
+					title: "Empresas",
+					url: "/registers/companies",
+				},
+				{
+					icon: Tags,
+					title: "Categorias",
+					url: "/registers/categories",
+				},
+				{
+					icon: Network,
+					title: "Centro de Custos",
+					url: "/registers/cost-centers",
+				},
+				{
+					icon: IdCardLanyard,
+					title: "Funcionários",
+					url: "/registers/employees",
+				},
+			],
+		},
+		{
+			title: "Transações",
+			url: "/transactions",
+			icon: CreditCard,
+		},
+		{
+			title: "Orçamentos",
+			url: "#",
+			icon: ChartPie,
+		},
+		{
+			title: "Dívidas",
+			url: "#",
+			icon: TriangleAlert,
+		},
+		{
+			title: "Metas",
+			url: "#",
+			icon: Target,
+		},
+		{
+			title: "Família",
+			url: "#",
+			icon: Users,
+		},
+		{
+			title: "Configurações",
+			url: "/settings",
+			icon: Settings,
+		},
+		{
+			title: "Perfil",
+			url: "#",
+			icon: User,
+		},
+		{
+			title: "Sair",
+			url: "/sign-in",
+			icon: LogOut,
+			action: () => signOut.mutate(),
+		},
+	];
+
 	return (
-		<Sidebar>
+		<Sidebar variant="inset">
 			<SidebarHeader className="p-6">
 				<div className="flex items-center gap-3 w-full">
 					<div className="bg-green-500 rounded-md w-10 h-10 gradient-brand flex items-center justify-center">
@@ -139,7 +150,7 @@ export function AppSidebar() {
 							if (!item.children) {
 								return (
 									<SidebarMenuItem key={item.title}>
-										<SidebarMenuButton asChild>
+										<SidebarMenuButton asChild onClick={item.action}>
 											<Link to={item.url} className="p-6">
 												<item.icon className="size-4" />
 												<span>{item.title}</span>

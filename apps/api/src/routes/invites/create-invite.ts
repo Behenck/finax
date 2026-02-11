@@ -85,11 +85,11 @@ export async function createInvite(app: FastifyInstance) {
 
         const resend = new Resend(process.env.RESEND_API_KEY);
 
-        const link = `${process.env.APP_WEB_URL}/invites/${invite.id}/validate`
+        const link = `${process.env.APP_WEB_URL}/invite/${invite.id}`
 
         const { error } =
           await resend.emails.send({
-            to: ["denilson@arkogrupo.com"],
+            to: [email],
             template: {
               id: "finax-welcome",
               variables: {

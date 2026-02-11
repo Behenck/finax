@@ -4,45 +4,45 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetProfileQueryResponse } from "../models/GetProfile.ts";
+import type { GetMeQueryResponse } from "../models/GetMe.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, UseSuspenseQueryOptions, UseSuspenseQueryResult } from "@tanstack/react-query";
-import { getProfile } from "../getProfile.ts";
+import { getMe } from "../getMe.ts";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 
-export const getProfileSuspenseQueryKey = () => [{ url: '/profile' }] as const
+export const getMeSuspenseQueryKey = () => [{ url: '/me' }] as const
 
-export type GetProfileSuspenseQueryKey = ReturnType<typeof getProfileSuspenseQueryKey>
+export type GetMeSuspenseQueryKey = ReturnType<typeof getMeSuspenseQueryKey>
 
-export function getProfileSuspenseQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getProfileSuspenseQueryKey()
-  return queryOptions<GetProfileQueryResponse, ResponseErrorConfig<Error>, GetProfileQueryResponse, typeof queryKey>({
+export function getMeSuspenseQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+  const queryKey = getMeSuspenseQueryKey()
+  return queryOptions<GetMeQueryResponse, ResponseErrorConfig<Error>, GetMeQueryResponse, typeof queryKey>({
  
    queryKey,
    queryFn: async ({ signal }) => {
       config.signal = signal
-      return getProfile(config)
+      return getMe(config)
    },
   })
 }
 
 /**
  * @summary Get current user's profile
- * {@link /profile}
+ * {@link /me}
  */
-export function useGetProfileSuspense<TData = GetProfileQueryResponse, TQueryKey extends QueryKey = GetProfileSuspenseQueryKey>(options: 
+export function useGetMeSuspense<TData = GetMeQueryResponse, TQueryKey extends QueryKey = GetMeSuspenseQueryKey>(options: 
 {
-  query?: Partial<UseSuspenseQueryOptions<GetProfileQueryResponse, ResponseErrorConfig<Error>, TData, TQueryKey>> & { client?: QueryClient },
+  query?: Partial<UseSuspenseQueryOptions<GetMeQueryResponse, ResponseErrorConfig<Error>, TData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
 }
  = {}) {
   const { query: queryConfig = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getProfileSuspenseQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getMeSuspenseQueryKey()
 
 
   const query = useSuspenseQuery({
-   ...getProfileSuspenseQueryOptions(config),
+   ...getMeSuspenseQueryOptions(config),
    queryKey,
    ...queryOptions
   } as unknown as UseSuspenseQueryOptions, queryClient) as UseSuspenseQueryResult<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }

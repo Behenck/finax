@@ -4,7 +4,7 @@
 */
 
 import fetch from "@/lib/axios";
-import type { PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptPathParams } from "./models/PostInvitesInviteidAccept.ts";
+import type { PostInvitesInviteidAcceptMutationRequest, PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptPathParams } from "./models/PostInvitesInviteidAccept.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostInvitesInviteidAcceptUrl(inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]) {
@@ -16,9 +16,11 @@ function getPostInvitesInviteidAcceptUrl(inviteId: PostInvitesInviteidAcceptPath
  * @summary Accept an invite
  * {@link /invites/:inviteId/accept}
  */
-export async function postInvitesInviteidAccept(inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function postInvitesInviteidAccept(inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest, config: Partial<RequestConfig<PostInvitesInviteidAcceptMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getPostInvitesInviteidAcceptUrl(inviteId).url.toString(), ... requestConfig })  
+  const requestData = data  
+  
+  const res = await request<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, PostInvitesInviteidAcceptMutationRequest>({ method : "POST", url : getPostInvitesInviteidAcceptUrl(inviteId).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

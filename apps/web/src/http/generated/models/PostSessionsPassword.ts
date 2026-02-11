@@ -28,6 +28,16 @@ export type PostSessionsPassword401 = {
     message: string;
 };
 
+/**
+ * @description Default Response
+*/
+export type PostSessionsPassword403 = {
+    /**
+     * @type string
+    */
+    message: string;
+};
+
 export type PostSessionsPasswordMutationRequest = {
     /**
      * @type string, email
@@ -45,5 +55,5 @@ export type PostSessionsPasswordMutationResponse = PostSessionsPassword200;
 export type PostSessionsPasswordMutation = {
     Response: PostSessionsPassword200;
     Request: PostSessionsPasswordMutationRequest;
-    Errors: PostSessionsPassword401;
+    Errors: PostSessionsPassword401 | PostSessionsPassword403;
 };

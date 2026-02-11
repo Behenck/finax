@@ -4,7 +4,7 @@
 */
 
 import fetch from "@/lib/axios";
-import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401 } from "./models/PostSessionsPassword.ts";
+import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPassword401, PostSessionsPassword403 } from "./models/PostSessionsPassword.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostSessionsPasswordUrl() {
@@ -21,6 +21,6 @@ export async function postSessionsPassword(data: PostSessionsPasswordMutationReq
   
   const requestData = data  
   
-  const res = await request<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401>, PostSessionsPasswordMutationRequest>({ method : "POST", url : getPostSessionsPasswordUrl().url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostSessionsPasswordMutationResponse, ResponseErrorConfig<PostSessionsPassword401 | PostSessionsPassword403>, PostSessionsPasswordMutationRequest>({ method : "POST", url : getPostSessionsPasswordUrl().url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

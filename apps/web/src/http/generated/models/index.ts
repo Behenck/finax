@@ -9,6 +9,7 @@ export type { DeleteOrganizationsSlugMembersMemberidPathParams, DeleteOrganizati
 export type { DeleteOrganizationsSlugRecurrencesRecurrenceidPathParams, DeleteOrganizationsSlugRecurrencesRecurrenceid204EnumKey, DeleteOrganizationsSlugRecurrencesRecurrenceid204, DeleteOrganizationsSlugRecurrencesRecurrenceidMutationResponse, DeleteOrganizationsSlugRecurrencesRecurrenceidMutation } from "./DeleteOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { DeleteOrganizationsSlugTransactionsTransactionidPathParams, DeleteOrganizationsSlugTransactionsTransactionid204EnumKey, DeleteOrganizationsSlugTransactionsTransactionid204, DeleteOrganizationsSlugTransactionsTransactionidMutationResponse, DeleteOrganizationsSlugTransactionsTransactionidMutation } from "./DeleteOrganizationsSlugTransactionsTransactionid.ts";
 export type { GetInvitesInviteidPathParams, InviteRoleEnumKey, InviteRoleEnum2Key, InviteTypeEnumKey, GetInvitesInviteid200, GetInvitesInviteidQueryResponse, GetInvitesInviteidQuery } from "./GetInvitesInviteid.ts";
+export type { OrganizationRoleEnumKey, GetMe200, GetMeQueryResponse, GetMeQuery } from "./GetMe.ts";
 export type { OrganizationsRoleEnumKey, OrganizationsRoleEnum2Key, GetOrganizations200, GetOrganizationsQueryResponse, GetOrganizationsQuery } from "./GetOrganizations.ts";
 export type { GetOrganizationSlugPathParams, GetOrganizationSlug200, GetOrganizationSlugQueryResponse, GetOrganizationSlugQuery } from "./GetOrganizationSlug.ts";
 export type { GetOrganizationsSlugCategoriesPathParams, CategoriesTypeEnumKey, CategoriesParentIdEnumKey, ChildrenTypeEnumKey, GetOrganizationsSlugCategories200, GetOrganizationsSlugCategoriesQueryResponse, GetOrganizationsSlugCategoriesQuery } from "./GetOrganizationsSlugCategories.ts";
@@ -23,10 +24,11 @@ export type { GetOrganizationsSlugRecurrencesPathParams, RecurrencesTypeEnumKey,
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./GetOrganizationsSlugTransactions.ts";
 export type { GetOrganizationsSlugTransactionsTransactionidPathParams, TransactionTypeEnumKey, TransactionStatusEnumKey, TransactionNatureEnumKey, GetOrganizationsSlugTransactionsTransactionid200, GetOrganizationsSlugTransactionsTransactionidQueryResponse, GetOrganizationsSlugTransactionsTransactionidQuery } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export type { InvitesRoleEnum3Key, InvitesRoleEnum4Key, GetPendingInvites200, GetPendingInvitesQueryResponse, GetPendingInvitesQuery } from "./GetPendingInvites.ts";
-export type { GetProfile200, GetProfileQueryResponse, GetProfileQuery } from "./GetProfile.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidPathParams, PatchOrganizationsSlugRecurrencesRecurrenceid204EnumKey, PatchOrganizationsSlugRecurrencesRecurrenceid204, PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, PatchOrganizationsSlugRecurrencesRecurrenceidMutation } from "./PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidPathParams, PatchOrganizationsSlugTransactionsTransactionid204EnumKey, PatchOrganizationsSlugTransactionsTransactionid204, PatchOrganizationsSlugTransactionsTransactionidMutationRequest, PatchOrganizationsSlugTransactionsTransactionidMutationResponse, PatchOrganizationsSlugTransactionsTransactionidMutation } from "./PatchOrganizationsSlugTransactionsTransactionid.ts";
-export type { PostInvitesInviteidAcceptPathParams, PostInvitesInviteidAccept204EnumKey, PostInvitesInviteidAccept204, PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptMutation } from "./PostInvitesInviteidAccept.ts";
+export type { PostAuthSendEmailOtp204EnumKey, PostAuthSendEmailOtp204, PostAuthSendEmailOtpMutationRequest, PostAuthSendEmailOtpMutationResponse, PostAuthSendEmailOtpMutation } from "./PostAuthSendEmailOtp.ts";
+export type { PostAuthVerifyOtp200, PostAuthVerifyOtpMutationRequest, PostAuthVerifyOtpMutationResponse, PostAuthVerifyOtpMutation } from "./PostAuthVerifyOtp.ts";
+export type { PostInvitesInviteidAcceptPathParams, PostInvitesInviteidAccept200, PostInvitesInviteidAccept204EnumKey, PostInvitesInviteidAccept204, PostInvitesInviteidAcceptMutationRequest, PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptMutation } from "./PostInvitesInviteidAccept.ts";
 export type { PostInvitesInviteidRejectPathParams, PostInvitesInviteidReject204EnumKey, PostInvitesInviteidReject204, PostInvitesInviteidRejectMutationResponse, PostInvitesInviteidRejectMutation } from "./PostInvitesInviteidReject.ts";
 export type { PostOrganizations201, PostOrganizationsMutationRequest, PostOrganizationsMutationResponse, PostOrganizationsMutation } from "./PostOrganizations.ts";
 export type { PostOrganizationsSlugCategoriesPathParams, PostOrganizationsSlugCategories201, PostOrganizationsSlugCategoriesMutationRequestTypeEnumKey, PostOrganizationsSlugCategoriesMutationRequest, PostOrganizationsSlugCategoriesMutationResponse, PostOrganizationsSlugCategoriesMutation } from "./PostOrganizationsSlugCategories.ts";
@@ -40,7 +42,7 @@ export type { PostOrganizationsSlugRecurrencesPathParams, PostOrganizationsSlugR
 export type { PostOrganizationsSlugTransactionsPathParams, PostOrganizationsSlugTransactions201EnumKey, PostOrganizationsSlugTransactions201, PostOrganizationsSlugTransactionsMutationRequestTypeEnumKey, PostOrganizationsSlugTransactionsMutationRequestStatusEnumKey, PostOrganizationsSlugTransactionsMutationRequestNatureEnumKey, PostOrganizationsSlugTransactionsMutationRequestInstallmentRecurrenceTypeEnumKey, PostOrganizationsSlugTransactionsMutationRequest, PostOrganizationsSlugTransactionsMutationResponse, PostOrganizationsSlugTransactionsMutation } from "./PostOrganizationsSlugTransactions.ts";
 export type { PostPasswordRecover201EnumKey, PostPasswordRecover201, PostPasswordRecoverMutationRequest, PostPasswordRecoverMutationResponse, PostPasswordRecoverMutation } from "./PostPasswordRecover.ts";
 export type { PostPasswordReset200EnumKey, PostPasswordReset200, PostPasswordResetMutationRequest, PostPasswordResetMutationResponse, PostPasswordResetMutation } from "./PostPasswordReset.ts";
-export type { PostSessionsPassword200, PostSessionsPassword401, PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPasswordMutation } from "./PostSessionsPassword.ts";
+export type { PostSessionsPassword200, PostSessionsPassword401, PostSessionsPassword403, PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPasswordMutation } from "./PostSessionsPassword.ts";
 export type { PostSessionsRefresh200, PostSessionsRefresh401, PostSessionsRefreshMutationRequest, PostSessionsRefreshMutationResponse, PostSessionsRefreshMutation } from "./PostSessionsRefresh.ts";
 export type { PostUsers201, PostUsers400, PostUsersMutationRequest, PostUsersMutationResponse, PostUsersMutation } from "./PostUsers.ts";
 export type { PutOrganizationSlugPathParams, PutOrganizationSlug204EnumKey, PutOrganizationSlug204, PutOrganizationSlugMutationRequest, PutOrganizationSlugMutationResponse, PutOrganizationSlugMutation } from "./PutOrganizationSlug.ts";
@@ -65,6 +67,7 @@ export { deleteOrganizationsSlugTransactionsTransactionid204Enum } from "./Delet
 export { inviteRoleEnum } from "./GetInvitesInviteid.ts";
 export { inviteRoleEnum2 } from "./GetInvitesInviteid.ts";
 export { inviteTypeEnum } from "./GetInvitesInviteid.ts";
+export { organizationRoleEnum } from "./GetMe.ts";
 export { organizationsRoleEnum } from "./GetOrganizations.ts";
 export { organizationsRoleEnum2 } from "./GetOrganizations.ts";
 export { categoriesTypeEnum } from "./GetOrganizationsSlugCategories.ts";
@@ -90,6 +93,7 @@ export { invitesRoleEnum3 } from "./GetPendingInvites.ts";
 export { invitesRoleEnum4 } from "./GetPendingInvites.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceid204Enum } from "./PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { patchOrganizationsSlugTransactionsTransactionid204Enum } from "./PatchOrganizationsSlugTransactionsTransactionid.ts";
+export { postAuthSendEmailOtp204Enum } from "./PostAuthSendEmailOtp.ts";
 export { postInvitesInviteidAccept204Enum } from "./PostInvitesInviteidAccept.ts";
 export { postInvitesInviteidReject204Enum } from "./PostInvitesInviteidReject.ts";
 export { postOrganizationsSlugCategoriesMutationRequestTypeEnum } from "./PostOrganizationsSlugCategories.ts";

@@ -11,6 +11,16 @@ export type PostInvitesInviteidAcceptPathParams = {
     inviteId: string;
 };
 
+/**
+ * @description Default Response
+*/
+export type PostInvitesInviteidAccept200 = {
+    /**
+     * @type string
+    */
+    code: string;
+};
+
 export const postInvitesInviteidAccept204Enum = {} as const;
 
 export type PostInvitesInviteidAccept204EnumKey = (typeof postInvitesInviteidAccept204Enum)[keyof typeof postInvitesInviteidAccept204Enum];
@@ -20,10 +30,31 @@ export type PostInvitesInviteidAccept204EnumKey = (typeof postInvitesInviteidAcc
 */
 export type PostInvitesInviteidAccept204 = PostInvitesInviteidAccept204EnumKey | null;
 
-export type PostInvitesInviteidAcceptMutationResponse = PostInvitesInviteidAccept204;
+export type PostInvitesInviteidAcceptMutationRequest = {
+    /**
+     * @type string | undefined
+    */
+    name?: string;
+    /**
+     * @type string, email
+    */
+    email: string;
+    /**
+     * @type string | undefined
+    */
+    lastName?: string;
+    /**
+     * @minLength 6
+     * @type string | undefined
+    */
+    password?: string;
+};
+
+export type PostInvitesInviteidAcceptMutationResponse = (PostInvitesInviteidAccept200 | PostInvitesInviteidAccept204);
 
 export type PostInvitesInviteidAcceptMutation = {
-    Response: PostInvitesInviteidAccept204;
+    Response: PostInvitesInviteidAccept200 | PostInvitesInviteidAccept204;
+    Request: PostInvitesInviteidAcceptMutationRequest;
     PathParams: PostInvitesInviteidAcceptPathParams;
     Errors: any;
 };

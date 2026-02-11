@@ -1,17 +1,16 @@
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { Invite } from "@/schemas/types/invite";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { Controller, type Control, type SetFieldValue, type UseFormSetValue } from "react-hook-form";
 import z from "zod";
 
-const CreateMemberSchema = z
+export const CreateMemberSchema = z
   .object({
-    name: z.string().min(3, { error: "Mínimo 3 caracteres!" }).optional(),
+    firstName: z.string().min(3, { error: "Mínimo 3 caracteres!" }).optional(),
     lastName: z.string().min(3, { error: "Mínimo 3 caracteres!" }).optional(),
     email: z
-      .email()
-      .optional(),
+      .email(),
     password: z
       .string()
       .min(6, { error: "A senha deve ter no mínimo 6 caracteres!" }).optional(),
@@ -28,43 +27,32 @@ export type CreateMemberType = z.infer<typeof CreateMemberSchema>;
 
 interface CreateMemberFormProps {
   invite: Invite
+  control: Control<CreateMemberType>
+  setValue: UseFormSetValue<CreateMemberType>
 }
 
-export function CreateMemberForm({ invite }: CreateMemberFormProps) {
-  const {
-    handleSubmit,
-    resetField,
-    control,
-    watch,
-    setValue,
-    unregister,
-  } = useForm<CreateMemberType>({
-    resolver: zodResolver(CreateMemberSchema),
-    defaultValues: {
-      name: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  const name = watch("name")
+export function CreateMemberForm({ invite, control, setValue }: CreateMemberFormProps) {
   const shouldAskEmail = invite?.type === "LINK";
+
+  useEffect(() => {
+    if (invite?.email) {
+      setValue("email", invite.email);
+    }
+  }, [invite?.email, setValue]);
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
         <FieldGroup>
           <Controller
-            name="name"
+            name="firstName"
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel>Nome</FieldLabel>
                 <Input
                   {...field}
-                  id="name"
+                  id="firstName"
                   aria-invalid={fieldState.invalid}
                   placeholder="Seu nome"
                   autoComplete="off"

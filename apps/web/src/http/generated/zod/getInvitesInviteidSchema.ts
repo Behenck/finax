@@ -25,7 +25,8 @@ export const getInvitesInviteid200Schema = z.object({
 "avatarUrl": z.nullable(z.url())
     })),
 "organization": z.object({
-    "name": z.string()
+    "name": z.string(),
+"slug": z.string()
     })
     })
     })

@@ -45,7 +45,7 @@ export async function createInviteLink(app: FastifyInstance) {
       });
 
       const appUrl = process.env.APP_WEB_URL;
-      const url = `${appUrl}/invites/${invite.id}/validate`;
+      const url = `${appUrl}/invite/${invite.id}`;
 
       return reply.status(201).send({
         url,

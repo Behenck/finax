@@ -20,6 +20,8 @@ import { auth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/errors/api-error";
 import { resolveErrorMessage } from "@/errors";
+import { sendEmailOTP } from "@/http/auth/send-email-otp";
+import { router } from "@/router";
 
 const SignInSchema = z.object({
 	email: z.email("Email inválido").min(1, "Email é obrigatório"),
@@ -47,17 +49,19 @@ export const Route = createFileRoute("/_auth/sign-in")({
 });
 
 function SignIn() {
-	const { email } = Route.useSearch();
+	const { email: emailParam } = Route.useSearch();
 	const signInMutation = auth.useSignIn();
 	const { data: session, isPending: isSessionPending } = auth.useSession();
 
-	const { handleSubmit, resetField, control } = useForm<SignInType>({
+	const { handleSubmit, resetField, control, watch } = useForm<SignInType>({
 		resolver: zodResolver(SignInSchema as any),
 		defaultValues: {
-			email: email ?? "",
+			email: emailParam ?? "",
 			password: "",
 		},
 	});
+
+	const email = watch("email")
 
 	async function onSubmit(data: SignInType) {
 		try {
@@ -66,6 +70,24 @@ function SignIn() {
 		} catch (err) {
 			const apiError = normalizeApiError(err);
 			const message = resolveErrorMessage(apiError);
+
+			if (apiError?.status === 403 && !!email) {
+				console.log("teste")
+				try {
+					await sendEmailOTP(email)
+
+					toast.success("O código foi enviado para o seu email!")
+
+					router.navigate({
+						to: "/verify-otp",
+						search: { email: data.email }
+					});
+				} catch (err) {
+					console.log(err)
+				}
+
+				return;
+			}
 
 			console.error("API Error:", apiError);
 			toast.error(message);
@@ -164,12 +186,13 @@ function SignIn() {
 					<ArrowRight className="size-5" />
 				</Button>
 				<p className="flex gap-2 items-center justify-center text-sm text-muted-foreground">
-					Não tem uma conta?
+					Esqueceu a senha?
 					<Link
 						className="text-primary font-medium hover:underline"
-						to="/sign-up"
+						to="/password/recover"
+						search={{ email }}
 					>
-						Cadastre-se
+						Recuperar
 					</Link>
 				</p>
 			</form>

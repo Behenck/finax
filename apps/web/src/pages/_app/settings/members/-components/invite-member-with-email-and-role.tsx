@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useSession } from '@/hooks/auth/use-session';
 import api from '@/lib/axios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -21,6 +22,8 @@ export type InviteMemberType = z.infer<typeof InviteMemberSchema>;
 export function InviteMemberWithEmailAndRole() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const { data: session } = useSession()
+
   const {
     handleSubmit,
     reset,
@@ -34,7 +37,7 @@ export function InviteMemberWithEmailAndRole() {
     setIsLoading(true);
 
     try {
-      const organizationSlug = "behenck"
+      const organizationSlug = session?.organization.slug
       await api.post(`/organizations/${organizationSlug}/invites`, data)
       setIsLoading(false);
       reset({ email: "", role: data.role });

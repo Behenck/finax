@@ -9,6 +9,7 @@ export { deleteOrganizationsSlugMembersMemberidPathParamsSchema, deleteOrganizat
 export { deleteOrganizationsSlugRecurrencesRecurrenceidPathParamsSchema, deleteOrganizationsSlugRecurrencesRecurrenceid204Schema, deleteOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema } from "./deleteOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
 export { deleteOrganizationsSlugTransactionsTransactionidPathParamsSchema, deleteOrganizationsSlugTransactionsTransactionid204Schema, deleteOrganizationsSlugTransactionsTransactionidMutationResponseSchema } from "./deleteOrganizationsSlugTransactionsTransactionidSchema.ts";
 export { getInvitesInviteidPathParamsSchema, getInvitesInviteid200Schema, getInvitesInviteidQueryResponseSchema } from "./getInvitesInviteidSchema.ts";
+export { getMe200Schema, getMeQueryResponseSchema } from "./getMeSchema.ts";
 export { getOrganizationSlugPathParamsSchema, getOrganizationSlug200Schema, getOrganizationSlugQueryResponseSchema } from "./getOrganizationSlugSchema.ts";
 export { getOrganizations200Schema, getOrganizationsQueryResponseSchema } from "./getOrganizationsSchema.ts";
 export { getOrganizationsSlugCategoriesPathParamsSchema, getOrganizationsSlugCategories200Schema, getOrganizationsSlugCategoriesQueryResponseSchema } from "./getOrganizationsSlugCategoriesSchema.ts";
@@ -23,10 +24,11 @@ export { getOrganizationsSlugRecurrencesPathParamsSchema, getOrganizationsSlugRe
 export { getOrganizationsSlugTransactionsPathParamsSchema, getOrganizationsSlugTransactions200Schema, getOrganizationsSlugTransactionsQueryResponseSchema } from "./getOrganizationsSlugTransactionsSchema.ts";
 export { getOrganizationsSlugTransactionsTransactionidPathParamsSchema, getOrganizationsSlugTransactionsTransactionid200Schema, getOrganizationsSlugTransactionsTransactionidQueryResponseSchema } from "./getOrganizationsSlugTransactionsTransactionidSchema.ts";
 export { getPendingInvites200Schema, getPendingInvitesQueryResponseSchema } from "./getPendingInvitesSchema.ts";
-export { getProfile200Schema, getProfileQueryResponseSchema } from "./getProfileSchema.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidPathParamsSchema, patchOrganizationsSlugRecurrencesRecurrenceid204Schema, patchOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema } from "./patchOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
 export { patchOrganizationsSlugTransactionsTransactionidPathParamsSchema, patchOrganizationsSlugTransactionsTransactionid204Schema, patchOrganizationsSlugTransactionsTransactionidMutationRequestSchema, patchOrganizationsSlugTransactionsTransactionidMutationResponseSchema } from "./patchOrganizationsSlugTransactionsTransactionidSchema.ts";
-export { postInvitesInviteidAcceptPathParamsSchema, postInvitesInviteidAccept204Schema, postInvitesInviteidAcceptMutationResponseSchema } from "./postInvitesInviteidAcceptSchema.ts";
+export { postAuthSendEmailOtp204Schema, postAuthSendEmailOtpMutationRequestSchema, postAuthSendEmailOtpMutationResponseSchema } from "./postAuthSendEmailOtpSchema.ts";
+export { postAuthVerifyOtp200Schema, postAuthVerifyOtpMutationRequestSchema, postAuthVerifyOtpMutationResponseSchema } from "./postAuthVerifyOtpSchema.ts";
+export { postInvitesInviteidAcceptPathParamsSchema, postInvitesInviteidAccept200Schema, postInvitesInviteidAccept204Schema, postInvitesInviteidAcceptMutationRequestSchema, postInvitesInviteidAcceptMutationResponseSchema } from "./postInvitesInviteidAcceptSchema.ts";
 export { postInvitesInviteidRejectPathParamsSchema, postInvitesInviteidReject204Schema, postInvitesInviteidRejectMutationResponseSchema } from "./postInvitesInviteidRejectSchema.ts";
 export { postOrganizations201Schema, postOrganizationsMutationRequestSchema, postOrganizationsMutationResponseSchema } from "./postOrganizationsSchema.ts";
 export { postOrganizationsSlugCategoriesPathParamsSchema, postOrganizationsSlugCategories201Schema, postOrganizationsSlugCategoriesMutationRequestSchema, postOrganizationsSlugCategoriesMutationResponseSchema } from "./postOrganizationsSlugCategoriesSchema.ts";
@@ -40,7 +42,7 @@ export { postOrganizationsSlugRecurrencesPathParamsSchema, postOrganizationsSlug
 export { postOrganizationsSlugTransactionsPathParamsSchema, postOrganizationsSlugTransactions201Schema, postOrganizationsSlugTransactionsMutationRequestSchema, postOrganizationsSlugTransactionsMutationResponseSchema } from "./postOrganizationsSlugTransactionsSchema.ts";
 export { postPasswordRecover201Schema, postPasswordRecoverMutationRequestSchema, postPasswordRecoverMutationResponseSchema } from "./postPasswordRecoverSchema.ts";
 export { postPasswordReset200Schema, postPasswordResetMutationRequestSchema, postPasswordResetMutationResponseSchema } from "./postPasswordResetSchema.ts";
-export { postSessionsPassword200Schema, postSessionsPassword401Schema, postSessionsPasswordMutationRequestSchema, postSessionsPasswordMutationResponseSchema } from "./postSessionsPasswordSchema.ts";
+export { postSessionsPassword200Schema, postSessionsPassword401Schema, postSessionsPassword403Schema, postSessionsPasswordMutationRequestSchema, postSessionsPasswordMutationResponseSchema } from "./postSessionsPasswordSchema.ts";
 export { postSessionsRefresh200Schema, postSessionsRefresh401Schema, postSessionsRefreshMutationRequestSchema, postSessionsRefreshMutationResponseSchema } from "./postSessionsRefreshSchema.ts";
 export { postUsers201Schema, postUsers400Schema, postUsersMutationRequestSchema, postUsersMutationResponseSchema } from "./postUsersSchema.ts";
 export { putOrganizationSlugPathParamsSchema, putOrganizationSlug204Schema, putOrganizationSlugMutationRequestSchema, putOrganizationSlugMutationResponseSchema } from "./putOrganizationSlugSchema.ts";

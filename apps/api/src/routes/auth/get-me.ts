@@ -1,0 +1,85 @@
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
+import { BadRequestError } from "../_errors/bad-request-error";
+import { Role } from "generated/prisma/enums";
+
+export async function getMe(app: FastifyInstance) {
+  app.withTypeProvider<ZodTypeProvider>().register(auth).get("/me", {
+    schema: {
+      tags: ["auth"],
+      summary: "Get current user's profile",
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: z.object({
+          user: z.object({
+            id: z.uuid(),
+            name: z.string().nullable(),
+            email: z.email(),
+            avatarUrl: z.url().nullable()
+          }),
+          organization:
+            z.object({
+              id: z.uuid(),
+              name: z.string(),
+              slug: z.string(),
+              role: z.enum(Role),
+              ownerId: z.uuid()
+            })
+        })
+      }
+    },
+  },
+    async (req, reply) => {
+      const userId = await req.getCurrentUserId()
+
+      const user = await prisma.user.findUnique({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatarUrl: true
+        },
+        where: {
+          id: userId
+        }
+      })
+
+      if (!user) {
+        throw new BadRequestError("User not found.")
+      }
+
+      const membership = await prisma.member.findFirst({
+        where: { userId },
+        select: {
+          role: true,
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              ownerId: true
+            }
+          },
+        },
+      })
+
+      if (!membership) {
+        throw new BadRequestError("Organization in User not found.")
+      }
+
+      return reply.send({
+        user,
+        organization: {
+          id: membership.organization.id,
+          name: membership.organization.name,
+          slug: membership.organization.slug,
+          ownerId: membership.organization.ownerId,
+          role: membership.role
+        },
+      })
+    }
+  )
+}

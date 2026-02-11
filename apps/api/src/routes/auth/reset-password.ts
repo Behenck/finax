@@ -9,7 +9,7 @@ export async function resetPassword(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post("/password/reset", {
     schema: {
       tags: ["auth"],
-      summary: "Reset user password",
+      summary: "Reset user password ",
       body: z.object({
         code: z.string(),
         password: z.string().min(6)

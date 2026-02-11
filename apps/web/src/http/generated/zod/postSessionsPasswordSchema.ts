@@ -20,6 +20,13 @@ export const postSessionsPassword401Schema = z.object({
     "message": z.string()
     })
 
+/**
+ * @description Default Response
+ */
+export const postSessionsPassword403Schema = z.object({
+    "message": z.string()
+    })
+
 export const postSessionsPasswordMutationRequestSchema = z.object({
     "email": z.email(),
 "password": z.string().min(6)

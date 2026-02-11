@@ -4,7 +4,7 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptPathParams } from "../models/PostInvitesInviteidAccept.ts";
+import type { PostInvitesInviteidAcceptMutationRequest, PostInvitesInviteidAcceptMutationResponse, PostInvitesInviteidAcceptPathParams } from "../models/PostInvitesInviteidAccept.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import { postInvitesInviteidAccept } from "../postInvitesInviteidAccept.ts";
@@ -14,12 +14,12 @@ export const postInvitesInviteidAcceptMutationKey = () => [{ url: '/invites/:inv
 
 export type PostInvitesInviteidAcceptMutationKey = ReturnType<typeof postInvitesInviteidAcceptMutationKey>
 
-export function postInvitesInviteidAcceptMutationOptions<TContext = unknown>(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export function postInvitesInviteidAcceptMutationOptions<TContext = unknown>(config: Partial<RequestConfig<PostInvitesInviteidAcceptMutationRequest>> & { client?: typeof fetch } = {}) {
   const mutationKey = postInvitesInviteidAcceptMutationKey()
-  return mutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]}, TContext>({
+  return mutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext>({
     mutationKey,
-    mutationFn: async({ inviteId }) => {
-      return postInvitesInviteidAccept({ inviteId }, config)
+    mutationFn: async({ inviteId, data }) => {
+      return postInvitesInviteidAccept({ inviteId }, data, config)
     },
   })
 }
@@ -30,20 +30,20 @@ export function postInvitesInviteidAcceptMutationOptions<TContext = unknown>(con
  */
 export function usePostInvitesInviteidAccept<TContext>(options: 
 {
-  mutation?: UseMutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  mutation?: UseMutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<PostInvitesInviteidAcceptMutationRequest>> & { client?: typeof fetch },
 }
  = {}) {
   const { mutation = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...mutationOptions } = mutation;
   const mutationKey = mutationOptions.mutationKey ?? postInvitesInviteidAcceptMutationKey()
 
-  const baseOptions = postInvitesInviteidAcceptMutationOptions(config) as UseMutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]}, TContext>
+  const baseOptions = postInvitesInviteidAcceptMutationOptions(config) as UseMutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext>
 
 
-  return useMutation<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]}, TContext>({
+  return useMutation<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext>({
     ...baseOptions,
     mutationKey,
     ...mutationOptions,
-  }, queryClient) as UseMutationResult<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"]}, TContext>
+  }, queryClient) as UseMutationResult<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext>
 }

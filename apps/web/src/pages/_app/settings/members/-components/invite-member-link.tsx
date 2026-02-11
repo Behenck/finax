@@ -27,7 +27,7 @@ export function InviteMemberLink() {
       </div>
       <Button variant="outline" size="sm" onClick={handleCreateInviteLink}>
         <LinkIcon />
-        Convidas via link
+        Convidar via link
       </Button>
     </div>
   )
