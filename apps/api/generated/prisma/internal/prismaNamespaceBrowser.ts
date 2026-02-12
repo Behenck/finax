@@ -63,6 +63,9 @@ export const ModelName = {
   Category: 'Category',
   CostCenter: 'CostCenter',
   Employee: 'Employee',
+  Customer: 'Customer',
+  CustomerPF: 'CustomerPF',
+  CustomerPJ: 'CustomerPJ',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -229,6 +232,56 @@ export const EmployeeScalarFieldEnum = {
 } as const
 
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  personType: 'personType',
+  name: 'name',
+  documentType: 'documentType',
+  documentNumber: 'documentNumber',
+  email: 'email',
+  phone: 'phone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const CustomerPFScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  organizationId: 'organizationId',
+  birthDate: 'birthDate',
+  motherName: 'motherName',
+  fatherName: 'fatherName',
+  monthlyIncome: 'monthlyIncome',
+  placeOfBirth: 'placeOfBirth',
+  profession: 'profession',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerPFScalarFieldEnum = (typeof CustomerPFScalarFieldEnum)[keyof typeof CustomerPFScalarFieldEnum]
+
+
+export const CustomerPJScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  organizationId: 'organizationId',
+  tradeName: 'tradeName',
+  legalName: 'legalName',
+  stateRegistration: 'stateRegistration',
+  municipalRegistration: 'municipalRegistration',
+  foundationDate: 'foundationDate',
+  businessActivity: 'businessActivity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerPJScalarFieldEnum = (typeof CustomerPJScalarFieldEnum)[keyof typeof CustomerPJScalarFieldEnum]
 
 
 export const TransactionScalarFieldEnum = {

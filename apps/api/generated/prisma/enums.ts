@@ -49,6 +49,26 @@ export const InviteType = {
 export type InviteType = (typeof InviteType)[keyof typeof InviteType]
 
 
+export const CustomerPersonType = {
+  PF: 'PF',
+  PJ: 'PJ'
+} as const
+
+export type CustomerPersonType = (typeof CustomerPersonType)[keyof typeof CustomerPersonType]
+
+
+export const CustomerDocumentType = {
+  CPF: 'CPF',
+  CNPJ: 'CNPJ',
+  RG: 'RG',
+  IE: 'IE',
+  PASSPORT: 'PASSPORT',
+  OTHER: 'OTHER'
+} as const
+
+export type CustomerDocumentType = (typeof CustomerDocumentType)[keyof typeof CustomerDocumentType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

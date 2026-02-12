@@ -145,6 +145,7 @@ model Organization {
   costCenters  CostCenter[]
   employees    Employee[]
   recurrences  Recurrence[]
+  customers    Customer[]
 
   @@index([slug])
   @@map("organizations")
@@ -247,6 +248,92 @@ model Employee {
   @@index([organizationId])
   @@index([companyId])
   @@map("employees")
+}
+
+enum CustomerPersonType {
+  PF
+  PJ
+}
+
+enum CustomerDocumentType {
+  CPF
+  CNPJ
+  RG
+  IE
+  PASSPORT
+  OTHER
+}
+
+model Customer {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+
+  personType CustomerPersonType @default(PF) @map("person_type")
+  name       String
+
+  documentType   CustomerDocumentType @map("document_type")
+  documentNumber String               @map("document_number")
+
+  email String?
+  phone String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  customerPF   CustomerPF?
+  customerPJ   CustomerPJ?
+
+  @@unique([organizationId, documentType, documentNumber])
+  @@index([organizationId])
+  @@map("customers")
+}
+
+model CustomerPF {
+  id             String @id @default(uuid())
+  customerId     String @unique @map("customer_id")
+  organizationId String @map("organization_id")
+
+  birthDate  DateTime? @map("birth_date")
+  motherName String?   @map("mother_name")
+  fatherName String?   @map("father_name")
+
+  // “salário/renda”: escolha um termo e mantenha 1 só.
+  monthlyIncome Int? @map("monthly_income")
+
+  placeOfBirth String? @map("place_of_birth") // naturalidade
+  profession   String? @map("profession") // atividade profissional
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("customer_pf")
+}
+
+model CustomerPJ {
+  id             String @id @default(uuid())
+  customerId     String @unique @map("customer_id")
+  organizationId String @map("organization_id")
+
+  tradeName             String? @map("trade_name") // nome fantasia
+  legalName             String? @map("legal_name") // razão social (se preferir não usar Customer.name)
+  stateRegistration     String? @map("state_registration") // IE
+  municipalRegistration String? @map("municipal_registration") // IM
+
+  // Exemplo de campos comuns de PJ (ajuste ao seu caso):
+  foundationDate   DateTime? @map("foundation_date")
+  businessActivity String?   @map("business_activity") // CNAE/atividade (pode virar tabela depois)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("customer_pj")
 }
 
 enum TransactionType {

@@ -233,6 +233,67 @@ export type EnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
 }
 
+export type EnumCustomerPersonTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel> | $Enums.CustomerPersonType
+}
+
+export type EnumCustomerDocumentTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDocumentType | Prisma.EnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel> | $Enums.CustomerDocumentType
+}
+
+export type EnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerPersonType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel>
+}
+
+export type EnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDocumentType | Prisma.EnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerDocumentType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+}
+
+export type IntNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -575,6 +636,67 @@ export type NestedEnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumCustomerPersonTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel> | $Enums.CustomerPersonType
+}
+
+export type NestedEnumCustomerDocumentTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDocumentType | Prisma.EnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel> | $Enums.CustomerDocumentType
+}
+
+export type NestedEnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerPersonType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerPersonTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDocumentType | Prisma.EnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerDocumentType[] | Prisma.ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerDocumentType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+}
+
+export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
+export type NestedFloatNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
 }
 
 export type NestedEnumTransactionStatusFilter<$PrismaModel = never> = {

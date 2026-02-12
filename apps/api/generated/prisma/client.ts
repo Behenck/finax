@@ -100,6 +100,21 @@ export type CostCenter = Prisma.CostCenterModel
  */
 export type Employee = Prisma.EmployeeModel
 /**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel
+/**
+ * Model CustomerPF
+ * 
+ */
+export type CustomerPF = Prisma.CustomerPFModel
+/**
+ * Model CustomerPJ
+ * 
+ */
+export type CustomerPJ = Prisma.CustomerPJModel
+/**
  * Model Transaction
  * 
  */

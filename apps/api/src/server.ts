@@ -16,6 +16,7 @@ import { costCenterRoutes } from "./routes/cost-centers"
 import { employeeRoutes } from "./routes/employees"
 import { transactionRoutes } from "./routes/transactions"
 import { recurrencesRoutes } from "./routes/recurrences"
+import { customerRoute } from "./routes/customers"
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -91,8 +92,12 @@ app.register(unitRoutes)
 app.register(categoryRoutes)
 app.register(costCenterRoutes)
 app.register(employeeRoutes)
+
+app.register(customerRoute)
+
 app.register(transactionRoutes)
 app.register(recurrencesRoutes)
+
 
 app.listen({ port: 3333, host: '0.0.0.0' }).then(() => {
   console.log('🔥 HTTP server running on http://localhost:3333')
