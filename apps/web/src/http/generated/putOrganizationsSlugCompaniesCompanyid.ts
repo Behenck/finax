@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PutOrganizationsSlugCompaniesCompanyidMutationRequest, PutOrganizationsSlugCompaniesCompanyidMutationResponse, PutOrganizationsSlugCompaniesCompanyidPathParams } from "./models/PutOrganizationsSlugCompaniesCompanyid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPutOrganizationsSlugCompaniesCompanyidUrl(slug: PutOrganizationsSlugCompaniesCompanyidPathParams["slug"], companyId: PutOrganizationsSlugCompaniesCompanyidPathParams["companyId"]) {
+function getPutOrganizationsSlugCompaniesCompanyidUrl({ slug, companyId }: { slug: PutOrganizationsSlugCompaniesCompanyidPathParams["slug"]; companyId: PutOrganizationsSlugCompaniesCompanyidPathParams["companyId"] }) {
   const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPutOrganizationsSlugCompaniesCompanyidUrl(slug: PutOrganizationsSlug
  * @summary Update company
  * {@link /organizations/:slug/companies/:companyId}
  */
-export async function putOrganizationsSlugCompaniesCompanyid(slug: PutOrganizationsSlugCompaniesCompanyidPathParams["slug"], companyId: PutOrganizationsSlugCompaniesCompanyidPathParams["companyId"], data: PutOrganizationsSlugCompaniesCompanyidMutationRequest, config: Partial<RequestConfig<PutOrganizationsSlugCompaniesCompanyidMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function putOrganizationsSlugCompaniesCompanyid({ slug, companyId, data }: { slug: PutOrganizationsSlugCompaniesCompanyidPathParams["slug"]; companyId: PutOrganizationsSlugCompaniesCompanyidPathParams["companyId"]; data: PutOrganizationsSlugCompaniesCompanyidMutationRequest }, config: Partial<RequestConfig<PutOrganizationsSlugCompaniesCompanyidMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PutOrganizationsSlugCompaniesCompanyidMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCompaniesCompanyidMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCompaniesCompanyidUrl(slug, companyId).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PutOrganizationsSlugCompaniesCompanyidMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCompaniesCompanyidMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCompaniesCompanyidUrl({ slug, companyId }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

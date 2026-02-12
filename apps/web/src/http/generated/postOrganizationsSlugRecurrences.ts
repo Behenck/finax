@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugRecurrencesMutationRequest, PostOrganizationsSlugRecurrencesMutationResponse, PostOrganizationsSlugRecurrencesPathParams } from "./models/PostOrganizationsSlugRecurrences.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugRecurrencesUrl(slug: PostOrganizationsSlugRecurrencesPathParams["slug"]) {
+function getPostOrganizationsSlugRecurrencesUrl({ slug }: { slug: PostOrganizationsSlugRecurrencesPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/recurrences` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugRecurrencesUrl(slug: PostOrganizationsSlugRecur
  * @summary Create a new recurrence
  * {@link /organizations/:slug/recurrences}
  */
-export async function postOrganizationsSlugRecurrences(slug: PostOrganizationsSlugRecurrencesPathParams["slug"], data: PostOrganizationsSlugRecurrencesMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugRecurrencesMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugRecurrences({ slug, data }: { slug: PostOrganizationsSlugRecurrencesPathParams["slug"]; data: PostOrganizationsSlugRecurrencesMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugRecurrencesMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugRecurrencesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugRecurrencesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugRecurrencesUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugRecurrencesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugRecurrencesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugRecurrencesUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

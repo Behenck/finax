@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { GetOrganizationsSlugRecurrencesQueryResponse, GetOrganizationsSlugRecurrencesPathParams } from "./models/GetOrganizationsSlugRecurrences.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getGetOrganizationsSlugRecurrencesUrl(slug: GetOrganizationsSlugRecurrencesPathParams["slug"]) {
+function getGetOrganizationsSlugRecurrencesUrl({ slug }: { slug: GetOrganizationsSlugRecurrencesPathParams["slug"] }) {
   const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/recurrences` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getGetOrganizationsSlugRecurrencesUrl(slug: GetOrganizationsSlugRecurre
  * @summary Get recurrences
  * {@link /organizations/:slug/recurrences}
  */
-export async function getOrganizationsSlugRecurrences(slug: GetOrganizationsSlugRecurrencesPathParams["slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getOrganizationsSlugRecurrences({ slug }: { slug: GetOrganizationsSlugRecurrencesPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetOrganizationsSlugRecurrencesQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugRecurrencesUrl(slug).url.toString(), ... requestConfig })  
+  const res = await request<GetOrganizationsSlugRecurrencesQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugRecurrencesUrl({ slug }).url.toString(), ... requestConfig })  
   return res.data
 }

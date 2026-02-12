@@ -28,11 +28,13 @@ import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/tra
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
 import { Route as AppSettingsMembersIndexRouteImport } from './pages/_app/settings/members/index'
 import { Route as AppRegistersEmployeesIndexRouteImport } from './pages/_app/registers/employees/index'
+import { Route as AppRegistersCustomersIndexRouteImport } from './pages/_app/registers/customers/index'
 import { Route as AppRegistersCostCentersIndexRouteImport } from './pages/_app/registers/cost-centers/index'
 import { Route as AppRegistersCompaniesIndexRouteImport } from './pages/_app/registers/companies/index'
 import { Route as AppRegistersCategoriesIndexRouteImport } from './pages/_app/registers/categories/index'
 import { Route as AuthInviteInviteIdAcceptRouteImport } from './pages/_auth/invite/$inviteId/accept'
 import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/_app/transactions/update/$transactionId'
+import { Route as AppRegistersCustomersCreateIndexRouteImport } from './pages/_app/registers/customers/create/index'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -130,6 +132,12 @@ const AppRegistersEmployeesIndexRoute =
     path: '/registers/employees/',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppRegistersCustomersIndexRoute =
+  AppRegistersCustomersIndexRouteImport.update({
+    id: '/registers/customers/',
+    path: '/registers/customers/',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AppRegistersCostCentersIndexRoute =
   AppRegistersCostCentersIndexRouteImport.update({
     id: '/registers/cost-centers/',
@@ -160,6 +168,12 @@ const AppTransactionsUpdateTransactionIdRoute =
     path: '/transactions/update/$transactionId',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppRegistersCustomersCreateIndexRoute =
+  AppRegistersCustomersCreateIndexRouteImport.update({
+    id: '/registers/customers/create/',
+    path: '/registers/customers/create/',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsLayoutRouteWithChildren
@@ -179,11 +193,13 @@ export interface FileRoutesByFullPath {
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
+  '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
   '/invite/$inviteId': typeof AuthInviteInviteIdIndexRoute
+  '/registers/customers/create': typeof AppRegistersCustomersCreateIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
@@ -201,11 +217,13 @@ export interface FileRoutesByTo {
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
   '/registers/companies': typeof AppRegistersCompaniesIndexRoute
   '/registers/cost-centers': typeof AppRegistersCostCentersIndexRoute
+  '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
   '/invite/$inviteId': typeof AuthInviteInviteIdIndexRoute
+  '/registers/customers/create': typeof AppRegistersCustomersCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,11 +246,13 @@ export interface FileRoutesById {
   '/_app/registers/categories/': typeof AppRegistersCategoriesIndexRoute
   '/_app/registers/companies/': typeof AppRegistersCompaniesIndexRoute
   '/_app/registers/cost-centers/': typeof AppRegistersCostCentersIndexRoute
+  '/_app/registers/customers/': typeof AppRegistersCustomersIndexRoute
   '/_app/registers/employees/': typeof AppRegistersEmployeesIndexRoute
   '/_app/settings/members/': typeof AppSettingsMembersIndexRoute
   '/_app/settings/organization/': typeof AppSettingsOrganizationIndexRoute
   '/_app/transactions/create/': typeof AppTransactionsCreateIndexRoute
   '/_auth/invite/$inviteId/': typeof AuthInviteInviteIdIndexRoute
+  '/_app/registers/customers/create/': typeof AppRegistersCustomersCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -254,11 +274,13 @@ export interface FileRouteTypes {
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
+    | '/registers/customers'
     | '/registers/employees'
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
     | '/invite/$inviteId'
+    | '/registers/customers/create'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
@@ -276,11 +298,13 @@ export interface FileRouteTypes {
     | '/registers/categories'
     | '/registers/companies'
     | '/registers/cost-centers'
+    | '/registers/customers'
     | '/registers/employees'
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
     | '/invite/$inviteId'
+    | '/registers/customers/create'
   id:
     | '__root__'
     | '/_app'
@@ -302,11 +326,13 @@ export interface FileRouteTypes {
     | '/_app/registers/categories/'
     | '/_app/registers/companies/'
     | '/_app/registers/cost-centers/'
+    | '/_app/registers/customers/'
     | '/_app/registers/employees/'
     | '/_app/settings/members/'
     | '/_app/settings/organization/'
     | '/_app/transactions/create/'
     | '/_auth/invite/$inviteId/'
+    | '/_app/registers/customers/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -449,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistersEmployeesIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/customers/': {
+      id: '/_app/registers/customers/'
+      path: '/registers/customers'
+      fullPath: '/registers/customers'
+      preLoaderRoute: typeof AppRegistersCustomersIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/cost-centers/': {
       id: '/_app/registers/cost-centers/'
       path: '/registers/cost-centers'
@@ -484,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTransactionsUpdateTransactionIdRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/customers/create/': {
+      id: '/_app/registers/customers/create/'
+      path: '/registers/customers/create'
+      fullPath: '/registers/customers/create'
+      preLoaderRoute: typeof AppRegistersCustomersCreateIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
   }
 }
 
@@ -510,8 +550,10 @@ interface AppLayoutRouteChildren {
   AppRegistersCategoriesIndexRoute: typeof AppRegistersCategoriesIndexRoute
   AppRegistersCompaniesIndexRoute: typeof AppRegistersCompaniesIndexRoute
   AppRegistersCostCentersIndexRoute: typeof AppRegistersCostCentersIndexRoute
+  AppRegistersCustomersIndexRoute: typeof AppRegistersCustomersIndexRoute
   AppRegistersEmployeesIndexRoute: typeof AppRegistersEmployeesIndexRoute
   AppTransactionsCreateIndexRoute: typeof AppTransactionsCreateIndexRoute
+  AppRegistersCustomersCreateIndexRoute: typeof AppRegistersCustomersCreateIndexRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
@@ -523,8 +565,10 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersCategoriesIndexRoute: AppRegistersCategoriesIndexRoute,
   AppRegistersCompaniesIndexRoute: AppRegistersCompaniesIndexRoute,
   AppRegistersCostCentersIndexRoute: AppRegistersCostCentersIndexRoute,
+  AppRegistersCustomersIndexRoute: AppRegistersCustomersIndexRoute,
   AppRegistersEmployeesIndexRoute: AppRegistersEmployeesIndexRoute,
   AppTransactionsCreateIndexRoute: AppTransactionsCreateIndexRoute,
+  AppRegistersCustomersCreateIndexRoute: AppRegistersCustomersCreateIndexRoute,
 }
 
 const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(

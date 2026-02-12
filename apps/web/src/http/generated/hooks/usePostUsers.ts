@@ -19,7 +19,7 @@ export function postUsersMutationOptions<TContext = unknown>(config: Partial<Req
   return mutationOptions<PostUsersMutationResponse, ResponseErrorConfig<PostUsers400>, {data: PostUsersMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postUsers(data, config)
+      return postUsers({ data }, config)
     },
   })
 }

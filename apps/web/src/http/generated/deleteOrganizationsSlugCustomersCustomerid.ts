@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugCustomersCustomeridMutationResponse, DeleteOrganizationsSlugCustomersCustomeridPathParams } from "./models/DeleteOrganizationsSlugCustomersCustomerid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugCustomersCustomeridUrl(slug: DeleteOrganizationsSlugCustomersCustomeridPathParams["slug"], customerId: DeleteOrganizationsSlugCustomersCustomeridPathParams["customerId"]) {
+function getDeleteOrganizationsSlugCustomersCustomeridUrl({ slug, customerId }: { slug: DeleteOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: DeleteOrganizationsSlugCustomersCustomeridPathParams["customerId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/customers/${customerId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugCustomersCustomeridUrl(slug: DeleteOrganizati
  * @summary Delete customer
  * {@link /organizations/:slug/customers/:customerId}
  */
-export async function deleteOrganizationsSlugCustomersCustomerid(slug: DeleteOrganizationsSlugCustomersCustomeridPathParams["slug"], customerId: DeleteOrganizationsSlugCustomersCustomeridPathParams["customerId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugCustomersCustomerid({ slug, customerId }: { slug: DeleteOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: DeleteOrganizationsSlugCustomersCustomeridPathParams["customerId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugCustomersCustomeridMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCustomersCustomeridUrl(slug, customerId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugCustomersCustomeridMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCustomersCustomeridUrl({ slug, customerId }).url.toString(), ... requestConfig })  
   return res.data
 }

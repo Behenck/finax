@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostInvitesInviteidRejectMutationResponse, PostInvitesInviteidRejectPathParams } from "./models/PostInvitesInviteidReject.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostInvitesInviteidRejectUrl(inviteId: PostInvitesInviteidRejectPathParams["inviteId"]) {
+function getPostInvitesInviteidRejectUrl({ inviteId }: { inviteId: PostInvitesInviteidRejectPathParams["inviteId"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/invites/${inviteId}/reject` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getPostInvitesInviteidRejectUrl(inviteId: PostInvitesInviteidRejectPath
  * @summary Reject an invite
  * {@link /invites/:inviteId/reject}
  */
-export async function postInvitesInviteidReject(inviteId: PostInvitesInviteidRejectPathParams["inviteId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function postInvitesInviteidReject({ inviteId }: { inviteId: PostInvitesInviteidRejectPathParams["inviteId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<PostInvitesInviteidRejectMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getPostInvitesInviteidRejectUrl(inviteId).url.toString(), ... requestConfig })  
+  const res = await request<PostInvitesInviteidRejectMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getPostInvitesInviteidRejectUrl({ inviteId }).url.toString(), ... requestConfig })  
   return res.data
 }

@@ -16,7 +16,7 @@ function getPostAuthVerifyOtpUrl() {
  * @summary Get code verify email
  * {@link /auth/verify-otp}
  */
-export async function postAuthVerifyOtp(data: PostAuthVerifyOtpMutationRequest, config: Partial<RequestConfig<PostAuthVerifyOtpMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postAuthVerifyOtp({ data }: { data: PostAuthVerifyOtpMutationRequest }, config: Partial<RequestConfig<PostAuthVerifyOtpMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

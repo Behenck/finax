@@ -19,7 +19,7 @@ export function putOrganizationsSlugMembersMemberidMutationOptions<TContext = un
   return mutationOptions<PutOrganizationsSlugMembersMemberidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugMembersMemberidPathParams["slug"], memberId: PutOrganizationsSlugMembersMemberidPathParams["memberId"], data: PutOrganizationsSlugMembersMemberidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, memberId, data }) => {
-      return putOrganizationsSlugMembersMemberid({ slug, memberId }, data, config)
+      return putOrganizationsSlugMembersMemberid({ slug, memberId, data }, config)
     },
   })
 }

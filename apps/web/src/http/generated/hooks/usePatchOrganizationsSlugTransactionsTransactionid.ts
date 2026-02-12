@@ -19,7 +19,7 @@ export function patchOrganizationsSlugTransactionsTransactionidMutationOptions<T
   return mutationOptions<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, transactionId, data }) => {
-      return patchOrganizationsSlugTransactionsTransactionid({ slug, transactionId }, data, config)
+      return patchOrganizationsSlugTransactionsTransactionid({ slug, transactionId, data }, config)
     },
   })
 }

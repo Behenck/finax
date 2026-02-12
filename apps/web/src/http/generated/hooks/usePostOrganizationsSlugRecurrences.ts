@@ -19,7 +19,7 @@ export function postOrganizationsSlugRecurrencesMutationOptions<TContext = unkno
   return mutationOptions<PostOrganizationsSlugRecurrencesMutationResponse, ResponseErrorConfig<Error>, {slug: PostOrganizationsSlugRecurrencesPathParams["slug"], data: PostOrganizationsSlugRecurrencesMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, data }) => {
-      return postOrganizationsSlugRecurrences({ slug }, data, config)
+      return postOrganizationsSlugRecurrences({ slug, data }, config)
     },
   })
 }

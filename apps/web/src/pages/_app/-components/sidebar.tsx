@@ -21,6 +21,7 @@ import {
 	ChartPie,
 	ChevronRight,
 	Circle,
+	Contact,
 	CreditCard,
 	Database,
 	Home,
@@ -71,6 +72,11 @@ export function AppSidebar() {
 					icon: Building2,
 					title: "Empresas",
 					url: "/registers/companies",
+				},
+				{
+					icon: Contact,
+					title: "Clientes",
+					url: "/registers/customers",
 				},
 				{
 					icon: Tags,

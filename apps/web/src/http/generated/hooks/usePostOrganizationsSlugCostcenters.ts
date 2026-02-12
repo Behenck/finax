@@ -19,7 +19,7 @@ export function postOrganizationsSlugCostcentersMutationOptions<TContext = unkno
   return mutationOptions<PostOrganizationsSlugCostcentersMutationResponse, ResponseErrorConfig<Error>, {slug: PostOrganizationsSlugCostcentersPathParams["slug"], data: PostOrganizationsSlugCostcentersMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, data }) => {
-      return postOrganizationsSlugCostcenters({ slug }, data, config)
+      return postOrganizationsSlugCostcenters({ slug, data }, config)
     },
   })
 }

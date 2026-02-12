@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest, PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams } from "./models/PutOrganizationsSlugCompaniesCompanyidUnitsUnitid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPutOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"], companyId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"], unitId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"]) {
+function getPutOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl({ slug, companyId, unitId }: { slug: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"]; companyId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"]; unitId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"] }) {
   const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}/units/${unitId}` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPutOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug: PutOrgani
  * @summary Update unit
  * {@link /organizations/:slug/companies/:companyId/units/:unitId}
  */
-export async function putOrganizationsSlugCompaniesCompanyidUnitsUnitid(slug: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"], companyId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"], unitId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"], data: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest, config: Partial<RequestConfig<PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function putOrganizationsSlugCompaniesCompanyidUnitsUnitid({ slug, companyId, unitId, data }: { slug: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"]; companyId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"]; unitId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"]; data: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest }, config: Partial<RequestConfig<PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug, companyId, unitId).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl({ slug, companyId, unitId }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

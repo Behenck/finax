@@ -16,7 +16,7 @@ function getPostOrganizationsUrl() {
  * @summary Create a new organization
  * {@link /organizations}
  */
-export async function postOrganizations(data: PostOrganizationsMutationRequest, config: Partial<RequestConfig<PostOrganizationsMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizations({ data }: { data: PostOrganizationsMutationRequest }, config: Partial<RequestConfig<PostOrganizationsMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

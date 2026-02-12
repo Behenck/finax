@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugCostcentersCostcenteridMutationResponse, DeleteOrganizationsSlugCostcentersCostcenteridPathParams } from "./models/DeleteOrganizationsSlugCostcentersCostcenterid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugCostcentersCostcenteridUrl(slug: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["slug"], costCenterId: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["costCenterId"]) {
+function getDeleteOrganizationsSlugCostcentersCostcenteridUrl({ slug, costCenterId }: { slug: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["slug"]; costCenterId: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["costCenterId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/costCenters/${costCenterId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugCostcentersCostcenteridUrl(slug: DeleteOrgani
  * @summary Delete cost center
  * {@link /organizations/:slug/costCenters/:costCenterId}
  */
-export async function deleteOrganizationsSlugCostcentersCostcenterid(slug: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["slug"], costCenterId: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["costCenterId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugCostcentersCostcenterid({ slug, costCenterId }: { slug: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["slug"]; costCenterId: DeleteOrganizationsSlugCostcentersCostcenteridPathParams["costCenterId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugCostcentersCostcenteridMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCostcentersCostcenteridUrl(slug, costCenterId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugCostcentersCostcenteridMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCostcentersCostcenteridUrl({ slug, costCenterId }).url.toString(), ... requestConfig })  
   return res.data
 }

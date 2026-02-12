@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugCategoriesMutationRequest, PostOrganizationsSlugCategoriesMutationResponse, PostOrganizationsSlugCategoriesPathParams } from "./models/PostOrganizationsSlugCategories.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugCategoriesUrl(slug: PostOrganizationsSlugCategoriesPathParams["slug"]) {
+function getPostOrganizationsSlugCategoriesUrl({ slug }: { slug: PostOrganizationsSlugCategoriesPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/categories` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugCategoriesUrl(slug: PostOrganizationsSlugCatego
  * @summary Create a new category
  * {@link /organizations/:slug/categories}
  */
-export async function postOrganizationsSlugCategories(slug: PostOrganizationsSlugCategoriesPathParams["slug"], data: PostOrganizationsSlugCategoriesMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugCategoriesMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugCategories({ slug, data }: { slug: PostOrganizationsSlugCategoriesPathParams["slug"]; data: PostOrganizationsSlugCategoriesMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugCategoriesMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugCategoriesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCategoriesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCategoriesUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugCategoriesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCategoriesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCategoriesUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

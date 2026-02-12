@@ -19,7 +19,7 @@ export function postInvitesInviteidAcceptMutationOptions<TContext = unknown>(con
   return mutationOptions<PostInvitesInviteidAcceptMutationResponse, ResponseErrorConfig<Error>, {inviteId: PostInvitesInviteidAcceptPathParams["inviteId"], data: PostInvitesInviteidAcceptMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ inviteId, data }) => {
-      return postInvitesInviteidAccept({ inviteId }, data, config)
+      return postInvitesInviteidAccept({ inviteId, data }, config)
     },
   })
 }

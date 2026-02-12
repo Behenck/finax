@@ -19,7 +19,7 @@ export function postAuthVerifyOtpMutationOptions<TContext = unknown>(config: Par
   return mutationOptions<PostAuthVerifyOtpMutationResponse, ResponseErrorConfig<Error>, {data: PostAuthVerifyOtpMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postAuthVerifyOtp(data, config)
+      return postAuthVerifyOtp({ data }, config)
     },
   })
 }

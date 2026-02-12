@@ -19,7 +19,7 @@ export function putOrganizationsSlugTransactionsTransactionidMutationOptions<TCo
   return mutationOptions<PutOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PutOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data: PutOrganizationsSlugTransactionsTransactionidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, transactionId, data }) => {
-      return putOrganizationsSlugTransactionsTransactionid({ slug, transactionId }, data, config)
+      return putOrganizationsSlugTransactionsTransactionid({ slug, transactionId, data }, config)
     },
   })
 }

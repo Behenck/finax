@@ -19,7 +19,7 @@ export function putOrganizationSlugMutationOptions<TContext = unknown>(config: P
   return mutationOptions<PutOrganizationSlugMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationSlugPathParams["slug"], data: PutOrganizationSlugMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, data }) => {
-      return putOrganizationSlug({ slug }, data, config)
+      return putOrganizationSlug({ slug, data }, config)
     },
   })
 }

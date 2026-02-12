@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugCategoriesIdMutationResponse, DeleteOrganizationsSlugCategoriesIdPathParams } from "./models/DeleteOrganizationsSlugCategoriesId.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugCategoriesIdUrl(slug: DeleteOrganizationsSlugCategoriesIdPathParams["slug"], id: DeleteOrganizationsSlugCategoriesIdPathParams["id"]) {
+function getDeleteOrganizationsSlugCategoriesIdUrl({ slug, id }: { slug: DeleteOrganizationsSlugCategoriesIdPathParams["slug"]; id: DeleteOrganizationsSlugCategoriesIdPathParams["id"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/categories/${id}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugCategoriesIdUrl(slug: DeleteOrganizationsSlug
  * @summary Delete category
  * {@link /organizations/:slug/categories/:id}
  */
-export async function deleteOrganizationsSlugCategoriesId(slug: DeleteOrganizationsSlugCategoriesIdPathParams["slug"], id: DeleteOrganizationsSlugCategoriesIdPathParams["id"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugCategoriesId({ slug, id }: { slug: DeleteOrganizationsSlugCategoriesIdPathParams["slug"]; id: DeleteOrganizationsSlugCategoriesIdPathParams["id"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugCategoriesIdMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCategoriesIdUrl(slug, id).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugCategoriesIdMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCategoriesIdUrl({ slug, id }).url.toString(), ... requestConfig })  
   return res.data
 }

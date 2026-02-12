@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PatchOrganizationsSlugTransactionsTransactionidMutationRequest, PatchOrganizationsSlugTransactionsTransactionidMutationResponse, PatchOrganizationsSlugTransactionsTransactionidPathParams } from "./models/PatchOrganizationsSlugTransactionsTransactionid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPatchOrganizationsSlugTransactionsTransactionidUrl(slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"]) {
+function getPatchOrganizationsSlugTransactionsTransactionidUrl({ slug, transactionId }: { slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"]; transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"] }) {
   const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/transactions/${transactionId}` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPatchOrganizationsSlugTransactionsTransactionidUrl(slug: PatchOrgani
  * @summary Payment transaction
  * {@link /organizations/:slug/transactions/:transactionId}
  */
-export async function patchOrganizationsSlugTransactionsTransactionid(slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"], transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"], data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest, config: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function patchOrganizationsSlugTransactionsTransactionid({ slug, transactionId, data }: { slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"]; transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"]; data?: PatchOrganizationsSlugTransactionsTransactionidMutationRequest }, config: Partial<RequestConfig<PatchOrganizationsSlugTransactionsTransactionidMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, PatchOrganizationsSlugTransactionsTransactionidMutationRequest>({ method : "PATCH", url : getPatchOrganizationsSlugTransactionsTransactionidUrl(slug, transactionId).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PatchOrganizationsSlugTransactionsTransactionidMutationResponse, ResponseErrorConfig<Error>, PatchOrganizationsSlugTransactionsTransactionidMutationRequest>({ method : "PATCH", url : getPatchOrganizationsSlugTransactionsTransactionidUrl({ slug, transactionId }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

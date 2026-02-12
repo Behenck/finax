@@ -16,7 +16,7 @@ function getPostPasswordResetUrl() {
  * @summary Reset user password
  * {@link /password/reset}
  */
-export async function postPasswordReset(data: PostPasswordResetMutationRequest, config: Partial<RequestConfig<PostPasswordResetMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postPasswordReset({ data }: { data: PostPasswordResetMutationRequest }, config: Partial<RequestConfig<PostPasswordResetMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

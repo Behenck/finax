@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { GetOrganizationsSlugMembershipQueryResponse, GetOrganizationsSlugMembershipPathParams } from "./models/GetOrganizationsSlugMembership.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getGetOrganizationsSlugMembershipUrl(slug: GetOrganizationsSlugMembershipPathParams["slug"]) {
+function getGetOrganizationsSlugMembershipUrl({ slug }: { slug: GetOrganizationsSlugMembershipPathParams["slug"] }) {
   const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/membership` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getGetOrganizationsSlugMembershipUrl(slug: GetOrganizationsSlugMembersh
  * @summary Get Organization Membership
  * {@link /organizations/:slug/membership}
  */
-export async function getOrganizationsSlugMembership(slug: GetOrganizationsSlugMembershipPathParams["slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getOrganizationsSlugMembership({ slug }: { slug: GetOrganizationsSlugMembershipPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetOrganizationsSlugMembershipQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugMembershipUrl(slug).url.toString(), ... requestConfig })  
+  const res = await request<GetOrganizationsSlugMembershipQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugMembershipUrl({ slug }).url.toString(), ... requestConfig })  
   return res.data
 }

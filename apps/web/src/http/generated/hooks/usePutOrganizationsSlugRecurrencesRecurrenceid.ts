@@ -19,7 +19,7 @@ export function putOrganizationsSlugRecurrencesRecurrenceidMutationOptions<TCont
   return mutationOptions<PutOrganizationsSlugRecurrencesRecurrenceidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"], recurrenceId: PutOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"], data: PutOrganizationsSlugRecurrencesRecurrenceidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, recurrenceId, data }) => {
-      return putOrganizationsSlugRecurrencesRecurrenceid({ slug, recurrenceId }, data, config)
+      return putOrganizationsSlugRecurrencesRecurrenceid({ slug, recurrenceId, data }, config)
     },
   })
 }

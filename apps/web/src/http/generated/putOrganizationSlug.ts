@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PutOrganizationSlugMutationRequest, PutOrganizationSlugMutationResponse, PutOrganizationSlugPathParams } from "./models/PutOrganizationSlug.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPutOrganizationSlugUrl(slug: PutOrganizationSlugPathParams["slug"]) {
+function getPutOrganizationSlugUrl({ slug }: { slug: PutOrganizationSlugPathParams["slug"] }) {
   const res = { method: 'PUT', url: `http://localhost:3333/organization/${slug}` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPutOrganizationSlugUrl(slug: PutOrganizationSlugPathParams["slug"]) 
  * @summary Update an organization
  * {@link /organization/:slug}
  */
-export async function putOrganizationSlug(slug: PutOrganizationSlugPathParams["slug"], data: PutOrganizationSlugMutationRequest, config: Partial<RequestConfig<PutOrganizationSlugMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function putOrganizationSlug({ slug, data }: { slug: PutOrganizationSlugPathParams["slug"]; data: PutOrganizationSlugMutationRequest }, config: Partial<RequestConfig<PutOrganizationSlugMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PutOrganizationSlugMutationResponse, ResponseErrorConfig<Error>, PutOrganizationSlugMutationRequest>({ method : "PUT", url : getPutOrganizationSlugUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PutOrganizationSlugMutationResponse, ResponseErrorConfig<Error>, PutOrganizationSlugMutationRequest>({ method : "PUT", url : getPutOrganizationSlugUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

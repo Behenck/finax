@@ -19,7 +19,7 @@ export function postOrganizationsMutationOptions<TContext = unknown>(config: Par
   return mutationOptions<PostOrganizationsMutationResponse, ResponseErrorConfig<Error>, {data: PostOrganizationsMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postOrganizations(data, config)
+      return postOrganizations({ data }, config)
     },
   })
 }

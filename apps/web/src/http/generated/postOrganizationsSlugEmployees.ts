@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugEmployeesMutationRequest, PostOrganizationsSlugEmployeesMutationResponse, PostOrganizationsSlugEmployeesPathParams } from "./models/PostOrganizationsSlugEmployees.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugEmployeesUrl(slug: PostOrganizationsSlugEmployeesPathParams["slug"]) {
+function getPostOrganizationsSlugEmployeesUrl({ slug }: { slug: PostOrganizationsSlugEmployeesPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/employees` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugEmployeesUrl(slug: PostOrganizationsSlugEmploye
  * @summary Create a new employee
  * {@link /organizations/:slug/employees}
  */
-export async function postOrganizationsSlugEmployees(slug: PostOrganizationsSlugEmployeesPathParams["slug"], data: PostOrganizationsSlugEmployeesMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugEmployeesMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugEmployees({ slug, data }: { slug: PostOrganizationsSlugEmployeesPathParams["slug"]; data: PostOrganizationsSlugEmployeesMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugEmployeesMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugEmployeesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugEmployeesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugEmployeesUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugEmployeesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugEmployeesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugEmployeesUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

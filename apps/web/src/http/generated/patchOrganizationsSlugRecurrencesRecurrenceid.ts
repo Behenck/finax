@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, PatchOrganizationsSlugRecurrencesRecurrenceidPathParams } from "./models/PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPatchOrganizationsSlugRecurrencesRecurrenceidUrl(slug: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"], recurrenceId: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"]) {
+function getPatchOrganizationsSlugRecurrencesRecurrenceidUrl({ slug, recurrenceId }: { slug: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"]; recurrenceId: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"] }) {
   const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/recurrences/${recurrenceId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getPatchOrganizationsSlugRecurrencesRecurrenceidUrl(slug: PatchOrganiza
  * @summary Toggle recurrence status (pause/resume)
  * {@link /organizations/:slug/recurrences/:recurrenceId}
  */
-export async function patchOrganizationsSlugRecurrencesRecurrenceid(slug: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"], recurrenceId: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function patchOrganizationsSlugRecurrencesRecurrenceid({ slug, recurrenceId }: { slug: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"]; recurrenceId: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "PATCH", url : getPatchOrganizationsSlugRecurrencesRecurrenceidUrl(slug, recurrenceId).url.toString(), ... requestConfig })  
+  const res = await request<PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "PATCH", url : getPatchOrganizationsSlugRecurrencesRecurrenceidUrl({ slug, recurrenceId }).url.toString(), ... requestConfig })  
   return res.data
 }

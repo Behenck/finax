@@ -41,13 +41,14 @@ export default defineConfig({
 			},
 			importPath: "@/lib/axios", // 👈 vamos criar esse arquivo
 			dataReturnType: "data",
+			paramsType: "object",
 		}),
 		pluginReactQuery({
 			client: {
 				baseURL: "http://localhost:3333",
 				dataReturnType: "data",
 			},
-			paramsType: "inline",
+			paramsType: "object",
 			pathParamsType: "object",
 		}),
 	],

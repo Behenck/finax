@@ -16,7 +16,7 @@ function getPostSessionsRefreshUrl() {
  * @summary Refresh access token using a refresh token
  * {@link /sessions/refresh}
  */
-export async function postSessionsRefresh(data: PostSessionsRefreshMutationRequest, config: Partial<RequestConfig<PostSessionsRefreshMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postSessionsRefresh({ data }: { data: PostSessionsRefreshMutationRequest }, config: Partial<RequestConfig<PostSessionsRefreshMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

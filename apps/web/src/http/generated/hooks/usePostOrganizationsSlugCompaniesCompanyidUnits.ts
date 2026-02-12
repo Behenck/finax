@@ -19,7 +19,7 @@ export function postOrganizationsSlugCompaniesCompanyidUnitsMutationOptions<TCon
   return mutationOptions<PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, ResponseErrorConfig<Error>, {slug: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"], companyId: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"], data: PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, companyId, data }) => {
-      return postOrganizationsSlugCompaniesCompanyidUnits({ slug, companyId }, data, config)
+      return postOrganizationsSlugCompaniesCompanyidUnits({ slug, companyId, data }, config)
     },
   })
 }

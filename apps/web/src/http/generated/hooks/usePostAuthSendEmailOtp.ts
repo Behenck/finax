@@ -19,7 +19,7 @@ export function postAuthSendEmailOtpMutationOptions<TContext = unknown>(config: 
   return mutationOptions<PostAuthSendEmailOtpMutationResponse, ResponseErrorConfig<Error>, {data: PostAuthSendEmailOtpMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postAuthSendEmailOtp(data, config)
+      return postAuthSendEmailOtp({ data }, config)
     },
   })
 }

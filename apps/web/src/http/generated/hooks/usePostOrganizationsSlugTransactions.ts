@@ -19,7 +19,7 @@ export function postOrganizationsSlugTransactionsMutationOptions<TContext = unkn
   return mutationOptions<PostOrganizationsSlugTransactionsMutationResponse, ResponseErrorConfig<Error>, {slug: PostOrganizationsSlugTransactionsPathParams["slug"], data: PostOrganizationsSlugTransactionsMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, data }) => {
-      return postOrganizationsSlugTransactions({ slug }, data, config)
+      return postOrganizationsSlugTransactions({ slug, data }, config)
     },
   })
 }

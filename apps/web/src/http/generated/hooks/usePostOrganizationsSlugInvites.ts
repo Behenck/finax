@@ -19,7 +19,7 @@ export function postOrganizationsSlugInvitesMutationOptions<TContext = unknown>(
   return mutationOptions<PostOrganizationsSlugInvitesMutationResponse, ResponseErrorConfig<Error>, {slug: PostOrganizationsSlugInvitesPathParams["slug"], data: PostOrganizationsSlugInvitesMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, data }) => {
-      return postOrganizationsSlugInvites({ slug }, data, config)
+      return postOrganizationsSlugInvites({ slug, data }, config)
     },
   })
 }

@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugInvitesInviteidMutationResponse, DeleteOrganizationsSlugInvitesInviteidPathParams } from "./models/DeleteOrganizationsSlugInvitesInviteid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugInvitesInviteidUrl(slug: DeleteOrganizationsSlugInvitesInviteidPathParams["slug"], inviteId: DeleteOrganizationsSlugInvitesInviteidPathParams["inviteId"]) {
+function getDeleteOrganizationsSlugInvitesInviteidUrl({ slug, inviteId }: { slug: DeleteOrganizationsSlugInvitesInviteidPathParams["slug"]; inviteId: DeleteOrganizationsSlugInvitesInviteidPathParams["inviteId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/invites/${inviteId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugInvitesInviteidUrl(slug: DeleteOrganizationsS
  * @summary Create a new invite
  * {@link /organizations/:slug/invites/:inviteId}
  */
-export async function deleteOrganizationsSlugInvitesInviteid(slug: DeleteOrganizationsSlugInvitesInviteidPathParams["slug"], inviteId: DeleteOrganizationsSlugInvitesInviteidPathParams["inviteId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugInvitesInviteid({ slug, inviteId }: { slug: DeleteOrganizationsSlugInvitesInviteidPathParams["slug"]; inviteId: DeleteOrganizationsSlugInvitesInviteidPathParams["inviteId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugInvitesInviteidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugInvitesInviteidUrl(slug, inviteId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugInvitesInviteidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugInvitesInviteidUrl({ slug, inviteId }).url.toString(), ... requestConfig })  
   return res.data
 }

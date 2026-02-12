@@ -16,7 +16,7 @@ function getPostAuthSendEmailOtpUrl() {
  * @summary Send code OTP email
  * {@link /auth/send-email-otp}
  */
-export async function postAuthSendEmailOtp(data: PostAuthSendEmailOtpMutationRequest, config: Partial<RequestConfig<PostAuthSendEmailOtpMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postAuthSendEmailOtp({ data }: { data: PostAuthSendEmailOtpMutationRequest }, config: Partial<RequestConfig<PostAuthSendEmailOtpMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

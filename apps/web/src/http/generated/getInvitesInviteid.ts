@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { GetInvitesInviteidQueryResponse, GetInvitesInviteidPathParams } from "./models/GetInvitesInviteid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getGetInvitesInviteidUrl(inviteId: GetInvitesInviteidPathParams["inviteId"]) {
+function getGetInvitesInviteidUrl({ inviteId }: { inviteId: GetInvitesInviteidPathParams["inviteId"] }) {
   const res = { method: 'GET', url: `http://localhost:3333/invites/${inviteId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getGetInvitesInviteidUrl(inviteId: GetInvitesInviteidPathParams["invite
  * @summary Get an invite
  * {@link /invites/:inviteId}
  */
-export async function getInvitesInviteid(inviteId: GetInvitesInviteidPathParams["inviteId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getInvitesInviteid({ inviteId }: { inviteId: GetInvitesInviteidPathParams["inviteId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetInvitesInviteidQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetInvitesInviteidUrl(inviteId).url.toString(), ... requestConfig })  
+  const res = await request<GetInvitesInviteidQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetInvitesInviteidUrl({ inviteId }).url.toString(), ... requestConfig })  
   return res.data
 }

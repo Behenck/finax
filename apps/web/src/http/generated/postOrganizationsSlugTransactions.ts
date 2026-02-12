@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugTransactionsMutationRequest, PostOrganizationsSlugTransactionsMutationResponse, PostOrganizationsSlugTransactionsPathParams } from "./models/PostOrganizationsSlugTransactions.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugTransactionsUrl(slug: PostOrganizationsSlugTransactionsPathParams["slug"]) {
+function getPostOrganizationsSlugTransactionsUrl({ slug }: { slug: PostOrganizationsSlugTransactionsPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/transactions` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugTransactionsUrl(slug: PostOrganizationsSlugTran
  * @summary Create a new transaction
  * {@link /organizations/:slug/transactions}
  */
-export async function postOrganizationsSlugTransactions(slug: PostOrganizationsSlugTransactionsPathParams["slug"], data: PostOrganizationsSlugTransactionsMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugTransactionsMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugTransactions({ slug, data }: { slug: PostOrganizationsSlugTransactionsPathParams["slug"]; data: PostOrganizationsSlugTransactionsMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugTransactionsMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugTransactionsMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugTransactionsMutationRequest>({ method : "POST", url : getPostOrganizationsSlugTransactionsUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugTransactionsMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugTransactionsMutationRequest>({ method : "POST", url : getPostOrganizationsSlugTransactionsUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

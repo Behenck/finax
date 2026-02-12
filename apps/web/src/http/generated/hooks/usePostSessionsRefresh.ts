@@ -19,7 +19,7 @@ export function postSessionsRefreshMutationOptions<TContext = unknown>(config: P
   return mutationOptions<PostSessionsRefreshMutationResponse, ResponseErrorConfig<PostSessionsRefresh401>, {data: PostSessionsRefreshMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postSessionsRefresh(data, config)
+      return postSessionsRefresh({ data }, config)
     },
   })
 }

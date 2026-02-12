@@ -19,7 +19,7 @@ export function putOrganizationsSlugCostcentersCostcenteridMutationOptions<TCont
   return mutationOptions<PutOrganizationsSlugCostcentersCostcenteridMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugCostcentersCostcenteridPathParams["slug"], costCenterId: PutOrganizationsSlugCostcentersCostcenteridPathParams["costCenterId"], data: PutOrganizationsSlugCostcentersCostcenteridMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, costCenterId, data }) => {
-      return putOrganizationsSlugCostcentersCostcenterid({ slug, costCenterId }, data, config)
+      return putOrganizationsSlugCostcentersCostcenterid({ slug, costCenterId, data }, config)
     },
   })
 }

@@ -19,7 +19,7 @@ export function postPasswordResetMutationOptions<TContext = unknown>(config: Par
   return mutationOptions<PostPasswordResetMutationResponse, ResponseErrorConfig<Error>, {data: PostPasswordResetMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ data }) => {
-      return postPasswordReset(data, config)
+      return postPasswordReset({ data }, config)
     },
   })
 }

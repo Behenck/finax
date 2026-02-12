@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugInvitesMutationRequest, PostOrganizationsSlugInvitesMutationResponse, PostOrganizationsSlugInvitesPathParams } from "./models/PostOrganizationsSlugInvites.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugInvitesUrl(slug: PostOrganizationsSlugInvitesPathParams["slug"]) {
+function getPostOrganizationsSlugInvitesUrl({ slug }: { slug: PostOrganizationsSlugInvitesPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/invites` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugInvitesUrl(slug: PostOrganizationsSlugInvitesPa
  * @summary Create an invite for an organization
  * {@link /organizations/:slug/invites}
  */
-export async function postOrganizationsSlugInvites(slug: PostOrganizationsSlugInvitesPathParams["slug"], data: PostOrganizationsSlugInvitesMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugInvitesMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugInvites({ slug, data }: { slug: PostOrganizationsSlugInvitesPathParams["slug"]; data: PostOrganizationsSlugInvitesMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugInvitesMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugInvitesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugInvitesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugInvitesUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugInvitesMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugInvitesMutationRequest>({ method : "POST", url : getPostOrganizationsSlugInvitesUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

@@ -16,7 +16,7 @@ function getPostUsersUrl() {
  * @summary Create a new account
  * {@link /users}
  */
-export async function postUsers(data: PostUsersMutationRequest, config: Partial<RequestConfig<PostUsersMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postUsers({ data }: { data: PostUsersMutationRequest }, config: Partial<RequestConfig<PostUsersMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

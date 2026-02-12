@@ -16,7 +16,7 @@ function getPostPasswordRecoverUrl() {
  * @summary Request password recovery
  * {@link /password/recover}
  */
-export async function postPasswordRecover(data: PostPasswordRecoverMutationRequest, config: Partial<RequestConfig<PostPasswordRecoverMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postPasswordRecover({ data }: { data: PostPasswordRecoverMutationRequest }, config: Partial<RequestConfig<PostPasswordRecoverMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

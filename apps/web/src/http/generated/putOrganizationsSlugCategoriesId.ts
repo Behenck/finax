@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PutOrganizationsSlugCategoriesIdMutationRequest, PutOrganizationsSlugCategoriesIdMutationResponse, PutOrganizationsSlugCategoriesIdPathParams } from "./models/PutOrganizationsSlugCategoriesId.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPutOrganizationsSlugCategoriesIdUrl(slug: PutOrganizationsSlugCategoriesIdPathParams["slug"], id: PutOrganizationsSlugCategoriesIdPathParams["id"]) {
+function getPutOrganizationsSlugCategoriesIdUrl({ slug, id }: { slug: PutOrganizationsSlugCategoriesIdPathParams["slug"]; id: PutOrganizationsSlugCategoriesIdPathParams["id"] }) {
   const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/categories/${id}` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPutOrganizationsSlugCategoriesIdUrl(slug: PutOrganizationsSlugCatego
  * @summary Update category
  * {@link /organizations/:slug/categories/:id}
  */
-export async function putOrganizationsSlugCategoriesId(slug: PutOrganizationsSlugCategoriesIdPathParams["slug"], id: PutOrganizationsSlugCategoriesIdPathParams["id"], data: PutOrganizationsSlugCategoriesIdMutationRequest, config: Partial<RequestConfig<PutOrganizationsSlugCategoriesIdMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function putOrganizationsSlugCategoriesId({ slug, id, data }: { slug: PutOrganizationsSlugCategoriesIdPathParams["slug"]; id: PutOrganizationsSlugCategoriesIdPathParams["id"]; data: PutOrganizationsSlugCategoriesIdMutationRequest }, config: Partial<RequestConfig<PutOrganizationsSlugCategoriesIdMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PutOrganizationsSlugCategoriesIdMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCategoriesIdMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCategoriesIdUrl(slug, id).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PutOrganizationsSlugCategoriesIdMutationResponse, ResponseErrorConfig<Error>, PutOrganizationsSlugCategoriesIdMutationRequest>({ method : "PUT", url : getPutOrganizationsSlugCategoriesIdUrl({ slug, id }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

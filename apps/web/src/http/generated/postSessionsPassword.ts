@@ -16,7 +16,7 @@ function getPostSessionsPasswordUrl() {
  * @summary Authenticate user with email and password
  * {@link /sessions/password}
  */
-export async function postSessionsPassword(data: PostSessionsPasswordMutationRequest, config: Partial<RequestConfig<PostSessionsPasswordMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postSessionsPassword({ data }: { data: PostSessionsPasswordMutationRequest }, config: Partial<RequestConfig<PostSessionsPasswordMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  

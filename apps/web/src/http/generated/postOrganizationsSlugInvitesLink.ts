@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugInvitesLinkMutationResponse, PostOrganizationsSlugInvitesLinkPathParams } from "./models/PostOrganizationsSlugInvitesLink.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugInvitesLinkUrl(slug: PostOrganizationsSlugInvitesLinkPathParams["slug"]) {
+function getPostOrganizationsSlugInvitesLinkUrl({ slug }: { slug: PostOrganizationsSlugInvitesLinkPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/invites/link` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getPostOrganizationsSlugInvitesLinkUrl(slug: PostOrganizationsSlugInvit
  * @summary Generate an invite link for an organization
  * {@link /organizations/:slug/invites/link}
  */
-export async function postOrganizationsSlugInvitesLink(slug: PostOrganizationsSlugInvitesLinkPathParams["slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugInvitesLink({ slug }: { slug: PostOrganizationsSlugInvitesLinkPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<PostOrganizationsSlugInvitesLinkMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getPostOrganizationsSlugInvitesLinkUrl(slug).url.toString(), ... requestConfig })  
+  const res = await request<PostOrganizationsSlugInvitesLinkMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getPostOrganizationsSlugInvitesLinkUrl({ slug }).url.toString(), ... requestConfig })  
   return res.data
 }

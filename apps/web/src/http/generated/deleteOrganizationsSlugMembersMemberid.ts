@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugMembersMemberidMutationResponse, DeleteOrganizationsSlugMembersMemberidPathParams } from "./models/DeleteOrganizationsSlugMembersMemberid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugMembersMemberidUrl(slug: DeleteOrganizationsSlugMembersMemberidPathParams["slug"], memberId: DeleteOrganizationsSlugMembersMemberidPathParams["memberId"]) {
+function getDeleteOrganizationsSlugMembersMemberidUrl({ slug, memberId }: { slug: DeleteOrganizationsSlugMembersMemberidPathParams["slug"]; memberId: DeleteOrganizationsSlugMembersMemberidPathParams["memberId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/members/${memberId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugMembersMemberidUrl(slug: DeleteOrganizationsS
  * @summary Remove a member from the organization
  * {@link /organizations/:slug/members/:memberId}
  */
-export async function deleteOrganizationsSlugMembersMemberid(slug: DeleteOrganizationsSlugMembersMemberidPathParams["slug"], memberId: DeleteOrganizationsSlugMembersMemberidPathParams["memberId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugMembersMemberid({ slug, memberId }: { slug: DeleteOrganizationsSlugMembersMemberidPathParams["slug"]; memberId: DeleteOrganizationsSlugMembersMemberidPathParams["memberId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugMembersMemberidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugMembersMemberidUrl(slug, memberId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugMembersMemberidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugMembersMemberidUrl({ slug, memberId }).url.toString(), ... requestConfig })  
   return res.data
 }

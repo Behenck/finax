@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams } from "./models/DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"], companyId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"], unitId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"]) {
+function getDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl({ slug, companyId, unitId }: { slug: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"]; companyId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"]; unitId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}/units/${unitId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug: Delete
  * @summary Delete unit
  * {@link /organizations/:slug/companies/:companyId/units/:unitId}
  */
-export async function deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid(slug: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"], companyId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"], unitId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugCompaniesCompanyidUnitsUnitid({ slug, companyId, unitId }: { slug: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"]; companyId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"]; unitId: DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl(slug, companyId, unitId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitidUrl({ slug, companyId, unitId }).url.toString(), ... requestConfig })  
   return res.data
 }

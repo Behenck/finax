@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest, PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, PostOrganizationsSlugCompaniesCompanyidUnitsPathParams } from "./models/PostOrganizationsSlugCompaniesCompanyidUnits.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugCompaniesCompanyidUnitsUrl(slug: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"], companyId: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"]) {
+function getPostOrganizationsSlugCompaniesCompanyidUnitsUrl({ slug, companyId }: { slug: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"]; companyId: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}/units` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugCompaniesCompanyidUnitsUrl(slug: PostOrganizati
  * @summary Create a new Unit
  * {@link /organizations/:slug/companies/:companyId/units}
  */
-export async function postOrganizationsSlugCompaniesCompanyidUnits(slug: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"], companyId: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"], data: PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugCompaniesCompanyidUnits({ slug, companyId, data }: { slug: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"]; companyId: PostOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"]; data: PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCompaniesCompanyidUnitsUrl(slug, companyId).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCompaniesCompanyidUnitsUrl({ slug, companyId }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

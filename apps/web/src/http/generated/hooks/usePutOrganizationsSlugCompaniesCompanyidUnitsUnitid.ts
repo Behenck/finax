@@ -19,7 +19,7 @@ export function putOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationOptions
   return mutationOptions<PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationResponse, ResponseErrorConfig<Error>, {slug: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["slug"], companyId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["companyId"], unitId: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidPathParams["unitId"], data: PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest}, TContext>({
     mutationKey,
     mutationFn: async({ slug, companyId, unitId, data }) => {
-      return putOrganizationsSlugCompaniesCompanyidUnitsUnitid({ slug, companyId, unitId }, data, config)
+      return putOrganizationsSlugCompaniesCompanyidUnitsUnitid({ slug, companyId, unitId, data }, config)
     },
   })
 }

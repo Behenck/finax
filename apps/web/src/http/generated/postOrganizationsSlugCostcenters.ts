@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { PostOrganizationsSlugCostcentersMutationRequest, PostOrganizationsSlugCostcentersMutationResponse, PostOrganizationsSlugCostcentersPathParams } from "./models/PostOrganizationsSlugCostcenters.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getPostOrganizationsSlugCostcentersUrl(slug: PostOrganizationsSlugCostcentersPathParams["slug"]) {
+function getPostOrganizationsSlugCostcentersUrl({ slug }: { slug: PostOrganizationsSlugCostcentersPathParams["slug"] }) {
   const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/costCenters` as const }  
   return res
 }
@@ -16,11 +16,11 @@ function getPostOrganizationsSlugCostcentersUrl(slug: PostOrganizationsSlugCostc
  * @summary Create a new cost center
  * {@link /organizations/:slug/costCenters}
  */
-export async function postOrganizationsSlugCostcenters(slug: PostOrganizationsSlugCostcentersPathParams["slug"], data: PostOrganizationsSlugCostcentersMutationRequest, config: Partial<RequestConfig<PostOrganizationsSlugCostcentersMutationRequest>> & { client?: typeof fetch } = {}) {
+export async function postOrganizationsSlugCostcenters({ slug, data }: { slug: PostOrganizationsSlugCostcentersPathParams["slug"]; data: PostOrganizationsSlugCostcentersMutationRequest }, config: Partial<RequestConfig<PostOrganizationsSlugCostcentersMutationRequest>> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
   const requestData = data  
   
-  const res = await request<PostOrganizationsSlugCostcentersMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCostcentersMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCostcentersUrl(slug).url.toString(), data : requestData, ... requestConfig })  
+  const res = await request<PostOrganizationsSlugCostcentersMutationResponse, ResponseErrorConfig<Error>, PostOrganizationsSlugCostcentersMutationRequest>({ method : "POST", url : getPostOrganizationsSlugCostcentersUrl({ slug }).url.toString(), data : requestData, ... requestConfig })  
   return res.data
 }

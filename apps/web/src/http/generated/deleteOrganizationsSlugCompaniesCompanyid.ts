@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { DeleteOrganizationsSlugCompaniesCompanyidMutationResponse, DeleteOrganizationsSlugCompaniesCompanyidPathParams } from "./models/DeleteOrganizationsSlugCompaniesCompanyid.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getDeleteOrganizationsSlugCompaniesCompanyidUrl(slug: DeleteOrganizationsSlugCompaniesCompanyidPathParams["slug"], companyId: DeleteOrganizationsSlugCompaniesCompanyidPathParams["companyId"]) {
+function getDeleteOrganizationsSlugCompaniesCompanyidUrl({ slug, companyId }: { slug: DeleteOrganizationsSlugCompaniesCompanyidPathParams["slug"]; companyId: DeleteOrganizationsSlugCompaniesCompanyidPathParams["companyId"] }) {
   const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getDeleteOrganizationsSlugCompaniesCompanyidUrl(slug: DeleteOrganizatio
  * @summary Delete company
  * {@link /organizations/:slug/companies/:companyId}
  */
-export async function deleteOrganizationsSlugCompaniesCompanyid(slug: DeleteOrganizationsSlugCompaniesCompanyidPathParams["slug"], companyId: DeleteOrganizationsSlugCompaniesCompanyidPathParams["companyId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function deleteOrganizationsSlugCompaniesCompanyid({ slug, companyId }: { slug: DeleteOrganizationsSlugCompaniesCompanyidPathParams["slug"]; companyId: DeleteOrganizationsSlugCompaniesCompanyidPathParams["companyId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<DeleteOrganizationsSlugCompaniesCompanyidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCompaniesCompanyidUrl(slug, companyId).url.toString(), ... requestConfig })  
+  const res = await request<DeleteOrganizationsSlugCompaniesCompanyidMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "DELETE", url : getDeleteOrganizationsSlugCompaniesCompanyidUrl({ slug, companyId }).url.toString(), ... requestConfig })  
   return res.data
 }

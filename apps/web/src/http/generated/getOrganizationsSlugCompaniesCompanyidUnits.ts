@@ -7,7 +7,7 @@ import fetch from "@/lib/axios";
 import type { GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, GetOrganizationsSlugCompaniesCompanyidUnitsPathParams } from "./models/GetOrganizationsSlugCompaniesCompanyidUnits.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
-function getGetOrganizationsSlugCompaniesCompanyidUnitsUrl(slug: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"], companyId: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"]) {
+function getGetOrganizationsSlugCompaniesCompanyidUnitsUrl({ slug, companyId }: { slug: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"]; companyId: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"] }) {
   const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/companies/${companyId}/units` as const }  
   return res
 }
@@ -16,9 +16,9 @@ function getGetOrganizationsSlugCompaniesCompanyidUnitsUrl(slug: GetOrganization
  * @summary Get units
  * {@link /organizations/:slug/companies/:companyId/units}
  */
-export async function getOrganizationsSlugCompaniesCompanyidUnits(slug: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"], companyId: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getOrganizationsSlugCompaniesCompanyidUnits({ slug, companyId }: { slug: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["slug"]; companyId: GetOrganizationsSlugCompaniesCompanyidUnitsPathParams["companyId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugCompaniesCompanyidUnitsUrl(slug, companyId).url.toString(), ... requestConfig })  
+  const res = await request<GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugCompaniesCompanyidUnitsUrl({ slug, companyId }).url.toString(), ... requestConfig })  
   return res.data
 }
