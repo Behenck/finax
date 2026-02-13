@@ -12,36 +12,37 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from '@tanstack/react-router'
-import { useDeleteOrganizationsSlugCustomersCustomerid, type GetOrganizationsSlugCustomers200 } from '@/http/generated'
+import { getOrganizationsSlugCustomersQueryKey, useDeleteOrganizationsSlugCustomersCustomerid, type GetOrganizationsSlugCustomers200 } from '@/http/generated'
 import { getInitials } from '@/utils/get-initials'
 import { formatPhone } from '@/utils/format-phone'
 import { useApp } from '@/context/app-context'
 import { toast } from 'sonner'
-import { queryClient } from '@/lib/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface CustomerRowProps {
   customer: GetOrganizationsSlugCustomers200["customers"][number]
 }
 
 export function CustomerRow({ customer }: CustomerRowProps) {
+  const queryClient = useQueryClient()
   const { organization } = useApp()
   const { mutateAsync: deleteCustomer } = useDeleteOrganizationsSlugCustomersCustomerid()
-
   async function handleDeleteCustomer(customer: CustomerRowProps["customer"]) {
     try {
-      await deleteCustomer({
-        slug: organization!.slug,
-        customerId: customer.id
-      })
+      await deleteCustomer({ slug: organization!.slug, customerId: customer.id },
 
-      // ✅ opção A: invalidate (refetch)
-      // Se você tiver o helper do queryKey:
-      // await queryClient.invalidateQueries({ queryKey: getGetOrganizationsSlugCustomersQueryKey({ slug: organization!.slug }) })
-
-      // ✅ opção B: invalidate genérico (depende do formato do queryKey do gerador)
-      await queryClient.invalidateQueries({
-        predicate: (q) => Array.isArray(q.queryKey) && q.queryKey.includes("organizations") && q.queryKey.includes("customers"),
-      })
+      )
+      // await deleteCustomer({ slug: organization!.slug, customerId: customer.id },
+      //   {
+      //     onSuccess: async () => {
+      //       await queryClient.invalidateQueries({
+      //         queryKey: getOrganizationsSlugCustomersQueryKey({
+      //           slug: organization!.slug,
+      //         }),
+      //       })
+      //     },
+      //   }
+      // )
 
       toast.success(`Cliente ${customer.name} excluído com sucesso!`)
     } catch (err) {

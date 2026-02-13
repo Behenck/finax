@@ -9,7 +9,9 @@ export function ListCustomers() {
     return null
   }
 
-  const { data, isLoading } = useGetOrganizationsSlugCustomers({ slug: organization!.slug })
+  const { data, isLoading } = useGetOrganizationsSlugCustomers({
+    slug: organization!.slug
+  })
 
   if (isLoading) {
     return <span>Carregando...</span>

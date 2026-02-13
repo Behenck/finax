@@ -36,6 +36,7 @@ app.register(fastifySwagger, {
       description: 'API for capturing and inspecting webhook requests',
       version: '1.0.0'
     },
+    servers: [],
     components: {
       securitySchemes: {
         bearerAuth: {
