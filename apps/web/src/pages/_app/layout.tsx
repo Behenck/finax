@@ -23,7 +23,7 @@ function AppLayout() {
 			<SidebarProvider>
 				<AppSidebar />
 
-				<main className="flex-1 p-10 bg-white">
+				<main className="flex-1 p-10 bg-gray-50">
 					<Outlet />
 				</main>
 			</SidebarProvider>

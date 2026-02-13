@@ -26,7 +26,7 @@ export function TabCustomerPF() {
     control,
     formState: { errors },
     watch,
-  } = useFormContext<Extract<CustomerFormInput, { type: "PF" }>>()
+  } = useFormContext<Extract<CustomerFormInput, { personType: "PF" }>>()
 
   const documentType = watch("documentType")
 
@@ -205,7 +205,12 @@ export function TabCustomerPF() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Renda mensal (R$)</FieldLabel>
-              <Input type='number' placeholder='0' {...register("monthlyIncome")} />
+              <Input
+                type="number"
+                {...register("monthlyIncome", {
+                  setValueAs: (v) => (v === "" || v == null ? 0 : Number(v) || 0),
+                })}
+              />
               <FieldError error={errors.monthlyIncome} />
             </Field>
           </FieldGroup>

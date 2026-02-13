@@ -70,7 +70,10 @@ export type PostOrganizationsSlugCustomersMutationRequest = {
     pf?: {
         birthDate?: any;
         /**
-         * @type number | undefined
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @default 0
+         * @type integer | undefined
         */
         monthlyIncome?: number;
         /**

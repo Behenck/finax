@@ -26,7 +26,7 @@ export function TabCustomerPJ() {
     control,
     formState: { errors },
     watch
-  } = useFormContext<Extract<CustomerFormInput, { type: "PJ" }>>()
+  } = useFormContext<Extract<CustomerFormInput, { personType: "PJ" }>>()
 
   const documentType = watch("documentType")
 

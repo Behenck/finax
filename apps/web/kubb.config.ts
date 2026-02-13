@@ -25,9 +25,12 @@ export default defineConfig({
 		path: "./src/http/generated",
 		clean: true,
 	},
+	hooks: {
+		done: []
+	},
 
 	plugins: [
-		pluginOas(),
+		pluginOas({ generators: [], validate: false }),
 		pluginTs({
 			output: {
 				path: "models",
@@ -44,12 +47,16 @@ export default defineConfig({
 			paramsType: "object",
 		}),
 		pluginReactQuery({
+			output: {
+				path: "./hooks"
+			},
+			paramsType: "object",
+			pathParamsType: "object",
+			suspense: false,
 			client: {
 				baseURL: "http://localhost:3333",
 				dataReturnType: "data",
 			},
-			paramsType: "object",
-			pathParamsType: "object",
 		}),
 	],
 });

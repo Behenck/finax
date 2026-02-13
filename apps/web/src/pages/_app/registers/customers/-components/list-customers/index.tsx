@@ -9,7 +9,7 @@ export function ListCustomers() {
     return null
   }
 
-  const { data, isLoading } = useGetOrganizationsSlugCustomers({ slug: "behenck" })
+  const { data, isLoading } = useGetOrganizationsSlugCustomers({ slug: organization!.slug })
 
   if (isLoading) {
     return <span>Carregando...</span>
@@ -20,7 +20,7 @@ export function ListCustomers() {
       {
         data?.customers.map((customer) => {
           return (
-            <CustomerRow customer={customer} />
+            <CustomerRow key={customer.id} customer={customer} />
           )
         })
       }

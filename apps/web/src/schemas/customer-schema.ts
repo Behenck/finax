@@ -1,12 +1,15 @@
 import { z } from "zod"
 
 const baseCustomerSchema = z.object({
-  email: z.union([z.email(), z.literal("")]).optional(),
+  email: z
+    .email("Email inválido")
+    .optional()
+    .or(z.literal("")),
   phone: z.string({ error: "Telefone inválido" }).optional(),
 })
 
 const customerPFSchema = baseCustomerSchema.extend({
-  type: z.literal("PF"),
+  personType: z.literal("PF"),
   name: z.string().min(1, "Nome obrigatório"),
   documentType: z.enum(["CPF", "RG", "PASSPORT", "OTHER"]),
   documentNumber: z.string().min(5, "Documento obrigatório"),
@@ -15,12 +18,12 @@ const customerPFSchema = baseCustomerSchema.extend({
   motherName: z.string().optional(),
   fatherName: z.string().optional(),
   profession: z.string().optional(),
-  monthlyIncome: z.coerce.number().optional(),
+  monthlyIncome: z.preprocess(v => (Number.isFinite(Number(v)) ? Number(v) : 0), z.number().int().nonnegative()),
 })
 
 
 const customerPJSchema = baseCustomerSchema.extend({
-  type: z.literal("PJ"),
+  personType: z.literal("PJ"),
   corporateName: z.string().min(1, "Nome da empresa obrigatório"),
   documentType: z.enum(["CNPJ", "IE", "OTHER"]),
   documentNumber: z.string().min(5, "Documento obrigatório"),
@@ -32,7 +35,7 @@ const customerPJSchema = baseCustomerSchema.extend({
   businessActivity: z.string().optional(),
 })
 
-export const customerSchema = z.discriminatedUnion("type", [
+export const customerSchema = z.discriminatedUnion("personType", [
   customerPFSchema,
   customerPJSchema,
 ])

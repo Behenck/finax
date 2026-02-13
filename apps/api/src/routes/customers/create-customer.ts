@@ -28,7 +28,7 @@ export async function createCustomer(app: FastifyInstance) {
           documentNumber: z.string(),
           pf: z.object({
             birthDate: z.date().optional(),
-            monthlyIncome: z.number().optional(),
+            monthlyIncome: z.number().int().nonnegative().default(0),
             profession: z.string().optional(),
             placeOfBirth: z.string().optional(),
             fatherName: z.string().optional(),

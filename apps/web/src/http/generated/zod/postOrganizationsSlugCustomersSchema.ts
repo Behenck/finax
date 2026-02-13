@@ -25,7 +25,7 @@ export const postOrganizationsSlugCustomersMutationRequestSchema = z.object({
 "documentNumber": z.string(),
 "pf": z.optional(z.object({
     "birthDate": z.optional(z.any()),
-"monthlyIncome": z.optional(z.number()),
+"monthlyIncome": z.optional(z.int().min(0).max(9007199254740991).default(0)),
 "profession": z.optional(z.string()),
 "placeOfBirth": z.optional(z.string()),
 "fatherName": z.optional(z.string()),

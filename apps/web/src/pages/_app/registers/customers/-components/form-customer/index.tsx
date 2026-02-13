@@ -8,26 +8,39 @@ import { customerSchema, type CustomerFormInput } from '@/schemas/customer-schem
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { usePostOrganizationsSlugCustomers } from '@/http/generated'
+import { useApp } from '@/context/app-context'
+import { mapCustomerFormToRequest } from './-mappers/customer-mapper'
 
 export function FormCustomer() {
+  const { organization } = useApp()
+  const { mutateAsync: createCustomer, isPending } =
+    usePostOrganizationsSlugCustomers()
+
   const form = useForm<CustomerFormInput>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
-      type: "PF",
+      personType: "PF",
       documentType: "CPF",
       email: "",
       phone: "",
     },
   })
 
-  const type = form.watch("type")
+  const personType = form.watch("personType")
 
   async function onSubmit(data: CustomerFormInput) {
-    const parsed = customerSchema.parse(data)
+    const payload = customerSchema.parse(data)
 
     try {
-      const response = await usePostOrganizationsSlugCustomers()
-    } catch {
+      await createCustomer({
+        slug: organization!.slug,
+        data: mapCustomerFormToRequest(payload),
+      })
+
+      toast.success("Cliente cadastrado com sucesso")
+      form.reset()
+    } catch (err) {
+      console.log(err)
       toast.error("Erro ao Cadastrar")
     }
   }
@@ -36,11 +49,11 @@ export function FormCustomer() {
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Tabs
-          value={type}
+          value={personType}
           onValueChange={(value) => {
-            const newType = value as "PF" | "PJ"
-            form.setValue("type", newType)
-            if (newType === "PJ") {
+            const newPersonTypeType = value as "PF" | "PJ"
+            form.setValue("personType", newPersonTypeType)
+            if (newPersonTypeType === "PJ") {
               form.setValue("documentType", "CNPJ")
             } else {
               form.setValue("documentType", "CPF")
