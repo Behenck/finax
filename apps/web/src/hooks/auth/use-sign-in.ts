@@ -12,7 +12,7 @@ export function useSignIn() {
 
 	return useMutation({
 		mutationFn: async (payload: SignInInput) => {
-			const data = await postSessionsPassword(payload);
+			const data = await postSessionsPassword({ data: payload });
 			return data;
 		},
 

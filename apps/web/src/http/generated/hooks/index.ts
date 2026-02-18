@@ -25,6 +25,8 @@ export type { GetOrganizationsSlugCompaniesSuspenseQueryKey } from "./useGetOrga
 export type { GetOrganizationsSlugCostcentersQueryKey } from "./useGetOrganizationsSlugCostcenters.ts";
 export type { GetOrganizationsSlugCostcentersSuspenseQueryKey } from "./useGetOrganizationsSlugCostcentersSuspense.ts";
 export type { GetOrganizationsSlugCustomersQueryKey } from "./useGetOrganizationsSlugCustomers.ts";
+export type { GetOrganizationsSlugCustomersCustomeridQueryKey } from "./useGetOrganizationsSlugCustomersCustomerid.ts";
+export type { GetOrganizationsSlugCustomersCustomeridSuspenseQueryKey } from "./useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
 export type { GetOrganizationsSlugCustomersSuspenseQueryKey } from "./useGetOrganizationsSlugCustomersSuspense.ts";
 export type { GetOrganizationsSlugEmployeesQueryKey } from "./useGetOrganizationsSlugEmployees.ts";
 export type { GetOrganizationsSlugEmployeesSuspenseQueryKey } from "./useGetOrganizationsSlugEmployeesSuspense.ts";
@@ -156,6 +158,12 @@ export { useGetOrganizationsSlugCostcentersSuspense } from "./useGetOrganization
 export { getOrganizationsSlugCustomersQueryKey } from "./useGetOrganizationsSlugCustomers.ts";
 export { getOrganizationsSlugCustomersQueryOptions } from "./useGetOrganizationsSlugCustomers.ts";
 export { useGetOrganizationsSlugCustomers } from "./useGetOrganizationsSlugCustomers.ts";
+export { getOrganizationsSlugCustomersCustomeridQueryKey } from "./useGetOrganizationsSlugCustomersCustomerid.ts";
+export { getOrganizationsSlugCustomersCustomeridQueryOptions } from "./useGetOrganizationsSlugCustomersCustomerid.ts";
+export { useGetOrganizationsSlugCustomersCustomerid } from "./useGetOrganizationsSlugCustomersCustomerid.ts";
+export { getOrganizationsSlugCustomersCustomeridSuspenseQueryKey } from "./useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
+export { getOrganizationsSlugCustomersCustomeridSuspenseQueryOptions } from "./useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
+export { useGetOrganizationsSlugCustomersCustomeridSuspense } from "./useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
 export { getOrganizationsSlugCustomersSuspenseQueryKey } from "./useGetOrganizationsSlugCustomersSuspense.ts";
 export { getOrganizationsSlugCustomersSuspenseQueryOptions } from "./useGetOrganizationsSlugCustomersSuspense.ts";
 export { useGetOrganizationsSlugCustomersSuspense } from "./useGetOrganizationsSlugCustomersSuspense.ts";

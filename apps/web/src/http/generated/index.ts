@@ -25,6 +25,8 @@ export type { GetOrganizationsSlugCompaniesSuspenseQueryKey } from "./hooks/useG
 export type { GetOrganizationsSlugCostcentersQueryKey } from "./hooks/useGetOrganizationsSlugCostcenters.ts";
 export type { GetOrganizationsSlugCostcentersSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugCostcentersSuspense.ts";
 export type { GetOrganizationsSlugCustomersQueryKey } from "./hooks/useGetOrganizationsSlugCustomers.ts";
+export type { GetOrganizationsSlugCustomersCustomeridQueryKey } from "./hooks/useGetOrganizationsSlugCustomersCustomerid.ts";
+export type { GetOrganizationsSlugCustomersCustomeridSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
 export type { GetOrganizationsSlugCustomersSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugCustomersSuspense.ts";
 export type { GetOrganizationsSlugEmployeesQueryKey } from "./hooks/useGetOrganizationsSlugEmployees.ts";
 export type { GetOrganizationsSlugEmployeesSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugEmployeesSuspense.ts";
@@ -95,6 +97,7 @@ export type { GetOrganizationsSlugCompaniesPathParams, GetOrganizationsSlugCompa
 export type { GetOrganizationsSlugCompaniesCompanyidUnitsPathParams, GetOrganizationsSlugCompaniesCompanyidUnits200, GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, GetOrganizationsSlugCompaniesCompanyidUnitsQuery } from "./models/GetOrganizationsSlugCompaniesCompanyidUnits.ts";
 export type { GetOrganizationsSlugCostcentersPathParams, GetOrganizationsSlugCostcenters200, GetOrganizationsSlugCostcentersQueryResponse, GetOrganizationsSlugCostcentersQuery } from "./models/GetOrganizationsSlugCostcenters.ts";
 export type { GetOrganizationsSlugCustomersPathParams, CustomersPersonTypeEnumKey, CustomersDocumentTypeEnumKey, GetOrganizationsSlugCustomers200, GetOrganizationsSlugCustomersQueryResponse, GetOrganizationsSlugCustomersQuery } from "./models/GetOrganizationsSlugCustomers.ts";
+export type { GetOrganizationsSlugCustomersCustomeridPathParams, CustomerPersonTypeEnumKey, CustomerDocumentTypeEnumKey, GetOrganizationsSlugCustomersCustomerid200, GetOrganizationsSlugCustomersCustomeridQueryResponse, GetOrganizationsSlugCustomersCustomeridQuery } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
 export type { GetOrganizationsSlugEmployeesPathParams, GetOrganizationsSlugEmployees200, GetOrganizationsSlugEmployeesQueryResponse, GetOrganizationsSlugEmployeesQuery } from "./models/GetOrganizationsSlugEmployees.ts";
 export type { GetOrganizationsSlugInvitesPathParams, InvitesRoleEnumKey, InvitesRoleEnum2Key, GetOrganizationsSlugInvites200, GetOrganizationsSlugInvitesQueryResponse, GetOrganizationsSlugInvitesQuery } from "./models/GetOrganizationsSlugInvites.ts";
 export type { GetOrganizationsSlugMembersPathParams, MembersRoleEnumKey, MembersRoleEnum2Key, GetOrganizationsSlugMembers200, GetOrganizationsSlugMembersQueryResponse, GetOrganizationsSlugMembersQuery } from "./models/GetOrganizationsSlugMembers.ts";
@@ -155,6 +158,7 @@ export { getOrganizationsSlugCompanies } from "./getOrganizationsSlugCompanies.t
 export { getOrganizationsSlugCompaniesCompanyidUnits } from "./getOrganizationsSlugCompaniesCompanyidUnits.ts";
 export { getOrganizationsSlugCostcenters } from "./getOrganizationsSlugCostcenters.ts";
 export { getOrganizationsSlugCustomers } from "./getOrganizationsSlugCustomers.ts";
+export { getOrganizationsSlugCustomersCustomerid } from "./getOrganizationsSlugCustomersCustomerid.ts";
 export { getOrganizationsSlugEmployees } from "./getOrganizationsSlugEmployees.ts";
 export { getOrganizationsSlugInvites } from "./getOrganizationsSlugInvites.ts";
 export { getOrganizationsSlugMembers } from "./getOrganizationsSlugMembers.ts";
@@ -244,6 +248,12 @@ export { useGetOrganizationsSlugCostcentersSuspense } from "./hooks/useGetOrgani
 export { getOrganizationsSlugCustomersQueryKey } from "./hooks/useGetOrganizationsSlugCustomers.ts";
 export { getOrganizationsSlugCustomersQueryOptions } from "./hooks/useGetOrganizationsSlugCustomers.ts";
 export { useGetOrganizationsSlugCustomers } from "./hooks/useGetOrganizationsSlugCustomers.ts";
+export { getOrganizationsSlugCustomersCustomeridQueryKey } from "./hooks/useGetOrganizationsSlugCustomersCustomerid.ts";
+export { getOrganizationsSlugCustomersCustomeridQueryOptions } from "./hooks/useGetOrganizationsSlugCustomersCustomerid.ts";
+export { useGetOrganizationsSlugCustomersCustomerid } from "./hooks/useGetOrganizationsSlugCustomersCustomerid.ts";
+export { getOrganizationsSlugCustomersCustomeridSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
+export { getOrganizationsSlugCustomersCustomeridSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
+export { useGetOrganizationsSlugCustomersCustomeridSuspense } from "./hooks/useGetOrganizationsSlugCustomersCustomeridSuspense.ts";
 export { getOrganizationsSlugCustomersSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugCustomersSuspense.ts";
 export { getOrganizationsSlugCustomersSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugCustomersSuspense.ts";
 export { useGetOrganizationsSlugCustomersSuspense } from "./hooks/useGetOrganizationsSlugCustomersSuspense.ts";
@@ -416,6 +426,8 @@ export { categoriesParentIdEnum } from "./models/GetOrganizationsSlugCategories.
 export { childrenTypeEnum } from "./models/GetOrganizationsSlugCategories.ts";
 export { customersPersonTypeEnum } from "./models/GetOrganizationsSlugCustomers.ts";
 export { customersDocumentTypeEnum } from "./models/GetOrganizationsSlugCustomers.ts";
+export { customerPersonTypeEnum } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
+export { customerDocumentTypeEnum } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
 export { invitesRoleEnum } from "./models/GetOrganizationsSlugInvites.ts";
 export { invitesRoleEnum2 } from "./models/GetOrganizationsSlugInvites.ts";
 export { membersRoleEnum } from "./models/GetOrganizationsSlugMembers.ts";
@@ -530,6 +542,7 @@ export { getOrganizationsSlugCategoriesPathParamsSchema, getOrganizationsSlugCat
 export { getOrganizationsSlugCompaniesCompanyidUnitsPathParamsSchema, getOrganizationsSlugCompaniesCompanyidUnits200Schema, getOrganizationsSlugCompaniesCompanyidUnitsQueryResponseSchema } from "./zod/getOrganizationsSlugCompaniesCompanyidUnitsSchema.ts";
 export { getOrganizationsSlugCompaniesPathParamsSchema, getOrganizationsSlugCompanies200Schema, getOrganizationsSlugCompaniesQueryResponseSchema } from "./zod/getOrganizationsSlugCompaniesSchema.ts";
 export { getOrganizationsSlugCostcentersPathParamsSchema, getOrganizationsSlugCostcenters200Schema, getOrganizationsSlugCostcentersQueryResponseSchema } from "./zod/getOrganizationsSlugCostcentersSchema.ts";
+export { getOrganizationsSlugCustomersCustomeridPathParamsSchema, getOrganizationsSlugCustomersCustomerid200Schema, getOrganizationsSlugCustomersCustomeridQueryResponseSchema } from "./zod/getOrganizationsSlugCustomersCustomeridSchema.ts";
 export { getOrganizationsSlugCustomersPathParamsSchema, getOrganizationsSlugCustomers200Schema, getOrganizationsSlugCustomersQueryResponseSchema } from "./zod/getOrganizationsSlugCustomersSchema.ts";
 export { getOrganizationsSlugEmployeesPathParamsSchema, getOrganizationsSlugEmployees200Schema, getOrganizationsSlugEmployeesQueryResponseSchema } from "./zod/getOrganizationsSlugEmployeesSchema.ts";
 export { getOrganizationsSlugInvitesPathParamsSchema, getOrganizationsSlugInvites200Schema, getOrganizationsSlugInvitesQueryResponseSchema } from "./zod/getOrganizationsSlugInvitesSchema.ts";

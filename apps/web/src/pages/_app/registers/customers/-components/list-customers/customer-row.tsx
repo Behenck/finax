@@ -15,41 +15,13 @@ import { Link } from '@tanstack/react-router'
 import { getOrganizationsSlugCustomersQueryKey, useDeleteOrganizationsSlugCustomersCustomerid, type GetOrganizationsSlugCustomers200 } from '@/http/generated'
 import { getInitials } from '@/utils/get-initials'
 import { formatPhone } from '@/utils/format-phone'
-import { useApp } from '@/context/app-context'
-import { toast } from 'sonner'
-import { useQueryClient } from '@tanstack/react-query'
+import { DeleteCustomer } from './-components/delete-customer'
 
 interface CustomerRowProps {
   customer: GetOrganizationsSlugCustomers200["customers"][number]
 }
 
 export function CustomerRow({ customer }: CustomerRowProps) {
-  const queryClient = useQueryClient()
-  const { organization } = useApp()
-  const { mutateAsync: deleteCustomer } = useDeleteOrganizationsSlugCustomersCustomerid()
-  async function handleDeleteCustomer(customer: CustomerRowProps["customer"]) {
-    try {
-      await deleteCustomer({ slug: organization!.slug, customerId: customer.id },
-
-      )
-      // await deleteCustomer({ slug: organization!.slug, customerId: customer.id },
-      //   {
-      //     onSuccess: async () => {
-      //       await queryClient.invalidateQueries({
-      //         queryKey: getOrganizationsSlugCustomersQueryKey({
-      //           slug: organization!.slug,
-      //         }),
-      //       })
-      //     },
-      //   }
-      // )
-
-      toast.success(`Cliente ${customer.name} excluído com sucesso!`)
-    } catch (err) {
-      toast.error("Ocorreu um erro ao deletar esse cliente")
-    }
-  }
-
   return (
     <Card className='p-4 flex flex-row items-center justify-between cursor-pointer'>
       <div className='flex gap-2 items-center'>
@@ -96,21 +68,15 @@ export function CustomerRow({ customer }: CustomerRowProps) {
           <DropdownMenuContent>
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to="/" className='cursor-pointer'>
+                <Link to="/registers/customers/update" search={{ customerId: customer.id }} className='cursor-pointer'>
                   <div className='flex gap-4 items-center'>
                     <Edit3 className='size-3.5 text-foreground' />
                     <span className='font-light text-sm'>Editar</span>
                   </div>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className='flex gap-4 items-center'
-                onClick={() => {
-                  handleDeleteCustomer(customer)
-                }}
-              >
-                <Trash2 className='size-3.5 text-foreground' />
-                <span className='font-light text-sm'>Excluir</span>
+              <DropdownMenuItem>
+                <DeleteCustomer customer={customer} />
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

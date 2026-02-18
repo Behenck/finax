@@ -18,6 +18,7 @@ export type { GetOrganizationsSlugCompaniesPathParams, GetOrganizationsSlugCompa
 export type { GetOrganizationsSlugCompaniesCompanyidUnitsPathParams, GetOrganizationsSlugCompaniesCompanyidUnits200, GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, GetOrganizationsSlugCompaniesCompanyidUnitsQuery } from "./GetOrganizationsSlugCompaniesCompanyidUnits.ts";
 export type { GetOrganizationsSlugCostcentersPathParams, GetOrganizationsSlugCostcenters200, GetOrganizationsSlugCostcentersQueryResponse, GetOrganizationsSlugCostcentersQuery } from "./GetOrganizationsSlugCostcenters.ts";
 export type { GetOrganizationsSlugCustomersPathParams, CustomersPersonTypeEnumKey, CustomersDocumentTypeEnumKey, GetOrganizationsSlugCustomers200, GetOrganizationsSlugCustomersQueryResponse, GetOrganizationsSlugCustomersQuery } from "./GetOrganizationsSlugCustomers.ts";
+export type { GetOrganizationsSlugCustomersCustomeridPathParams, CustomerPersonTypeEnumKey, CustomerDocumentTypeEnumKey, GetOrganizationsSlugCustomersCustomerid200, GetOrganizationsSlugCustomersCustomeridQueryResponse, GetOrganizationsSlugCustomersCustomeridQuery } from "./GetOrganizationsSlugCustomersCustomerid.ts";
 export type { GetOrganizationsSlugEmployeesPathParams, GetOrganizationsSlugEmployees200, GetOrganizationsSlugEmployeesQueryResponse, GetOrganizationsSlugEmployeesQuery } from "./GetOrganizationsSlugEmployees.ts";
 export type { GetOrganizationsSlugInvitesPathParams, InvitesRoleEnumKey, InvitesRoleEnum2Key, GetOrganizationsSlugInvites200, GetOrganizationsSlugInvitesQueryResponse, GetOrganizationsSlugInvitesQuery } from "./GetOrganizationsSlugInvites.ts";
 export type { GetOrganizationsSlugMembersPathParams, MembersRoleEnumKey, MembersRoleEnum2Key, GetOrganizationsSlugMembers200, GetOrganizationsSlugMembersQueryResponse, GetOrganizationsSlugMembersQuery } from "./GetOrganizationsSlugMembers.ts";
@@ -80,6 +81,8 @@ export { categoriesParentIdEnum } from "./GetOrganizationsSlugCategories.ts";
 export { childrenTypeEnum } from "./GetOrganizationsSlugCategories.ts";
 export { customersPersonTypeEnum } from "./GetOrganizationsSlugCustomers.ts";
 export { customersDocumentTypeEnum } from "./GetOrganizationsSlugCustomers.ts";
+export { customerPersonTypeEnum } from "./GetOrganizationsSlugCustomersCustomerid.ts";
+export { customerDocumentTypeEnum } from "./GetOrganizationsSlugCustomersCustomerid.ts";
 export { invitesRoleEnum } from "./GetOrganizationsSlugInvites.ts";
 export { invitesRoleEnum2 } from "./GetOrganizationsSlugInvites.ts";
 export { membersRoleEnum } from "./GetOrganizationsSlugMembers.ts";

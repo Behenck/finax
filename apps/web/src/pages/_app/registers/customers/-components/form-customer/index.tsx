@@ -7,11 +7,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { customerSchema, type CustomerFormInput } from '@/schemas/customer-schema'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { usePostOrganizationsSlugCustomers } from '@/http/generated'
+import { usePostOrganizationsSlugCustomers, type GetOrganizationsSlugCustomers200 } from '@/http/generated'
 import { useApp } from '@/context/app-context'
 import { mapCustomerFormToRequest } from './-mappers/customer-mapper'
 
-export function FormCustomer() {
+interface FormCustomerProps {
+  customer?: GetOrganizationsSlugCustomers200["customers"][number]
+}
+
+export function FormCustomer({ customer }: FormCustomerProps) {
   const { organization } = useApp()
   const { mutateAsync: createCustomer, isPending } =
     usePostOrganizationsSlugCustomers()
