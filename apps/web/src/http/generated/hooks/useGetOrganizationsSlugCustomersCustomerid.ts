@@ -10,7 +10,7 @@ import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryResult } from
 import { getOrganizationsSlugCustomersCustomerid } from "../getOrganizationsSlugCustomersCustomerid.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getOrganizationsSlugCustomersCustomeridQueryKey = ({ slug, customerId }: { slug: GetOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: GetOrganizationsSlugCustomersCustomeridPathParams["customerId"] }) => [{ url: '/organizations/:slug/customers/customerId', params: {slug:slug} }] as const
+export const getOrganizationsSlugCustomersCustomeridQueryKey = ({ slug, customerId }: { slug: GetOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: GetOrganizationsSlugCustomersCustomeridPathParams["customerId"] }) => [{ url: '/organizations/:slug/customers/:customerId', params: {slug:slug,customerId:customerId} }] as const
 
 export type GetOrganizationsSlugCustomersCustomeridQueryKey = ReturnType<typeof getOrganizationsSlugCustomersCustomeridQueryKey>
 
@@ -28,7 +28,7 @@ export function getOrganizationsSlugCustomersCustomeridQueryOptions({ slug, cust
 
 /**
  * @summary Get customer
- * {@link /organizations/:slug/customers/customerId}
+ * {@link /organizations/:slug/customers/:customerId}
  */
 export function useGetOrganizationsSlugCustomersCustomerid<TData = GetOrganizationsSlugCustomersCustomeridQueryResponse, TQueryData = GetOrganizationsSlugCustomersCustomeridQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugCustomersCustomeridQueryKey>({ slug, customerId }: { slug: GetOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: GetOrganizationsSlugCustomersCustomeridPathParams["customerId"] }, options: 
 {

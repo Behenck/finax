@@ -264,6 +264,11 @@ enum CustomerDocumentType {
   OTHER
 }
 
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model Customer {
   id             String @id @default(uuid())
   organizationId String @map("organization_id")
@@ -274,8 +279,9 @@ model Customer {
   documentType   CustomerDocumentType @map("document_type")
   documentNumber String               @map("document_number")
 
-  email String?
-  phone String?
+  email  String?
+  phone  String?
+  status CustomerStatus @default(ACTIVE)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -303,6 +309,7 @@ model CustomerPF {
 
   placeOfBirth String? @map("place_of_birth") // naturalidade
   profession   String? @map("profession") // atividade profissional
+  naturality   String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

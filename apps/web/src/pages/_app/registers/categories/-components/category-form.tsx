@@ -24,12 +24,12 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Palette } from "lucide-react";
 import type z from "zod";
 import { cn } from "@/lib/utils";
-import { useCreateCategory } from "@/hooks/categories/use-create-category";
-import { useUpdateCategory } from "@/hooks/categories/use-update-category";
 import type { Category, CategoryChild } from "@/schemas/types/category";
 import { formatTitleCase } from "@/utils/format-title-case";
 import { formatCategoryCode } from "@/utils/format-category-code";
-import type { CategoriesTypeEnumKey } from "@/http/generated";
+import { getOrganizationsSlugCategoriesQueryKey, usePostOrganizationsSlugCategories, usePutOrganizationsSlugCategoriesId, type CategoriesTypeEnumKey } from "@/http/generated";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type CreateCategoryType = z.infer<typeof categorySchema>;
 
@@ -127,8 +127,11 @@ export function CategoryForm({
 	parentId,
 	parentColor,
 }: CreateCategoryFormProps) {
-	const { mutateAsync: createCategory } = useCreateCategory();
-	const { mutateAsync: updateCategory } = useUpdateCategory();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: createCategory } = usePostOrganizationsSlugCategories();
+	const { mutateAsync: updateCategory } = usePutOrganizationsSlugCategoriesId();
 
 	const { handleSubmit, control } = useForm<CreateCategoryType>({
 		resolver: zodResolver(categorySchema as any),
@@ -149,15 +152,37 @@ export function CategoryForm({
 	async function onSubmit(data: CategoryFormData) {
 		if (mode === "edit" && initialData) {
 			await updateCategory({
+				slug: organization!.slug,
 				id: initialData.id,
 				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCategoriesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		} else {
 			const { parentId: oldParentId, ...rest } = data;
 
-			await createCategory({
+			const payload = {
 				...rest,
 				parentId,
+			}
+
+			await createCategory({
+				slug: organization!.slug,
+				data: payload
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCategoriesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		}
 

@@ -10,8 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
-import { useCreateEmployee } from "@/hooks/employees/use-create-employee";
-import { useUpdateEmployee } from "@/hooks/employees/use-update-employee";
 import {
 	employeeSchema,
 	type EmployeeFormData,
@@ -24,7 +22,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useCompanies } from "@/hooks/companies/use-companies";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugEmployeesQueryKey, useGetOrganizationsSlugCompanies, usePostOrganizationsSlugEmployees, usePutOrganizationsSlugEmployeesEmployeeid } from "@/http/generated";
 
 export type CreateEmployeeType = z.infer<typeof employeeSchema>;
 
@@ -39,10 +39,13 @@ export function EmployeeForm({
 	mode,
 	initialData,
 }: CreateEmployeeFormProps) {
-	const { mutateAsync: createEmployee } = useCreateEmployee();
-	const { mutateAsync: updateEmployee } = useUpdateEmployee();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
 
-	const { data: companies } = useCompanies();
+	const { mutateAsync: createEmployee } = usePostOrganizationsSlugEmployees();
+	const { mutateAsync: updateEmployee } = usePutOrganizationsSlugEmployeesEmployeeid();
+
+	const { data } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
 
 	const { handleSubmit, control } = useForm<CreateEmployeeType>({
 		resolver: zodResolver(employeeSchema as any),
@@ -58,11 +61,31 @@ export function EmployeeForm({
 	async function onSubmit(data: EmployeeFormData) {
 		if (mode === "edit" && initialData) {
 			await updateEmployee({
+				slug: organization!.slug,
 				employeeId: initialData.id,
 				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugEmployeesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		} else {
-			await createEmployee(data);
+			await createEmployee({
+				slug: organization!.slug,
+				data
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugEmployeesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
+			});
 		}
 
 		onSuccess?.();
@@ -216,7 +239,7 @@ export function EmployeeForm({
 								</SelectTrigger>
 
 								<SelectContent>
-									{companies?.map((company) => (
+									{data?.companies.map((company) => (
 										<SelectItem key={company.id} value={company.id}>
 											{company.name}
 										</SelectItem>

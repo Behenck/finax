@@ -8,13 +8,13 @@ import type { GetOrganizationsSlugCustomersCustomeridQueryResponse, GetOrganizat
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugCustomersCustomeridUrl({ slug, customerId }: { slug: GetOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: GetOrganizationsSlugCustomersCustomeridPathParams["customerId"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/customers/customerId` as const }  
+  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/customers/${customerId}` as const }  
   return res
 }
 
 /**
  * @summary Get customer
- * {@link /organizations/:slug/customers/customerId}
+ * {@link /organizations/:slug/customers/:customerId}
  */
 export async function getOrganizationsSlugCustomersCustomerid({ slug, customerId }: { slug: GetOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: GetOrganizationsSlugCustomersCustomeridPathParams["customerId"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  

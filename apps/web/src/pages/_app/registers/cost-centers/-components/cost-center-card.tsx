@@ -1,25 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useDeleteCostCenter } from "@/hooks/cost-centers/use-delete-cost-center";
 import type { CostCenter } from "@/schemas/types/cost-center";
 import { Building2, Trash2 } from "lucide-react";
-import { CreateCostCenter } from "./create-cost-center";
 import { UpdateCostCenter } from "./update-cost-center";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugCompaniesQueryKey, useDeleteOrganizationsSlugCostcentersCostcenterid } from "@/http/generated";
 
 interface CostCenterCardProps {
 	costCenter: CostCenter;
 }
 
 export function CostCenterCard({ costCenter }: CostCenterCardProps) {
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
 	const { mutateAsync: handleDeleteCostCenter, isPending } =
-		useDeleteCostCenter();
+		useDeleteOrganizationsSlugCostcentersCostcenterid();
 
 	async function onDelete(costCenter: CostCenter) {
 		const confirmed = window.confirm(
 			`Deseja realmente excluir o Centro de Custo ${costCenter.name} ?`,
 		);
 		if (!confirmed) return;
-		await handleDeleteCostCenter(costCenter.id);
+		await handleDeleteCostCenter({
+			slug: organization!.slug,
+			costCenterId: costCenter.id,
+		}, {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugCompaniesQueryKey({
+						slug: organization!.slug,
+					}),
+				})
+			},
+		});
 	}
 
 	return (

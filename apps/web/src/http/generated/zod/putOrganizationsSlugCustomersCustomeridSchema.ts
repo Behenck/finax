@@ -28,7 +28,8 @@ export const putOrganizationsSlugCustomersCustomeridMutationRequestSchema = z.ob
 "profession": z.optional(z.string()),
 "placeOfBirth": z.optional(z.string()),
 "fatherName": z.optional(z.string()),
-"motherName": z.optional(z.string())
+"motherName": z.optional(z.string()),
+"naturality": z.optional(z.string())
     })),
 "pj": z.optional(z.object({
     "businessActivity": z.optional(z.string()),

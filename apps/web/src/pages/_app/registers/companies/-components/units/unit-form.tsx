@@ -12,8 +12,9 @@ import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
 import type { Unit } from "@/schemas/types/unit";
 import { unitSchema, type UnitFormData } from "@/schemas/unity-schema";
-import { useCreateUnit } from "@/hooks/units/use-create-unit";
-import { useUpdateUnit } from "@/hooks/units/use-update-unit";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugCompaniesCompanyidUnitsQueryKey, getOrganizationsSlugCompaniesQueryKey, usePostOrganizationsSlugCompaniesCompanyidUnits, usePutOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "@/http/generated";
 
 export type CreateUnitType = z.infer<typeof unitSchema>;
 
@@ -30,8 +31,11 @@ export function UnitForm({
 	companyId,
 	initialData,
 }: CreateUnitFormProps) {
-	const { mutateAsync: createUnit } = useCreateUnit();
-	const { mutateAsync: updateUnit } = useUpdateUnit();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: createUnit } = usePostOrganizationsSlugCompaniesCompanyidUnits();
+	const { mutateAsync: updateUnit } = usePutOrganizationsSlugCompaniesCompanyidUnitsUnitid();
 
 	const { handleSubmit, control } = useForm<CreateUnitType>({
 		resolver: zodResolver(unitSchema as any),
@@ -43,12 +47,33 @@ export function UnitForm({
 	async function onSubmit(data: UnitFormData) {
 		if (mode === "edit" && initialData) {
 			await updateUnit({
+				slug: organization!.slug,
 				companyId,
 				unitId: initialData.id,
 				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCompaniesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		} else {
-			await createUnit({ companyId, data });
+			await createUnit({
+				slug: organization!.slug,
+				companyId,
+				data
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCompaniesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
+			});
 		}
 
 		onSuccess?.();

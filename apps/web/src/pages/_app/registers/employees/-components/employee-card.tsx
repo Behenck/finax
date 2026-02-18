@@ -1,24 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useDeleteEmployee } from "@/hooks/employees/use-delete-employee";
 import type { Employee } from "@/schemas/types/employee";
 import { Briefcase, Building2, Mail, Trash2 } from "lucide-react";
 import { UpdateEmployee } from "./update-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugEmployeesQueryKey, useDeleteOrganizationsSlugEmployeesEmployeeid } from "@/http/generated";
 
 interface EmployeeCardProps {
 	employee: Employee;
 }
 
 export function EmployeeCard({ employee }: EmployeeCardProps) {
-	const { mutateAsync: handleDeleteEmployee, isPending } = useDeleteEmployee();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: handleDeleteEmployee, isPending } = useDeleteOrganizationsSlugEmployeesEmployeeid();
 
 	async function onDelete(employee: Employee) {
 		const confirmed = window.confirm(
 			`Deseja realmente excluir o Funcionário ${employee.name} ?`,
 		);
 		if (!confirmed) return;
-		await handleDeleteEmployee(employee.id);
+		await handleDeleteEmployee({
+			slug: organization!.slug,
+			employeeId: employee.id
+		}, {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugEmployeesQueryKey({
+						slug: organization!.slug,
+					}),
+				})
+			},
+		});
 	}
 
 	return (

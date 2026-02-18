@@ -22,16 +22,20 @@ function UpdateCustomer() {
     customerId
   })
 
+  if (!data?.customer) {
+    return <span>Carregando...</span>
+  }
+
   return (
     <main className="w-full space-y-6">
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Editar Cliente</h1>
-          <span className='text-xs text-muted-foreground'>Preencha os dados para cadastrar um novo cliente.</span>
+          <span className='text-xs text-muted-foreground'>Preencha os dados para atualizar o cliente.</span>
         </div>
       </header>
 
-      <FormCustomer customer={data?.customer} />
+      <FormCustomer type='UPDATE' customer={data.customer} />
     </main>
   )
 }

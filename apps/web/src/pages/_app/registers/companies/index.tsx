@@ -1,10 +1,11 @@
 import { Input } from "@/components/ui/input";
-import { useCompanies } from "@/hooks/companies/use-companies";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CompanyCard } from "./-components/company-card";
 import { CreateCompany } from "./-components/create-company";
 import { createFileRoute } from "@tanstack/react-router";
+import { useGetOrganizationsSlugCompanies } from "@/http/generated";
+import { useApp } from "@/context/app-context";
 
 export const Route = createFileRoute("/_app/registers/companies/")({
 	component: Companies,
@@ -12,9 +13,10 @@ export const Route = createFileRoute("/_app/registers/companies/")({
 
 function Companies() {
 	const [search, setSearch] = useState("");
-	const { data: companies, isLoading, isError } = useCompanies();
+	const { organization } = useApp()
+	const { data, isLoading, isError } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
 
-	const safeCompanies = companies ?? [];
+	const safeCompanies = data?.companies ?? [];
 
 	const filteredCompanies = useMemo(() => {
 		if (!search.trim()) return safeCompanies;

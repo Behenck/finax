@@ -21,13 +21,15 @@ export const getOrganizationsSlugCustomers200Schema = z.object({
 "email": z.nullable(z.string()),
 "documentType": z.enum(["CPF", "CNPJ", "RG", "IE", "PASSPORT", "OTHER"]),
 "documentNumber": z.string(),
+"status": z.enum(["ACTIVE", "INACTIVE"]),
 "pf": z.nullable(z.object({
     "birthDate": z.nullable(z.iso.datetime()),
 "monthlyIncome": z.nullable(z.number()),
 "profession": z.nullable(z.string()),
 "placeOfBirth": z.nullable(z.string()),
 "fatherName": z.nullable(z.string()),
-"motherName": z.nullable(z.string())
+"motherName": z.nullable(z.string()),
+"naturality": z.nullable(z.string())
     })),
 "pj": z.nullable(z.object({
     "businessActivity": z.nullable(z.string()),

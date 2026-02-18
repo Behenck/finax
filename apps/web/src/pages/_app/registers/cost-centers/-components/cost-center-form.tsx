@@ -10,13 +10,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
-import { useCreateCostCenter } from "@/hooks/cost-centers/use-create-cost-center";
-import { useUpdateCostCenter } from "@/hooks/cost-centers/use-update-cost-center";
 import {
 	costCenterSchema,
 	type CostCenterFormData,
 } from "@/schemas/cost-center-schema";
 import type { CostCenter } from "@/schemas/types/cost-center";
+import { useApp } from "@/context/app-context";
+import { getOrganizationsSlugCostcentersQueryKey, usePostOrganizationsSlugCostcenters, usePutOrganizationsSlugCostcentersCostcenterid } from "@/http/generated";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type CreateCostCenterType = z.infer<typeof costCenterSchema>;
 
@@ -31,8 +32,11 @@ export function CostCenterForm({
 	mode,
 	initialData,
 }: CreateCostCenterFormProps) {
-	const { mutateAsync: createCostCenter } = useCreateCostCenter();
-	const { mutateAsync: updateCostCenter } = useUpdateCostCenter();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: createCostCenter } = usePostOrganizationsSlugCostcenters();
+	const { mutateAsync: updateCostCenter } = usePutOrganizationsSlugCostcentersCostcenterid();
 
 	const { handleSubmit, control } = useForm<CreateCostCenterType>({
 		resolver: zodResolver(costCenterSchema as any),
@@ -44,11 +48,31 @@ export function CostCenterForm({
 	async function onSubmit(data: CostCenterFormData) {
 		if (mode === "edit" && initialData) {
 			await updateCostCenter({
+				slug: organization!.slug,
 				costCenterId: initialData.id,
 				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCostcentersQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		} else {
-			await createCostCenter(data);
+			await createCostCenter({
+				slug: organization!.slug,
+				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCostcentersQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
+			});
 		}
 
 		onSuccess?.();

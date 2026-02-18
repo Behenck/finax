@@ -247,6 +247,13 @@ export type EnumCustomerDocumentTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel> | $Enums.CustomerDocumentType
 }
 
+export type EnumCustomerStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerStatus | Prisma.EnumCustomerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel> | $Enums.CustomerStatus
+}
+
 export type EnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
   in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
@@ -265,6 +272,16 @@ export type EnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+}
+
+export type EnumCustomerStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerStatus | Prisma.EnumCustomerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerStatusWithAggregatesFilter<$PrismaModel> | $Enums.CustomerStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
 }
 
 export type IntNullableFilter<$PrismaModel = never> = {
@@ -652,6 +669,13 @@ export type NestedEnumCustomerDocumentTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel> | $Enums.CustomerDocumentType
 }
 
+export type NestedEnumCustomerStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerStatus | Prisma.EnumCustomerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel> | $Enums.CustomerStatus
+}
+
 export type NestedEnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
   in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
@@ -670,6 +694,16 @@ export type NestedEnumCustomerDocumentTypeWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerDocumentTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumCustomerStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerStatus | Prisma.EnumCustomerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CustomerStatus[] | Prisma.ListEnumCustomerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCustomerStatusWithAggregatesFilter<$PrismaModel> | $Enums.CustomerStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
 }
 
 export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {

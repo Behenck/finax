@@ -16,7 +16,9 @@ import { UpdateCategory } from "./update-category";
 
 import type { Category } from "@/schemas/types/category";
 import { getLucideIcon } from "@/components/lucide-icon";
-import { useDeleteCategory } from "@/hooks/categories/use-delete-category";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugCategoriesQueryKey, useDeleteOrganizationsSlugCategoriesId } from "@/http/generated";
 
 interface CategoryCardProps {
 	category: Category;
@@ -25,10 +27,13 @@ interface CategoryCardProps {
 type DeleteTarget = { id: string; name: string };
 
 export function CategoryCard({ category }: CategoryCardProps) {
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
 	const [isOpen, setIsOpen] = useState(false);
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-	const { mutateAsync: handleDeleteCategory, isPending } = useDeleteCategory();
+	const { mutateAsync: handleDeleteCategory, isPending } = useDeleteOrganizationsSlugCategoriesId();
 
 	const Icon = getLucideIcon(category.icon);
 	const children = category.children ?? [];
@@ -39,7 +44,18 @@ export function CategoryCard({ category }: CategoryCardProps) {
 			`Deseja realmente excluir a categoria ${category.name} ?`,
 		);
 		if (!confirmed) return;
-		await handleDeleteCategory(category.id);
+		await handleDeleteCategory({
+			slug: organization!.slug,
+			id: category.id
+		}, {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugCategoriesQueryKey({
+						slug: organization!.slug,
+					}),
+				})
+			},
+		});
 	}
 
 	return (

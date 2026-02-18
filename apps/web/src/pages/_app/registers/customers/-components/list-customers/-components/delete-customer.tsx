@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useApp } from "@/context/app-context";
 import { getOrganizationsSlugCustomersQueryKey, useDeleteOrganizationsSlugCustomersCustomerid, type GetOrganizationsSlugCustomers200 } from "@/http/generated";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,13 +36,9 @@ export function DeleteCustomer({ customer }: DeleteCustomerProps) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      className='flex gap-4 items-center'
-      onClick={handleDeleteCustomer}
-    >
+    <DropdownMenuItem className='flex gap-4 items-center cursor-pointer' onClick={handleDeleteCustomer}>
       <Trash2 className='size-3.5 text-foreground' />
       <span className='font-light text-sm'>Excluir</span>
-    </Button>
+    </DropdownMenuItem>
   )
 }

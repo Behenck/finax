@@ -1,21 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CreateCategory } from "./-components/create-category";
-import { useCategories } from "@/hooks/categories/use-category";
 import { useMemo, useState } from "react";
 import { CategoryColumn } from "./-components/category-column";
 import { Input } from "@/components/ui/input";
 import { isNotNull } from "@/utils/is-not-null";
 import { Search } from "lucide-react";
+import { useApp } from "@/context/app-context";
+import { useGetOrganizationsSlugCategories } from "@/http/generated";
 
 export const Route = createFileRoute("/_app/registers/categories/")({
 	component: Categories,
 });
 
 function Categories() {
-	const { data: categories, isError, isLoading } = useCategories();
+	const { organization } = useApp()
+
+	const { data, isError, isLoading } = useGetOrganizationsSlugCategories({ slug: organization!.slug });
 	const [search, setSearch] = useState("");
 
-	const safeCategories = categories ?? [];
+	const safeCategories = data?.categories ?? [];
 
 	const filteredCategories = useMemo(() => {
 		if (!search.trim()) return safeCategories;

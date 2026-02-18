@@ -96,8 +96,8 @@ export type { GetOrganizationsSlugCategoriesPathParams, CategoriesTypeEnumKey, C
 export type { GetOrganizationsSlugCompaniesPathParams, GetOrganizationsSlugCompanies200, GetOrganizationsSlugCompaniesQueryResponse, GetOrganizationsSlugCompaniesQuery } from "./models/GetOrganizationsSlugCompanies.ts";
 export type { GetOrganizationsSlugCompaniesCompanyidUnitsPathParams, GetOrganizationsSlugCompaniesCompanyidUnits200, GetOrganizationsSlugCompaniesCompanyidUnitsQueryResponse, GetOrganizationsSlugCompaniesCompanyidUnitsQuery } from "./models/GetOrganizationsSlugCompaniesCompanyidUnits.ts";
 export type { GetOrganizationsSlugCostcentersPathParams, GetOrganizationsSlugCostcenters200, GetOrganizationsSlugCostcentersQueryResponse, GetOrganizationsSlugCostcentersQuery } from "./models/GetOrganizationsSlugCostcenters.ts";
-export type { GetOrganizationsSlugCustomersPathParams, CustomersPersonTypeEnumKey, CustomersDocumentTypeEnumKey, GetOrganizationsSlugCustomers200, GetOrganizationsSlugCustomersQueryResponse, GetOrganizationsSlugCustomersQuery } from "./models/GetOrganizationsSlugCustomers.ts";
-export type { GetOrganizationsSlugCustomersCustomeridPathParams, CustomerPersonTypeEnumKey, CustomerDocumentTypeEnumKey, GetOrganizationsSlugCustomersCustomerid200, GetOrganizationsSlugCustomersCustomeridQueryResponse, GetOrganizationsSlugCustomersCustomeridQuery } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
+export type { GetOrganizationsSlugCustomersPathParams, CustomersPersonTypeEnumKey, CustomersDocumentTypeEnumKey, CustomersStatusEnumKey, GetOrganizationsSlugCustomers200, GetOrganizationsSlugCustomersQueryResponse, GetOrganizationsSlugCustomersQuery } from "./models/GetOrganizationsSlugCustomers.ts";
+export type { GetOrganizationsSlugCustomersCustomeridPathParams, CustomerPersonTypeEnumKey, CustomerDocumentTypeEnumKey, CustomerStatusEnumKey, GetOrganizationsSlugCustomersCustomerid200, GetOrganizationsSlugCustomersCustomeridQueryResponse, GetOrganizationsSlugCustomersCustomeridQuery } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
 export type { GetOrganizationsSlugEmployeesPathParams, GetOrganizationsSlugEmployees200, GetOrganizationsSlugEmployeesQueryResponse, GetOrganizationsSlugEmployeesQuery } from "./models/GetOrganizationsSlugEmployees.ts";
 export type { GetOrganizationsSlugInvitesPathParams, InvitesRoleEnumKey, InvitesRoleEnum2Key, GetOrganizationsSlugInvites200, GetOrganizationsSlugInvitesQueryResponse, GetOrganizationsSlugInvitesQuery } from "./models/GetOrganizationsSlugInvites.ts";
 export type { GetOrganizationsSlugMembersPathParams, MembersRoleEnumKey, MembersRoleEnum2Key, GetOrganizationsSlugMembers200, GetOrganizationsSlugMembersQueryResponse, GetOrganizationsSlugMembersQuery } from "./models/GetOrganizationsSlugMembers.ts";
@@ -426,8 +426,10 @@ export { categoriesParentIdEnum } from "./models/GetOrganizationsSlugCategories.
 export { childrenTypeEnum } from "./models/GetOrganizationsSlugCategories.ts";
 export { customersPersonTypeEnum } from "./models/GetOrganizationsSlugCustomers.ts";
 export { customersDocumentTypeEnum } from "./models/GetOrganizationsSlugCustomers.ts";
+export { customersStatusEnum } from "./models/GetOrganizationsSlugCustomers.ts";
 export { customerPersonTypeEnum } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
 export { customerDocumentTypeEnum } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
+export { customerStatusEnum } from "./models/GetOrganizationsSlugCustomersCustomerid.ts";
 export { invitesRoleEnum } from "./models/GetOrganizationsSlugInvites.ts";
 export { invitesRoleEnum2 } from "./models/GetOrganizationsSlugInvites.ts";
 export { membersRoleEnum } from "./models/GetOrganizationsSlugMembers.ts";

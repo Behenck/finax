@@ -243,6 +243,7 @@ export const CustomerScalarFieldEnum = {
   documentNumber: 'documentNumber',
   email: 'email',
   phone: 'phone',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -260,6 +261,7 @@ export const CustomerPFScalarFieldEnum = {
   monthlyIncome: 'monthlyIncome',
   placeOfBirth: 'placeOfBirth',
   profession: 'profession',
+  naturality: 'naturality',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

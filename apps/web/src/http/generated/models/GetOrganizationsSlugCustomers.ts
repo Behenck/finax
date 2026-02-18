@@ -29,6 +29,13 @@ export const customersDocumentTypeEnum = {
 
 export type CustomersDocumentTypeEnumKey = (typeof customersDocumentTypeEnum)[keyof typeof customersDocumentTypeEnum];
 
+export const customersStatusEnum = {
+    "ACTIVE": "ACTIVE",
+    "INACTIVE": "INACTIVE"
+} as const;
+
+export type CustomersStatusEnumKey = (typeof customersStatusEnum)[keyof typeof customersStatusEnum];
+
 /**
  * @description Default Response
 */
@@ -66,6 +73,10 @@ export type GetOrganizationsSlugCustomers200 = {
         */
         documentNumber: string;
         /**
+         * @type string
+        */
+        status: CustomersStatusEnumKey;
+        /**
          * @type object
         */
         pf: {
@@ -93,6 +104,10 @@ export type GetOrganizationsSlugCustomers200 = {
              * @type string
             */
             motherName: string | null;
+            /**
+             * @type string
+            */
+            naturality: string | null;
         } | null;
         /**
          * @type object

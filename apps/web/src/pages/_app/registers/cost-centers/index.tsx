@@ -1,20 +1,23 @@
 import { Input } from "@/components/ui/input";
-import { useCostCenters } from "@/hooks/cost-centers/use-cost-centers";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CreateCostCenter } from "./-components/create-cost-center";
 import { CostCenterCard } from "./-components/cost-center-card";
 import { createFileRoute } from "@tanstack/react-router";
+import { useApp } from "@/context/app-context";
+import { useGetOrganizationsSlugCostcenters } from "@/http/generated";
 
 export const Route = createFileRoute("/_app/registers/cost-centers/")({
 	component: CostCenters,
 });
 
 function CostCenters() {
-	const [search, setSearch] = useState("");
-	const { data: costCenters, isLoading, isError } = useCostCenters();
+	const { organization } = useApp()
 
-	const safeCostCenters = costCenters ?? [];
+	const [search, setSearch] = useState("");
+	const { data, isLoading, isError } = useGetOrganizationsSlugCostcenters({ slug: organization!.slug });
+
+	const safeCostCenters = data?.costCenters ?? [];
 
 	const filteredCostCenters = useMemo(() => {
 		if (!search.trim()) return safeCostCenters;

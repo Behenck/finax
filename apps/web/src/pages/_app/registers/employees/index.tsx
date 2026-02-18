@@ -1,20 +1,23 @@
 import { Input } from "@/components/ui/input";
-import { useEmployees } from "@/hooks/employees/use-employees";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CreateEmployee } from "./-components/create-employee";
 import { EmployeeCard } from "./-components/employee-card";
 import { createFileRoute } from "@tanstack/react-router";
+import { useApp } from "@/context/app-context";
+import { useGetOrganizationsSlugEmployees } from "@/http/generated";
 
 export const Route = createFileRoute("/_app/registers/employees/")({
 	component: Employees,
 });
 
 function Employees() {
-	const [search, setSearch] = useState("");
-	const { data: employees, isLoading, isError } = useEmployees();
+	const { organization } = useApp()
 
-	const safeEmployees = employees ?? [];
+	const [search, setSearch] = useState("");
+	const { data, isLoading, isError } = useGetOrganizationsSlugEmployees({ slug: organization!.slug });
+
+	const safeEmployees = data?.employees ?? [];
 
 	const filteredEmployees = useMemo(() => {
 		if (!search.trim()) return safeEmployees;

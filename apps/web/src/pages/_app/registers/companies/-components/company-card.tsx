@@ -10,16 +10,21 @@ import { useState } from "react";
 import { UnitCard } from "./units/unit-card";
 import type { Company } from "@/schemas/types/company";
 import { CreateUnit } from "./units/create-unit";
-import { useDeleteCompany } from "@/hooks/companies/use-delete-company";
 import { UpdateCompany } from "./update-company";
+import { getOrganizationsSlugCompaniesQueryKey, useDeleteOrganizationsSlugCompaniesCompanyid } from "@/http/generated";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CompanyCardProps {
 	company: Company;
 }
 
 export function CompanyCard({ company }: CompanyCardProps) {
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
 	const [isOpen, setIsOpen] = useState(false);
-	const { mutateAsync: handleDeleteCompany, isPending } = useDeleteCompany();
+	const { mutateAsync: handleDeleteCompany, isPending } = useDeleteOrganizationsSlugCompaniesCompanyid();
 
 	const units = company.units ?? [];
 	const hasUnits = units.length > 0;
@@ -31,7 +36,18 @@ export function CompanyCard({ company }: CompanyCardProps) {
 			`Deseja realmente excluir a empresa ${company.name} ?`,
 		);
 		if (!confirmed) return;
-		await handleDeleteCompany(company.id);
+		await handleDeleteCompany({
+			slug: organization!.slug,
+			companyId: company.id
+		}, {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugCompaniesQueryKey({
+						slug: organization!.slug,
+					}),
+				})
+			},
+		});
 	}
 
 	return (
@@ -89,8 +105,8 @@ export function CompanyCard({ company }: CompanyCardProps) {
 								<UnitCard
 									companyId={company.id}
 									unit={unit}
-									// isLoading={isPending}
-									// onDelete={onDelete}
+								// isLoading={isPending}
+								// onDelete={onDelete}
 								/>
 							</div>
 						))}

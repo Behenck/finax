@@ -3,7 +3,7 @@ import type { CategoriesTypeEnumKey } from "@/http/generated";
 export interface CategoryChild {
 	id: string;
 	name: string;
-	code?: string;
+	code: string | null;
 	type: CategoriesTypeEnumKey;
 	color: string;
 	icon: string;
@@ -13,7 +13,7 @@ export interface CategoryChild {
 export interface Category {
 	id: string;
 	name: string;
-	code?: string;
+	code: string | null;
 	type: CategoriesTypeEnumKey;
 	color: string;
 	icon: string;

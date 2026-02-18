@@ -34,6 +34,7 @@ export async function updateCustomer(app: FastifyInstance) {
             placeOfBirth: z.string().optional(),
             fatherName: z.string().optional(),
             motherName: z.string().optional(),
+            naturality: z.string().optional(),
           }).optional(),
           pj: z.object({
             businessActivity: z.string().optional(),
@@ -124,6 +125,7 @@ export async function updateCustomer(app: FastifyInstance) {
                     placeOfBirth: data.pf?.placeOfBirth ?? null,
                     fatherName: data.pf?.fatherName ?? null,
                     motherName: data.pf?.motherName ?? null,
+                    naturality: data.pf?.naturality ?? null,
                   },
                   update: {
                     birthDate: data.pf?.birthDate ?? null,
@@ -132,6 +134,7 @@ export async function updateCustomer(app: FastifyInstance) {
                     placeOfBirth: data.pf?.placeOfBirth ?? null,
                     fatherName: data.pf?.fatherName ?? null,
                     motherName: data.pf?.motherName ?? null,
+                    naturality: data.pf?.naturality ?? null,
                   },
                 })
               }

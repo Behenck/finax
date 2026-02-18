@@ -44,6 +44,7 @@ export type CustomerPFMinAggregateOutputType = {
   monthlyIncome: number | null
   placeOfBirth: string | null
   profession: string | null
+  naturality: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type CustomerPFMaxAggregateOutputType = {
   monthlyIncome: number | null
   placeOfBirth: string | null
   profession: string | null
+  naturality: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +74,7 @@ export type CustomerPFCountAggregateOutputType = {
   monthlyIncome: number
   placeOfBirth: number
   profession: number
+  naturality: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type CustomerPFMinAggregateInputType = {
   monthlyIncome?: true
   placeOfBirth?: true
   profession?: true
+  naturality?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +114,7 @@ export type CustomerPFMaxAggregateInputType = {
   monthlyIncome?: true
   placeOfBirth?: true
   profession?: true
+  naturality?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +129,7 @@ export type CustomerPFCountAggregateInputType = {
   monthlyIncome?: true
   placeOfBirth?: true
   profession?: true
+  naturality?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +231,7 @@ export type CustomerPFGroupByOutputType = {
   monthlyIncome: number | null
   placeOfBirth: string | null
   profession: string | null
+  naturality: string | null
   createdAt: Date
   updatedAt: Date
   _count: CustomerPFCountAggregateOutputType | null
@@ -262,6 +269,7 @@ export type CustomerPFWhereInput = {
   monthlyIncome?: Prisma.IntNullableFilter<"CustomerPF"> | number | null
   placeOfBirth?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
   profession?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
+  naturality?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CustomerPF"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CustomerPF"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
@@ -277,6 +285,7 @@ export type CustomerPFOrderByWithRelationInput = {
   monthlyIncome?: Prisma.SortOrderInput | Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   profession?: Prisma.SortOrderInput | Prisma.SortOrder
+  naturality?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
@@ -295,6 +304,7 @@ export type CustomerPFWhereUniqueInput = Prisma.AtLeast<{
   monthlyIncome?: Prisma.IntNullableFilter<"CustomerPF"> | number | null
   placeOfBirth?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
   profession?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
+  naturality?: Prisma.StringNullableFilter<"CustomerPF"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CustomerPF"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CustomerPF"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
@@ -310,6 +320,7 @@ export type CustomerPFOrderByWithAggregationInput = {
   monthlyIncome?: Prisma.SortOrderInput | Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   profession?: Prisma.SortOrderInput | Prisma.SortOrder
+  naturality?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CustomerPFCountOrderByAggregateInput
@@ -332,6 +343,7 @@ export type CustomerPFScalarWhereWithAggregatesInput = {
   monthlyIncome?: Prisma.IntNullableWithAggregatesFilter<"CustomerPF"> | number | null
   placeOfBirth?: Prisma.StringNullableWithAggregatesFilter<"CustomerPF"> | string | null
   profession?: Prisma.StringNullableWithAggregatesFilter<"CustomerPF"> | string | null
+  naturality?: Prisma.StringNullableWithAggregatesFilter<"CustomerPF"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerPF"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerPF"> | Date | string
 }
@@ -345,6 +357,7 @@ export type CustomerPFCreateInput = {
   monthlyIncome?: number | null
   placeOfBirth?: string | null
   profession?: string | null
+  naturality?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutCustomerPFInput
@@ -360,6 +373,7 @@ export type CustomerPFUncheckedCreateInput = {
   monthlyIncome?: number | null
   placeOfBirth?: string | null
   profession?: string | null
+  naturality?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -373,6 +387,7 @@ export type CustomerPFUpdateInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutCustomerPFNestedInput
@@ -388,6 +403,7 @@ export type CustomerPFUncheckedUpdateInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -402,6 +418,7 @@ export type CustomerPFCreateManyInput = {
   monthlyIncome?: number | null
   placeOfBirth?: string | null
   profession?: string | null
+  naturality?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -415,6 +432,7 @@ export type CustomerPFUpdateManyMutationInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -429,6 +447,7 @@ export type CustomerPFUncheckedUpdateManyInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -448,6 +467,7 @@ export type CustomerPFCountOrderByAggregateInput = {
   monthlyIncome?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
   profession?: Prisma.SortOrder
+  naturality?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -466,6 +486,7 @@ export type CustomerPFMaxOrderByAggregateInput = {
   monthlyIncome?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
   profession?: Prisma.SortOrder
+  naturality?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -480,6 +501,7 @@ export type CustomerPFMinOrderByAggregateInput = {
   monthlyIncome?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
   profession?: Prisma.SortOrder
+  naturality?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -537,6 +559,7 @@ export type CustomerPFCreateWithoutCustomerInput = {
   monthlyIncome?: number | null
   placeOfBirth?: string | null
   profession?: string | null
+  naturality?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -550,6 +573,7 @@ export type CustomerPFUncheckedCreateWithoutCustomerInput = {
   monthlyIncome?: number | null
   placeOfBirth?: string | null
   profession?: string | null
+  naturality?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -579,6 +603,7 @@ export type CustomerPFUpdateWithoutCustomerInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -592,6 +617,7 @@ export type CustomerPFUncheckedUpdateWithoutCustomerInput = {
   monthlyIncome?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profession?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naturality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -608,6 +634,7 @@ export type CustomerPFSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   monthlyIncome?: boolean
   placeOfBirth?: boolean
   profession?: boolean
+  naturality?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -623,6 +650,7 @@ export type CustomerPFSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   monthlyIncome?: boolean
   placeOfBirth?: boolean
   profession?: boolean
+  naturality?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -638,6 +666,7 @@ export type CustomerPFSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   monthlyIncome?: boolean
   placeOfBirth?: boolean
   profession?: boolean
+  naturality?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -653,11 +682,12 @@ export type CustomerPFSelectScalar = {
   monthlyIncome?: boolean
   placeOfBirth?: boolean
   profession?: boolean
+  naturality?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CustomerPFOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "organizationId" | "birthDate" | "motherName" | "fatherName" | "monthlyIncome" | "placeOfBirth" | "profession" | "createdAt" | "updatedAt", ExtArgs["result"]["customerPF"]>
+export type CustomerPFOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "organizationId" | "birthDate" | "motherName" | "fatherName" | "monthlyIncome" | "placeOfBirth" | "profession" | "naturality" | "createdAt" | "updatedAt", ExtArgs["result"]["customerPF"]>
 export type CustomerPFInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }
@@ -683,6 +713,7 @@ export type $CustomerPFPayload<ExtArgs extends runtime.Types.Extensions.Internal
     monthlyIncome: number | null
     placeOfBirth: string | null
     profession: string | null
+    naturality: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["customerPF"]>
@@ -1118,6 +1149,7 @@ export interface CustomerPFFieldRefs {
   readonly monthlyIncome: Prisma.FieldRef<"CustomerPF", 'Int'>
   readonly placeOfBirth: Prisma.FieldRef<"CustomerPF", 'String'>
   readonly profession: Prisma.FieldRef<"CustomerPF", 'String'>
+  readonly naturality: Prisma.FieldRef<"CustomerPF", 'String'>
   readonly createdAt: Prisma.FieldRef<"CustomerPF", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CustomerPF", 'DateTime'>
 }

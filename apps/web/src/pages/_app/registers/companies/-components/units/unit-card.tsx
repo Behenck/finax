@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useDeleteUnit } from "@/hooks/units/use-delete-unit";
 import type { Unit } from "@/schemas/types/unit";
-import { MapPin, Pencil, Trash2 } from "lucide-react";
+import { MapPin, Trash2 } from "lucide-react";
 import { UpdateUnit } from "./update-unit";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { getOrganizationsSlugCompaniesQueryKey, useDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "@/http/generated";
 
 interface UnitCardProps {
 	companyId: string;
@@ -11,14 +13,29 @@ interface UnitCardProps {
 }
 
 export function UnitCard({ companyId, unit }: UnitCardProps) {
-	const { mutateAsync: handleDeleteUnit, isPending } = useDeleteUnit();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: handleDeleteUnit, isPending } = useDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitid();
 
 	async function onDelete(unit: Unit) {
 		const confirmed = window.confirm(
 			`Deseja realmente excluir a unidade ${unit.name} ?`,
 		);
 		if (!confirmed) return;
-		await handleDeleteUnit({ companyId, unitId: unit.id });
+		await handleDeleteUnit({
+			slug: organization!.slug,
+			companyId,
+			unitId: unit.id
+		}, {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugCompaniesQueryKey({
+						slug: organization!.slug,
+					}),
+				})
+			},
+		});
 	}
 	return (
 		<Card className="flex flex-row items-center justify-between gap-2 p-2 shadow-none border-none bg-gray-50">

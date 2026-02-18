@@ -1948,6 +1948,7 @@ export const CustomerScalarFieldEnum = {
   documentNumber: 'documentNumber',
   email: 'email',
   phone: 'phone',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1965,6 +1966,7 @@ export const CustomerPFScalarFieldEnum = {
   monthlyIncome: 'monthlyIncome',
   placeOfBirth: 'placeOfBirth',
   profession: 'profession',
+  naturality: 'naturality',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2216,6 +2218,20 @@ export type EnumCustomerDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'CustomerDocumentType[]'
  */
 export type ListEnumCustomerDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerDocumentType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CustomerStatus'
+ */
+export type EnumCustomerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CustomerStatus[]'
+ */
+export type ListEnumCustomerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerStatus[]'>
     
 
 

@@ -69,6 +69,14 @@ export const CustomerDocumentType = {
 export type CustomerDocumentType = (typeof CustomerDocumentType)[keyof typeof CustomerDocumentType]
 
 
+export const CustomerStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type CustomerStatus = (typeof CustomerStatus)[keyof typeof CustomerStatus]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

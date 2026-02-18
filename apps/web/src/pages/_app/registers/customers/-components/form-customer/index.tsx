@@ -3,51 +3,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button'
 import { TabCustomerPF } from './tab-customer-pf'
 import { TabCustomerPJ } from './tab-customer-pj'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { customerSchema, type CustomerFormInput } from '@/schemas/customer-schema'
-import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { usePostOrganizationsSlugCustomers, type GetOrganizationsSlugCustomers200 } from '@/http/generated'
-import { useApp } from '@/context/app-context'
-import { mapCustomerFormToRequest } from './-mappers/customer-mapper'
+import { FormProvider } from 'react-hook-form'
+import { type GetOrganizationsSlugCustomersCustomerid200 } from '@/http/generated'
+import { useCustomerForm } from './hooks/use-customer-form'
 
 interface FormCustomerProps {
-  customer?: GetOrganizationsSlugCustomers200["customers"][number]
+  customer?: GetOrganizationsSlugCustomersCustomerid200["customer"]
+  type?: "CREATE" | "UPDATE"
 }
 
-export function FormCustomer({ customer }: FormCustomerProps) {
-  const { organization } = useApp()
-  const { mutateAsync: createCustomer, isPending } =
-    usePostOrganizationsSlugCustomers()
-
-  const form = useForm<CustomerFormInput>({
-    resolver: zodResolver(customerSchema),
-    defaultValues: {
-      personType: "PF",
-      documentType: "CPF",
-      email: "",
-      phone: "",
-    },
+export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
+  const { form, personType, onSubmit } = useCustomerForm({
+    customer,
+    type,
   })
-
-  const personType = form.watch("personType")
-
-  async function onSubmit(data: CustomerFormInput) {
-    const payload = customerSchema.parse(data)
-
-    try {
-      await createCustomer({
-        slug: organization!.slug,
-        data: mapCustomerFormToRequest(payload),
-      })
-
-      toast.success("Cliente cadastrado com sucesso")
-      form.reset()
-    } catch (err) {
-      console.log(err)
-      toast.error("Erro ao Cadastrar")
-    }
-  }
 
   return (
     <FormProvider {...form}>
@@ -82,13 +51,17 @@ export function FormCustomer({ customer }: FormCustomerProps) {
         </Tabs>
 
         <div className='flex items-center gap-2 justify-end'>
-          <Button variant='outline'>
-            <Link to='/registers/customers'>
+          <Button type='button' variant="outline" asChild>
+            <Link to="/registers/customers">
               Cancelar
             </Link>
           </Button>
           <Button type='submit'>
-            Cadastrar Cliente
+            {type === "CREATE" ? (
+              "Cadastrar Cliente"
+            ) : (
+              "Atualizar Cliente"
+            )}
           </Button>
         </div>
       </form>

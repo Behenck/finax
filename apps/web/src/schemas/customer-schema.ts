@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 const baseCustomerSchema = z.object({
+  name: z.string().min(1, "Nome obrigatório"),
   email: z
     .email("Email inválido")
     .optional()
@@ -10,7 +11,6 @@ const baseCustomerSchema = z.object({
 
 const customerPFSchema = baseCustomerSchema.extend({
   personType: z.literal("PF"),
-  name: z.string().min(1, "Nome obrigatório"),
   documentType: z.enum(["CPF", "RG", "PASSPORT", "OTHER"]),
   documentNumber: z.string().min(5, "Documento obrigatório"),
   birthDate: z.date().optional(),
@@ -18,17 +18,28 @@ const customerPFSchema = baseCustomerSchema.extend({
   motherName: z.string().optional(),
   fatherName: z.string().optional(),
   profession: z.string().optional(),
-  monthlyIncome: z.preprocess(v => (Number.isFinite(Number(v)) ? Number(v) : 0), z.number().int().nonnegative()),
+  // monthlyIncome: z.preprocess(v => (Number.isFinite(Number(v)) ? Number(v) : 0), z.number().int().nonnegative()),
+  monthlyIncome: z
+    .preprocess(
+      (value) => {
+        if (value === "" || value === null || value === undefined) {
+          return undefined
+        }
+
+        const numberValue = Number(value)
+        return Number.isNaN(numberValue) ? undefined : numberValue
+      },
+      z.number().optional()
+    ),
 })
 
 
 const customerPJSchema = baseCustomerSchema.extend({
   personType: z.literal("PJ"),
-  corporateName: z.string().min(1, "Nome da empresa obrigatório"),
   documentType: z.enum(["CNPJ", "IE", "OTHER"]),
   documentNumber: z.string().min(5, "Documento obrigatório"),
-  fantasyName: z.string().optional(),
-  corporateReason: z.string().optional(),
+  tradeName: z.string().optional(),
+  legalName: z.string().optional(),
   stateRegistration: z.string().optional(),
   municipalRegistration: z.string().optional(),
   foundationDate: z.date().optional(),
@@ -40,6 +51,7 @@ export const customerSchema = z.discriminatedUnion("personType", [
   customerPJSchema,
 ])
 
-export type CustomerFormData = z.infer<typeof customerSchema>
 export type CustomerFormInput = z.input<typeof customerSchema>
+export type CustomerFormOutput = z.infer<typeof customerSchema>
+
 

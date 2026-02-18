@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
-import { CustomerDocumentType, CustomerPersonType } from "generated/prisma/enums";
+import { CustomerDocumentType, CustomerPersonType, CustomerStatus } from "generated/prisma/enums";
 
 export async function getCustomers(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -28,6 +28,7 @@ export async function getCustomers(app: FastifyInstance) {
                 email: z.string().nullable(),
                 documentType: z.enum(CustomerDocumentType),
                 documentNumber: z.string(),
+                status: z.enum(CustomerStatus),
                 pf: z.object({
                   birthDate: z.date().nullable(),
                   monthlyIncome: z.number().nullable(),
@@ -35,6 +36,7 @@ export async function getCustomers(app: FastifyInstance) {
                   placeOfBirth: z.string().nullable(),
                   fatherName: z.string().nullable(),
                   motherName: z.string().nullable(),
+                  naturality: z.string().nullable(),
                 }).nullable(),
                 pj: z.object({
                   businessActivity: z.string().nullable(),
@@ -78,6 +80,7 @@ export async function getCustomers(app: FastifyInstance) {
             phone: true,
             documentType: true,
             documentNumber: true,
+            status: true,
             customerPF: {
               select: {
                 birthDate: true,
@@ -86,6 +89,7 @@ export async function getCustomers(app: FastifyInstance) {
                 placeOfBirth: true,
                 fatherName: true,
                 motherName: true,
+                naturality: true,
               }
             },
             customerPJ: {
@@ -113,6 +117,7 @@ export async function getCustomers(app: FastifyInstance) {
             phone: customer.phone,
             documentType: customer.documentType,
             documentNumber: customer.documentNumber,
+            status: customer.status,
 
             pf: isPF
               ? customer.customerPF && {
@@ -122,6 +127,7 @@ export async function getCustomers(app: FastifyInstance) {
                 placeOfBirth: customer.customerPF.placeOfBirth,
                 fatherName: customer.customerPF.fatherName,
                 motherName: customer.customerPF.motherName,
+                naturality: customer.customerPF.naturality,
               }
               : null,
 

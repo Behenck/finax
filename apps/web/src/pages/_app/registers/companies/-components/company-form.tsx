@@ -10,10 +10,11 @@ import { companySchema, type CompanyFormData } from "@/schemas/company-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
-import { useCreateCompany } from "@/hooks/companies/use-create-company";
-import { useUpdateCompany } from "@/hooks/companies/use-update-company";
 import { formatTitleCase } from "@/utils/format-title-case";
 import type { Company } from "@/schemas/types/company";
+import { getOrganizationsSlugCompaniesQueryKey, usePostOrganizationsSlugCompanies, usePutOrganizationsSlugCompaniesCompanyid } from "@/http/generated";
+import { useApp } from "@/context/app-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type CreateCompanyType = z.infer<typeof companySchema>;
 
@@ -28,8 +29,11 @@ export function CompanyForm({
 	mode,
 	initialData,
 }: CreateCompanyFormProps) {
-	const { mutateAsync: createCompany } = useCreateCompany();
-	const { mutateAsync: updateCompany } = useUpdateCompany();
+	const { organization } = useApp()
+	const queryClient = useQueryClient()
+
+	const { mutateAsync: createCompany } = usePostOrganizationsSlugCompanies();
+	const { mutateAsync: updateCompany } = usePutOrganizationsSlugCompaniesCompanyid();
 
 	const { handleSubmit, control } = useForm<CreateCompanyType>({
 		resolver: zodResolver(companySchema as any),
@@ -41,11 +45,31 @@ export function CompanyForm({
 	async function onSubmit(data: CompanyFormData) {
 		if (mode === "edit" && initialData) {
 			await updateCompany({
+				slug: organization!.slug,
 				companyId: initialData.id,
 				data,
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCompaniesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
 			});
 		} else {
-			await createCompany(data);
+			await createCompany({
+				slug: organization!.slug,
+				data
+			}, {
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getOrganizationsSlugCompaniesQueryKey({
+							slug: organization!.slug,
+						}),
+					})
+				},
+			});
 		}
 
 		onSuccess?.();

@@ -92,6 +92,10 @@ export type PostOrganizationsSlugCustomersMutationRequest = {
          * @type string | undefined
         */
         motherName?: string;
+        /**
+         * @type string | undefined
+        */
+        naturality?: string;
     };
     /**
      * @type object | undefined

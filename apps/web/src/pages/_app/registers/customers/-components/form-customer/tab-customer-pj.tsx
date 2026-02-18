@@ -35,8 +35,8 @@ export function TabCustomerPJ() {
       <FieldGroup>
         <Field className='gap-1'>
           <FieldLabel>Nome da empresa *</FieldLabel>
-          <Input placeholder='Ex: Razão social ou nome fantasia' {...register("corporateName")} />
-          <FieldError error={errors.corporateName} />
+          <Input placeholder='Ex: Razão social ou nome fantasia' {...register("name")} />
+          <FieldError error={errors.name} />
         </Field>
       </FieldGroup>
       <div className='flex items-center gap-4'>
@@ -137,15 +137,15 @@ export function TabCustomerPJ() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Nome fantasia</FieldLabel>
-              <Input placeholder='Nome fantasia' {...register("fantasyName")} />
-              <FieldError error={errors.fantasyName} />
+              <Input placeholder='Nome fantasia' {...register("tradeName")} />
+              <FieldError error={errors.tradeName} />
             </Field>
           </FieldGroup>
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Razão social</FieldLabel>
-              <Input placeholder='Razão social completa' {...register("corporateReason")} />
-              <FieldError error={errors.corporateReason} />
+              <Input placeholder='Razão social completa' {...register("legalName")} />
+              <FieldError error={errors.legalName} />
             </Field>
           </FieldGroup>
         </div>
