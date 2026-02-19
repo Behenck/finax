@@ -14,7 +14,7 @@ import { Link } from '@tanstack/react-router'
 import { getInitials } from '@/utils/get-initials'
 import { formatPhone } from '@/utils/format-phone'
 import { DeleteCustomer } from './-components/delete-customer'
-import { useGetOrganizationsSlugCustomers, type GetOrganizationsSlugCustomers200 } from "@/http/generated";
+import { type GetOrganizationsSlugCustomers200 } from "@/http/generated";
 import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 

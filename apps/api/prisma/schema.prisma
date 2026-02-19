@@ -28,6 +28,8 @@ model User {
   createdTransactions Transaction[]  @relation("TransactionCreatedBy")
   employees           Employee[]
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
+  supervisedPartners  Partner[]      @relation("PartnerSupervisor")
+  linkedPartners      Partner[]      @relation("PartnerUser")
 
   @@map("users")
 }
@@ -341,6 +343,57 @@ model CustomerPJ {
 
   @@index([organizationId])
   @@map("customer_pj")
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PartnerDocumentType {
+  CPF
+  CNPJ
+}
+
+model Partner {
+  id String @id @default(uuid())
+
+  name  String
+  email String
+  phone String
+
+  documentType PartnerDocumentType
+  document     String
+
+  companyName String @map("company_name")
+
+  street       String?
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String
+  zipCode      String?
+  country      String  @default("BR")
+
+  userId       String? @map("user_id")
+  supervisorId String? @map("supervisor_id")
+
+  status PartnerStatus @default(ACTIVE)
+
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  supervisor User? @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+  user       User? @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, email])
+  @@unique([organizationId, document])
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@map("partners")
 }
 
 enum TransactionType {

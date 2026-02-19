@@ -77,6 +77,22 @@ export const CustomerStatus = {
 export type CustomerStatus = (typeof CustomerStatus)[keyof typeof CustomerStatus]
 
 
+export const PartnerStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type PartnerStatus = (typeof PartnerStatus)[keyof typeof PartnerStatus]
+
+
+export const PartnerDocumentType = {
+  CPF: 'CPF',
+  CNPJ: 'CNPJ'
+} as const
+
+export type PartnerDocumentType = (typeof PartnerDocumentType)[keyof typeof PartnerDocumentType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

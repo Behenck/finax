@@ -28,6 +28,7 @@ import {
 	IdCardLanyard,
 	LogOut,
 	Network,
+	PersonStanding,
 	Settings,
 	Tags,
 	Target,
@@ -77,6 +78,11 @@ export function AppSidebar() {
 					icon: Contact,
 					title: "Clientes",
 					url: "/registers/customers",
+				},
+				{
+					icon: PersonStanding,
+					title: "Parceiros",
+					url: "/registers/partners",
 				},
 				{
 					icon: Tags,

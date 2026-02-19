@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { customerSchema, type CustomerFormInput, type CustomerFormOutput } from "@/schemas/customer-schema"
 import {
+  getOrganizationsSlugCustomersQueryKey,
   usePostOrganizationsSlugCustomers,
   usePutOrganizationsSlugCustomersCustomerid,
   type GetOrganizationsSlugCustomersCustomerid200,
@@ -10,6 +11,7 @@ import { useApp } from "@/context/app-context"
 import { toast } from "sonner"
 import { router } from "@/router"
 import { buildCustomerDefaultValues, mapCustomerFormToRequest } from "../-mappers/customer-mapper"
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UseCustomerFormProps {
   customer?: GetOrganizationsSlugCustomersCustomerid200["customer"]
@@ -17,8 +19,8 @@ interface UseCustomerFormProps {
 }
 
 export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
-
   const { organization } = useApp()
+  const queryClient = useQueryClient()
 
   const { mutateAsync: createCustomer } =
     usePostOrganizationsSlugCustomers()
@@ -39,7 +41,15 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
         const response = await createCustomer({
           slug: organization!.slug,
           data: mapCustomerFormToRequest(data),
-        })
+        }, {
+          onSuccess: async () => {
+            await queryClient.invalidateQueries({
+              queryKey: getOrganizationsSlugCustomersQueryKey({
+                slug: organization!.slug,
+              }),
+            })
+          },
+        });
 
         toast.success("Cliente cadastrado com sucesso")
 
@@ -57,7 +67,15 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
         slug: organization!.slug,
         customerId: customer!.id,
         data: mapCustomerFormToRequest(data),
-      })
+      }, {
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: getOrganizationsSlugCustomersQueryKey({
+              slug: organization!.slug,
+            }),
+          })
+        },
+      });
 
       toast.success("Cliente atualizado com sucesso")
     } catch (err) {

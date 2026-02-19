@@ -66,6 +66,7 @@ export const ModelName = {
   Customer: 'Customer',
   CustomerPF: 'CustomerPF',
   CustomerPJ: 'CustomerPJ',
+  Partner: 'Partner',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -284,6 +285,33 @@ export const CustomerPJScalarFieldEnum = {
 } as const
 
 export type CustomerPJScalarFieldEnum = (typeof CustomerPJScalarFieldEnum)[keyof typeof CustomerPJScalarFieldEnum]
+
+
+export const PartnerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  documentType: 'documentType',
+  document: 'document',
+  companyName: 'companyName',
+  street: 'street',
+  number: 'number',
+  complement: 'complement',
+  neighborhood: 'neighborhood',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  userId: 'userId',
+  supervisorId: 'supervisorId',
+  status: 'status',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PartnerScalarFieldEnum = (typeof PartnerScalarFieldEnum)[keyof typeof PartnerScalarFieldEnum]
 
 
 export const TransactionScalarFieldEnum = {
