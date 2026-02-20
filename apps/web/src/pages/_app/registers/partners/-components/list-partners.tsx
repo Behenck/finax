@@ -15,6 +15,7 @@ import type { GetOrganizationsSlugPartners200 } from "@/http/generated"
 import { Link } from "@tanstack/react-router"
 import { Edit3, EllipsisVertical, ListChevronsUpDown, Receipt, UserRoundCheck, UserPlus, Trash2, UserRoundX } from "lucide-react"
 import { AssignSupervisor } from "./assign-supervisor"
+import { DetailsPartner } from "./details-partner"
 
 interface ListPartnersProps {
   partners: GetOrganizationsSlugPartners200["partners"]
@@ -86,14 +87,7 @@ export function ListPartners({ partners }: ListPartnersProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="mr-4">
                       <DropdownMenuGroup className="space-y-1">
-                        <DropdownMenuItem asChild>
-                          <Link to="/" className='cursor-pointer'>
-                            <div className='flex gap-4 items-center'>
-                              <ListChevronsUpDown className='size-3.5 text-foreground' />
-                              <span className='font-light text-sm'>Ver Detalhes</span>
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
+                        <DetailsPartner partner={partner} />
                         <DropdownMenuItem asChild>
                           <Link to="/registers/partners/update" search={{ partnerId: partner.id }} className='cursor-pointer'>
                             <div className='flex gap-4 items-center'>
