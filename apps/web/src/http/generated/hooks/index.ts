@@ -1,3 +1,4 @@
+export type { AssignPartnerSupervisorMutationKey } from "./useAssignPartnerSupervisor.ts";
 export type { DeleteOrganizationSlugMutationKey } from "./useDeleteOrganizationSlug.ts";
 export type { DeleteOrganizationsSlugCategoriesIdMutationKey } from "./useDeleteOrganizationsSlugCategoriesId.ts";
 export type { DeleteOrganizationsSlugCompaniesCompanyidMutationKey } from "./useDeleteOrganizationsSlugCompaniesCompanyid.ts";
@@ -36,6 +37,8 @@ export type { GetOrganizationsSlugInvitesSuspenseQueryKey } from "./useGetOrgani
 export type { GetOrganizationsSlugMembersQueryKey } from "./useGetOrganizationsSlugMembers.ts";
 export type { GetOrganizationsSlugMembershipQueryKey } from "./useGetOrganizationsSlugMembership.ts";
 export type { GetOrganizationsSlugMembershipSuspenseQueryKey } from "./useGetOrganizationsSlugMembershipSuspense.ts";
+export type { GetOrganizationsSlugMembersRoleQueryKey } from "./useGetOrganizationsSlugMembersRole.ts";
+export type { GetOrganizationsSlugMembersRoleSuspenseQueryKey } from "./useGetOrganizationsSlugMembersRoleSuspense.ts";
 export type { GetOrganizationsSlugMembersSuspenseQueryKey } from "./useGetOrganizationsSlugMembersSuspense.ts";
 export type { GetOrganizationsSlugPartnersQueryKey } from "./useGetOrganizationsSlugPartners.ts";
 export type { GetOrganizationsSlugPartnersPartneridQueryKey } from "./useGetOrganizationsSlugPartnersPartnerid.ts";
@@ -84,6 +87,9 @@ export type { PutOrganizationsSlugMembersMemberidMutationKey } from "./usePutOrg
 export type { PutOrganizationsSlugPartnersPartneridMutationKey } from "./usePutOrganizationsSlugPartnersPartnerid.ts";
 export type { PutOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./usePutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PutOrganizationsSlugTransactionsTransactionidMutationKey } from "./usePutOrganizationsSlugTransactionsTransactionid.ts";
+export { assignPartnerSupervisorMutationKey } from "./useAssignPartnerSupervisor.ts";
+export { assignPartnerSupervisorMutationOptions } from "./useAssignPartnerSupervisor.ts";
+export { useAssignPartnerSupervisor } from "./useAssignPartnerSupervisor.ts";
 export { deleteOrganizationSlugMutationKey } from "./useDeleteOrganizationSlug.ts";
 export { deleteOrganizationSlugMutationOptions } from "./useDeleteOrganizationSlug.ts";
 export { useDeleteOrganizationSlug } from "./useDeleteOrganizationSlug.ts";
@@ -198,6 +204,12 @@ export { useGetOrganizationsSlugMembership } from "./useGetOrganizationsSlugMemb
 export { getOrganizationsSlugMembershipSuspenseQueryKey } from "./useGetOrganizationsSlugMembershipSuspense.ts";
 export { getOrganizationsSlugMembershipSuspenseQueryOptions } from "./useGetOrganizationsSlugMembershipSuspense.ts";
 export { useGetOrganizationsSlugMembershipSuspense } from "./useGetOrganizationsSlugMembershipSuspense.ts";
+export { getOrganizationsSlugMembersRoleQueryKey } from "./useGetOrganizationsSlugMembersRole.ts";
+export { getOrganizationsSlugMembersRoleQueryOptions } from "./useGetOrganizationsSlugMembersRole.ts";
+export { useGetOrganizationsSlugMembersRole } from "./useGetOrganizationsSlugMembersRole.ts";
+export { getOrganizationsSlugMembersRoleSuspenseQueryKey } from "./useGetOrganizationsSlugMembersRoleSuspense.ts";
+export { getOrganizationsSlugMembersRoleSuspenseQueryOptions } from "./useGetOrganizationsSlugMembersRoleSuspense.ts";
+export { useGetOrganizationsSlugMembersRoleSuspense } from "./useGetOrganizationsSlugMembersRoleSuspense.ts";
 export { getOrganizationsSlugMembersSuspenseQueryKey } from "./useGetOrganizationsSlugMembersSuspense.ts";
 export { getOrganizationsSlugMembersSuspenseQueryOptions } from "./useGetOrganizationsSlugMembersSuspense.ts";
 export { useGetOrganizationsSlugMembersSuspense } from "./useGetOrganizationsSlugMembersSuspense.ts";

@@ -19,7 +19,7 @@ export const getMe200Schema = z.object({
     "id": z.uuid(),
 "name": z.string(),
 "slug": z.string(),
-"role": z.enum(["ADMIN", "MEMBER"]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR"]),
 "ownerId": z.uuid()
     })
     })

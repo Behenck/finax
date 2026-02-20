@@ -8,6 +8,8 @@ import { useApp } from "@/context/app-context"
 import { getOrganizationsSlugPartnersQueryKey, usePostOrganizationsSlugPartners, usePutOrganizationsSlugPartnersPartnerid, type GetOrganizationsSlugPartnersPartnerid200 } from "@/http/generated"
 import { router } from "@/router"
 import { partnerSchema, type PartnerForm } from "@/schemas/partner-schema"
+import { formatDocument } from "@/utils/format-document"
+import { formatPhone } from "@/utils/format-phone"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
@@ -34,10 +36,23 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
     defaultValues: {
       name: partner?.name ?? "",
       email: partner?.email ?? "",
-      phone: partner?.phone ?? "",
+      phone: formatPhone(
+        partner?.phone ?? ""
+      ),
+      companyName: partner?.companyName ?? "",
       documentType: partner?.documentType ?? "CNPJ",
+      document: formatDocument({
+        type: partner?.documentType ?? "CNPJ",
+        value: partner?.document ?? "",
+      }),
       country: partner?.country ?? "BR",
-      state: partner?.state ?? "RS"
+      state: partner?.state ?? "RS",
+      zipCode: partner?.zipCode ?? "",
+      city: partner?.city ?? "",
+      street: partner?.street ?? "",
+      neighborhood: partner?.neighborhood ?? "",
+      number: partner?.number ?? "",
+      complement: partner?.complement ?? "",
     },
   })
 
@@ -45,11 +60,13 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
     handleSubmit,
     register,
     control,
+    watch,
     formState: { errors }
   } = form
 
+  const documentType = watch("documentType")
+
   async function onSubmit(data: PartnerForm) {
-    console.log(data)
     try {
       if (type === "CREATE") {
         const response = await createPartner({
@@ -128,8 +145,26 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
           <FieldGroup>
             <Field className="gap-1">
               <FieldLabel>Telefone para contato *</FieldLabel>
-              <Input placeholder='Ex: (00) 00000-0000' {...register("phone")} />
-              <FieldError error={errors.phone} />
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder="(00) 00000-0000"
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          formatPhone(
+                            e.target.value,
+                          )
+                        )
+                      }
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>
@@ -165,8 +200,27 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
           <FieldGroup className="flex-1">
             <Field className="gap-1">
               <FieldLabel>CNPJ / CPF *</FieldLabel>
-              <Input placeholder='00.000.000/0000-00' {...register("document")} />
-              <FieldError error={errors.document} />
+              <Controller
+                control={control}
+                name="document"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder="00.000.000/0000-00"
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          formatDocument({
+                            type: documentType,
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>

@@ -15,7 +15,6 @@ export const partnerSchema = z.object({
   neighborhood: z.string().optional(),
   number: z.string().optional(),
   complement: z.string().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]),
 })
 
 export type PartnerForm = z.input<typeof partnerSchema>

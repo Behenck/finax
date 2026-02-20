@@ -35,7 +35,8 @@ export type AccountProvider = (typeof AccountProvider)[keyof typeof AccountProvi
 
 export const Role = {
   ADMIN: 'ADMIN',
-  MEMBER: 'MEMBER'
+  MEMBER: 'MEMBER',
+  SUPERVISOR: 'SUPERVISOR'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]

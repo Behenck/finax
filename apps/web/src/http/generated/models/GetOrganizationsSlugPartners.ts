@@ -94,6 +94,15 @@ export type GetOrganizationsSlugPartners200 = {
         */
         complement: string | null;
         /**
+         * @type object
+        */
+        organization: {
+            /**
+             * @type string
+            */
+            slug: string;
+        };
+        /**
          * @type string
         */
         status: PartnersStatusEnumKey;

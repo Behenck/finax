@@ -36,6 +36,9 @@ export async function getPartners(app: FastifyInstance) {
                 neighborhood: z.string().nullable(),
                 number: z.string().nullable(),
                 complement: z.string().nullable(),
+                organization: z.object({
+                  slug: z.string()
+                }),
                 status: z.enum(PartnerStatus),
                 user: z.object({
                   id: z.uuid(),
@@ -87,6 +90,11 @@ export async function getPartners(app: FastifyInstance) {
             neighborhood: true,
             number: true,
             complement: true,
+            organization: {
+              select: {
+                slug: true,
+              }
+            },
             status: true,
             user: {
               select: {

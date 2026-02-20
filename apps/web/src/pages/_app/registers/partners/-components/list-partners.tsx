@@ -14,6 +14,7 @@ import {
 import type { GetOrganizationsSlugPartners200 } from "@/http/generated"
 import { Link } from "@tanstack/react-router"
 import { Edit3, EllipsisVertical, ListChevronsUpDown, Receipt, UserRoundCheck, UserPlus, Trash2, UserRoundX } from "lucide-react"
+import { AssignSupervisor } from "./assign-supervisor"
 
 interface ListPartnersProps {
   partners: GetOrganizationsSlugPartners200["partners"]
@@ -109,14 +110,7 @@ export function ListPartners({ partners }: ListPartnersProps) {
                             </div>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/" className='cursor-pointer'>
-                            <div className='flex gap-4 items-center'>
-                              <UserPlus className='size-3.5 text-foreground' />
-                              <span className='font-light text-sm'>Atribuir Supervisor</span>
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
+                        <AssignSupervisor partner={partner} />
                         <Separator />
                         <DropdownMenuItem asChild>
                           <Link to="/" className='cursor-pointer'>

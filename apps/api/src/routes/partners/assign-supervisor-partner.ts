@@ -5,37 +5,22 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
-import { PartnerDocumentType, PartnerStatus } from "generated/prisma/enums";
 
-export async function updatePartner(app: FastifyInstance) {
+export async function assignSupervisorPartner(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .put("/organizations/:slug/partners/:partnerId", {
+    .patch("/organizations/:slug/partners/:partnerId/assign-supervisor", {
       schema: {
         tags: ["partners"],
         summary: "Update employee",
+        operationId: "assignPartnerSupervisor",
         security: [{ bearerAuth: [] }],
         params: z.object({
           slug: z.string(),
           partnerId: z.uuid(),
         }),
         body: z.object({
-          name: z.string(),
-          email: z.string(),
-          phone: z.string(),
-          companyName: z.string(),
-          documentType: z.enum(PartnerDocumentType),
-          document: z.string(),
-          country: z.string(),
-          state: z.string(),
-          city: z.string().optional(),
-          street: z.string().optional(),
-          zipCode: z.string().optional(),
-          neighborhood: z.string().optional(),
-          number: z.string().optional(),
-          complement: z.string().optional(),
-          status: z.enum(PartnerStatus).optional(),
-          supervisorId: z.uuid().optional(),
+          supervisorId: z.uuid().nullable(),
         }),
         response: {
           204: z.null()
@@ -44,7 +29,7 @@ export async function updatePartner(app: FastifyInstance) {
     },
       async (request, reply) => {
         const { slug, partnerId } = request.params
-        const data = request.body
+        const { supervisorId } = request.body
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -71,27 +56,27 @@ export async function updatePartner(app: FastifyInstance) {
           throw new BadRequestError("Partner not found")
         }
 
+        // if (supervisorId) {
+        //   const supervisor = await prisma.user.findFirst({
+        //     where: {
+        //       id: supervisorId,
+        //       organizationId: organization.id,
+        //     },
+        //     select: { id: true },
+        //   })
+
+        //   if (!supervisor) {
+        //     throw new BadRequestError("Supervisor not found")
+        //   }
+        // }
+
         await db(() => prisma.partner.update({
           where: {
             id: partnerId,
+            organizationId: organization.id
           },
           data: {
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            companyName: data.companyName,
-            documentType: data.documentType,
-            document: data.document,
-            country: data.country,
-            state: data.state,
-            city: data.city,
-            street: data.street,
-            zipCode: data.zipCode,
-            neighborhood: data.neighborhood,
-            number: data.number,
-            complement: data.complement,
-            status: data.status,
-            supervisorId: data.supervisorId,
+            supervisorId,
           }
         })
         )

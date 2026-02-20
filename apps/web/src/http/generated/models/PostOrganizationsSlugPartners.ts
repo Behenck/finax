@@ -93,9 +93,9 @@ export type PostOrganizationsSlugPartnersMutationRequest = {
     */
     complement?: string;
     /**
-     * @type string
+     * @type string | undefined
     */
-    status: PostOrganizationsSlugPartnersMutationRequestStatusEnumKey;
+    status?: PostOrganizationsSlugPartnersMutationRequestStatusEnumKey;
     /**
      * @type string | undefined, uuid
     */

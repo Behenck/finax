@@ -31,7 +31,7 @@ export const postOrganizationsSlugPartnersMutationRequestSchema = z.object({
 "neighborhood": z.optional(z.string()),
 "number": z.optional(z.string()),
 "complement": z.optional(z.string()),
-"status": z.enum(["ACTIVE", "INACTIVE"]),
+"status": z.optional(z.enum(["ACTIVE", "INACTIVE"])),
 "supervisorId": z.optional(z.uuid())
     })
 

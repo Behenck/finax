@@ -30,6 +30,9 @@ export const getOrganizationsSlugPartnersPartnerid200Schema = z.object({
 "neighborhood": z.nullable(z.string()),
 "number": z.nullable(z.string()),
 "complement": z.nullable(z.string()),
+"organization": z.object({
+    "slug": z.string()
+    }),
 "status": z.enum(["ACTIVE", "INACTIVE"]),
 "user": z.nullable(z.object({
     "id": z.uuid(),

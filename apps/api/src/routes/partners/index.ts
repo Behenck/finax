@@ -4,6 +4,7 @@ import { updatePartner } from "./update-partner";
 import { deletePartner } from "./delete-partner";
 import { getPartners } from "./get-partners";
 import { getPartner } from "./get-partner";
+import { assignSupervisorPartner } from "./assign-supervisor-partner";
 
 export async function partnerRoutes(app: FastifyInstance) {
   await app.register(createPartner);
@@ -11,4 +12,5 @@ export async function partnerRoutes(app: FastifyInstance) {
   await app.register(deletePartner);
   await app.register(getPartners);
   await app.register(getPartner);
+  await app.register(assignSupervisorPartner);
 }

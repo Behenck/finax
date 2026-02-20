@@ -90,6 +90,7 @@ model Account {
 enum Role {
   ADMIN
   MEMBER
+  SUPERVISOR
 }
 
 enum InviteType {
@@ -148,6 +149,7 @@ model Organization {
   employees    Employee[]
   recurrences  Recurrence[]
   customers    Customer[]
+  partners     Partner[]
 
   @@index([slug])
   @@map("organizations")
@@ -386,8 +388,9 @@ model Partner {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  supervisor User? @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
-  user       User? @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
+  supervisor   User?        @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+  user         User?        @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])

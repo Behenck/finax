@@ -96,9 +96,9 @@ export type PutOrganizationsSlugPartnersPartneridMutationRequest = {
     */
     complement?: string;
     /**
-     * @type string
+     * @type string | undefined
     */
-    status: PutOrganizationsSlugPartnersPartneridMutationRequestStatusEnumKey;
+    status?: PutOrganizationsSlugPartnersPartneridMutationRequestStatusEnumKey;
     /**
      * @type string | undefined, uuid
     */

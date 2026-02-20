@@ -312,6 +312,7 @@ export type PartnerWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Partner"> | Date | string
   supervisor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }
 
 export type PartnerOrderByWithRelationInput = {
@@ -338,6 +339,7 @@ export type PartnerOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   supervisor?: Prisma.UserOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  organization?: Prisma.OrganizationOrderByWithRelationInput
 }
 
 export type PartnerWhereUniqueInput = Prisma.AtLeast<{
@@ -369,6 +371,7 @@ export type PartnerWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Partner"> | Date | string
   supervisor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }, "id" | "organizationId_email" | "organizationId_document">
 
 export type PartnerOrderByWithAggregationInput = {
@@ -442,11 +445,11 @@ export type PartnerCreateInput = {
   zipCode?: string | null
   country?: string
   status?: $Enums.PartnerStatus
-  organizationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   supervisor?: Prisma.UserCreateNestedOneWithoutSupervisedPartnersInput
   user?: Prisma.UserCreateNestedOneWithoutLinkedPartnersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutPartnersInput
 }
 
 export type PartnerUncheckedCreateInput = {
@@ -490,11 +493,11 @@ export type PartnerUpdateInput = {
   zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   supervisor?: Prisma.UserUpdateOneWithoutSupervisedPartnersNestedInput
   user?: Prisma.UserUpdateOneWithoutLinkedPartnersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPartnersNestedInput
 }
 
 export type PartnerUncheckedUpdateInput = {
@@ -562,7 +565,6 @@ export type PartnerUpdateManyMutationInput = {
   zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -767,6 +769,48 @@ export type PartnerUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.PartnerScalarWhereInput | Prisma.PartnerScalarWhereInput[]
 }
 
+export type PartnerCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput> | Prisma.PartnerCreateWithoutOrganizationInput[] | Prisma.PartnerUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.PartnerCreateOrConnectWithoutOrganizationInput | Prisma.PartnerCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.PartnerCreateManyOrganizationInputEnvelope
+  connect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+}
+
+export type PartnerUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput> | Prisma.PartnerCreateWithoutOrganizationInput[] | Prisma.PartnerUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.PartnerCreateOrConnectWithoutOrganizationInput | Prisma.PartnerCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.PartnerCreateManyOrganizationInputEnvelope
+  connect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+}
+
+export type PartnerUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput> | Prisma.PartnerCreateWithoutOrganizationInput[] | Prisma.PartnerUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.PartnerCreateOrConnectWithoutOrganizationInput | Prisma.PartnerCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.PartnerUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.PartnerUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.PartnerCreateManyOrganizationInputEnvelope
+  set?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  disconnect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  delete?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  connect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  update?: Prisma.PartnerUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.PartnerUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.PartnerUpdateManyWithWhereWithoutOrganizationInput | Prisma.PartnerUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.PartnerScalarWhereInput | Prisma.PartnerScalarWhereInput[]
+}
+
+export type PartnerUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput> | Prisma.PartnerCreateWithoutOrganizationInput[] | Prisma.PartnerUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.PartnerCreateOrConnectWithoutOrganizationInput | Prisma.PartnerCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.PartnerUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.PartnerUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.PartnerCreateManyOrganizationInputEnvelope
+  set?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  disconnect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  delete?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  connect?: Prisma.PartnerWhereUniqueInput | Prisma.PartnerWhereUniqueInput[]
+  update?: Prisma.PartnerUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.PartnerUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.PartnerUpdateManyWithWhereWithoutOrganizationInput | Prisma.PartnerUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.PartnerScalarWhereInput | Prisma.PartnerScalarWhereInput[]
+}
+
 export type EnumPartnerDocumentTypeFieldUpdateOperationsInput = {
   set?: $Enums.PartnerDocumentType
 }
@@ -792,10 +836,10 @@ export type PartnerCreateWithoutSupervisorInput = {
   zipCode?: string | null
   country?: string
   status?: $Enums.PartnerStatus
-  organizationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutLinkedPartnersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutPartnersInput
 }
 
 export type PartnerUncheckedCreateWithoutSupervisorInput = {
@@ -848,10 +892,10 @@ export type PartnerCreateWithoutUserInput = {
   zipCode?: string | null
   country?: string
   status?: $Enums.PartnerStatus
-  organizationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   supervisor?: Prisma.UserCreateNestedOneWithoutSupervisedPartnersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutPartnersInput
 }
 
 export type PartnerUncheckedCreateWithoutUserInput = {
@@ -946,6 +990,78 @@ export type PartnerUpdateManyWithWhereWithoutUserInput = {
   data: Prisma.XOR<Prisma.PartnerUpdateManyMutationInput, Prisma.PartnerUncheckedUpdateManyWithoutUserInput>
 }
 
+export type PartnerCreateWithoutOrganizationInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.PartnerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  status?: $Enums.PartnerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  supervisor?: Prisma.UserCreateNestedOneWithoutSupervisedPartnersInput
+  user?: Prisma.UserCreateNestedOneWithoutLinkedPartnersInput
+}
+
+export type PartnerUncheckedCreateWithoutOrganizationInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.PartnerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  userId?: string | null
+  supervisorId?: string | null
+  status?: $Enums.PartnerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PartnerCreateOrConnectWithoutOrganizationInput = {
+  where: Prisma.PartnerWhereUniqueInput
+  create: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput>
+}
+
+export type PartnerCreateManyOrganizationInputEnvelope = {
+  data: Prisma.PartnerCreateManyOrganizationInput | Prisma.PartnerCreateManyOrganizationInput[]
+  skipDuplicates?: boolean
+}
+
+export type PartnerUpsertWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.PartnerWhereUniqueInput
+  update: Prisma.XOR<Prisma.PartnerUpdateWithoutOrganizationInput, Prisma.PartnerUncheckedUpdateWithoutOrganizationInput>
+  create: Prisma.XOR<Prisma.PartnerCreateWithoutOrganizationInput, Prisma.PartnerUncheckedCreateWithoutOrganizationInput>
+}
+
+export type PartnerUpdateWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.PartnerWhereUniqueInput
+  data: Prisma.XOR<Prisma.PartnerUpdateWithoutOrganizationInput, Prisma.PartnerUncheckedUpdateWithoutOrganizationInput>
+}
+
+export type PartnerUpdateManyWithWhereWithoutOrganizationInput = {
+  where: Prisma.PartnerScalarWhereInput
+  data: Prisma.XOR<Prisma.PartnerUpdateManyMutationInput, Prisma.PartnerUncheckedUpdateManyWithoutOrganizationInput>
+}
+
 export type PartnerCreateManySupervisorInput = {
   id?: string
   name: string
@@ -1009,10 +1125,10 @@ export type PartnerUpdateWithoutSupervisorInput = {
   zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutLinkedPartnersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPartnersNestedInput
 }
 
 export type PartnerUncheckedUpdateWithoutSupervisorInput = {
@@ -1078,10 +1194,10 @@ export type PartnerUpdateWithoutUserInput = {
   zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   supervisor?: Prisma.UserUpdateOneWithoutSupervisedPartnersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPartnersNestedInput
 }
 
 export type PartnerUncheckedUpdateWithoutUserInput = {
@@ -1130,6 +1246,98 @@ export type PartnerUncheckedUpdateManyWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type PartnerCreateManyOrganizationInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.PartnerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  userId?: string | null
+  supervisorId?: string | null
+  status?: $Enums.PartnerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PartnerUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  supervisor?: Prisma.UserUpdateOneWithoutSupervisedPartnersNestedInput
+  user?: Prisma.UserUpdateOneWithoutLinkedPartnersNestedInput
+}
+
+export type PartnerUncheckedUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PartnerUncheckedUpdateManyWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPartnerStatusFieldUpdateOperationsInput | $Enums.PartnerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type PartnerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1156,6 +1364,7 @@ export type PartnerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["partner"]>
 
 export type PartnerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1182,6 +1391,7 @@ export type PartnerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   updatedAt?: boolean
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["partner"]>
 
 export type PartnerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1208,6 +1418,7 @@ export type PartnerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   updatedAt?: boolean
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["partner"]>
 
 export type PartnerSelectScalar = {
@@ -1238,14 +1449,17 @@ export type PartnerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type PartnerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
 export type PartnerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
 export type PartnerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   supervisor?: boolean | Prisma.Partner$supervisorArgs<ExtArgs>
   user?: boolean | Prisma.Partner$userArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
 
 export type $PartnerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1253,6 +1467,7 @@ export type $PartnerPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     supervisor: Prisma.$UserPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs> | null
+    organization: Prisma.$OrganizationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1672,6 +1887,7 @@ export interface Prisma__PartnerClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   supervisor<T extends Prisma.Partner$supervisorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Partner$supervisorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.Partner$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Partner$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

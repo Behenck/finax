@@ -33,7 +33,7 @@ export async function createPartner(app: FastifyInstance) {
           neighborhood: z.string().optional(),
           number: z.string().optional(),
           complement: z.string().optional(),
-          status: z.enum(PartnerStatus),
+          status: z.enum(PartnerStatus).optional(),
           supervisorId: z.uuid().optional(),
         }),
         response: {

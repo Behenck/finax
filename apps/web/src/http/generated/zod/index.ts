@@ -1,3 +1,4 @@
+export { assignPartnerSupervisorPathParamsSchema, assignPartnerSupervisor204Schema, assignPartnerSupervisorMutationRequestSchema, assignPartnerSupervisorMutationResponseSchema } from "./assignPartnerSupervisorSchema.ts";
 export { deleteOrganizationSlugPathParamsSchema, deleteOrganizationSlug204Schema, deleteOrganizationSlugMutationResponseSchema } from "./deleteOrganizationSlugSchema.ts";
 export { deleteOrganizationsSlugCategoriesIdPathParamsSchema, deleteOrganizationsSlugCategoriesId204Schema, deleteOrganizationsSlugCategoriesIdMutationResponseSchema } from "./deleteOrganizationsSlugCategoriesIdSchema.ts";
 export { deleteOrganizationsSlugCompaniesCompanyidPathParamsSchema, deleteOrganizationsSlugCompaniesCompanyid204Schema, deleteOrganizationsSlugCompaniesCompanyidMutationResponseSchema } from "./deleteOrganizationsSlugCompaniesCompanyidSchema.ts";
@@ -23,6 +24,7 @@ export { getOrganizationsSlugCustomersPathParamsSchema, getOrganizationsSlugCust
 export { getOrganizationsSlugEmployeesPathParamsSchema, getOrganizationsSlugEmployees200Schema, getOrganizationsSlugEmployeesQueryResponseSchema } from "./getOrganizationsSlugEmployeesSchema.ts";
 export { getOrganizationsSlugInvitesPathParamsSchema, getOrganizationsSlugInvites200Schema, getOrganizationsSlugInvitesQueryResponseSchema } from "./getOrganizationsSlugInvitesSchema.ts";
 export { getOrganizationsSlugMembershipPathParamsSchema, getOrganizationsSlugMembership200Schema, getOrganizationsSlugMembershipQueryResponseSchema } from "./getOrganizationsSlugMembershipSchema.ts";
+export { getOrganizationsSlugMembersRolePathParamsSchema, getOrganizationsSlugMembersRole200Schema, getOrganizationsSlugMembersRoleQueryResponseSchema } from "./getOrganizationsSlugMembersRoleSchema.ts";
 export { getOrganizationsSlugMembersPathParamsSchema, getOrganizationsSlugMembers200Schema, getOrganizationsSlugMembersQueryResponseSchema } from "./getOrganizationsSlugMembersSchema.ts";
 export { getOrganizationsSlugPartnersPartneridPathParamsSchema, getOrganizationsSlugPartnersPartnerid200Schema, getOrganizationsSlugPartnersPartneridQueryResponseSchema } from "./getOrganizationsSlugPartnersPartneridSchema.ts";
 export { getOrganizationsSlugPartnersPathParamsSchema, getOrganizationsSlugPartners200Schema, getOrganizationsSlugPartnersQueryResponseSchema } from "./getOrganizationsSlugPartnersSchema.ts";
