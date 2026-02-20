@@ -98,6 +98,11 @@ export type CustomerPJ = Prisma.CustomerPJModel
  */
 export type Partner = Prisma.PartnerModel
 /**
+ * Model Seller
+ * 
+ */
+export type Seller = Prisma.SellerModel
+/**
  * Model Transaction
  * 
  */

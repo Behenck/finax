@@ -30,6 +30,7 @@ model User {
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
   linkedPartners      Partner[]      @relation("PartnerUser")
+  linkedSellers       Seller[]       @relation("SellerUser")
 
   @@map("users")
 }
@@ -150,6 +151,7 @@ model Organization {
   recurrences  Recurrence[]
   customers    Customer[]
   partners     Partner[]
+  sellers      Seller[]
 
   @@index([slug])
   @@map("organizations")
@@ -397,6 +399,56 @@ model Partner {
   @@index([organizationId])
   @@index([organizationId, status])
   @@map("partners")
+}
+
+enum SellerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum SellerDocumentType {
+  CPF
+  CNPJ
+}
+
+model Seller {
+  id String @id @default(uuid())
+
+  name  String
+  email String
+  phone String
+
+  documentType SellerDocumentType
+  document     String
+
+  companyName String @map("company_name")
+
+  street       String?
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String
+  zipCode      String?
+  country      String  @default("BR")
+
+  userId String? @map("user_id")
+
+  status SellerStatus @default(ACTIVE)
+
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User?        @relation("SellerUser", fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, email])
+  @@unique([organizationId, document])
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@map("sellers")
 }
 
 enum TransactionType {

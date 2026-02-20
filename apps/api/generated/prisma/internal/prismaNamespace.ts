@@ -400,6 +400,7 @@ export const ModelName = {
   CustomerPF: 'CustomerPF',
   CustomerPJ: 'CustomerPJ',
   Partner: 'Partner',
+  Seller: 'Seller',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1606,6 +1607,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Seller: {
+      payload: Prisma.$SellerPayload<ExtArgs>
+      fields: Prisma.SellerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SellerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SellerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        findFirst: {
+          args: Prisma.SellerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SellerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        findMany: {
+          args: Prisma.SellerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>[]
+        }
+        create: {
+          args: Prisma.SellerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        createMany: {
+          args: Prisma.SellerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SellerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>[]
+        }
+        delete: {
+          args: Prisma.SellerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        update: {
+          args: Prisma.SellerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        deleteMany: {
+          args: Prisma.SellerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SellerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SellerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>[]
+        }
+        upsert: {
+          args: Prisma.SellerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerPayload>
+        }
+        aggregate: {
+          args: Prisma.SellerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSeller>
+        }
+        groupBy: {
+          args: Prisma.SellerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SellerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerCountAggregateOutputType> | number
+        }
+      }
+    }
     Transaction: {
       payload: Prisma.$TransactionPayload<ExtArgs>
       fields: Prisma.TransactionFieldRefs
@@ -2093,6 +2168,32 @@ export const PartnerScalarFieldEnum = {
 export type PartnerScalarFieldEnum = (typeof PartnerScalarFieldEnum)[keyof typeof PartnerScalarFieldEnum]
 
 
+export const SellerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  documentType: 'documentType',
+  document: 'document',
+  companyName: 'companyName',
+  street: 'street',
+  number: 'number',
+  complement: 'complement',
+  neighborhood: 'neighborhood',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  userId: 'userId',
+  status: 'status',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SellerScalarFieldEnum = (typeof SellerScalarFieldEnum)[keyof typeof SellerScalarFieldEnum]
+
+
 export const TransactionScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -2380,6 +2481,34 @@ export type ListEnumPartnerStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'SellerDocumentType'
+ */
+export type EnumSellerDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SellerDocumentType'>
+    
+
+
+/**
+ * Reference to a field of type 'SellerDocumentType[]'
+ */
+export type ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SellerDocumentType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SellerStatus'
+ */
+export type EnumSellerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SellerStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SellerStatus[]'
+ */
+export type ListEnumSellerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SellerStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'TransactionStatus'
  */
 export type EnumTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionStatus'>
@@ -2573,6 +2702,7 @@ export type GlobalOmitConfig = {
   customerPF?: Prisma.CustomerPFOmit
   customerPJ?: Prisma.CustomerPJOmit
   partner?: Prisma.PartnerOmit
+  seller?: Prisma.SellerOmit
   transaction?: Prisma.TransactionOmit
   transactionItem?: Prisma.TransactionItemOmit
   recurrence?: Prisma.RecurrenceOmit

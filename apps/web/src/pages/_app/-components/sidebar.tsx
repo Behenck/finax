@@ -81,6 +81,11 @@ export function AppSidebar() {
 				},
 				{
 					icon: PersonStanding,
+					title: "Vendedores",
+					url: "/registers/sellers",
+				},
+				{
+					icon: PersonStanding,
 					title: "Parceiros",
 					url: "/registers/partners",
 				},

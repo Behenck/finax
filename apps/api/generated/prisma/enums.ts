@@ -94,6 +94,22 @@ export const PartnerDocumentType = {
 export type PartnerDocumentType = (typeof PartnerDocumentType)[keyof typeof PartnerDocumentType]
 
 
+export const SellerStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type SellerStatus = (typeof SellerStatus)[keyof typeof SellerStatus]
+
+
+export const SellerDocumentType = {
+  CPF: 'CPF',
+  CNPJ: 'CNPJ'
+} as const
+
+export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof SellerDocumentType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

@@ -225,6 +225,7 @@ export type OrganizationWhereInput = {
   recurrences?: Prisma.RecurrenceListRelationFilter
   customers?: Prisma.CustomerListRelationFilter
   partners?: Prisma.PartnerListRelationFilter
+  sellers?: Prisma.SellerListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -248,6 +249,7 @@ export type OrganizationOrderByWithRelationInput = {
   recurrences?: Prisma.RecurrenceOrderByRelationAggregateInput
   customers?: Prisma.CustomerOrderByRelationAggregateInput
   partners?: Prisma.PartnerOrderByRelationAggregateInput
+  sellers?: Prisma.SellerOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -274,6 +276,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   recurrences?: Prisma.RecurrenceListRelationFilter
   customers?: Prisma.CustomerListRelationFilter
   partners?: Prisma.PartnerListRelationFilter
+  sellers?: Prisma.SellerListRelationFilter
 }, "id" | "slug" | "domain">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -326,6 +329,7 @@ export type OrganizationCreateInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -348,6 +352,7 @@ export type OrganizationUncheckedCreateInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -370,6 +375,7 @@ export type OrganizationUpdateInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -392,6 +398,7 @@ export type OrganizationUncheckedUpdateInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -641,6 +648,20 @@ export type OrganizationUpdateOneRequiredWithoutPartnersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPartnersInput, Prisma.OrganizationUpdateWithoutPartnersInput>, Prisma.OrganizationUncheckedUpdateWithoutPartnersInput>
 }
 
+export type OrganizationCreateNestedOneWithoutSellersInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSellersInput, Prisma.OrganizationUncheckedCreateWithoutSellersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSellersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutSellersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSellersInput, Prisma.OrganizationUncheckedCreateWithoutSellersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSellersInput
+  upsert?: Prisma.OrganizationUpsertWithoutSellersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSellersInput, Prisma.OrganizationUpdateWithoutSellersInput>, Prisma.OrganizationUncheckedUpdateWithoutSellersInput>
+}
+
 export type OrganizationCreateNestedOneWithoutTransactionsInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTransactionsInput, Prisma.OrganizationUncheckedCreateWithoutTransactionsInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTransactionsInput
@@ -688,6 +709,7 @@ export type OrganizationCreateWithoutOwnerInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOwnerInput = {
@@ -709,6 +731,7 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOwnerInput = {
@@ -771,6 +794,7 @@ export type OrganizationCreateWithoutInvitesInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvitesInput = {
@@ -792,6 +816,7 @@ export type OrganizationUncheckedCreateWithoutInvitesInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvitesInput = {
@@ -829,6 +854,7 @@ export type OrganizationUpdateWithoutInvitesInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvitesInput = {
@@ -850,6 +876,7 @@ export type OrganizationUncheckedUpdateWithoutInvitesInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -871,6 +898,7 @@ export type OrganizationCreateWithoutMembersInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -892,6 +920,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -929,6 +958,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -950,6 +980,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCompaniesInput = {
@@ -971,6 +1002,7 @@ export type OrganizationCreateWithoutCompaniesInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCompaniesInput = {
@@ -992,6 +1024,7 @@ export type OrganizationUncheckedCreateWithoutCompaniesInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCompaniesInput = {
@@ -1029,6 +1062,7 @@ export type OrganizationUpdateWithoutCompaniesInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
@@ -1050,6 +1084,7 @@ export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCategoriesInput = {
@@ -1071,6 +1106,7 @@ export type OrganizationCreateWithoutCategoriesInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCategoriesInput = {
@@ -1092,6 +1128,7 @@ export type OrganizationUncheckedCreateWithoutCategoriesInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCategoriesInput = {
@@ -1129,6 +1166,7 @@ export type OrganizationUpdateWithoutCategoriesInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
@@ -1150,6 +1188,7 @@ export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCostCentersInput = {
@@ -1171,6 +1210,7 @@ export type OrganizationCreateWithoutCostCentersInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCostCentersInput = {
@@ -1192,6 +1232,7 @@ export type OrganizationUncheckedCreateWithoutCostCentersInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCostCentersInput = {
@@ -1229,6 +1270,7 @@ export type OrganizationUpdateWithoutCostCentersInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCostCentersInput = {
@@ -1250,6 +1292,7 @@ export type OrganizationUncheckedUpdateWithoutCostCentersInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutEmployeesInput = {
@@ -1271,6 +1314,7 @@ export type OrganizationCreateWithoutEmployeesInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutEmployeesInput = {
@@ -1292,6 +1336,7 @@ export type OrganizationUncheckedCreateWithoutEmployeesInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutEmployeesInput = {
@@ -1329,6 +1374,7 @@ export type OrganizationUpdateWithoutEmployeesInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutEmployeesInput = {
@@ -1350,6 +1396,7 @@ export type OrganizationUncheckedUpdateWithoutEmployeesInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCustomersInput = {
@@ -1371,6 +1418,7 @@ export type OrganizationCreateWithoutCustomersInput = {
   employees?: Prisma.EmployeeCreateNestedManyWithoutOrganizationInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCustomersInput = {
@@ -1392,6 +1440,7 @@ export type OrganizationUncheckedCreateWithoutCustomersInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutOrganizationInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCustomersInput = {
@@ -1429,6 +1478,7 @@ export type OrganizationUpdateWithoutCustomersInput = {
   employees?: Prisma.EmployeeUpdateManyWithoutOrganizationNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCustomersInput = {
@@ -1450,6 +1500,7 @@ export type OrganizationUncheckedUpdateWithoutCustomersInput = {
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutOrganizationNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutPartnersInput = {
@@ -1471,6 +1522,7 @@ export type OrganizationCreateWithoutPartnersInput = {
   employees?: Prisma.EmployeeCreateNestedManyWithoutOrganizationInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutPartnersInput = {
@@ -1492,6 +1544,7 @@ export type OrganizationUncheckedCreateWithoutPartnersInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutOrganizationInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutPartnersInput = {
@@ -1529,6 +1582,7 @@ export type OrganizationUpdateWithoutPartnersInput = {
   employees?: Prisma.EmployeeUpdateManyWithoutOrganizationNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPartnersInput = {
@@ -1550,6 +1604,111 @@ export type OrganizationUncheckedUpdateWithoutPartnersInput = {
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutOrganizationNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutSellersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  shouldAttachUserByDomain?: boolean
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwns_organizationsInput
+  invites?: Prisma.InviteCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  costCenters?: Prisma.CostCenterCreateNestedManyWithoutOrganizationInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutOrganizationInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutSellersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  shouldAttachUserByDomain?: boolean
+  avatarUrl?: string | null
+  ownerId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invites?: Prisma.InviteUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  costCenters?: Prisma.CostCenterUncheckedCreateNestedManyWithoutOrganizationInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutOrganizationInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutSellersInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSellersInput, Prisma.OrganizationUncheckedCreateWithoutSellersInput>
+}
+
+export type OrganizationUpsertWithoutSellersInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutSellersInput, Prisma.OrganizationUncheckedUpdateWithoutSellersInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSellersInput, Prisma.OrganizationUncheckedCreateWithoutSellersInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutSellersInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutSellersInput, Prisma.OrganizationUncheckedUpdateWithoutSellersInput>
+}
+
+export type OrganizationUpdateWithoutSellersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwns_organizationsNestedInput
+  invites?: Prisma.InviteUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  costCenters?: Prisma.CostCenterUpdateManyWithoutOrganizationNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutOrganizationNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutSellersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invites?: Prisma.InviteUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  costCenters?: Prisma.CostCenterUncheckedUpdateManyWithoutOrganizationNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutOrganizationNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTransactionsInput = {
@@ -1571,6 +1730,7 @@ export type OrganizationCreateWithoutTransactionsInput = {
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTransactionsInput = {
@@ -1592,6 +1752,7 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTransactionsInput = {
@@ -1629,6 +1790,7 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
@@ -1650,6 +1812,7 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutRecurrencesInput = {
@@ -1671,6 +1834,7 @@ export type OrganizationCreateWithoutRecurrencesInput = {
   employees?: Prisma.EmployeeCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutRecurrencesInput = {
@@ -1692,6 +1856,7 @@ export type OrganizationUncheckedCreateWithoutRecurrencesInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutOrganizationInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutRecurrencesInput = {
@@ -1729,6 +1894,7 @@ export type OrganizationUpdateWithoutRecurrencesInput = {
   employees?: Prisma.EmployeeUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutRecurrencesInput = {
@@ -1750,6 +1916,7 @@ export type OrganizationUncheckedUpdateWithoutRecurrencesInput = {
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyOwnerInput = {
@@ -1782,6 +1949,7 @@ export type OrganizationUpdateWithoutOwnerInput = {
   recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOwnerInput = {
@@ -1803,6 +1971,7 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
@@ -1832,6 +2001,7 @@ export type OrganizationCountOutputType = {
   recurrences: number
   customers: number
   partners: number
+  sellers: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1845,6 +2015,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   recurrences?: boolean | OrganizationCountOutputTypeCountRecurrencesArgs
   customers?: boolean | OrganizationCountOutputTypeCountCustomersArgs
   partners?: boolean | OrganizationCountOutputTypeCountPartnersArgs
+  sellers?: boolean | OrganizationCountOutputTypeCountSellersArgs
 }
 
 /**
@@ -1927,6 +2098,13 @@ export type OrganizationCountOutputTypeCountPartnersArgs<ExtArgs extends runtime
   where?: Prisma.PartnerWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountSellersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SellerWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1949,6 +2127,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   recurrences?: boolean | Prisma.Organization$recurrencesArgs<ExtArgs>
   customers?: boolean | Prisma.Organization$customersArgs<ExtArgs>
   partners?: boolean | Prisma.Organization$partnersArgs<ExtArgs>
+  sellers?: boolean | Prisma.Organization$sellersArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -2003,6 +2182,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   recurrences?: boolean | Prisma.Organization$recurrencesArgs<ExtArgs>
   customers?: boolean | Prisma.Organization$customersArgs<ExtArgs>
   partners?: boolean | Prisma.Organization$partnersArgs<ExtArgs>
+  sellers?: boolean | Prisma.Organization$sellersArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2026,6 +2206,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     recurrences: Prisma.$RecurrencePayload<ExtArgs>[]
     customers: Prisma.$CustomerPayload<ExtArgs>[]
     partners: Prisma.$PartnerPayload<ExtArgs>[]
+    sellers: Prisma.$SellerPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2442,6 +2623,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   recurrences<T extends Prisma.Organization$recurrencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$recurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customers<T extends Prisma.Organization$customersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$customersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   partners<T extends Prisma.Organization$partnersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$partnersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PartnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sellers<T extends Prisma.Organization$sellersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$sellersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SellerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3132,6 +3314,30 @@ export type Organization$partnersArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.PartnerScalarFieldEnum | Prisma.PartnerScalarFieldEnum[]
+}
+
+/**
+ * Organization.sellers
+ */
+export type Organization$sellersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Seller
+   */
+  select?: Prisma.SellerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Seller
+   */
+  omit?: Prisma.SellerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SellerInclude<ExtArgs> | null
+  where?: Prisma.SellerWhereInput
+  orderBy?: Prisma.SellerOrderByWithRelationInput | Prisma.SellerOrderByWithRelationInput[]
+  cursor?: Prisma.SellerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SellerScalarFieldEnum | Prisma.SellerScalarFieldEnum[]
 }
 
 /**

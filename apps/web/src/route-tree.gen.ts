@@ -27,6 +27,7 @@ import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invit
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
 import { Route as AppSettingsMembersIndexRouteImport } from './pages/_app/settings/members/index'
+import { Route as AppRegistersSellersIndexRouteImport } from './pages/_app/registers/sellers/index'
 import { Route as AppRegistersPartnersIndexRouteImport } from './pages/_app/registers/partners/index'
 import { Route as AppRegistersEmployeesIndexRouteImport } from './pages/_app/registers/employees/index'
 import { Route as AppRegistersCustomersIndexRouteImport } from './pages/_app/registers/customers/index'
@@ -35,6 +36,8 @@ import { Route as AppRegistersCompaniesIndexRouteImport } from './pages/_app/reg
 import { Route as AppRegistersCategoriesIndexRouteImport } from './pages/_app/registers/categories/index'
 import { Route as AuthInviteInviteIdAcceptRouteImport } from './pages/_auth/invite/$inviteId/accept'
 import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/_app/transactions/update/$transactionId'
+import { Route as AppRegistersSellersUpdateRouteImport } from './pages/_app/registers/sellers/update'
+import { Route as AppRegistersSellersCreateRouteImport } from './pages/_app/registers/sellers/create'
 import { Route as AppRegistersPartnersUpdateRouteImport } from './pages/_app/registers/partners/update'
 import { Route as AppRegistersPartnersCreateRouteImport } from './pages/_app/registers/partners/create'
 import { Route as AppRegistersCustomersUpdateRouteImport } from './pages/_app/registers/customers/update'
@@ -130,6 +133,12 @@ const AppSettingsMembersIndexRoute = AppSettingsMembersIndexRouteImport.update({
   path: '/members/',
   getParentRoute: () => AppSettingsLayoutRoute,
 } as any)
+const AppRegistersSellersIndexRoute =
+  AppRegistersSellersIndexRouteImport.update({
+    id: '/registers/sellers/',
+    path: '/registers/sellers/',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AppRegistersPartnersIndexRoute =
   AppRegistersPartnersIndexRouteImport.update({
     id: '/registers/partners/',
@@ -178,6 +187,18 @@ const AppTransactionsUpdateTransactionIdRoute =
     path: '/transactions/update/$transactionId',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppRegistersSellersUpdateRoute =
+  AppRegistersSellersUpdateRouteImport.update({
+    id: '/registers/sellers/update',
+    path: '/registers/sellers/update',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
+const AppRegistersSellersCreateRoute =
+  AppRegistersSellersCreateRouteImport.update({
+    id: '/registers/sellers/create',
+    path: '/registers/sellers/create',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AppRegistersPartnersUpdateRoute =
   AppRegistersPartnersUpdateRouteImport.update({
     id: '/registers/partners/update',
@@ -220,6 +241,8 @@ export interface FileRoutesByFullPath {
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
+  '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
@@ -228,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/registers/partners': typeof AppRegistersPartnersIndexRoute
+  '/registers/sellers': typeof AppRegistersSellersIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
@@ -248,6 +272,8 @@ export interface FileRoutesByTo {
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
+  '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
@@ -256,6 +282,7 @@ export interface FileRoutesByTo {
   '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/registers/partners': typeof AppRegistersPartnersIndexRoute
+  '/registers/sellers': typeof AppRegistersSellersIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
   '/transactions/create': typeof AppTransactionsCreateIndexRoute
@@ -281,6 +308,8 @@ export interface FileRoutesById {
   '/_app/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/_app/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/_app/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/_app/registers/sellers/create': typeof AppRegistersSellersCreateRoute
+  '/_app/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/_app/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/_auth/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/_app/registers/categories/': typeof AppRegistersCategoriesIndexRoute
@@ -289,6 +318,7 @@ export interface FileRoutesById {
   '/_app/registers/customers/': typeof AppRegistersCustomersIndexRoute
   '/_app/registers/employees/': typeof AppRegistersEmployeesIndexRoute
   '/_app/registers/partners/': typeof AppRegistersPartnersIndexRoute
+  '/_app/registers/sellers/': typeof AppRegistersSellersIndexRoute
   '/_app/settings/members/': typeof AppSettingsMembersIndexRoute
   '/_app/settings/organization/': typeof AppSettingsOrganizationIndexRoute
   '/_app/transactions/create/': typeof AppTransactionsCreateIndexRoute
@@ -313,6 +343,8 @@ export interface FileRouteTypes {
     | '/registers/customers/update'
     | '/registers/partners/create'
     | '/registers/partners/update'
+    | '/registers/sellers/create'
+    | '/registers/sellers/update'
     | '/transactions/update/$transactionId'
     | '/invite/$inviteId/accept'
     | '/registers/categories'
@@ -321,6 +353,7 @@ export interface FileRouteTypes {
     | '/registers/customers'
     | '/registers/employees'
     | '/registers/partners'
+    | '/registers/sellers'
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
@@ -341,6 +374,8 @@ export interface FileRouteTypes {
     | '/registers/customers/update'
     | '/registers/partners/create'
     | '/registers/partners/update'
+    | '/registers/sellers/create'
+    | '/registers/sellers/update'
     | '/transactions/update/$transactionId'
     | '/invite/$inviteId/accept'
     | '/registers/categories'
@@ -349,6 +384,7 @@ export interface FileRouteTypes {
     | '/registers/customers'
     | '/registers/employees'
     | '/registers/partners'
+    | '/registers/sellers'
     | '/settings/members'
     | '/settings/organization'
     | '/transactions/create'
@@ -373,6 +409,8 @@ export interface FileRouteTypes {
     | '/_app/registers/customers/update'
     | '/_app/registers/partners/create'
     | '/_app/registers/partners/update'
+    | '/_app/registers/sellers/create'
+    | '/_app/registers/sellers/update'
     | '/_app/transactions/update/$transactionId'
     | '/_auth/invite/$inviteId/accept'
     | '/_app/registers/categories/'
@@ -381,6 +419,7 @@ export interface FileRouteTypes {
     | '/_app/registers/customers/'
     | '/_app/registers/employees/'
     | '/_app/registers/partners/'
+    | '/_app/registers/sellers/'
     | '/_app/settings/members/'
     | '/_app/settings/organization/'
     | '/_app/transactions/create/'
@@ -520,6 +559,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsMembersIndexRouteImport
       parentRoute: typeof AppSettingsLayoutRoute
     }
+    '/_app/registers/sellers/': {
+      id: '/_app/registers/sellers/'
+      path: '/registers/sellers'
+      fullPath: '/registers/sellers'
+      preLoaderRoute: typeof AppRegistersSellersIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/partners/': {
       id: '/_app/registers/partners/'
       path: '/registers/partners'
@@ -576,6 +622,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTransactionsUpdateTransactionIdRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/sellers/update': {
+      id: '/_app/registers/sellers/update'
+      path: '/registers/sellers/update'
+      fullPath: '/registers/sellers/update'
+      preLoaderRoute: typeof AppRegistersSellersUpdateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/registers/sellers/create': {
+      id: '/_app/registers/sellers/create'
+      path: '/registers/sellers/create'
+      fullPath: '/registers/sellers/create'
+      preLoaderRoute: typeof AppRegistersSellersCreateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/partners/update': {
       id: '/_app/registers/partners/update'
       path: '/registers/partners/update'
@@ -630,6 +690,8 @@ interface AppLayoutRouteChildren {
   AppRegistersCustomersUpdateRoute: typeof AppRegistersCustomersUpdateRoute
   AppRegistersPartnersCreateRoute: typeof AppRegistersPartnersCreateRoute
   AppRegistersPartnersUpdateRoute: typeof AppRegistersPartnersUpdateRoute
+  AppRegistersSellersCreateRoute: typeof AppRegistersSellersCreateRoute
+  AppRegistersSellersUpdateRoute: typeof AppRegistersSellersUpdateRoute
   AppTransactionsUpdateTransactionIdRoute: typeof AppTransactionsUpdateTransactionIdRoute
   AppRegistersCategoriesIndexRoute: typeof AppRegistersCategoriesIndexRoute
   AppRegistersCompaniesIndexRoute: typeof AppRegistersCompaniesIndexRoute
@@ -637,6 +699,7 @@ interface AppLayoutRouteChildren {
   AppRegistersCustomersIndexRoute: typeof AppRegistersCustomersIndexRoute
   AppRegistersEmployeesIndexRoute: typeof AppRegistersEmployeesIndexRoute
   AppRegistersPartnersIndexRoute: typeof AppRegistersPartnersIndexRoute
+  AppRegistersSellersIndexRoute: typeof AppRegistersSellersIndexRoute
   AppTransactionsCreateIndexRoute: typeof AppTransactionsCreateIndexRoute
 }
 
@@ -648,6 +711,8 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersCustomersUpdateRoute: AppRegistersCustomersUpdateRoute,
   AppRegistersPartnersCreateRoute: AppRegistersPartnersCreateRoute,
   AppRegistersPartnersUpdateRoute: AppRegistersPartnersUpdateRoute,
+  AppRegistersSellersCreateRoute: AppRegistersSellersCreateRoute,
+  AppRegistersSellersUpdateRoute: AppRegistersSellersUpdateRoute,
   AppTransactionsUpdateTransactionIdRoute:
     AppTransactionsUpdateTransactionIdRoute,
   AppRegistersCategoriesIndexRoute: AppRegistersCategoriesIndexRoute,
@@ -656,6 +721,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersCustomersIndexRoute: AppRegistersCustomersIndexRoute,
   AppRegistersEmployeesIndexRoute: AppRegistersEmployeesIndexRoute,
   AppRegistersPartnersIndexRoute: AppRegistersPartnersIndexRoute,
+  AppRegistersSellersIndexRoute: AppRegistersSellersIndexRoute,
   AppTransactionsCreateIndexRoute: AppTransactionsCreateIndexRoute,
 }
 

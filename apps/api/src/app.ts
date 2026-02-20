@@ -18,6 +18,7 @@ import { transactionRoutes } from "./routes/transactions"
 import { recurrencesRoutes } from "./routes/recurrences"
 import { customerRoute } from "./routes/customers"
 import { partnerRoutes } from "./routes/partners"
+import { sellerRoutes } from "./routes/sellers"
 
 export function buildApp() {
   const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -98,6 +99,7 @@ export function buildApp() {
 
   app.register(customerRoute)
   app.register(partnerRoutes)
+  app.register(sellerRoutes)
 
   app.register(transactionRoutes)
   app.register(recurrencesRoutes)
