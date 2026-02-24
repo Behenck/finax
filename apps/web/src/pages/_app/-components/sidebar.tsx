@@ -112,26 +112,6 @@ export function AppSidebar() {
 			icon: CreditCard,
 		},
 		{
-			title: "Orçamentos",
-			url: "#",
-			icon: ChartPie,
-		},
-		{
-			title: "Dívidas",
-			url: "#",
-			icon: TriangleAlert,
-		},
-		{
-			title: "Metas",
-			url: "#",
-			icon: Target,
-		},
-		{
-			title: "Família",
-			url: "#",
-			icon: Users,
-		},
-		{
 			title: "Configurações",
 			url: "/settings",
 			icon: Settings,
@@ -193,7 +173,7 @@ export function AppSidebar() {
 												{item.children.map((child) => (
 													<SidebarMenuSubItem key={child.title}>
 														<SidebarMenuSubButton asChild>
-															<Link to={child.url} className="p-4">
+															<Link to={child.url} className="p-4.5">
 																<child.icon className="size-4" />
 																<span>{child.title}</span>
 															</Link>

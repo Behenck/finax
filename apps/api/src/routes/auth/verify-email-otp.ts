@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { compare } from "bcryptjs";
@@ -76,6 +77,7 @@ export async function verifyEmailOTP(app: FastifyInstance) {
       // create a refresh token string (random long value) and persist
       const refreshTokenValue = await reply.jwtSign({
         sub: user.id,
+        nonce: randomUUID(),
       }, { expiresIn: '30d' })
 
       // prisma client might need regeneration after schema change; use any to avoid type errors until generated client is updated

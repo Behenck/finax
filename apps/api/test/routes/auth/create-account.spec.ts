@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { makeUser } from "../../factories/make-user"
-import { prisma } from "@/lib/prisma"
+import { prisma } from "../../lib/prisma"
 
 describe("Create account factory", () => {
 

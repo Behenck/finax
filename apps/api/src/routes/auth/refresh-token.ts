@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { randomUUID } from "node:crypto";
 import z from "zod";
 
 export async function refreshTokenRoute(app: FastifyInstance) {
@@ -52,7 +53,10 @@ export async function refreshTokenRoute(app: FastifyInstance) {
 
       // issue new tokens
       const newAccess = await reply.jwtSign({ sub: user.id })
-      const newRefresh = await reply.jwtSign({ sub: user.id }, { expiresIn: '30d' })
+      const newRefresh = await reply.jwtSign(
+        { sub: user.id, nonce: randomUUID() },
+        { expiresIn: '30d' }
+      )
 
       await (prisma as any).refreshToken.create({ data: { token: newRefresh, userId: user.id } })
 

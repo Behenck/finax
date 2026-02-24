@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    setupFiles: ["./src/tests/setup.ts"],
+    setupFiles: ["./test/setup.ts"],
   },
 
   resolve: {
