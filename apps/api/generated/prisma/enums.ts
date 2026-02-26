@@ -120,6 +120,26 @@ export const SellerDocumentType = {
 export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof SellerDocumentType]
 
 
+export const ProductCommissionScenarioConditionType = {
+  SALE_HAS_SELLER: 'SALE_HAS_SELLER',
+  SALE_UNIT_EQUALS: 'SALE_UNIT_EQUALS',
+  SELLER_EQUALS: 'SELLER_EQUALS'
+} as const
+
+export type ProductCommissionScenarioConditionType = (typeof ProductCommissionScenarioConditionType)[keyof typeof ProductCommissionScenarioConditionType]
+
+
+export const ProductCommissionRecipientType = {
+  COMPANY: 'COMPANY',
+  SELLER: 'SELLER',
+  PARTNER: 'PARTNER',
+  SUPERVISOR: 'SUPERVISOR',
+  OTHER: 'OTHER'
+} as const
+
+export type ProductCommissionRecipientType = (typeof ProductCommissionRecipientType)[keyof typeof ProductCommissionRecipientType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

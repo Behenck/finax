@@ -176,6 +176,7 @@ model Organization {
   customers             Customer[]
   partners              Partner[]
   sellers               Seller[]
+  products              Product[]
   memberCompanyAccesses MemberCompanyAccess[]
 
   @@index([slug])
@@ -208,11 +209,12 @@ model Unit {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  company               Company               @relation(fields: [companyId], references: [id])
-  transactions          Transaction[]
-  recurrences           Recurrence[]
-  memberCompanyAccesses MemberCompanyAccess[]
-  employees             Employee[]
+  company                             Company                              @relation(fields: [companyId], references: [id])
+  transactions                        Transaction[]
+  recurrences                         Recurrence[]
+  memberCompanyAccesses               MemberCompanyAccess[]
+  employees                           Employee[]
+  productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionUnit")
 
   @@unique([companyId, name])
   @@index([companyId])
@@ -480,14 +482,133 @@ model Seller {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user         User?        @relation("SellerUser", fields: [userId], references: [id], onDelete: SetNull)
-  organization Organization @relation(fields: [organizationId], references: [id])
+  user                                User?                                @relation("SellerUser", fields: [userId], references: [id], onDelete: SetNull)
+  organization                        Organization                         @relation(fields: [organizationId], references: [id])
+  productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionSeller")
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])
   @@index([organizationId])
   @@index([organizationId, status])
   @@map("sellers")
+}
+
+model Product {
+  id             String  @id @default(uuid())
+  organizationId String  @map("organization_id")
+  parentId       String? @map("parent_id")
+  name           String
+  description    String?
+  isActive       Boolean @default(true) @map("is_active")
+  sortOrder      Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  parent       Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Product[]    @relation("ProductTree")
+
+  commissionScenarios ProductCommissionScenario[]
+
+  @@unique([organizationId, parentId, name])
+  @@index([organizationId])
+  @@index([parentId])
+  @@index([organizationId, isActive])
+  @@map("products")
+}
+
+enum ProductCommissionScenarioConditionType {
+  SALE_HAS_SELLER
+  SALE_UNIT_EQUALS
+  SELLER_EQUALS
+}
+
+model ProductCommissionScenario {
+  id          String  @id @default(uuid())
+  productId   String  @map("product_id")
+  name        String
+  description String?
+  isDefault   Boolean @default(false) @map("is_default")
+  isActive    Boolean @default(true) @map("is_active")
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id])
+
+  conditions  ProductCommissionScenarioCondition[]
+  commissions ProductCommission[]
+
+  @@unique([productId, name])
+  @@index([productId])
+  @@index([productId, isActive, sortOrder])
+  @@map("product_commission_scenarios")
+}
+
+model ProductCommissionScenarioCondition {
+  id         String                                 @id @default(uuid())
+  scenarioId String                                 @map("scenario_id")
+  type       ProductCommissionScenarioConditionType
+  sellerId   String?                                @map("seller_id")
+  unitId     String?                                @map("unit_id")
+  sortOrder  Int                                    @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  scenario ProductCommissionScenario @relation(fields: [scenarioId], references: [id])
+  seller   Seller?                   @relation("ProductCommissionConditionSeller", fields: [sellerId], references: [id])
+  unit     Unit?                     @relation("ProductCommissionConditionUnit", fields: [unitId], references: [id])
+
+  @@index([scenarioId])
+  @@index([scenarioId, sortOrder])
+  @@index([sellerId])
+  @@index([unitId])
+  @@map("product_commission_scenario_conditions")
+}
+
+enum ProductCommissionRecipientType {
+  COMPANY
+  SELLER
+  PARTNER
+  SUPERVISOR
+  OTHER
+}
+
+model ProductCommission {
+  id                        String                         @id @default(uuid())
+  scenarioId                String                         @map("scenario_id")
+  description               String
+  recipientType             ProductCommissionRecipientType @map("recipient_type")
+  recipientOtherDescription String?                        @map("recipient_other_description")
+  totalPercentage           Int                            @map("total_percentage")
+  sortOrder                 Int                            @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  scenario     ProductCommissionScenario      @relation(fields: [scenarioId], references: [id])
+  installments ProductCommissionInstallment[]
+
+  @@index([scenarioId])
+  @@index([scenarioId, sortOrder])
+  @@map("product_commissions")
+}
+
+model ProductCommissionInstallment {
+  id                String @id @default(uuid())
+  commissionId      String @map("commission_id")
+  installmentNumber Int    @map("installment_number")
+  percentage        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  commission ProductCommission @relation(fields: [commissionId], references: [id])
+
+  @@unique([commissionId, installmentNumber])
+  @@index([commissionId])
+  @@map("product_commission_installments")
 }
 
 enum TransactionType {

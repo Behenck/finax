@@ -130,6 +130,31 @@ export type Partner = Prisma.PartnerModel
  */
 export type Seller = Prisma.SellerModel
 /**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
+ * Model ProductCommissionScenario
+ * 
+ */
+export type ProductCommissionScenario = Prisma.ProductCommissionScenarioModel
+/**
+ * Model ProductCommissionScenarioCondition
+ * 
+ */
+export type ProductCommissionScenarioCondition = Prisma.ProductCommissionScenarioConditionModel
+/**
+ * Model ProductCommission
+ * 
+ */
+export type ProductCommission = Prisma.ProductCommissionModel
+/**
+ * Model ProductCommissionInstallment
+ * 
+ */
+export type ProductCommissionInstallment = Prisma.ProductCommissionInstallmentModel
+/**
  * Model Transaction
  * 
  */

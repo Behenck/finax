@@ -69,6 +69,11 @@ export const ModelName = {
   CustomerPJ: 'CustomerPJ',
   Partner: 'Partner',
   Seller: 'Seller',
+  Product: 'Product',
+  ProductCommissionScenario: 'ProductCommissionScenario',
+  ProductCommissionScenarioCondition: 'ProductCommissionScenarioCondition',
+  ProductCommission: 'ProductCommission',
+  ProductCommissionInstallment: 'ProductCommissionInstallment',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -355,6 +360,75 @@ export const SellerScalarFieldEnum = {
 } as const
 
 export type SellerScalarFieldEnum = (typeof SellerScalarFieldEnum)[keyof typeof SellerScalarFieldEnum]
+
+
+export const ProductScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  parentId: 'parentId',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProductCommissionScenarioScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  description: 'description',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductCommissionScenarioScalarFieldEnum = (typeof ProductCommissionScenarioScalarFieldEnum)[keyof typeof ProductCommissionScenarioScalarFieldEnum]
+
+
+export const ProductCommissionScenarioConditionScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  type: 'type',
+  sellerId: 'sellerId',
+  unitId: 'unitId',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductCommissionScenarioConditionScalarFieldEnum = (typeof ProductCommissionScenarioConditionScalarFieldEnum)[keyof typeof ProductCommissionScenarioConditionScalarFieldEnum]
+
+
+export const ProductCommissionScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  description: 'description',
+  recipientType: 'recipientType',
+  recipientOtherDescription: 'recipientOtherDescription',
+  totalPercentage: 'totalPercentage',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductCommissionScalarFieldEnum = (typeof ProductCommissionScalarFieldEnum)[keyof typeof ProductCommissionScalarFieldEnum]
+
+
+export const ProductCommissionInstallmentScalarFieldEnum = {
+  id: 'id',
+  commissionId: 'commissionId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductCommissionInstallmentScalarFieldEnum = (typeof ProductCommissionInstallmentScalarFieldEnum)[keyof typeof ProductCommissionInstallmentScalarFieldEnum]
 
 
 export const TransactionScalarFieldEnum = {
