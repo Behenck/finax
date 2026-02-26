@@ -42,6 +42,13 @@ export const putOrganizationsSlugCustomersCustomeridMutationRequestDocumentTypeE
 
 export type PutOrganizationsSlugCustomersCustomeridMutationRequestDocumentTypeEnumKey = (typeof putOrganizationsSlugCustomersCustomeridMutationRequestDocumentTypeEnum)[keyof typeof putOrganizationsSlugCustomersCustomeridMutationRequestDocumentTypeEnum];
 
+export const responsibleTypeEnum3 = {
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
+} as const;
+
+export type ResponsibleTypeEnum3Key = (typeof responsibleTypeEnum3)[keyof typeof responsibleTypeEnum3];
+
 export type PutOrganizationsSlugCustomersCustomeridMutationRequest = {
     /**
      * @type string
@@ -67,6 +74,19 @@ export type PutOrganizationsSlugCustomersCustomeridMutationRequest = {
      * @type string
     */
     documentNumber: string;
+    /**
+     * @type object
+    */
+    responsible?: {
+        /**
+         * @type string
+        */
+        type: ResponsibleTypeEnum3Key;
+        /**
+         * @type string, uuid
+        */
+        id: string;
+    } | null;
     /**
      * @type object | undefined
     */

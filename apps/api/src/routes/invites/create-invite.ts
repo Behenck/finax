@@ -2,11 +2,10 @@ import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { UnauthorizedError } from "../_errors/unauthorized-error";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { prisma } from "@/lib/prisma";
-import { roleSchema } from "@/schemas/role";
 import { Resend } from "resend";
+import { Role } from "generated/prisma/enums";
 
 export async function createInvite(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -21,7 +20,7 @@ export async function createInvite(app: FastifyInstance) {
         }),
         body: z.object({
           email: z.email(),
-          role: roleSchema
+          role: z.enum(Role)
         }),
         response: {
           204: z.null()

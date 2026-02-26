@@ -5,16 +5,20 @@ import { MembersList } from './-components/members-list'
 import { InviteMemberWithEmailAndRole } from './-components/invite-member-with-email-and-role'
 import { InviteMemberLink } from './-components/invite-member-link'
 import { InvitesPendingList } from './-components/invites-pending-list'
-import { useMembers } from '@/hooks/members/use-members'
+import { useApp } from '@/context/app-context'
+import { useGetOrganizationsSlugMembers } from '@/http/generated'
 
 export const Route = createFileRoute('/_app/settings/members/')({
   component: Members,
 })
 
 function Members() {
-  const { data: members } = useMembers("behenck")
+  const { organization } = useApp()
+  const { data } = useGetOrganizationsSlugMembers({ slug: organization!.slug })
 
-  const totalMembers = members?.length
+  const members = data?.members
+
+  const totalMembers = members?.length ?? 0
   return (
     <main className='flex flex-col gap-8'>
       <div className='flex items-center justify-between'>
@@ -25,7 +29,7 @@ function Members() {
       <Separator />
 
       <div>
-        <Tabs defaultValue="overview" className="space-y-2">
+        <Tabs defaultValue="members" className="space-y-2">
           <TabsList variant="underline" className="justify-start p-0 border-b border-gray-200 rounded-none h-auto w-full">
             <TabsTab
               value="members"

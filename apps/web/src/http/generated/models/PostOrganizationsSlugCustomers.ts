@@ -39,6 +39,13 @@ export const postOrganizationsSlugCustomersMutationRequestDocumentTypeEnum = {
 
 export type PostOrganizationsSlugCustomersMutationRequestDocumentTypeEnumKey = (typeof postOrganizationsSlugCustomersMutationRequestDocumentTypeEnum)[keyof typeof postOrganizationsSlugCustomersMutationRequestDocumentTypeEnum];
 
+export const responsibleTypeEnum = {
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
+} as const;
+
+export type ResponsibleTypeEnumKey = (typeof responsibleTypeEnum)[keyof typeof responsibleTypeEnum];
+
 export type PostOrganizationsSlugCustomersMutationRequest = {
     /**
      * @type string
@@ -64,6 +71,19 @@ export type PostOrganizationsSlugCustomersMutationRequest = {
      * @type string
     */
     documentNumber: string;
+    /**
+     * @type object
+    */
+    responsible?: {
+        /**
+         * @type string
+        */
+        type: ResponsibleTypeEnumKey;
+        /**
+         * @type string, uuid
+        */
+        id: string;
+    } | null;
     /**
      * @type object | undefined
     */

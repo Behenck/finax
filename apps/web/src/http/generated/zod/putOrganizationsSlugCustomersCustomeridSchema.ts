@@ -22,6 +22,10 @@ export const putOrganizationsSlugCustomersCustomeridMutationRequestSchema = z.ob
 "email": z.optional(z.string()),
 "documentType": z.enum(["CPF", "CNPJ", "RG", "IE", "PASSPORT", "OTHER"]),
 "documentNumber": z.string(),
+"responsible": z.object({
+    "type": z.enum(["SELLER", "PARTNER"]),
+"id": z.uuid()
+    }).nullish(),
 "pf": z.optional(z.object({
     "birthDate": z.optional(z.any()),
 "monthlyIncome": z.optional(z.number()),

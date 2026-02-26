@@ -23,6 +23,11 @@ export const getOrganizationsSlugCustomersCustomerid200Schema = z.object({
 "documentType": z.enum(["CPF", "CNPJ", "RG", "IE", "PASSPORT", "OTHER"]),
 "documentNumber": z.string(),
 "status": z.enum(["ACTIVE", "INACTIVE"]),
+"responsible": z.nullable(z.object({
+    "type": z.enum(["SELLER", "PARTNER"]),
+"id": z.uuid(),
+"name": z.string()
+    })),
 "pf": z.nullable(z.object({
     "birthDate": z.nullable(z.iso.datetime()),
 "monthlyIncome": z.nullable(z.number()),

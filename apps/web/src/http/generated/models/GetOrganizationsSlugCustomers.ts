@@ -36,6 +36,13 @@ export const customersStatusEnum = {
 
 export type CustomersStatusEnumKey = (typeof customersStatusEnum)[keyof typeof customersStatusEnum];
 
+export const responsibleTypeEnum2 = {
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
+} as const;
+
+export type ResponsibleTypeEnum2Key = (typeof responsibleTypeEnum2)[keyof typeof responsibleTypeEnum2];
+
 /**
  * @description Default Response
 */
@@ -76,6 +83,23 @@ export type GetOrganizationsSlugCustomers200 = {
          * @type string
         */
         status: CustomersStatusEnumKey;
+        /**
+         * @type object
+        */
+        responsible: {
+            /**
+             * @type string
+            */
+            type: ResponsibleTypeEnum2Key;
+            /**
+             * @type string, uuid
+            */
+            id: string;
+            /**
+             * @type string
+            */
+            name: string;
+        } | null;
         /**
          * @type object
         */

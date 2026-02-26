@@ -21,23 +21,22 @@ export type PostOrganizationsSlugInvites204EnumKey = (typeof postOrganizationsSl
 export type PostOrganizationsSlugInvites204 = PostOrganizationsSlugInvites204EnumKey | null;
 
 export const postOrganizationsSlugInvitesMutationRequestRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR"
 } as const;
 
 export type PostOrganizationsSlugInvitesMutationRequestRoleEnumKey = (typeof postOrganizationsSlugInvitesMutationRequestRoleEnum)[keyof typeof postOrganizationsSlugInvitesMutationRequestRoleEnum];
-
-export const postOrganizationsSlugInvitesMutationRequestRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type PostOrganizationsSlugInvitesMutationRequestRoleEnum2Key = (typeof postOrganizationsSlugInvitesMutationRequestRoleEnum2)[keyof typeof postOrganizationsSlugInvitesMutationRequestRoleEnum2];
 
 export type PostOrganizationsSlugInvitesMutationRequest = {
     /**
      * @type string, email
     */
     email: string;
-    role: (PostOrganizationsSlugInvitesMutationRequestRoleEnumKey | PostOrganizationsSlugInvitesMutationRequestRoleEnum2Key);
+    /**
+     * @type string
+    */
+    role: PostOrganizationsSlugInvitesMutationRequestRoleEnumKey;
 };
 
 export type PostOrganizationsSlugInvitesMutationResponse = PostOrganizationsSlugInvites204;

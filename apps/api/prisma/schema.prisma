@@ -25,14 +25,28 @@ model User {
   member_on           Member[]
   refreshTokens       RefreshToken[]
   owns_organizations  Organization[]
-  createdTransactions Transaction[]  @relation("TransactionCreatedBy")
+  createdTransactions Transaction[]       @relation("TransactionCreatedBy")
   employees           Employee[]
-  recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
-  supervisedPartners  Partner[]      @relation("PartnerSupervisor")
-  linkedPartners      Partner[]      @relation("PartnerUser")
-  linkedSellers       Seller[]       @relation("SellerUser")
+  recurrencesCreated  Recurrence[]        @relation("RecurrenceCreatedBy")
+  supervisedPartners  Partner[]           @relation("PartnerSupervisor")
+  linkedPartners      Partner[]           @relation("PartnerUser")
+  linkedSellers       Seller[]            @relation("SellerUser")
+  userCompanyAcesses  UserCompanyAccess[]
 
   @@map("users")
+}
+
+model UserCompanyAccess {
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  companyId String  @map("company_id")
+  unitId    String? @map("unit_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  unit    Unit?   @relation(fields: [unitId], references: [id], onDelete: Cascade)
 }
 
 enum TokenType {
@@ -164,11 +178,12 @@ model Company {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  organization Organization  @relation(fields: [organizationId], references: [id])
-  units        Unit[]
-  transactions Transaction[]
-  employees    Employee[]
-  recurrences  Recurrence[]
+  organization        Organization        @relation(fields: [organizationId], references: [id])
+  units               Unit[]
+  transactions        Transaction[]
+  employees           Employee[]
+  recurrences         Recurrence[]
+  userCompanyAccesses UserCompanyAccess[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -182,9 +197,10 @@ model Unit {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  company      Company       @relation(fields: [companyId], references: [id])
-  transactions Transaction[]
-  recurrences  Recurrence[]
+  company             Company             @relation(fields: [companyId], references: [id])
+  transactions        Transaction[]
+  recurrences         Recurrence[]
+  userCompanyAccesses UserCompanyAccess[]
 
   @@unique([companyId, name])
   @@index([companyId])
