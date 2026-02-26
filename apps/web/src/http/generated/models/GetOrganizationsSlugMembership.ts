@@ -12,16 +12,14 @@ export type GetOrganizationsSlugMembershipPathParams = {
 };
 
 export const membershipRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type MembershipRoleEnumKey = (typeof membershipRoleEnum)[keyof typeof membershipRoleEnum];
-
-export const membershipRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type MembershipRoleEnum2Key = (typeof membershipRoleEnum2)[keyof typeof membershipRoleEnum2];
 
 /**
  * @description Default Response
@@ -35,7 +33,10 @@ export type GetOrganizationsSlugMembership200 = {
          * @type string, uuid
         */
         id: string;
-        role: (MembershipRoleEnumKey | MembershipRoleEnum2Key);
+        /**
+         * @type string
+        */
+        role: MembershipRoleEnumKey;
         /**
          * @type string, uuid
         */

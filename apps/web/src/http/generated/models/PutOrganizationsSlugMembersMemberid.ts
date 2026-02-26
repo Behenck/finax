@@ -25,19 +25,49 @@ export type PutOrganizationsSlugMembersMemberid204EnumKey = (typeof putOrganizat
 export type PutOrganizationsSlugMembersMemberid204 = PutOrganizationsSlugMembersMemberid204EnumKey | null;
 
 export const putOrganizationsSlugMembersMemberidMutationRequestRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type PutOrganizationsSlugMembersMemberidMutationRequestRoleEnumKey = (typeof putOrganizationsSlugMembersMemberidMutationRequestRoleEnum)[keyof typeof putOrganizationsSlugMembersMemberidMutationRequestRoleEnum];
 
-export const putOrganizationsSlugMembersMemberidMutationRequestRoleEnum2 = {
-    "MEMBER": "MEMBER"
+export const accessScopeModeEnum = {
+    "ALL": "ALL",
+    "RESTRICTED": "RESTRICTED"
 } as const;
 
-export type PutOrganizationsSlugMembersMemberidMutationRequestRoleEnum2Key = (typeof putOrganizationsSlugMembersMemberidMutationRequestRoleEnum2)[keyof typeof putOrganizationsSlugMembersMemberidMutationRequestRoleEnum2];
+export type AccessScopeModeEnumKey = (typeof accessScopeModeEnum)[keyof typeof accessScopeModeEnum];
 
 export type PutOrganizationsSlugMembersMemberidMutationRequest = {
-    role: (PutOrganizationsSlugMembersMemberidMutationRequestRoleEnumKey | PutOrganizationsSlugMembersMemberidMutationRequestRoleEnum2Key);
+    /**
+     * @type string
+    */
+    role: PutOrganizationsSlugMembersMemberidMutationRequestRoleEnumKey;
+    /**
+     * @type object | undefined
+    */
+    accessScope?: {
+        /**
+         * @type string
+        */
+        mode: AccessScopeModeEnumKey;
+        /**
+         * @type array | undefined
+        */
+        accesses?: {
+            /**
+             * @type string, uuid
+            */
+            companyId: string;
+            /**
+             * @type string, uuid
+            */
+            unitId?: string | null;
+        }[];
+    };
 };
 
 export type PutOrganizationsSlugMembersMemberidMutationResponse = PutOrganizationsSlugMembersMemberid204;

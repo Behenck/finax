@@ -5,8 +5,7 @@ import z from 'zod'
 import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
-import { roleSchema } from '@/schemas/role'
-import { InviteType } from 'generated/prisma/enums'
+import { InviteType, Role } from 'generated/prisma/enums'
 
 export async function getInvite(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -23,7 +22,7 @@ export async function getInvite(app: FastifyInstance) {
             invite: z.object({
               id: z.uuid(),
               email: z.email().nullable(),
-              role: roleSchema,
+              role: z.enum(Role),
               type: z.enum(InviteType),
               createdAt: z.date(),
               author: z

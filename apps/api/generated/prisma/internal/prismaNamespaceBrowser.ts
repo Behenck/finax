@@ -52,12 +52,12 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  UserCompanyAccess: 'UserCompanyAccess',
   Token: 'Token',
   RefreshToken: 'RefreshToken',
   Account: 'Account',
   Invite: 'Invite',
   Member: 'Member',
+  MemberCompanyAccess: 'MemberCompanyAccess',
   Organization: 'Organization',
   Company: 'Company',
   Unit: 'Unit',
@@ -102,17 +102,6 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const UserCompanyAccessScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  companyId: 'companyId',
-  unitId: 'unitId',
-  createdAt: 'createdAt'
-} as const
-
-export type UserCompanyAccessScalarFieldEnum = (typeof UserCompanyAccessScalarFieldEnum)[keyof typeof UserCompanyAccessScalarFieldEnum]
 
 
 export const TokenScalarFieldEnum = {
@@ -171,6 +160,18 @@ export const MemberScalarFieldEnum = {
 } as const
 
 export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
+
+
+export const MemberCompanyAccessScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  companyId: 'companyId',
+  unitId: 'unitId',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type MemberCompanyAccessScalarFieldEnum = (typeof MemberCompanyAccessScalarFieldEnum)[keyof typeof MemberCompanyAccessScalarFieldEnum]
 
 
 export const OrganizationScalarFieldEnum = {

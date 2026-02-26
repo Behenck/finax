@@ -12,16 +12,14 @@ export type GetOrganizationsSlugInvitesPathParams = {
 };
 
 export const invitesRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type InvitesRoleEnumKey = (typeof invitesRoleEnum)[keyof typeof invitesRoleEnum];
-
-export const invitesRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type InvitesRoleEnum2Key = (typeof invitesRoleEnum2)[keyof typeof invitesRoleEnum2];
 
 /**
  * @description Default Response
@@ -39,7 +37,10 @@ export type GetOrganizationsSlugInvites200 = {
          * @type string, date-time
         */
         createdAt: string;
-        role: (InvitesRoleEnumKey | InvitesRoleEnum2Key);
+        /**
+         * @type string
+        */
+        role: InvitesRoleEnumKey;
         /**
          * @type string, email
         */

@@ -16,7 +16,7 @@ export const getInvitesInviteid200Schema = z.object({
     "invite": z.object({
     "id": z.uuid(),
 "email": z.nullable(z.email()),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "type": z.enum(["EMAIL", "LINK"]),
 "createdAt": z.iso.datetime(),
 "author": z.nullable(z.object({

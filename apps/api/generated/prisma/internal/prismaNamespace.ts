@@ -385,12 +385,12 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  UserCompanyAccess: 'UserCompanyAccess',
   Token: 'Token',
   RefreshToken: 'RefreshToken',
   Account: 'Account',
   Invite: 'Invite',
   Member: 'Member',
+  MemberCompanyAccess: 'MemberCompanyAccess',
   Organization: 'Organization',
   Company: 'Company',
   Unit: 'Unit',
@@ -420,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userCompanyAccess" | "token" | "refreshToken" | "account" | "invite" | "member" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -495,80 +495,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
-        }
-      }
-    }
-    UserCompanyAccess: {
-      payload: Prisma.$UserCompanyAccessPayload<ExtArgs>
-      fields: Prisma.UserCompanyAccessFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.UserCompanyAccessFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.UserCompanyAccessFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        findFirst: {
-          args: Prisma.UserCompanyAccessFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.UserCompanyAccessFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        findMany: {
-          args: Prisma.UserCompanyAccessFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>[]
-        }
-        create: {
-          args: Prisma.UserCompanyAccessCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        createMany: {
-          args: Prisma.UserCompanyAccessCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.UserCompanyAccessCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>[]
-        }
-        delete: {
-          args: Prisma.UserCompanyAccessDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        update: {
-          args: Prisma.UserCompanyAccessUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        deleteMany: {
-          args: Prisma.UserCompanyAccessDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.UserCompanyAccessUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.UserCompanyAccessUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>[]
-        }
-        upsert: {
-          args: Prisma.UserCompanyAccessUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCompanyAccessPayload>
-        }
-        aggregate: {
-          args: Prisma.UserCompanyAccessAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateUserCompanyAccess>
-        }
-        groupBy: {
-          args: Prisma.UserCompanyAccessGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UserCompanyAccessGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.UserCompanyAccessCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UserCompanyAccessCountAggregateOutputType> | number
         }
       }
     }
@@ -939,6 +865,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    MemberCompanyAccess: {
+      payload: Prisma.$MemberCompanyAccessPayload<ExtArgs>
+      fields: Prisma.MemberCompanyAccessFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemberCompanyAccessFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemberCompanyAccessFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        findFirst: {
+          args: Prisma.MemberCompanyAccessFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemberCompanyAccessFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        findMany: {
+          args: Prisma.MemberCompanyAccessFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>[]
+        }
+        create: {
+          args: Prisma.MemberCompanyAccessCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        createMany: {
+          args: Prisma.MemberCompanyAccessCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemberCompanyAccessCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>[]
+        }
+        delete: {
+          args: Prisma.MemberCompanyAccessDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        update: {
+          args: Prisma.MemberCompanyAccessUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        deleteMany: {
+          args: Prisma.MemberCompanyAccessDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemberCompanyAccessUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemberCompanyAccessUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>[]
+        }
+        upsert: {
+          args: Prisma.MemberCompanyAccessUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberCompanyAccessPayload>
+        }
+        aggregate: {
+          args: Prisma.MemberCompanyAccessAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemberCompanyAccess>
+        }
+        groupBy: {
+          args: Prisma.MemberCompanyAccessGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberCompanyAccessGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemberCompanyAccessCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberCompanyAccessCountAggregateOutputType> | number
         }
       }
     }
@@ -2031,17 +2031,6 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const UserCompanyAccessScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  companyId: 'companyId',
-  unitId: 'unitId',
-  createdAt: 'createdAt'
-} as const
-
-export type UserCompanyAccessScalarFieldEnum = (typeof UserCompanyAccessScalarFieldEnum)[keyof typeof UserCompanyAccessScalarFieldEnum]
-
-
 export const TokenScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -2098,6 +2087,18 @@ export const MemberScalarFieldEnum = {
 } as const
 
 export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
+
+
+export const MemberCompanyAccessScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  companyId: 'companyId',
+  unitId: 'unitId',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type MemberCompanyAccessScalarFieldEnum = (typeof MemberCompanyAccessScalarFieldEnum)[keyof typeof MemberCompanyAccessScalarFieldEnum]
 
 
 export const OrganizationScalarFieldEnum = {
@@ -2789,12 +2790,12 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
-  userCompanyAccess?: Prisma.UserCompanyAccessOmit
   token?: Prisma.TokenOmit
   refreshToken?: Prisma.RefreshTokenOmit
   account?: Prisma.AccountOmit
   invite?: Prisma.InviteOmit
   member?: Prisma.MemberOmit
+  memberCompanyAccess?: Prisma.MemberCompanyAccessOmit
   organization?: Prisma.OrganizationOmit
   company?: Prisma.CompanyOmit
   unit?: Prisma.UnitOmit

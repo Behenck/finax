@@ -5,16 +5,14 @@
 
 
 export const organizationsRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type OrganizationsRoleEnumKey = (typeof organizationsRoleEnum)[keyof typeof organizationsRoleEnum];
-
-export const organizationsRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type OrganizationsRoleEnum2Key = (typeof organizationsRoleEnum2)[keyof typeof organizationsRoleEnum2];
 
 /**
  * @description Default Response
@@ -40,7 +38,10 @@ export type GetOrganizations200 = {
          * @type string, uri
         */
         avatarUrl: string | null;
-        role: (OrganizationsRoleEnumKey | OrganizationsRoleEnum2Key);
+        /**
+         * @type string
+        */
+        role: OrganizationsRoleEnumKey;
     }[];
 };
 

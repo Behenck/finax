@@ -6,7 +6,7 @@ import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
-import { roleSchema } from '@/schemas/role'
+import { Role } from 'generated/prisma/enums'
 
 export async function getPendingInvites(app: FastifyInstance) {
   app
@@ -24,7 +24,7 @@ export async function getPendingInvites(app: FastifyInstance) {
                 z.object({
                   id: z.uuid(),
                   email: z.email(),
-                  role: roleSchema,
+                  role: z.enum(Role),
                   createdAt: z.date(),
                   author: z
                     .object({

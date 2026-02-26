@@ -6,7 +6,7 @@ import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 
 import { UnauthorizedError } from '../_errors/unauthorized-error'
-import { roleSchema } from '@/schemas/role'
+import { Role } from 'generated/prisma/enums'
 
 export async function getInvites(app: FastifyInstance) {
   app
@@ -28,7 +28,7 @@ export async function getInvites(app: FastifyInstance) {
                 z.object({
                   id: z.uuid(),
                   createdAt: z.date(),
-                  role: roleSchema,
+                  role: z.enum(Role),
                   email: z.email().nullable(),
                   author: z
                     .object({

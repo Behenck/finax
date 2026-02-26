@@ -14,7 +14,7 @@ export const getOrganizations200Schema = z.object({
 "name": z.string(),
 "slug": z.string(),
 "avatarUrl": z.nullable(z.url()),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])])
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"])
     }))
     })
 

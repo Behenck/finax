@@ -25,28 +25,14 @@ model User {
   member_on           Member[]
   refreshTokens       RefreshToken[]
   owns_organizations  Organization[]
-  createdTransactions Transaction[]       @relation("TransactionCreatedBy")
+  createdTransactions Transaction[]  @relation("TransactionCreatedBy")
   employees           Employee[]
-  recurrencesCreated  Recurrence[]        @relation("RecurrenceCreatedBy")
-  supervisedPartners  Partner[]           @relation("PartnerSupervisor")
-  linkedPartners      Partner[]           @relation("PartnerUser")
-  linkedSellers       Seller[]            @relation("SellerUser")
-  userCompanyAcesses  UserCompanyAccess[]
+  recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
+  supervisedPartners  Partner[]      @relation("PartnerSupervisor")
+  linkedPartners      Partner[]      @relation("PartnerUser")
+  linkedSellers       Seller[]       @relation("SellerUser")
 
   @@map("users")
-}
-
-model UserCompanyAccess {
-  id        String  @id @default(uuid())
-  userId    String  @map("user_id")
-  companyId String  @map("company_id")
-  unitId    String? @map("unit_id")
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  unit    Unit?   @relation(fields: [unitId], references: [id], onDelete: Cascade)
 }
 
 enum TokenType {
@@ -106,6 +92,8 @@ enum Role {
   ADMIN
   MEMBER
   SUPERVISOR
+  SELLER
+  PARTNER
 }
 
 enum InviteType {
@@ -131,16 +119,38 @@ model Invite {
 }
 
 model Member {
-  id             String       @id @default(uuid())
-  role           Role         @default(MEMBER)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId String       @map("organization_id")
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String       @map("user_id")
+  id                    String                @id @default(uuid())
+  role                  Role                  @default(MEMBER)
+  organization          Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId        String                @map("organization_id")
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String                @map("user_id")
+  memberCompanyAccesses MemberCompanyAccess[]
 
   @@unique([organizationId, userId])
   @@index([userId])
   @@map("members")
+}
+
+model MemberCompanyAccess {
+  id             String  @id @default(uuid())
+  memberId       String  @map("member_id")
+  companyId      String  @map("company_id")
+  unitId         String? @map("unit_id")
+  organizationId String  @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  member       Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  unit         Unit?        @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, companyId, unitId])
+  @@index([memberId])
+  @@index([companyId])
+  @@index([unitId])
+  @@map("member_company_access")
 }
 
 model Organization {
@@ -155,17 +165,18 @@ model Organization {
   updatedAt                DateTime @updatedAt @map("updated_at")
   owner                    User?    @relation(fields: [ownerId], references: [id])
 
-  invites      Invite[]
-  members      Member[]
-  categories   Category[]
-  companies    Company[]
-  transactions Transaction[]
-  costCenters  CostCenter[]
-  employees    Employee[]
-  recurrences  Recurrence[]
-  customers    Customer[]
-  partners     Partner[]
-  sellers      Seller[]
+  invites               Invite[]
+  members               Member[]
+  categories            Category[]
+  companies             Company[]
+  transactions          Transaction[]
+  costCenters           CostCenter[]
+  employees             Employee[]
+  recurrences           Recurrence[]
+  customers             Customer[]
+  partners              Partner[]
+  sellers               Seller[]
+  memberCompanyAccesses MemberCompanyAccess[]
 
   @@index([slug])
   @@map("organizations")
@@ -178,12 +189,12 @@ model Company {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  organization        Organization        @relation(fields: [organizationId], references: [id])
-  units               Unit[]
-  transactions        Transaction[]
-  employees           Employee[]
-  recurrences         Recurrence[]
-  userCompanyAccesses UserCompanyAccess[]
+  organization          Organization          @relation(fields: [organizationId], references: [id])
+  units                 Unit[]
+  transactions          Transaction[]
+  employees             Employee[]
+  recurrences           Recurrence[]
+  memberCompanyAccesses MemberCompanyAccess[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -197,10 +208,10 @@ model Unit {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  company             Company             @relation(fields: [companyId], references: [id])
-  transactions        Transaction[]
-  recurrences         Recurrence[]
-  userCompanyAccesses UserCompanyAccess[]
+  company               Company               @relation(fields: [companyId], references: [id])
+  transactions          Transaction[]
+  recurrences           Recurrence[]
+  memberCompanyAccesses MemberCompanyAccess[]
 
   @@unique([companyId, name])
   @@index([companyId])

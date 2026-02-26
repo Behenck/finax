@@ -16,7 +16,14 @@ export const putOrganizationsSlugMembersMemberidPathParamsSchema = z.object({
 export const putOrganizationsSlugMembersMemberid204Schema = z.enum([]).nullable()
 
 export const putOrganizationsSlugMembersMemberidMutationRequestSchema = z.object({
-    "role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])])
+    "role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
+"accessScope": z.optional(z.object({
+    "mode": z.enum(["ALL", "RESTRICTED"]),
+"accesses": z.optional(z.array(z.object({
+    "companyId": z.uuid(),
+"unitId": z.uuid().nullish()
+    })))
+    }))
     })
 
 export const putOrganizationsSlugMembersMemberidMutationResponseSchema = z.lazy(() => putOrganizationsSlugMembersMemberid204Schema)

@@ -12,7 +12,7 @@ export const getPendingInvites200Schema = z.object({
     "invites": z.array(z.object({
     "id": z.uuid(),
 "email": z.email(),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "createdAt": z.iso.datetime(),
 "author": z.nullable(z.object({
     "id": z.uuid(),

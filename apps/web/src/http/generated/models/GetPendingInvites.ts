@@ -4,17 +4,15 @@
 */
 
 
-export const invitesRoleEnum3 = {
-    "ADMIN": "ADMIN"
+export const invitesRoleEnum2 = {
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
-export type InvitesRoleEnum3Key = (typeof invitesRoleEnum3)[keyof typeof invitesRoleEnum3];
-
-export const invitesRoleEnum4 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type InvitesRoleEnum4Key = (typeof invitesRoleEnum4)[keyof typeof invitesRoleEnum4];
+export type InvitesRoleEnum2Key = (typeof invitesRoleEnum2)[keyof typeof invitesRoleEnum2];
 
 /**
  * @description Default Response
@@ -32,7 +30,10 @@ export type GetPendingInvites200 = {
          * @type string, email
         */
         email: string;
-        role: (InvitesRoleEnum3Key | InvitesRoleEnum4Key);
+        /**
+         * @type string
+        */
+        role: InvitesRoleEnum2Key;
         /**
          * @type string, date-time
         */

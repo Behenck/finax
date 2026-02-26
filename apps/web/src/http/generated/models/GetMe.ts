@@ -7,7 +7,9 @@
 export const organizationRoleEnum = {
     "ADMIN": "ADMIN",
     "MEMBER": "MEMBER",
-    "SUPERVISOR": "SUPERVISOR"
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type OrganizationRoleEnumKey = (typeof organizationRoleEnum)[keyof typeof organizationRoleEnum];

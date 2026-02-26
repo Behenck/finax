@@ -23,7 +23,9 @@ export type PostOrganizationsSlugInvites204 = PostOrganizationsSlugInvites204Enu
 export const postOrganizationsSlugInvitesMutationRequestRoleEnum = {
     "ADMIN": "ADMIN",
     "MEMBER": "MEMBER",
-    "SUPERVISOR": "SUPERVISOR"
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type PostOrganizationsSlugInvitesMutationRequestRoleEnumKey = (typeof postOrganizationsSlugInvitesMutationRequestRoleEnum)[keyof typeof postOrganizationsSlugInvitesMutationRequestRoleEnum];

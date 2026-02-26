@@ -4,9 +4,7 @@ import z from 'zod'
 
 import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
-
-import { UnauthorizedError } from '../_errors/unauthorized-error'
-import { roleSchema } from '@/schemas/role'
+import { Role } from 'generated/prisma/enums'
 
 export async function getMembers(app: FastifyInstance) {
   app
@@ -28,10 +26,18 @@ export async function getMembers(app: FastifyInstance) {
                 z.object({
                   id: z.uuid(),
                   userId: z.uuid(),
-                  role: roleSchema,
+                  role: z.enum(Role),
                   name: z.string().nullable(),
                   avatarUrl: z.url().nullable(),
                   email: z.email(),
+                  accesses: z.array(
+                    z.object({
+                      companyId: z.uuid(),
+                      companyName: z.string(),
+                      unitId: z.uuid().nullable(),
+                      unitName: z.string().nullable(),
+                    }),
+                  ),
                 }),
               ),
             }),
@@ -56,6 +62,22 @@ export async function getMembers(app: FastifyInstance) {
                 avatarUrl: true,
               },
             },
+            memberCompanyAccesses: {
+              select: {
+                companyId: true,
+                unitId: true,
+                company: {
+                  select: {
+                    name: true,
+                  },
+                },
+                unit: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
           where: { organizationId: organization.id },
           orderBy: {
@@ -64,11 +86,17 @@ export async function getMembers(app: FastifyInstance) {
         })
 
         const membersWithRoles = members.map(
-          ({ user: { id: userId, ...user }, ...member }) => {
+          ({ user: { id: userId, ...user }, memberCompanyAccesses, ...member }) => {
             return {
               ...user,
               ...member,
               userId,
+              accesses: memberCompanyAccesses.map((access) => ({
+                companyId: access.companyId,
+                companyName: access.company.name,
+                unitId: access.unitId,
+                unitName: access.unit?.name ?? null,
+              })),
             }
           },
         )

@@ -4,21 +4,25 @@ import z from 'zod'
 
 import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
+import { Role } from 'generated/prisma/enums'
 
-export async function removeMember(app: FastifyInstance) {
+export async function updateMemberRole(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .delete(
-      '/organizations/:slug/members/:memberId',
+    .patch(
+      '/organizations/:slug/members/:memberId/role',
       {
         schema: {
           tags: ['members'],
-          summary: 'Remove a member from the organization',
+          summary: 'Update a member role',
           security: [{ bearerAuth: [] }],
           params: z.object({
             slug: z.string(),
             memberId: z.uuid(),
+          }),
+          body: z.object({
+            role: z.enum(Role),
           }),
           response: {
             204: z.null(),
@@ -27,14 +31,16 @@ export async function removeMember(app: FastifyInstance) {
       },
       async (request, reply) => {
         const { slug, memberId } = request.params
-        const userId = await request.getCurrentUserId()
-        const { membership, organization } =
-          await request.getUserMembership(slug)
+        const { organization } = await request.getUserMembership(slug)
+        const { role } = request.body
 
-        await prisma.member.delete({
+        await prisma.member.update({
           where: {
             id: memberId,
             organizationId: organization.id,
+          },
+          data: {
+            role,
           },
         })
 
@@ -42,3 +48,4 @@ export async function removeMember(app: FastifyInstance) {
       },
     )
 }
+

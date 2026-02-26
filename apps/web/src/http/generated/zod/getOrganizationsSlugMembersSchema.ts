@@ -16,10 +16,16 @@ export const getOrganizationsSlugMembers200Schema = z.object({
     "members": z.array(z.object({
     "id": z.uuid(),
 "userId": z.uuid(),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "name": z.nullable(z.string()),
 "avatarUrl": z.nullable(z.url()),
-"email": z.email()
+"email": z.email(),
+"accesses": z.array(z.object({
+    "companyId": z.uuid(),
+"companyName": z.string(),
+"unitId": z.nullable(z.uuid()),
+"unitName": z.nullable(z.string())
+    }))
     }))
     })
 

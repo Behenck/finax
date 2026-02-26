@@ -45,11 +45,6 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model UserCompanyAccess
- * 
- */
-export type UserCompanyAccess = Prisma.UserCompanyAccessModel
-/**
  * Model Token
  * 
  */
@@ -74,6 +69,11 @@ export type Invite = Prisma.InviteModel
  * 
  */
 export type Member = Prisma.MemberModel
+/**
+ * Model MemberCompanyAccess
+ * 
+ */
+export type MemberCompanyAccess = Prisma.MemberCompanyAccessModel
 /**
  * Model Organization
  * 

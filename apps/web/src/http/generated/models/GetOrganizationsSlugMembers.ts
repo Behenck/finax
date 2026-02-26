@@ -12,16 +12,14 @@ export type GetOrganizationsSlugMembersPathParams = {
 };
 
 export const membersRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type MembersRoleEnumKey = (typeof membersRoleEnum)[keyof typeof membersRoleEnum];
-
-export const membersRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type MembersRoleEnum2Key = (typeof membersRoleEnum2)[keyof typeof membersRoleEnum2];
 
 /**
  * @description Default Response
@@ -39,7 +37,10 @@ export type GetOrganizationsSlugMembers200 = {
          * @type string, uuid
         */
         userId: string;
-        role: (MembersRoleEnumKey | MembersRoleEnum2Key);
+        /**
+         * @type string
+        */
+        role: MembersRoleEnumKey;
         /**
          * @type string
         */
@@ -52,6 +53,27 @@ export type GetOrganizationsSlugMembers200 = {
          * @type string, email
         */
         email: string;
+        /**
+         * @type array
+        */
+        accesses: {
+            /**
+             * @type string, uuid
+            */
+            companyId: string;
+            /**
+             * @type string
+            */
+            companyName: string;
+            /**
+             * @type string, uuid
+            */
+            unitId: string | null;
+            /**
+             * @type string
+            */
+            unitName: string | null;
+        }[];
     }[];
 };
 

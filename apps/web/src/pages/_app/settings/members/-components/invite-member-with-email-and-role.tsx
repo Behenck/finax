@@ -108,6 +108,10 @@ export function InviteMemberWithEmailAndRole() {
       <Button type='submit' className='w-full'>
         {isLoading ? "Enviando convite..." : "Enviar convite"}
       </Button>
+
+      <p className='text-xs text-muted-foreground'>
+        Após o membro aceitar o convite, você pode definir o acesso por empresa e unidade na lista de membros.
+      </p>
     </form>
   )
 }

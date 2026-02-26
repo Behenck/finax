@@ -16,7 +16,7 @@ export const postOrganizationsSlugInvites204Schema = z.enum([]).nullable()
 
 export const postOrganizationsSlugInvitesMutationRequestSchema = z.object({
     "email": z.email(),
-"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR"])
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"])
     })
 
 export const postOrganizationsSlugInvitesMutationResponseSchema = z.lazy(() => postOrganizationsSlugInvites204Schema)

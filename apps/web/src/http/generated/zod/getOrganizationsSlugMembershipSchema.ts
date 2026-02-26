@@ -15,7 +15,7 @@ export const getOrganizationsSlugMembershipPathParamsSchema = z.object({
 export const getOrganizationsSlugMembership200Schema = z.object({
     "membership": z.object({
     "id": z.uuid(),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "userId": z.uuid(),
 "organizationId": z.uuid()
     })

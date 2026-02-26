@@ -5,7 +5,6 @@ import z from 'zod'
 import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 
-import { roleSchema } from '@/schemas/role'
 import { Role } from 'generated/prisma/enums'
 
 export async function getMembersRole(app: FastifyInstance) {
@@ -29,7 +28,7 @@ export async function getMembersRole(app: FastifyInstance) {
                 z.object({
                   id: z.uuid(),
                   userId: z.uuid(),
-                  role: roleSchema,
+                  role: z.enum(Role),
                   name: z.string().nullable(),
                   avatarUrl: z.url().nullable(),
                   email: z.email(),

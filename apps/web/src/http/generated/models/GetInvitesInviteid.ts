@@ -12,16 +12,14 @@ export type GetInvitesInviteidPathParams = {
 };
 
 export const inviteRoleEnum = {
-    "ADMIN": "ADMIN"
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type InviteRoleEnumKey = (typeof inviteRoleEnum)[keyof typeof inviteRoleEnum];
-
-export const inviteRoleEnum2 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type InviteRoleEnum2Key = (typeof inviteRoleEnum2)[keyof typeof inviteRoleEnum2];
 
 export const inviteTypeEnum = {
     "EMAIL": "EMAIL",
@@ -46,7 +44,10 @@ export type GetInvitesInviteid200 = {
          * @type string, email
         */
         email: string | null;
-        role: (InviteRoleEnumKey | InviteRoleEnum2Key);
+        /**
+         * @type string
+        */
+        role: InviteRoleEnumKey;
         /**
          * @type string
         */

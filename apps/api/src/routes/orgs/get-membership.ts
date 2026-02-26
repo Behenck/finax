@@ -1,7 +1,7 @@
 import { auth } from "@/middleware/auth";
-import { roleSchema } from "@/schemas/role";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { Role } from "generated/prisma/enums";
 import z from "zod";
 
 export async function getMembership(app: FastifyInstance) {
@@ -19,7 +19,7 @@ export async function getMembership(app: FastifyInstance) {
           200: z.object({
             membership: z.object({
               id: z.uuid(),
-              role: roleSchema,
+              role: z.enum(Role),
               userId: z.uuid(),
               organizationId: z.uuid()
             })

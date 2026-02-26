@@ -9,12 +9,12 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
-export type * from './models/UserCompanyAccess.js'
 export type * from './models/Token.js'
 export type * from './models/RefreshToken.js'
 export type * from './models/Account.js'
 export type * from './models/Invite.js'
 export type * from './models/Member.js'
+export type * from './models/MemberCompanyAccess.js'
 export type * from './models/Organization.js'
 export type * from './models/Company.js'
 export type * from './models/Unit.js'

@@ -7,7 +7,9 @@
 export const getOrganizationsSlugMembersRolePathParamsRoleEnum = {
     "ADMIN": "ADMIN",
     "MEMBER": "MEMBER",
-    "SUPERVISOR": "SUPERVISOR"
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
 export type GetOrganizationsSlugMembersRolePathParamsRoleEnumKey = (typeof getOrganizationsSlugMembersRolePathParamsRoleEnum)[keyof typeof getOrganizationsSlugMembersRolePathParamsRoleEnum];
@@ -23,17 +25,15 @@ export type GetOrganizationsSlugMembersRolePathParams = {
     role: GetOrganizationsSlugMembersRolePathParamsRoleEnumKey;
 };
 
-export const membersRoleEnum3 = {
-    "ADMIN": "ADMIN"
+export const membersRoleEnum2 = {
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
 } as const;
 
-export type MembersRoleEnum3Key = (typeof membersRoleEnum3)[keyof typeof membersRoleEnum3];
-
-export const membersRoleEnum4 = {
-    "MEMBER": "MEMBER"
-} as const;
-
-export type MembersRoleEnum4Key = (typeof membersRoleEnum4)[keyof typeof membersRoleEnum4];
+export type MembersRoleEnum2Key = (typeof membersRoleEnum2)[keyof typeof membersRoleEnum2];
 
 /**
  * @description Default Response
@@ -51,7 +51,10 @@ export type GetOrganizationsSlugMembersRole200 = {
          * @type string, uuid
         */
         userId: string;
-        role: (MembersRoleEnum3Key | MembersRoleEnum4Key);
+        /**
+         * @type string
+        */
+        role: MembersRoleEnum2Key;
         /**
          * @type string
         */

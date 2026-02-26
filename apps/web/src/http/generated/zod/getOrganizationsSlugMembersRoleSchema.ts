@@ -7,7 +7,7 @@ import { z } from "zod/v4";
 
 export const getOrganizationsSlugMembersRolePathParamsSchema = z.object({
     "slug": z.string(),
-"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR"])
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"])
     })
 
 /**
@@ -17,7 +17,7 @@ export const getOrganizationsSlugMembersRole200Schema = z.object({
     "members": z.array(z.object({
     "id": z.uuid(),
 "userId": z.uuid(),
-"role": z.union([z.enum(["ADMIN"]), z.enum(["MEMBER"])]),
+"role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "name": z.nullable(z.string()),
 "avatarUrl": z.nullable(z.url()),
 "email": z.email()
