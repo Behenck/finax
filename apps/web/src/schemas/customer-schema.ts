@@ -7,6 +7,8 @@ const baseCustomerSchema = z.object({
     .optional()
     .or(z.literal("")),
   phone: z.string({ error: "Telefone inválido" }).optional(),
+  responsibleType: z.enum(["SELLER", "PARTNER"]).optional(),
+  responsibleId: z.uuid().optional(),
 })
 
 const customerPFSchema = baseCustomerSchema.extend({
@@ -46,12 +48,23 @@ const customerPJSchema = baseCustomerSchema.extend({
   businessActivity: z.string().optional(),
 })
 
-export const customerSchema = z.discriminatedUnion("personType", [
-  customerPFSchema,
-  customerPJSchema,
-])
+export const customerSchema = z
+  .discriminatedUnion("personType", [customerPFSchema, customerPJSchema])
+  .superRefine((data, ctx) => {
+    const hasResponsibleType = !!data.responsibleType
+    const hasResponsibleId = !!data.responsibleId
+
+    if (hasResponsibleType === hasResponsibleId) {
+      return
+    }
+
+    ctx.addIssue({
+      code: "custom",
+      path: ["responsibleId"],
+      message: "Selecione o responsável",
+    })
+  })
 
 export type CustomerFormInput = z.input<typeof customerSchema>
 export type CustomerFormOutput = z.infer<typeof customerSchema>
-
-
+export type CustomerFormData = CustomerFormOutput

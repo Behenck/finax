@@ -275,6 +275,11 @@ enum CustomerStatus {
   INACTIVE
 }
 
+enum CustomerResponsibleType {
+  SELLER
+  PARTNER
+}
+
 model Customer {
   id             String @id @default(uuid())
   organizationId String @map("organization_id")
@@ -289,6 +294,9 @@ model Customer {
   phone  String?
   status CustomerStatus @default(ACTIVE)
 
+  responsibleType CustomerResponsibleType? @map("responsible_type")
+  responsibleId   String?                  @map("responsible_id")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -298,6 +306,7 @@ model Customer {
 
   @@unique([organizationId, documentType, documentNumber])
   @@index([organizationId])
+  @@index([responsibleId])
   @@map("customers")
 }
 

@@ -19,7 +19,15 @@ import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow, Table
 import { Badge } from "@/components/ui/badge";
 
 interface ListCustomersProps {
-  customers: GetOrganizationsSlugCustomers200["customers"]
+  customers: Array<
+    GetOrganizationsSlugCustomers200["customers"][number] & {
+      responsible?: {
+        type: "SELLER" | "PARTNER"
+        id: string
+        name: string
+      } | null
+    }
+  >
 }
 
 export function ListCustomers({ customers }: ListCustomersProps) {
@@ -30,6 +38,7 @@ export function ListCustomers({ customers }: ListCustomersProps) {
         <TableRow>
           <TableHead>Cliente</TableHead>
           <TableHead>Tipo</TableHead>
+          <TableHead>Responsável</TableHead>
           <TableHead>Contato</TableHead>
           <TableHead></TableHead>
         </TableRow>
@@ -38,7 +47,7 @@ export function ListCustomers({ customers }: ListCustomersProps) {
         {
           customers.map((customer) => {
             return (
-              <TableRow className='cursor-pointer'>
+              <TableRow key={customer.id} className='cursor-pointer'>
                 <TableCell>
                   <div className='flex gap-2 items-center'>
                     <Checkbox className='w-5 h-5' />
@@ -57,6 +66,18 @@ export function ListCustomers({ customers }: ListCustomersProps) {
                       "Pessoa Jurídica"
                     )}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  {customer.responsible ? (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{customer.responsible.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {customer.responsible.type === "SELLER" ? "Vendedor" : "Parceiro"}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Não vinculado</span>
+                  )}
                 </TableCell>
                 <TableCell className='flex items-center gap-6'>
                   {(customer.phone || customer.email) && (

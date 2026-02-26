@@ -254,6 +254,13 @@ export type EnumCustomerStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel> | $Enums.CustomerStatus
 }
 
+export type EnumCustomerResponsibleTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerResponsibleType | Prisma.EnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel> | $Enums.CustomerResponsibleType | null
+}
+
 export type EnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
   in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
@@ -282,6 +289,16 @@ export type EnumCustomerStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
+}
+
+export type EnumCustomerResponsibleTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerResponsibleType | Prisma.EnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumCustomerResponsibleTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CustomerResponsibleType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel>
 }
 
 export type IntNullableFilter<$PrismaModel = never> = {
@@ -744,6 +761,13 @@ export type NestedEnumCustomerStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel> | $Enums.CustomerStatus
 }
 
+export type NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerResponsibleType | Prisma.EnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel> | $Enums.CustomerResponsibleType | null
+}
+
 export type NestedEnumCustomerPersonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
   in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
@@ -772,6 +796,16 @@ export type NestedEnumCustomerStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumCustomerResponsibleTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerResponsibleType | Prisma.EnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.CustomerResponsibleType[] | Prisma.ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumCustomerResponsibleTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CustomerResponsibleType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerResponsibleTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {

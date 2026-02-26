@@ -7,6 +7,7 @@ import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
 import { CustomerDocumentType, CustomerPersonType } from "generated/prisma/enums";
 import { hasAnyValue } from "@/utils/has-any-value";
+import { customerResponsibleTypeValues, resolveCustomerResponsibleData } from "./customer-responsible";
 
 export async function createCustomer(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -26,6 +27,10 @@ export async function createCustomer(app: FastifyInstance) {
           email: z.string().optional(),
           documentType: z.enum(CustomerDocumentType),
           documentNumber: z.string(),
+          responsible: z.object({
+            type: z.enum(customerResponsibleTypeValues),
+            id: z.uuid(),
+          }).nullable().optional(),
           pf: z.object({
             birthDate: z.date().optional(),
             monthlyIncome: z.number().int().nonnegative().default(0),
@@ -88,6 +93,11 @@ export async function createCustomer(app: FastifyInstance) {
         const shouldCreatePJ =
           data.personType === CustomerPersonType.PJ && hasAnyValue(data.pj)
 
+        const responsibleData = await resolveCustomerResponsibleData(
+          organization.id,
+          data.responsible,
+        )
+
         const customer = await db(() =>
           prisma.customer.create({
             data: {
@@ -98,6 +108,7 @@ export async function createCustomer(app: FastifyInstance) {
               documentType: data.documentType,
               documentNumber: data.documentNumber,
               organizationId: organization.id,
+              ...(responsibleData ?? {}),
 
               ...(shouldCreatePF
                 ? {

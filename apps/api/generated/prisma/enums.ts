@@ -78,6 +78,14 @@ export const CustomerStatus = {
 export type CustomerStatus = (typeof CustomerStatus)[keyof typeof CustomerStatus]
 
 
+export const CustomerResponsibleType = {
+  SELLER: 'SELLER',
+  PARTNER: 'PARTNER'
+} as const
+
+export type CustomerResponsibleType = (typeof CustomerResponsibleType)[keyof typeof CustomerResponsibleType]
+
+
 export const PartnerStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE'

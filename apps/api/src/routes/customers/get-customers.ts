@@ -5,6 +5,7 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { CustomerDocumentType, CustomerPersonType, CustomerStatus } from "generated/prisma/enums";
+import { customerResponsibleTypeValues, loadCustomersResponsible } from "./customer-responsible";
 
 export async function getCustomers(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -29,6 +30,11 @@ export async function getCustomers(app: FastifyInstance) {
                 documentType: z.enum(CustomerDocumentType),
                 documentNumber: z.string(),
                 status: z.enum(CustomerStatus),
+                responsible: z.object({
+                  type: z.enum(customerResponsibleTypeValues),
+                  id: z.uuid(),
+                  name: z.string(),
+                }).nullable(),
                 pf: z.object({
                   birthDate: z.date().nullable(),
                   monthlyIncome: z.number().nullable(),
@@ -81,6 +87,8 @@ export async function getCustomers(app: FastifyInstance) {
             documentType: true,
             documentNumber: true,
             status: true,
+            responsibleType: true,
+            responsibleId: true,
             customerPF: {
               select: {
                 birthDate: true,
@@ -105,6 +113,11 @@ export async function getCustomers(app: FastifyInstance) {
           }
         })
 
+        const responsibleByCustomerId = await loadCustomersResponsible(
+          organization.id,
+          customers,
+        )
+
         const result = customers.map((customer) => {
           const isPF = customer.personType === CustomerPersonType.PF
           const isPJ = customer.personType === CustomerPersonType.PJ
@@ -118,6 +131,7 @@ export async function getCustomers(app: FastifyInstance) {
             documentType: customer.documentType,
             documentNumber: customer.documentNumber,
             status: customer.status,
+            responsible: responsibleByCustomerId.get(customer.id) ?? null,
 
             pf: isPF
               ? customer.customerPF && {

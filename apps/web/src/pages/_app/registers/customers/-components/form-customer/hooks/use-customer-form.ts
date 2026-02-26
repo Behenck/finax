@@ -6,6 +6,7 @@ import {
   usePostOrganizationsSlugCustomers,
   usePutOrganizationsSlugCustomersCustomerid,
   type GetOrganizationsSlugCustomersCustomerid200,
+  type PostOrganizationsSlugCustomersMutationRequest,
 } from "@/http/generated"
 import { useApp } from "@/context/app-context"
 import { toast } from "sonner"
@@ -14,7 +15,13 @@ import { buildCustomerDefaultValues, mapCustomerFormToRequest } from "../-mapper
 import { useQueryClient } from '@tanstack/react-query';
 
 interface UseCustomerFormProps {
-  customer?: GetOrganizationsSlugCustomersCustomerid200["customer"]
+  customer?: GetOrganizationsSlugCustomersCustomerid200["customer"] & {
+    responsible?: {
+      type: "SELLER" | "PARTNER"
+      id: string
+      name: string
+    } | null
+  }
   type: "CREATE" | "UPDATE"
 }
 
@@ -40,7 +47,7 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
       if (type === "CREATE") {
         const response = await createCustomer({
           slug: organization!.slug,
-          data: mapCustomerFormToRequest(data),
+          data: mapCustomerFormToRequest(data) as PostOrganizationsSlugCustomersMutationRequest,
         }, {
           onSuccess: async () => {
             await queryClient.invalidateQueries({
@@ -66,7 +73,7 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
       await updateCustomer({
         slug: organization!.slug,
         customerId: customer!.id,
-        data: mapCustomerFormToRequest(data),
+        data: mapCustomerFormToRequest(data) as PostOrganizationsSlugCustomersMutationRequest,
       }, {
         onSuccess: async () => {
           await queryClient.invalidateQueries({

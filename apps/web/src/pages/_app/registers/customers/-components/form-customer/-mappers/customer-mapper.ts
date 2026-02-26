@@ -1,9 +1,40 @@
 import type { CustomerFormData, CustomerFormInput } from "@/schemas/customer-schema"
 import type { GetOrganizationsSlugCustomersCustomerid200, PostOrganizationsSlugCustomersMutationRequest } from "@/http/generated"
 
+type CustomerResponsible =
+  | {
+      type: "SELLER" | "PARTNER"
+      id: string
+      name: string
+    }
+  | null
+
+type CustomerWithResponsible = GetOrganizationsSlugCustomersCustomerid200["customer"] & {
+  responsible?: CustomerResponsible
+}
+
+type CustomerMutationRequestWithResponsible =
+  PostOrganizationsSlugCustomersMutationRequest & {
+    responsible?: {
+      type: "SELLER" | "PARTNER"
+      id: string
+    } | null
+  }
+
+function mapResponsible(data: CustomerFormData) {
+  if (!data.responsibleType || !data.responsibleId) {
+    return null
+  }
+
+  return {
+    type: data.responsibleType,
+    id: data.responsibleId,
+  } as const
+}
+
 export function mapCustomerFormToRequest(
   data: CustomerFormData
-): PostOrganizationsSlugCustomersMutationRequest {
+): CustomerMutationRequestWithResponsible {
 
   if (data.personType === "PF") {
     return {
@@ -13,6 +44,7 @@ export function mapCustomerFormToRequest(
       documentNumber: data.documentNumber,
       email: data.email,
       phone: data.phone,
+      responsible: mapResponsible(data),
 
       pf: {
         birthDate: data.birthDate,
@@ -34,6 +66,7 @@ export function mapCustomerFormToRequest(
     documentNumber: data.documentNumber,
     email: data.email,
     phone: data.phone,
+    responsible: mapResponsible(data),
 
     pj: {
       businessActivity: data.businessActivity,
@@ -47,7 +80,7 @@ export function mapCustomerFormToRequest(
 }
 
 export function buildCustomerDefaultValues(
-  customer?: GetOrganizationsSlugCustomersCustomerid200["customer"]
+  customer?: CustomerWithResponsible
 ): CustomerFormInput {
 
   if (customer?.personType === "PJ") {
@@ -67,6 +100,8 @@ export function buildCustomerDefaultValues(
         ? new Date(customer.pj.foundationDate)
         : undefined,
       businessActivity: customer.pj?.businessActivity ?? "",
+      responsibleType: customer.responsible?.type,
+      responsibleId: customer.responsible?.id,
     }
   }
 
@@ -86,6 +121,7 @@ export function buildCustomerDefaultValues(
     fatherName: customer?.pf?.fatherName ?? "",
     profession: customer?.pf?.profession ?? "",
     monthlyIncome: customer?.pf?.monthlyIncome ?? 0,
+    responsibleType: customer?.responsible?.type,
+    responsibleId: customer?.responsible?.id,
   }
 }
-

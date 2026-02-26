@@ -246,6 +246,8 @@ export const CustomerScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   status: 'status',
+  responsibleType: 'responsibleType',
+  responsibleId: 'responsibleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

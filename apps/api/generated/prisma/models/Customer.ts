@@ -34,6 +34,8 @@ export type CustomerMinAggregateOutputType = {
   email: string | null
   phone: string | null
   status: $Enums.CustomerStatus | null
+  responsibleType: $Enums.CustomerResponsibleType | null
+  responsibleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +50,8 @@ export type CustomerMaxAggregateOutputType = {
   email: string | null
   phone: string | null
   status: $Enums.CustomerStatus | null
+  responsibleType: $Enums.CustomerResponsibleType | null
+  responsibleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +66,8 @@ export type CustomerCountAggregateOutputType = {
   email: number
   phone: number
   status: number
+  responsibleType: number
+  responsibleId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -78,6 +84,8 @@ export type CustomerMinAggregateInputType = {
   email?: true
   phone?: true
   status?: true
+  responsibleType?: true
+  responsibleId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +100,8 @@ export type CustomerMaxAggregateInputType = {
   email?: true
   phone?: true
   status?: true
+  responsibleType?: true
+  responsibleId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +116,8 @@ export type CustomerCountAggregateInputType = {
   email?: true
   phone?: true
   status?: true
+  responsibleType?: true
+  responsibleId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -193,6 +205,8 @@ export type CustomerGroupByOutputType = {
   email: string | null
   phone: string | null
   status: $Enums.CustomerStatus
+  responsibleType: $Enums.CustomerResponsibleType | null
+  responsibleId: string | null
   createdAt: Date
   updatedAt: Date
   _count: CustomerCountAggregateOutputType | null
@@ -228,6 +242,8 @@ export type CustomerWhereInput = {
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
   phone?: Prisma.StringNullableFilter<"Customer"> | string | null
   status?: Prisma.EnumCustomerStatusFilter<"Customer"> | $Enums.CustomerStatus
+  responsibleType?: Prisma.EnumCustomerResponsibleTypeNullableFilter<"Customer"> | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.StringNullableFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -245,6 +261,8 @@ export type CustomerOrderByWithRelationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  responsibleType?: Prisma.SortOrderInput | Prisma.SortOrder
+  responsibleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -266,6 +284,8 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
   phone?: Prisma.StringNullableFilter<"Customer"> | string | null
   status?: Prisma.EnumCustomerStatusFilter<"Customer"> | $Enums.CustomerStatus
+  responsibleType?: Prisma.EnumCustomerResponsibleTypeNullableFilter<"Customer"> | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.StringNullableFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -283,6 +303,8 @@ export type CustomerOrderByWithAggregationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  responsibleType?: Prisma.SortOrderInput | Prisma.SortOrder
+  responsibleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
@@ -303,6 +325,8 @@ export type CustomerScalarWhereWithAggregatesInput = {
   email?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   status?: Prisma.EnumCustomerStatusWithAggregatesFilter<"Customer"> | $Enums.CustomerStatus
+  responsibleType?: Prisma.EnumCustomerResponsibleTypeNullableWithAggregatesFilter<"Customer"> | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
 }
@@ -316,6 +340,8 @@ export type CustomerCreateInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutCustomersInput
@@ -333,6 +359,8 @@ export type CustomerUncheckedCreateInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customerPF?: Prisma.CustomerPFUncheckedCreateNestedOneWithoutCustomerInput
@@ -348,6 +376,8 @@ export type CustomerUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCustomersNestedInput
@@ -365,6 +395,8 @@ export type CustomerUncheckedUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerPF?: Prisma.CustomerPFUncheckedUpdateOneWithoutCustomerNestedInput
@@ -381,6 +413,8 @@ export type CustomerCreateManyInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -394,6 +428,8 @@ export type CustomerUpdateManyMutationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +444,8 @@ export type CustomerUncheckedUpdateManyInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -438,6 +476,8 @@ export type CustomerCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  responsibleType?: Prisma.SortOrder
+  responsibleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -452,6 +492,8 @@ export type CustomerMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  responsibleType?: Prisma.SortOrder
+  responsibleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -466,6 +508,8 @@ export type CustomerMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  responsibleType?: Prisma.SortOrder
+  responsibleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -529,6 +573,10 @@ export type EnumCustomerStatusFieldUpdateOperationsInput = {
   set?: $Enums.CustomerStatus
 }
 
+export type NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput = {
+  set?: $Enums.CustomerResponsibleType | null
+}
+
 export type CustomerCreateNestedOneWithoutCustomerPFInput = {
   create?: Prisma.XOR<Prisma.CustomerCreateWithoutCustomerPFInput, Prisma.CustomerUncheckedCreateWithoutCustomerPFInput>
   connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutCustomerPFInput
@@ -566,6 +614,8 @@ export type CustomerCreateWithoutOrganizationInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customerPF?: Prisma.CustomerPFCreateNestedOneWithoutCustomerInput
@@ -581,6 +631,8 @@ export type CustomerUncheckedCreateWithoutOrganizationInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customerPF?: Prisma.CustomerPFUncheckedCreateNestedOneWithoutCustomerInput
@@ -626,6 +678,8 @@ export type CustomerScalarWhereInput = {
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
   phone?: Prisma.StringNullableFilter<"Customer"> | string | null
   status?: Prisma.EnumCustomerStatusFilter<"Customer"> | $Enums.CustomerStatus
+  responsibleType?: Prisma.EnumCustomerResponsibleTypeNullableFilter<"Customer"> | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.StringNullableFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
 }
@@ -639,6 +693,8 @@ export type CustomerCreateWithoutCustomerPFInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutCustomersInput
@@ -655,6 +711,8 @@ export type CustomerUncheckedCreateWithoutCustomerPFInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customerPJ?: Prisma.CustomerPJUncheckedCreateNestedOneWithoutCustomerInput
@@ -685,6 +743,8 @@ export type CustomerUpdateWithoutCustomerPFInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCustomersNestedInput
@@ -701,6 +761,8 @@ export type CustomerUncheckedUpdateWithoutCustomerPFInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerPJ?: Prisma.CustomerPJUncheckedUpdateOneWithoutCustomerNestedInput
@@ -715,6 +777,8 @@ export type CustomerCreateWithoutCustomerPJInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutCustomersInput
@@ -731,6 +795,8 @@ export type CustomerUncheckedCreateWithoutCustomerPJInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customerPF?: Prisma.CustomerPFUncheckedCreateNestedOneWithoutCustomerInput
@@ -761,6 +827,8 @@ export type CustomerUpdateWithoutCustomerPJInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCustomersNestedInput
@@ -777,6 +845,8 @@ export type CustomerUncheckedUpdateWithoutCustomerPJInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerPF?: Prisma.CustomerPFUncheckedUpdateOneWithoutCustomerNestedInput
@@ -791,6 +861,8 @@ export type CustomerCreateManyOrganizationInput = {
   email?: string | null
   phone?: string | null
   status?: $Enums.CustomerStatus
+  responsibleType?: $Enums.CustomerResponsibleType | null
+  responsibleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -804,6 +876,8 @@ export type CustomerUpdateWithoutOrganizationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerPF?: Prisma.CustomerPFUpdateOneWithoutCustomerNestedInput
@@ -819,6 +893,8 @@ export type CustomerUncheckedUpdateWithoutOrganizationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerPF?: Prisma.CustomerPFUncheckedUpdateOneWithoutCustomerNestedInput
@@ -834,6 +910,8 @@ export type CustomerUncheckedUpdateManyWithoutOrganizationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCustomerStatusFieldUpdateOperationsInput | $Enums.CustomerStatus
+  responsibleType?: Prisma.NullableEnumCustomerResponsibleTypeFieldUpdateOperationsInput | $Enums.CustomerResponsibleType | null
+  responsibleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -850,6 +928,8 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   email?: boolean
   phone?: boolean
   status?: boolean
+  responsibleType?: boolean
+  responsibleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -867,6 +947,8 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   email?: boolean
   phone?: boolean
   status?: boolean
+  responsibleType?: boolean
+  responsibleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -882,6 +964,8 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   email?: boolean
   phone?: boolean
   status?: boolean
+  responsibleType?: boolean
+  responsibleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -897,11 +981,13 @@ export type CustomerSelectScalar = {
   email?: boolean
   phone?: boolean
   status?: boolean
+  responsibleType?: boolean
+  responsibleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "personType" | "name" | "documentType" | "documentNumber" | "email" | "phone" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "personType" | "name" | "documentType" | "documentNumber" | "email" | "phone" | "status" | "responsibleType" | "responsibleId" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   customerPF?: boolean | Prisma.Customer$customerPFArgs<ExtArgs>
@@ -931,6 +1017,8 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     email: string | null
     phone: string | null
     status: $Enums.CustomerStatus
+    responsibleType: $Enums.CustomerResponsibleType | null
+    responsibleId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["customer"]>
@@ -1368,6 +1456,8 @@ export interface CustomerFieldRefs {
   readonly email: Prisma.FieldRef<"Customer", 'String'>
   readonly phone: Prisma.FieldRef<"Customer", 'String'>
   readonly status: Prisma.FieldRef<"Customer", 'CustomerStatus'>
+  readonly responsibleType: Prisma.FieldRef<"Customer", 'CustomerResponsibleType'>
+  readonly responsibleId: Prisma.FieldRef<"Customer", 'String'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>
 }
