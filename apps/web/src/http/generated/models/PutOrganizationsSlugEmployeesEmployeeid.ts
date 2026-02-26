@@ -45,6 +45,10 @@ export type PutOrganizationsSlugEmployeesEmployeeidMutationRequest = {
      * @type string, uuid
     */
     companyId: string;
+    /**
+     * @type string | undefined, uuid
+    */
+    unitId?: string;
 };
 
 export type PutOrganizationsSlugEmployeesEmployeeidMutationResponse = PutOrganizationsSlugEmployeesEmployeeid204;

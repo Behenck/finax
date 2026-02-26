@@ -212,6 +212,7 @@ model Unit {
   transactions          Transaction[]
   recurrences           Recurrence[]
   memberCompanyAccesses MemberCompanyAccess[]
+  employees             Employee[]
 
   @@unique([companyId, name])
   @@index([companyId])
@@ -269,12 +270,14 @@ model Employee {
   userId         String? @map("user_id")
   organizationId String
   companyId      String
+  unitId         String?
 
   createdAt DateTime @default(now()) @map("created_at")
 
   user         User?         @relation(fields: [userId], references: [id])
   organization Organization  @relation(fields: [organizationId], references: [id])
   company      Company       @relation(fields: [companyId], references: [id])
+  unit         Unit?         @relation(fields: [unitId], references: [id])
   transactions Transaction[]
 
   @@unique([organizationId, userId])

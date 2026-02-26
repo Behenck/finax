@@ -8,4 +8,8 @@ export interface Employee {
 		id: string;
 		name: string;
 	};
+	unit: {
+		id: string;
+		name: string;
+	} | null;
 }

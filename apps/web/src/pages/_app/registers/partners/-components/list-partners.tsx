@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/table"
 import type { GetOrganizationsSlugPartners200 } from "@/http/generated"
 import { Link } from "@tanstack/react-router"
-import { Edit3, EllipsisVertical, ListChevronsUpDown, Receipt, UserRoundCheck, UserPlus, Trash2, UserRoundX } from "lucide-react"
+import { Edit3, EllipsisVertical, ListChevronsUpDown, Receipt, UserRoundCheck, UserPlus, UserRoundX } from "lucide-react"
 import { AssignSupervisor } from "./assign-supervisor"
 import { DetailsPartner } from "./details-partner"
+import { DeletePartner } from "./delete-partner"
 
 interface ListPartnersProps {
   partners: GetOrganizationsSlugPartners200["partners"]
@@ -106,14 +107,7 @@ export function ListPartners({ partners }: ListPartnersProps) {
                         </DropdownMenuItem>
                         <AssignSupervisor partner={partner} />
                         <Separator />
-                        <DropdownMenuItem asChild>
-                          <Link to="/" className='cursor-pointer'>
-                            <div className='flex gap-4 items-center '>
-                              <Trash2 className='size-3.5 text-red-500' />
-                              <span className='text-sm text-red-500'>Desativar</span>
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
+                        <DeletePartner partner={partner} />
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>

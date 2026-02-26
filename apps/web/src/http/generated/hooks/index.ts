@@ -58,6 +58,7 @@ export type { GetOrganizationsSlugTransactionsTransactionidSuspenseQueryKey } fr
 export type { GetOrganizationsSuspenseQueryKey } from "./useGetOrganizationsSuspense.ts";
 export type { GetPendingInvitesQueryKey } from "./useGetPendingInvites.ts";
 export type { GetPendingInvitesSuspenseQueryKey } from "./useGetPendingInvitesSuspense.ts";
+export type { PatchOrganizationsSlugMembersMemberidRoleMutationKey } from "./usePatchOrganizationsSlugMembersMemberidRole.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidMutationKey } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";
 export type { PostAuthSendEmailOtpMutationKey } from "./usePostAuthSendEmailOtp.ts";
@@ -274,6 +275,9 @@ export { useGetPendingInvites } from "./useGetPendingInvites.ts";
 export { getPendingInvitesSuspenseQueryKey } from "./useGetPendingInvitesSuspense.ts";
 export { getPendingInvitesSuspenseQueryOptions } from "./useGetPendingInvitesSuspense.ts";
 export { useGetPendingInvitesSuspense } from "./useGetPendingInvitesSuspense.ts";
+export { patchOrganizationsSlugMembersMemberidRoleMutationKey } from "./usePatchOrganizationsSlugMembersMemberidRole.ts";
+export { patchOrganizationsSlugMembersMemberidRoleMutationOptions } from "./usePatchOrganizationsSlugMembersMemberidRole.ts";
+export { usePatchOrganizationsSlugMembersMemberidRole } from "./usePatchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationOptions } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { usePatchOrganizationsSlugRecurrencesRecurrenceid } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";

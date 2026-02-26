@@ -55,7 +55,7 @@ function Employees() {
 				/>
 			</div>
 
-			<section className="space-y-4">
+			<section className="space-y-2">
 				{filteredEmployees?.map((employee) => (
 					<EmployeeCard employee={employee} />
 				))}

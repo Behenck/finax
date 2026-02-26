@@ -20,7 +20,8 @@ export const putOrganizationsSlugEmployeesEmployeeidMutationRequestSchema = z.ob
 "role": z.optional(z.string()),
 "email": z.string(),
 "department": z.optional(z.string()),
-"companyId": z.uuid()
+"companyId": z.uuid(),
+"unitId": z.optional(z.uuid())
     })
 
 export const putOrganizationsSlugEmployeesEmployeeidMutationResponseSchema = z.lazy(() => putOrganizationsSlugEmployeesEmployeeid204Schema)

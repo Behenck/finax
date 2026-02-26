@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Employee } from "@/schemas/types/employee";
-import { Briefcase, Building2, Mail, Trash2 } from "lucide-react";
+import { Briefcase, Building, Building2, Mail, Trash2 } from "lucide-react";
 import { UpdateEmployee } from "./update-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useApp } from "@/context/app-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { getOrganizationsSlugEmployeesQueryKey, useDeleteOrganizationsSlugEmployeesEmployeeid } from "@/http/generated";
+import { getInitials } from "@/utils/get-initials";
 
 interface EmployeeCardProps {
 	employee: Employee;
@@ -43,7 +44,7 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
 				<div className="flex items-center gap-3">
 					<Avatar>
 						<AvatarImage />
-						<AvatarFallback>DB</AvatarFallback>
+						<AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
 					</Avatar>
 
 					<div className="flex flex-col gap-1">
@@ -65,6 +66,16 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
 								<Mail className="size-3" />
 								<span>{employee.email}</span>
 							</div>
+							<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<Building2 className="size-3" />
+								<span>{employee.company.name}</span>
+							</div>
+							{employee.unit && (
+								<div className="flex items-center gap-1 text-gray-500 text-xs">
+									<Building className="size-3" />
+									<span>{employee.unit.name}</span>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

@@ -56,6 +56,19 @@ export type GetOrganizationsSlugEmployees200 = {
             */
             name: string;
         };
+        /**
+         * @type object
+        */
+        unit: {
+            /**
+             * @type string, uuid
+            */
+            id: string;
+            /**
+             * @type string
+            */
+            name: string;
+        } | null;
     }[];
 };
 

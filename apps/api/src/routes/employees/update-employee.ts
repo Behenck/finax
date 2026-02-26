@@ -24,6 +24,7 @@ export async function updateEmployee(app: FastifyInstance) {
           email: z.string(),
           department: z.string().optional(),
           companyId: z.uuid(),
+          unitId: z.uuid().optional(),
         }),
         response: {
           204: z.null()
@@ -32,7 +33,7 @@ export async function updateEmployee(app: FastifyInstance) {
     },
       async (request, reply) => {
         const { slug, employeeId } = request.params
-        const { name, role, email, department, companyId } = request.body
+        const { name, role, email, department, companyId, unitId } = request.body
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -68,7 +69,8 @@ export async function updateEmployee(app: FastifyInstance) {
             role,
             email,
             department,
-            companyId
+            companyId,
+            unitId
           }
         })
         )

@@ -7,6 +7,7 @@ export const employeeSchema = z.object({
 	department: z.string().optional(),
 	userId: z.uuid().optional(),
 	companyId: z.uuid({ error: "Selecione uma empresa" }),
+	unitId: z.uuid().optional(),
 });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>;

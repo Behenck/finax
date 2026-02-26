@@ -23,7 +23,8 @@ export async function createEmployee(app: FastifyInstance) {
           email: z.string(),
           department: z.string().optional(),
           userId: z.string().optional(),
-          companyId: z.uuid()
+          companyId: z.uuid(),
+          unitId: z.uuid().optional(),
         }),
         response: {
           201: z.object({
@@ -34,7 +35,7 @@ export async function createEmployee(app: FastifyInstance) {
     },
       async (request, reply) => {
         const { slug } = request.params
-        const { name, department, userId, role, email, companyId } = request.body
+        const { name, department, userId, role, email, companyId, unitId } = request.body
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -63,6 +64,24 @@ export async function createEmployee(app: FastifyInstance) {
           throw new BadRequestError("Company not found")
         }
 
+        let unitIdVerify = unitId
+        if (!!unitId) {
+          const unit = await prisma.unit.findFirst({
+            where: {
+              id: unitId,
+            },
+            select: {
+              id: true
+            }
+          })
+
+          unitIdVerify = unit?.id
+
+          if (!unit) {
+            throw new BadRequestError("Unit not found")
+          }
+        }
+
         const employee = await db(() =>
           prisma.employee.create({
             data: {
@@ -72,6 +91,7 @@ export async function createEmployee(app: FastifyInstance) {
               department,
               userId,
               companyId: company.id,
+              unitId: unitIdVerify,
               organizationId: organization.id
             },
           })

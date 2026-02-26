@@ -29,7 +29,11 @@ export async function getEmployees(app: FastifyInstance) {
                 company: z.object({
                   id: z.uuid(),
                   name: z.string(),
-                })
+                }),
+                unit: z.object({
+                  id: z.uuid(),
+                  name: z.string(),
+                }).nullable()
               }),
             )
           })
@@ -64,6 +68,12 @@ export async function getEmployees(app: FastifyInstance) {
             department: true,
             userId: true,
             company: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            unit: {
               select: {
                 id: true,
                 name: true,

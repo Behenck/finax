@@ -46,6 +46,10 @@ export type PostOrganizationsSlugEmployeesMutationRequest = {
      * @type string, uuid
     */
     companyId: string;
+    /**
+     * @type string | undefined, uuid
+    */
+    unitId?: string;
 };
 
 export type PostOrganizationsSlugEmployeesMutationResponse = PostOrganizationsSlugEmployees201;

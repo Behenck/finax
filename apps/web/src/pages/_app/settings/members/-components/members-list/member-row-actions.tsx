@@ -41,22 +41,22 @@ export function MemberRowActions({
           <DropdownMenuItem
             onSelect={(event) => {
               event.preventDefault()
-              setRoleDialogOpen(true)
-            }}
-            disabled={owner}
-          >
-            <Shield className='size-4' />
-            Alterar permissão
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={(event) => {
-              event.preventDefault()
               setAccessSheetOpen(true)
             }}
             disabled={owner}
           >
             <KeyRound className='size-4' />
             Acessos
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault()
+              setRoleDialogOpen(true)
+            }}
+            disabled={owner}
+          >
+            <Shield className='size-4' />
+            Alterar permissão
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

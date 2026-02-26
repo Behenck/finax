@@ -35,6 +35,7 @@ export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeE
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./GetOrganizationsSlugTransactions.ts";
 export type { GetOrganizationsSlugTransactionsTransactionidPathParams, TransactionTypeEnumKey, TransactionStatusEnumKey, TransactionNatureEnumKey, GetOrganizationsSlugTransactionsTransactionid200, GetOrganizationsSlugTransactionsTransactionidQueryResponse, GetOrganizationsSlugTransactionsTransactionidQuery } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export type { InvitesRoleEnum2Key, GetPendingInvites200, GetPendingInvitesQueryResponse, GetPendingInvitesQuery } from "./GetPendingInvites.ts";
+export type { PatchOrganizationsSlugMembersMemberidRolePathParams, PatchOrganizationsSlugMembersMemberidRole204EnumKey, PatchOrganizationsSlugMembersMemberidRole204, PatchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnumKey, PatchOrganizationsSlugMembersMemberidRoleMutationRequest, PatchOrganizationsSlugMembersMemberidRoleMutationResponse, PatchOrganizationsSlugMembersMemberidRoleMutation } from "./PatchOrganizationsSlugMembersMemberidRole.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidPathParams, PatchOrganizationsSlugRecurrencesRecurrenceid204EnumKey, PatchOrganizationsSlugRecurrencesRecurrenceid204, PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, PatchOrganizationsSlugRecurrencesRecurrenceidMutation } from "./PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidPathParams, PatchOrganizationsSlugTransactionsTransactionid204EnumKey, PatchOrganizationsSlugTransactionsTransactionid204, PatchOrganizationsSlugTransactionsTransactionidMutationRequest, PatchOrganizationsSlugTransactionsTransactionidMutationResponse, PatchOrganizationsSlugTransactionsTransactionidMutation } from "./PatchOrganizationsSlugTransactionsTransactionid.ts";
 export type { PostAuthSendEmailOtp204EnumKey, PostAuthSendEmailOtp204, PostAuthSendEmailOtpMutationRequest, PostAuthSendEmailOtpMutationResponse, PostAuthSendEmailOtpMutation } from "./PostAuthSendEmailOtp.ts";
@@ -124,6 +125,8 @@ export { transactionTypeEnum } from "./GetOrganizationsSlugTransactionsTransacti
 export { transactionStatusEnum } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export { transactionNatureEnum } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export { invitesRoleEnum2 } from "./GetPendingInvites.ts";
+export { patchOrganizationsSlugMembersMemberidRole204Enum } from "./PatchOrganizationsSlugMembersMemberidRole.ts";
+export { patchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnum } from "./PatchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceid204Enum } from "./PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { patchOrganizationsSlugTransactionsTransactionid204Enum } from "./PatchOrganizationsSlugTransactionsTransactionid.ts";
 export { postAuthSendEmailOtp204Enum } from "./PostAuthSendEmailOtp.ts";

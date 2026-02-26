@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
 import {
@@ -25,6 +25,7 @@ import {
 import { useApp } from "@/context/app-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { getOrganizationsSlugEmployeesQueryKey, useGetOrganizationsSlugCompanies, usePostOrganizationsSlugEmployees, usePutOrganizationsSlugEmployeesEmployeeid } from "@/http/generated";
+import { useEffect, useMemo } from "react";
 
 export type CreateEmployeeType = z.infer<typeof employeeSchema>;
 
@@ -47,7 +48,7 @@ export function EmployeeForm({
 
 	const { data } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
 
-	const { handleSubmit, control } = useForm<CreateEmployeeType>({
+	const { handleSubmit, control, setValue } = useForm<CreateEmployeeType>({
 		resolver: zodResolver(employeeSchema as any),
 		defaultValues: {
 			name: initialData?.name ?? "",
@@ -55,8 +56,34 @@ export function EmployeeForm({
 			role: initialData?.role ?? "",
 			department: initialData?.department ?? "",
 			companyId: initialData?.company.id ?? "",
+			unitId: initialData?.unit?.id ?? undefined,
 		},
 	});
+
+	const selectedCompanyId = useWatch({ control, name: "companyId" });
+	const selectedUnitId = useWatch({ control, name: "unitId" });
+
+	const selectedCompany = useMemo(
+		() => data?.companies.find((company) => company.id === selectedCompanyId),
+		[data?.companies, selectedCompanyId],
+	);
+
+	useEffect(() => {
+		if (!selectedCompanyId) {
+			setValue("unitId", undefined);
+			return;
+		}
+
+		if (!selectedUnitId) return;
+
+		const hasSelectedUnitInCompany = selectedCompany?.units.some(
+			(unit) => unit.id === selectedUnitId,
+		);
+
+		if (!hasSelectedUnitInCompany) {
+			setValue("unitId", undefined);
+		}
+	}, [selectedCompany, selectedCompanyId, selectedUnitId, setValue]);
 
 	async function onSubmit(data: EmployeeFormData) {
 		if (mode === "edit" && initialData) {
@@ -248,6 +275,46 @@ export function EmployeeForm({
 							</Select>
 							{fieldState.invalid && (
 								<FieldError id="companyId-error" errors={[fieldState.error]} />
+							)}
+						</Field>
+					)}
+				/>
+			</FieldGroup>
+			<FieldGroup>
+				<Controller
+					name="unitId"
+					control={control}
+					render={({ field, fieldState }) => (
+						<Field data-invalid={fieldState.invalid} className="gap-1">
+							<FieldLabel>Unidade</FieldLabel>
+							<Select
+								value={field.value ?? "__none__"}
+								onValueChange={(value) =>
+									field.onChange(value === "__none__" ? undefined : value)
+								}
+								disabled={!selectedCompanyId}
+							>
+								<SelectTrigger>
+									<SelectValue
+										placeholder={
+											selectedCompanyId
+												? "Selecione uma unidade (opcional)"
+												: "Selecione uma empresa primeiro"
+										}
+									/>
+								</SelectTrigger>
+
+								<SelectContent>
+									<SelectItem value="__none__">Nenhum vinculada</SelectItem>
+									{selectedCompany?.units.map((unit) => (
+										<SelectItem key={unit.id} value={unit.id}>
+											{unit.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{fieldState.invalid && (
+								<FieldError id="unitId-error" errors={[fieldState.error]} />
 							)}
 						</Field>
 					)}
