@@ -92,24 +92,12 @@ const productCommissionSchema = z
 		}
 	});
 
-const productScenarioConditionSchema = z.discriminatedUnion("type", [
-	z.object({
-		type: z.literal("COMPANY"),
-		valueId: z.uuid({ error: "Selecione um valor" }),
-	}),
-	z.object({
-		type: z.literal("PARTNER"),
-		valueId: z.uuid({ error: "Selecione um valor" }),
-	}),
-	z.object({
-		type: z.literal("UNIT"),
-		valueId: z.uuid({ error: "Selecione um valor" }),
-	}),
-	z.object({
-		type: z.literal("SELLER"),
-		valueId: z.uuid({ error: "Selecione um valor" }),
-	}),
-]);
+const productScenarioConditionSchema = z.object({
+	type: z.enum(["COMPANY", "PARTNER", "UNIT", "SELLER"]),
+	valueIds: z
+		.array(z.uuid({ error: "Selecione um valor" }))
+		.min(1, "Selecione ao menos um valor"),
+});
 
 const productCommissionScenarioSchema = z.object({
 	name: z
