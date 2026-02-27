@@ -1,116 +1,169 @@
-import { db } from "@/lib/db";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 
 export async function updateProduct(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>()
-    .register(auth)
-    .put("/organizations/:slug/products/:id", {
-      schema: {
-        tags: ["products"],
-        summary: "Update product",
-        security: [{ bearerAuth: [] }],
-        params: z.object({
-          slug: z.string(),
-          id: z.uuid(),
-        }),
-        body: z.object({
-          name: z.string().min(1),
-          description: z.string().nullable(),
-          parentId: z.uuid().nullable(),
-          isActive: z.boolean(),
-          sortOrder: z.number().int().min(0),
-        }),
-        response: {
-          204: z.null(),
-        },
-      },
-    },
-      async (request, reply) => {
-        const { slug, id } = request.params
-        const data = request.body
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.put(
+			"/organizations/:slug/products/:id",
+			{
+				schema: {
+					tags: ["products"],
+					summary: "Update product",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+						id: z.uuid(),
+					}),
+					body: z.object({
+						name: z.string().min(1),
+						description: z.string().nullable(),
+						parentId: z.uuid().nullable(),
+						isActive: z.boolean(),
+						sortOrder: z.number().int().min(0),
+					}),
+					response: {
+						204: z.null(),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug, id } = request.params;
+				const data = request.body;
 
-        const organization = await prisma.organization.findUnique({
-          where: { slug },
-          select: { id: true },
-        })
+				const organization = await prisma.organization.findUnique({
+					where: { slug },
+					select: { id: true },
+				});
 
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
 
-        const product = await prisma.product.findFirst({
-          where: {
-            id,
-            organizationId: organization.id,
-          },
-          select: {
-            id: true,
-            parentId: true,
-            _count: {
-              select: {
-                children: true,
-              },
-            },
-          },
-        })
+				const product = await prisma.product.findFirst({
+					where: {
+						id,
+						organizationId: organization.id,
+					},
+					select: {
+						id: true,
+						parentId: true,
+						isActive: true,
+						_count: {
+							select: {
+								children: true,
+							},
+						},
+					},
+				});
 
-        if (!product) {
-          throw new BadRequestError("Product not found")
-        }
+				if (!product) {
+					throw new BadRequestError("Product not found");
+				}
 
-        if (data.parentId === id) {
-          throw new BadRequestError("Product cannot be its own parent")
-        }
+				if (data.parentId === id) {
+					throw new BadRequestError("Product cannot be its own parent");
+				}
 
-        if (data.parentId !== null) {
-          const parent = await prisma.product.findFirst({
-            where: {
-              id: data.parentId,
-              organizationId: organization.id,
-            },
-            select: {
-              id: true,
-              parentId: true,
-            },
-          })
+				if (data.parentId !== null) {
+					const parent = await prisma.product.findFirst({
+						where: {
+							id: data.parentId,
+							organizationId: organization.id,
+						},
+						select: {
+							id: true,
+							isActive: true,
+						},
+					});
 
-          if (!parent) {
-            throw new BadRequestError("Parent product not found")
-          }
+					if (!parent) {
+						throw new BadRequestError("Parent product not found");
+					}
 
-          if (parent.parentId !== null) {
-            throw new BadRequestError("Parent product must be a root product")
-          }
+					const isChangingParent = product.parentId !== data.parentId;
+					if (isChangingParent && product._count.children > 0) {
+						throw new BadRequestError(
+							"Cannot move a product with children under another parent",
+						);
+					}
 
-          if (product._count.children > 0) {
-            throw new BadRequestError(
-              "Cannot move a product with children under another parent"
-            )
-          }
-        }
+					if (data.isActive && !parent.isActive) {
+						throw new BadRequestError(
+							"Cannot activate a child product while parent is inactive",
+						);
+					}
+				}
 
-        await db(() =>
-          prisma.product.update({
-            where: {
-              id,
-            },
-            data: {
-              name: data.name,
-              description: data.description,
-              parentId: data.parentId,
-              isActive: data.isActive,
-              sortOrder: data.sortOrder,
-            },
-          })
-        )
+				await db(() =>
+					prisma.$transaction(async (tx) => {
+						await tx.product.update({
+							where: {
+								id,
+							},
+							data: {
+								name: data.name,
+								description: data.description,
+								parentId: data.parentId,
+								isActive: data.isActive,
+								sortOrder: data.sortOrder,
+							},
+						});
 
-        return reply.status(204).send()
-      }
-    )
+						if (product.isActive !== data.isActive) {
+							const descendants: string[] = [];
+							const visited = new Set<string>([id]);
+							let parentIds = [id];
+
+							while (parentIds.length > 0) {
+								const children = await tx.product.findMany({
+									where: {
+										organizationId: organization.id,
+										parentId: {
+											in: parentIds,
+										},
+									},
+									select: {
+										id: true,
+									},
+								});
+
+								const nextParentIds = children
+									.map((child) => child.id)
+									.filter((childId) => {
+										if (visited.has(childId)) return false;
+										visited.add(childId);
+										return true;
+									});
+
+								descendants.push(...nextParentIds);
+								parentIds = nextParentIds;
+							}
+
+							if (descendants.length > 0) {
+								await tx.product.updateMany({
+									where: {
+										organizationId: organization.id,
+										id: {
+											in: descendants,
+										},
+									},
+									data: {
+										isActive: data.isActive,
+									},
+								});
+							}
+						}
+					}),
+				);
+
+				return reply.status(204).send();
+			},
+		);
 }
-

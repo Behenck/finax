@@ -6,19 +6,17 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 
-const ProductChildSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  parentId: z.uuid(),
-  isActive: z.boolean(),
-  sortOrder: z.number().int(),
-})
-
-const ProductRootSchema = ProductChildSchema.extend({
-  parentId: z.null(),
-  children: z.array(ProductChildSchema),
-})
+const ProductTreeNodeSchema: z.ZodTypeAny = z.lazy(() =>
+  z.object({
+    id: z.uuid(),
+    name: z.string(),
+    description: z.string().nullable(),
+    parentId: z.uuid().nullable(),
+    isActive: z.boolean(),
+    sortOrder: z.number().int(),
+    children: z.array(ProductTreeNodeSchema),
+  })
+)
 
 export async function getProducts(app: FastifyInstance) {
   app
@@ -36,7 +34,7 @@ export async function getProducts(app: FastifyInstance) {
           }),
           response: {
             200: z.object({
-              products: z.array(ProductRootSchema),
+              products: z.array(ProductTreeNodeSchema),
             }),
           },
         },
@@ -81,4 +79,3 @@ export async function getProducts(app: FastifyInstance) {
       }
     )
 }
-

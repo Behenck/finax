@@ -29,6 +29,7 @@ import {
 	LogOut,
 	Network,
 	PersonStanding,
+	Package,
 	Settings,
 	Tags,
 	Target,
@@ -93,6 +94,11 @@ export function AppSidebar() {
 					icon: Tags,
 					title: "Categorias",
 					url: "/registers/categories",
+				},
+				{
+					icon: Package,
+					title: "Produtos",
+					url: "/registers/products",
 				},
 				{
 					icon: Network,

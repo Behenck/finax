@@ -52,16 +52,11 @@ export async function createProduct(app: FastifyInstance) {
             },
             select: {
               id: true,
-              parentId: true,
             },
           })
 
           if (!parent) {
             throw new BadRequestError("Parent product not found")
-          }
-
-          if (parent.parentId !== null) {
-            throw new BadRequestError("Parent product must be a root product")
           }
         }
 
@@ -84,4 +79,3 @@ export async function createProduct(app: FastifyInstance) {
       }
     )
 }
-

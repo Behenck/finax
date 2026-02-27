@@ -28,6 +28,7 @@ import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/tra
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
 import { Route as AppSettingsMembersIndexRouteImport } from './pages/_app/settings/members/index'
 import { Route as AppRegistersSellersIndexRouteImport } from './pages/_app/registers/sellers/index'
+import { Route as AppRegistersProductsIndexRouteImport } from './pages/_app/registers/products/index'
 import { Route as AppRegistersPartnersIndexRouteImport } from './pages/_app/registers/partners/index'
 import { Route as AppRegistersEmployeesIndexRouteImport } from './pages/_app/registers/employees/index'
 import { Route as AppRegistersCustomersIndexRouteImport } from './pages/_app/registers/customers/index'
@@ -137,6 +138,12 @@ const AppRegistersSellersIndexRoute =
   AppRegistersSellersIndexRouteImport.update({
     id: '/registers/sellers/',
     path: '/registers/sellers/',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
+const AppRegistersProductsIndexRoute =
+  AppRegistersProductsIndexRouteImport.update({
+    id: '/registers/products/',
+    path: '/registers/products/',
     getParentRoute: () => AppLayoutRoute,
   } as any)
 const AppRegistersPartnersIndexRoute =
@@ -251,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/registers/partners': typeof AppRegistersPartnersIndexRoute
+  '/registers/products': typeof AppRegistersProductsIndexRoute
   '/registers/sellers': typeof AppRegistersSellersIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
@@ -282,6 +290,7 @@ export interface FileRoutesByTo {
   '/registers/customers': typeof AppRegistersCustomersIndexRoute
   '/registers/employees': typeof AppRegistersEmployeesIndexRoute
   '/registers/partners': typeof AppRegistersPartnersIndexRoute
+  '/registers/products': typeof AppRegistersProductsIndexRoute
   '/registers/sellers': typeof AppRegistersSellersIndexRoute
   '/settings/members': typeof AppSettingsMembersIndexRoute
   '/settings/organization': typeof AppSettingsOrganizationIndexRoute
@@ -318,6 +327,7 @@ export interface FileRoutesById {
   '/_app/registers/customers/': typeof AppRegistersCustomersIndexRoute
   '/_app/registers/employees/': typeof AppRegistersEmployeesIndexRoute
   '/_app/registers/partners/': typeof AppRegistersPartnersIndexRoute
+  '/_app/registers/products/': typeof AppRegistersProductsIndexRoute
   '/_app/registers/sellers/': typeof AppRegistersSellersIndexRoute
   '/_app/settings/members/': typeof AppSettingsMembersIndexRoute
   '/_app/settings/organization/': typeof AppSettingsOrganizationIndexRoute
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
     | '/registers/customers'
     | '/registers/employees'
     | '/registers/partners'
+    | '/registers/products'
     | '/registers/sellers'
     | '/settings/members'
     | '/settings/organization'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/registers/customers'
     | '/registers/employees'
     | '/registers/partners'
+    | '/registers/products'
     | '/registers/sellers'
     | '/settings/members'
     | '/settings/organization'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/_app/registers/customers/'
     | '/_app/registers/employees/'
     | '/_app/registers/partners/'
+    | '/_app/registers/products/'
     | '/_app/registers/sellers/'
     | '/_app/settings/members/'
     | '/_app/settings/organization/'
@@ -566,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistersSellersIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/products/': {
+      id: '/_app/registers/products/'
+      path: '/registers/products'
+      fullPath: '/registers/products'
+      preLoaderRoute: typeof AppRegistersProductsIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/partners/': {
       id: '/_app/registers/partners/'
       path: '/registers/partners'
@@ -699,6 +719,7 @@ interface AppLayoutRouteChildren {
   AppRegistersCustomersIndexRoute: typeof AppRegistersCustomersIndexRoute
   AppRegistersEmployeesIndexRoute: typeof AppRegistersEmployeesIndexRoute
   AppRegistersPartnersIndexRoute: typeof AppRegistersPartnersIndexRoute
+  AppRegistersProductsIndexRoute: typeof AppRegistersProductsIndexRoute
   AppRegistersSellersIndexRoute: typeof AppRegistersSellersIndexRoute
   AppTransactionsCreateIndexRoute: typeof AppTransactionsCreateIndexRoute
 }
@@ -721,6 +742,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersCustomersIndexRoute: AppRegistersCustomersIndexRoute,
   AppRegistersEmployeesIndexRoute: AppRegistersEmployeesIndexRoute,
   AppRegistersPartnersIndexRoute: AppRegistersPartnersIndexRoute,
+  AppRegistersProductsIndexRoute: AppRegistersProductsIndexRoute,
   AppRegistersSellersIndexRoute: AppRegistersSellersIndexRoute,
   AppTransactionsCreateIndexRoute: AppTransactionsCreateIndexRoute,
 }
