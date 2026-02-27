@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import type { ProductListItem } from "@/schemas/types/product";
 import { Settings2 } from "lucide-react";
 import { useState } from "react";
@@ -22,7 +21,7 @@ export function UpdateProduct({
 					<Settings2 className="text-gray-700" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-xl">
+			<DialogContent className="sm:max-w-4xl">
 				<ProductForm mode="edit" initialData={product} onSuccess={() => setOpen(false)} />
 			</DialogContent>
 		</Dialog>

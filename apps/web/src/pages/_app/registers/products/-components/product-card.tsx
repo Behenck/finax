@@ -156,7 +156,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
 					<div className="flex shrink-0 items-center gap-1">
 						<CreateProduct
-							products={[]}
 							fixedParentId={product.id}
 							trigger={
 								<Button variant="ghost" size="icon">

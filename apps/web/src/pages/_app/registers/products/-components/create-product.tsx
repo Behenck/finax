@@ -2,17 +2,14 @@ import { Plus } from "lucide-react";
 import { type ReactElement, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import type { ProductListItem } from "@/schemas/types/product";
 import { ProductForm } from "./product-form";
 
 interface CreateProductProps {
 	fixedParentId?: string;
 	trigger?: ReactElement;
-	products?: ProductListItem[];
 }
 
 export function CreateProduct({
-	products: _products,
 	fixedParentId,
 	trigger,
 }: CreateProductProps) {
@@ -28,7 +25,7 @@ export function CreateProduct({
 					</Button>
 				)}
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-xl">
+			<DialogContent className="sm:max-w-4xl">
 				<ProductForm
 					fixedParentId={fixedParentId}
 					onSuccess={() => setOpen(false)}

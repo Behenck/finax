@@ -17,17 +17,10 @@ export const getOrganizationsSlugProducts200Schema = z.object({
     "id": z.uuid(),
 "name": z.string(),
 "description": z.nullable(z.string()),
-"parentId": z.nullable(z.enum([])),
+"parentId": z.nullable(z.uuid()),
 "isActive": z.boolean(),
 "sortOrder": z.int().min(-9007199254740991).max(9007199254740991),
-"children": z.array(z.object({
-    "id": z.uuid(),
-"name": z.string(),
-"description": z.nullable(z.string()),
-"parentId": z.uuid(),
-"isActive": z.boolean(),
-"sortOrder": z.int().min(-9007199254740991).max(9007199254740991)
-    }))
+"children": z.array(z.any())
     }))
     })
 

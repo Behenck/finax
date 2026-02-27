@@ -11,10 +11,6 @@ export type GetOrganizationsSlugProductsPathParams = {
     slug: string;
 };
 
-export const productsParentIdEnum = {} as const;
-
-export type ProductsParentIdEnumKey = (typeof productsParentIdEnum)[keyof typeof productsParentIdEnum];
-
 /**
  * @description Default Response
 */
@@ -36,9 +32,9 @@ export type GetOrganizationsSlugProducts200 = {
         */
         description: string | null;
         /**
-         * @type string
+         * @type string, uuid
         */
-        parentId: ProductsParentIdEnumKey | null;
+        parentId: string | null;
         /**
          * @type boolean
         */
@@ -52,34 +48,7 @@ export type GetOrganizationsSlugProducts200 = {
         /**
          * @type array
         */
-        children: {
-            /**
-             * @type string, uuid
-            */
-            id: string;
-            /**
-             * @type string
-            */
-            name: string;
-            /**
-             * @type string
-            */
-            description: string | null;
-            /**
-             * @type string, uuid
-            */
-            parentId: string;
-            /**
-             * @type boolean
-            */
-            isActive: boolean;
-            /**
-             * @minLength -9007199254740991
-             * @maxLength 9007199254740991
-             * @type integer
-            */
-            sortOrder: number;
-        }[];
+        children: any[];
     }[];
 };
 

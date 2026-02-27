@@ -57,7 +57,7 @@ function Products() {
 			.filter(isNotNull);
 	}, [safeProducts, search]);
 
-	if (isLoading) return <h1>Carregando...</h1>;
+	if (isLoading) return <p>Carregando...</p>;
 
 	if (isError) {
 		return <p className="text-destructive">Erro ao carregar produtos.</p>;

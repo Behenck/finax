@@ -92,7 +92,6 @@ export function ProductRow({
 
 					<div className="flex items-center gap-1">
 						<CreateProduct
-							products={[]}
 							fixedParentId={product.id}
 							trigger={
 								<Button

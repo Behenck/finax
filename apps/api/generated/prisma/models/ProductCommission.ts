@@ -41,6 +41,10 @@ export type ProductCommissionMinAggregateOutputType = {
   scenarioId: string | null
   description: string | null
   recipientType: $Enums.ProductCommissionRecipientType | null
+  recipientCompanyId: string | null
+  recipientUnitId: string | null
+  recipientSellerId: string | null
+  recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number | null
   sortOrder: number | null
@@ -53,6 +57,10 @@ export type ProductCommissionMaxAggregateOutputType = {
   scenarioId: string | null
   description: string | null
   recipientType: $Enums.ProductCommissionRecipientType | null
+  recipientCompanyId: string | null
+  recipientUnitId: string | null
+  recipientSellerId: string | null
+  recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number | null
   sortOrder: number | null
@@ -65,6 +73,10 @@ export type ProductCommissionCountAggregateOutputType = {
   scenarioId: number
   description: number
   recipientType: number
+  recipientCompanyId: number
+  recipientUnitId: number
+  recipientSellerId: number
+  recipientSupervisorId: number
   recipientOtherDescription: number
   totalPercentage: number
   sortOrder: number
@@ -89,6 +101,10 @@ export type ProductCommissionMinAggregateInputType = {
   scenarioId?: true
   description?: true
   recipientType?: true
+  recipientCompanyId?: true
+  recipientUnitId?: true
+  recipientSellerId?: true
+  recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
   sortOrder?: true
@@ -101,6 +117,10 @@ export type ProductCommissionMaxAggregateInputType = {
   scenarioId?: true
   description?: true
   recipientType?: true
+  recipientCompanyId?: true
+  recipientUnitId?: true
+  recipientSellerId?: true
+  recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
   sortOrder?: true
@@ -113,6 +133,10 @@ export type ProductCommissionCountAggregateInputType = {
   scenarioId?: true
   description?: true
   recipientType?: true
+  recipientCompanyId?: true
+  recipientUnitId?: true
+  recipientSellerId?: true
+  recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
   sortOrder?: true
@@ -212,6 +236,10 @@ export type ProductCommissionGroupByOutputType = {
   scenarioId: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId: string | null
+  recipientUnitId: string | null
+  recipientSellerId: string | null
+  recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number
   sortOrder: number
@@ -247,12 +275,20 @@ export type ProductCommissionWhereInput = {
   scenarioId?: Prisma.StringFilter<"ProductCommission"> | string
   description?: Prisma.StringFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSellerId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
   sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   scenario?: Prisma.XOR<Prisma.ProductCommissionScenarioScalarRelationFilter, Prisma.ProductCommissionScenarioWhereInput>
+  recipientCompany?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
+  recipientUnit?: Prisma.XOR<Prisma.UnitNullableScalarRelationFilter, Prisma.UnitWhereInput> | null
+  recipientSeller?: Prisma.XOR<Prisma.SellerNullableScalarRelationFilter, Prisma.SellerWhereInput> | null
+  recipientSupervisor?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
   installments?: Prisma.ProductCommissionInstallmentListRelationFilter
 }
 
@@ -261,12 +297,20 @@ export type ProductCommissionOrderByWithRelationInput = {
   scenarioId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  recipientCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientSellerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientSupervisorId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   scenario?: Prisma.ProductCommissionScenarioOrderByWithRelationInput
+  recipientCompany?: Prisma.CompanyOrderByWithRelationInput
+  recipientUnit?: Prisma.UnitOrderByWithRelationInput
+  recipientSeller?: Prisma.SellerOrderByWithRelationInput
+  recipientSupervisor?: Prisma.MemberOrderByWithRelationInput
   installments?: Prisma.ProductCommissionInstallmentOrderByRelationAggregateInput
 }
 
@@ -278,12 +322,20 @@ export type ProductCommissionWhereUniqueInput = Prisma.AtLeast<{
   scenarioId?: Prisma.StringFilter<"ProductCommission"> | string
   description?: Prisma.StringFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSellerId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
   sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   scenario?: Prisma.XOR<Prisma.ProductCommissionScenarioScalarRelationFilter, Prisma.ProductCommissionScenarioWhereInput>
+  recipientCompany?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
+  recipientUnit?: Prisma.XOR<Prisma.UnitNullableScalarRelationFilter, Prisma.UnitWhereInput> | null
+  recipientSeller?: Prisma.XOR<Prisma.SellerNullableScalarRelationFilter, Prisma.SellerWhereInput> | null
+  recipientSupervisor?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
   installments?: Prisma.ProductCommissionInstallmentListRelationFilter
 }, "id">
 
@@ -292,6 +344,10 @@ export type ProductCommissionOrderByWithAggregationInput = {
   scenarioId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  recipientCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientSellerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recipientSupervisorId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -312,6 +368,10 @@ export type ProductCommissionScalarWhereWithAggregatesInput = {
   scenarioId?: Prisma.StringWithAggregatesFilter<"ProductCommission"> | string
   description?: Prisma.StringWithAggregatesFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeWithAggregatesFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
+  recipientUnitId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
+  recipientSellerId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
+  recipientSupervisorId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntWithAggregatesFilter<"ProductCommission"> | number
   sortOrder?: Prisma.IntWithAggregatesFilter<"ProductCommission"> | number
@@ -329,6 +389,10 @@ export type ProductCommissionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
   installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
 }
 
@@ -337,6 +401,10 @@ export type ProductCommissionUncheckedCreateInput = {
   scenarioId: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
   sortOrder?: number
@@ -355,6 +423,10 @@ export type ProductCommissionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
   installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
 }
 
@@ -363,6 +435,10 @@ export type ProductCommissionUncheckedUpdateInput = {
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -376,6 +452,10 @@ export type ProductCommissionCreateManyInput = {
   scenarioId: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
   sortOrder?: number
@@ -399,6 +479,10 @@ export type ProductCommissionUncheckedUpdateManyInput = {
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -421,6 +505,10 @@ export type ProductCommissionCountOrderByAggregateInput = {
   scenarioId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  recipientCompanyId?: Prisma.SortOrder
+  recipientUnitId?: Prisma.SortOrder
+  recipientSellerId?: Prisma.SortOrder
+  recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -438,6 +526,10 @@ export type ProductCommissionMaxOrderByAggregateInput = {
   scenarioId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  recipientCompanyId?: Prisma.SortOrder
+  recipientUnitId?: Prisma.SortOrder
+  recipientSellerId?: Prisma.SortOrder
+  recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -450,6 +542,10 @@ export type ProductCommissionMinOrderByAggregateInput = {
   scenarioId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  recipientCompanyId?: Prisma.SortOrder
+  recipientUnitId?: Prisma.SortOrder
+  recipientSellerId?: Prisma.SortOrder
+  recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -465,6 +561,174 @@ export type ProductCommissionSumOrderByAggregateInput = {
 export type ProductCommissionScalarRelationFilter = {
   is?: Prisma.ProductCommissionWhereInput
   isNot?: Prisma.ProductCommissionWhereInput
+}
+
+export type ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput> | Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSupervisorInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput> | Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSupervisorInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput> | Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSupervisorInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSupervisorInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSupervisorInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSupervisorInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput> | Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSupervisorInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSupervisorInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSupervisorInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSupervisorInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSupervisorInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionCreateNestedManyWithoutRecipientCompanyInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput> | Prisma.ProductCommissionCreateWithoutRecipientCompanyInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientCompanyInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput> | Prisma.ProductCommissionCreateWithoutRecipientCompanyInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientCompanyInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput> | Prisma.ProductCommissionCreateWithoutRecipientCompanyInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientCompanyInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientCompanyInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientCompanyInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientCompanyInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientCompanyInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientCompanyInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientCompanyInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput> | Prisma.ProductCommissionCreateWithoutRecipientCompanyInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientCompanyInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientCompanyInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientCompanyInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientCompanyInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientCompanyInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientCompanyInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientCompanyInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientCompanyInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionCreateNestedManyWithoutRecipientUnitInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput> | Prisma.ProductCommissionCreateWithoutRecipientUnitInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientUnitInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUncheckedCreateNestedManyWithoutRecipientUnitInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput> | Prisma.ProductCommissionCreateWithoutRecipientUnitInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientUnitInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUpdateManyWithoutRecipientUnitNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput> | Prisma.ProductCommissionCreateWithoutRecipientUnitInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientUnitInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientUnitInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientUnitInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientUnitInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientUnitInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientUnitInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientUnitInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientUnitNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput> | Prisma.ProductCommissionCreateWithoutRecipientUnitInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientUnitInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientUnitInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientUnitInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientUnitInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientUnitInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientUnitInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientUnitInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientUnitInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionCreateNestedManyWithoutRecipientSellerInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput> | Prisma.ProductCommissionCreateWithoutRecipientSellerInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSellerInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput> | Prisma.ProductCommissionCreateWithoutRecipientSellerInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSellerInputEnvelope
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+}
+
+export type ProductCommissionUpdateManyWithoutRecipientSellerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput> | Prisma.ProductCommissionCreateWithoutRecipientSellerInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSellerInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSellerInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSellerInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSellerInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSellerInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSellerInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSellerInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput> | Prisma.ProductCommissionCreateWithoutRecipientSellerInput[] | Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput[]
+  connectOrCreate?: Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput | Prisma.ProductCommissionCreateOrConnectWithoutRecipientSellerInput[]
+  upsert?: Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSellerInput | Prisma.ProductCommissionUpsertWithWhereUniqueWithoutRecipientSellerInput[]
+  createMany?: Prisma.ProductCommissionCreateManyRecipientSellerInputEnvelope
+  set?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionWhereUniqueInput | Prisma.ProductCommissionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSellerInput | Prisma.ProductCommissionUpdateWithWhereUniqueWithoutRecipientSellerInput[]
+  updateMany?: Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSellerInput | Prisma.ProductCommissionUpdateManyWithWhereWithoutRecipientSellerInput[]
+  deleteMany?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
 }
 
 export type ProductCommissionCreateNestedManyWithoutScenarioInput = {
@@ -527,6 +791,257 @@ export type ProductCommissionUpdateOneRequiredWithoutInstallmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductCommissionUpdateToOneWithWhereWithoutInstallmentsInput, Prisma.ProductCommissionUpdateWithoutInstallmentsInput>, Prisma.ProductCommissionUncheckedUpdateWithoutInstallmentsInput>
 }
 
+export type ProductCommissionCreateWithoutRecipientSupervisorInput = {
+  id?: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionCreateOrConnectWithoutRecipientSupervisorInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput>
+}
+
+export type ProductCommissionCreateManyRecipientSupervisorInputEnvelope = {
+  data: Prisma.ProductCommissionCreateManyRecipientSupervisorInput | Prisma.ProductCommissionCreateManyRecipientSupervisorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionUpsertWithWhereUniqueWithoutRecipientSupervisorInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientSupervisorInput>
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput>
+}
+
+export type ProductCommissionUpdateWithWhereUniqueWithoutRecipientSupervisorInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientSupervisorInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientSupervisorInput>
+}
+
+export type ProductCommissionUpdateManyWithWhereWithoutRecipientSupervisorInput = {
+  where: Prisma.ProductCommissionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateManyMutationInput, Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorInput>
+}
+
+export type ProductCommissionScalarWhereInput = {
+  AND?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+  OR?: Prisma.ProductCommissionScalarWhereInput[]
+  NOT?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
+  id?: Prisma.StringFilter<"ProductCommission"> | string
+  scenarioId?: Prisma.StringFilter<"ProductCommission"> | string
+  description?: Prisma.StringFilter<"ProductCommission"> | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSellerId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
+  totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
+  sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
+  createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
+}
+
+export type ProductCommissionCreateWithoutRecipientCompanyInput = {
+  id?: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
+  installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionUncheckedCreateWithoutRecipientCompanyInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionCreateOrConnectWithoutRecipientCompanyInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput>
+}
+
+export type ProductCommissionCreateManyRecipientCompanyInputEnvelope = {
+  data: Prisma.ProductCommissionCreateManyRecipientCompanyInput | Prisma.ProductCommissionCreateManyRecipientCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionUpsertWithWhereUniqueWithoutRecipientCompanyInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientCompanyInput>
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientCompanyInput>
+}
+
+export type ProductCommissionUpdateWithWhereUniqueWithoutRecipientCompanyInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientCompanyInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientCompanyInput>
+}
+
+export type ProductCommissionUpdateManyWithWhereWithoutRecipientCompanyInput = {
+  where: Prisma.ProductCommissionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateManyMutationInput, Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyInput>
+}
+
+export type ProductCommissionCreateWithoutRecipientUnitInput = {
+  id?: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
+  installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionUncheckedCreateWithoutRecipientUnitInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionCreateOrConnectWithoutRecipientUnitInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput>
+}
+
+export type ProductCommissionCreateManyRecipientUnitInputEnvelope = {
+  data: Prisma.ProductCommissionCreateManyRecipientUnitInput | Prisma.ProductCommissionCreateManyRecipientUnitInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionUpsertWithWhereUniqueWithoutRecipientUnitInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientUnitInput>
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientUnitInput>
+}
+
+export type ProductCommissionUpdateWithWhereUniqueWithoutRecipientUnitInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientUnitInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientUnitInput>
+}
+
+export type ProductCommissionUpdateManyWithWhereWithoutRecipientUnitInput = {
+  where: Prisma.ProductCommissionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateManyMutationInput, Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientUnitInput>
+}
+
+export type ProductCommissionCreateWithoutRecipientSellerInput = {
+  id?: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
+  installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionUncheckedCreateWithoutRecipientSellerInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedCreateNestedManyWithoutCommissionInput
+}
+
+export type ProductCommissionCreateOrConnectWithoutRecipientSellerInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput>
+}
+
+export type ProductCommissionCreateManyRecipientSellerInputEnvelope = {
+  data: Prisma.ProductCommissionCreateManyRecipientSellerInput | Prisma.ProductCommissionCreateManyRecipientSellerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionUpsertWithWhereUniqueWithoutRecipientSellerInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientSellerInput>
+  create: Prisma.XOR<Prisma.ProductCommissionCreateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedCreateWithoutRecipientSellerInput>
+}
+
+export type ProductCommissionUpdateWithWhereUniqueWithoutRecipientSellerInput = {
+  where: Prisma.ProductCommissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateWithoutRecipientSellerInput, Prisma.ProductCommissionUncheckedUpdateWithoutRecipientSellerInput>
+}
+
+export type ProductCommissionUpdateManyWithWhereWithoutRecipientSellerInput = {
+  where: Prisma.ProductCommissionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionUpdateManyMutationInput, Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerInput>
+}
+
 export type ProductCommissionCreateWithoutScenarioInput = {
   id?: string
   description: string
@@ -536,6 +1051,10 @@ export type ProductCommissionCreateWithoutScenarioInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
   installments?: Prisma.ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput
 }
 
@@ -543,6 +1062,10 @@ export type ProductCommissionUncheckedCreateWithoutScenarioInput = {
   id?: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
   sortOrder?: number
@@ -577,21 +1100,6 @@ export type ProductCommissionUpdateManyWithWhereWithoutScenarioInput = {
   data: Prisma.XOR<Prisma.ProductCommissionUpdateManyMutationInput, Prisma.ProductCommissionUncheckedUpdateManyWithoutScenarioInput>
 }
 
-export type ProductCommissionScalarWhereInput = {
-  AND?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
-  OR?: Prisma.ProductCommissionScalarWhereInput[]
-  NOT?: Prisma.ProductCommissionScalarWhereInput | Prisma.ProductCommissionScalarWhereInput[]
-  id?: Prisma.StringFilter<"ProductCommission"> | string
-  scenarioId?: Prisma.StringFilter<"ProductCommission"> | string
-  description?: Prisma.StringFilter<"ProductCommission"> | string
-  recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
-  recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
-  totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
-  sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
-  createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
-}
-
 export type ProductCommissionCreateWithoutInstallmentsInput = {
   id?: string
   description: string
@@ -602,6 +1110,10 @@ export type ProductCommissionCreateWithoutInstallmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutCommissionsInput
+  recipientCompany?: Prisma.CompanyCreateNestedOneWithoutProductCommissionsInput
+  recipientUnit?: Prisma.UnitCreateNestedOneWithoutProductCommissionsInput
+  recipientSeller?: Prisma.SellerCreateNestedOneWithoutProductCommissionsInput
+  recipientSupervisor?: Prisma.MemberCreateNestedOneWithoutProductCommissionsInput
 }
 
 export type ProductCommissionUncheckedCreateWithoutInstallmentsInput = {
@@ -609,6 +1121,10 @@ export type ProductCommissionUncheckedCreateWithoutInstallmentsInput = {
   scenarioId: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
   sortOrder?: number
@@ -642,6 +1158,10 @@ export type ProductCommissionUpdateWithoutInstallmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
 }
 
 export type ProductCommissionUncheckedUpdateWithoutInstallmentsInput = {
@@ -649,6 +1169,258 @@ export type ProductCommissionUncheckedUpdateWithoutInstallmentsInput = {
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionCreateManyRecipientSupervisorInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductCommissionUpdateWithoutRecipientSupervisorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateWithoutRecipientSupervisorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionCreateManyRecipientCompanyInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductCommissionUpdateWithoutRecipientCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
+  installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateWithoutRecipientCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionCreateManyRecipientUnitInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductCommissionUpdateWithoutRecipientUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
+  installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateWithoutRecipientUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionCreateManyRecipientSellerInput = {
+  id?: string
+  scenarioId: string
+  description: string
+  recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSupervisorId?: string | null
+  recipientOtherDescription?: string | null
+  totalPercentage: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductCommissionUpdateWithoutRecipientSellerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutCommissionsNestedInput
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
+  installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateWithoutRecipientSellerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  installments?: Prisma.ProductCommissionInstallmentUncheckedUpdateManyWithoutCommissionNestedInput
+}
+
+export type ProductCommissionUncheckedUpdateManyWithoutRecipientSellerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -660,6 +1432,10 @@ export type ProductCommissionCreateManyScenarioInput = {
   id?: string
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: string | null
+  recipientUnitId?: string | null
+  recipientSellerId?: string | null
+  recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
   sortOrder?: number
@@ -676,6 +1452,10 @@ export type ProductCommissionUpdateWithoutScenarioInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipientCompany?: Prisma.CompanyUpdateOneWithoutProductCommissionsNestedInput
+  recipientUnit?: Prisma.UnitUpdateOneWithoutProductCommissionsNestedInput
+  recipientSeller?: Prisma.SellerUpdateOneWithoutProductCommissionsNestedInput
+  recipientSupervisor?: Prisma.MemberUpdateOneWithoutProductCommissionsNestedInput
   installments?: Prisma.ProductCommissionInstallmentUpdateManyWithoutCommissionNestedInput
 }
 
@@ -683,6 +1463,10 @@ export type ProductCommissionUncheckedUpdateWithoutScenarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -695,6 +1479,10 @@ export type ProductCommissionUncheckedUpdateManyWithoutScenarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
+  recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -738,12 +1526,20 @@ export type ProductCommissionSelect<ExtArgs extends runtime.Types.Extensions.Int
   scenarioId?: boolean
   description?: boolean
   recipientType?: boolean
+  recipientCompanyId?: boolean
+  recipientUnitId?: boolean
+  recipientSellerId?: boolean
+  recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
   installments?: boolean | Prisma.ProductCommission$installmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCommissionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productCommission"]>
@@ -753,12 +1549,20 @@ export type ProductCommissionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   scenarioId?: boolean
   description?: boolean
   recipientType?: boolean
+  recipientCompanyId?: boolean
+  recipientUnitId?: boolean
+  recipientSellerId?: boolean
+  recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
 }, ExtArgs["result"]["productCommission"]>
 
 export type ProductCommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -766,12 +1570,20 @@ export type ProductCommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   scenarioId?: boolean
   description?: boolean
   recipientType?: boolean
+  recipientCompanyId?: boolean
+  recipientUnitId?: boolean
+  recipientSellerId?: boolean
+  recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
 }, ExtArgs["result"]["productCommission"]>
 
 export type ProductCommissionSelectScalar = {
@@ -779,6 +1591,10 @@ export type ProductCommissionSelectScalar = {
   scenarioId?: boolean
   description?: boolean
   recipientType?: boolean
+  recipientCompanyId?: boolean
+  recipientUnitId?: boolean
+  recipientSellerId?: boolean
+  recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
   sortOrder?: boolean
@@ -786,23 +1602,39 @@ export type ProductCommissionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "recipientOtherDescription" | "totalPercentage" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
+export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "recipientCompanyId" | "recipientUnitId" | "recipientSellerId" | "recipientSupervisorId" | "recipientOtherDescription" | "totalPercentage" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
 export type ProductCommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
   installments?: boolean | Prisma.ProductCommission$installmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCommissionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductCommissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
 }
 export type ProductCommissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  recipientCompany?: boolean | Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>
+  recipientUnit?: boolean | Prisma.ProductCommission$recipientUnitArgs<ExtArgs>
+  recipientSeller?: boolean | Prisma.ProductCommission$recipientSellerArgs<ExtArgs>
+  recipientSupervisor?: boolean | Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>
 }
 
 export type $ProductCommissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProductCommission"
   objects: {
     scenario: Prisma.$ProductCommissionScenarioPayload<ExtArgs>
+    recipientCompany: Prisma.$CompanyPayload<ExtArgs> | null
+    recipientUnit: Prisma.$UnitPayload<ExtArgs> | null
+    recipientSeller: Prisma.$SellerPayload<ExtArgs> | null
+    recipientSupervisor: Prisma.$MemberPayload<ExtArgs> | null
     installments: Prisma.$ProductCommissionInstallmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -810,6 +1642,10 @@ export type $ProductCommissionPayload<ExtArgs extends runtime.Types.Extensions.I
     scenarioId: string
     description: string
     recipientType: $Enums.ProductCommissionRecipientType
+    recipientCompanyId: string | null
+    recipientUnitId: string | null
+    recipientSellerId: string | null
+    recipientSupervisorId: string | null
     recipientOtherDescription: string | null
     totalPercentage: number
     sortOrder: number
@@ -1210,6 +2046,10 @@ readonly fields: ProductCommissionFieldRefs;
 export interface Prisma__ProductCommissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   scenario<T extends Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductCommissionScenarioClient<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  recipientCompany<T extends Prisma.ProductCommission$recipientCompanyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommission$recipientCompanyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recipientUnit<T extends Prisma.ProductCommission$recipientUnitArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommission$recipientUnitArgs<ExtArgs>>): Prisma.Prisma__UnitClient<runtime.Types.Result.GetResult<Prisma.$UnitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recipientSeller<T extends Prisma.ProductCommission$recipientSellerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommission$recipientSellerArgs<ExtArgs>>): Prisma.Prisma__SellerClient<runtime.Types.Result.GetResult<Prisma.$SellerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recipientSupervisor<T extends Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommission$recipientSupervisorArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   installments<T extends Prisma.ProductCommission$installmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommission$installmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionInstallmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1244,6 +2084,10 @@ export interface ProductCommissionFieldRefs {
   readonly scenarioId: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly description: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientType: Prisma.FieldRef<"ProductCommission", 'ProductCommissionRecipientType'>
+  readonly recipientCompanyId: Prisma.FieldRef<"ProductCommission", 'String'>
+  readonly recipientUnitId: Prisma.FieldRef<"ProductCommission", 'String'>
+  readonly recipientSellerId: Prisma.FieldRef<"ProductCommission", 'String'>
+  readonly recipientSupervisorId: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientOtherDescription: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly totalPercentage: Prisma.FieldRef<"ProductCommission", 'Int'>
   readonly sortOrder: Prisma.FieldRef<"ProductCommission", 'Int'>
@@ -1642,6 +2486,82 @@ export type ProductCommissionDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many ProductCommissions to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductCommission.recipientCompany
+ */
+export type ProductCommission$recipientCompanyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
+}
+
+/**
+ * ProductCommission.recipientUnit
+ */
+export type ProductCommission$recipientUnitArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Unit
+   */
+  select?: Prisma.UnitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Unit
+   */
+  omit?: Prisma.UnitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UnitInclude<ExtArgs> | null
+  where?: Prisma.UnitWhereInput
+}
+
+/**
+ * ProductCommission.recipientSeller
+ */
+export type ProductCommission$recipientSellerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Seller
+   */
+  select?: Prisma.SellerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Seller
+   */
+  omit?: Prisma.SellerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SellerInclude<ExtArgs> | null
+  where?: Prisma.SellerWhereInput
+}
+
+/**
+ * ProductCommission.recipientSupervisor
+ */
+export type ProductCommission$recipientSupervisorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Member
+   */
+  select?: Prisma.MemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Member
+   */
+  omit?: Prisma.MemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemberInclude<ExtArgs> | null
+  where?: Prisma.MemberWhereInput
 }
 
 /**

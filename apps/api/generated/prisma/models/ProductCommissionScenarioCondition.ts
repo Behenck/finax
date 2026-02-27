@@ -38,6 +38,8 @@ export type ProductCommissionScenarioConditionMinAggregateOutputType = {
   id: string | null
   scenarioId: string | null
   type: $Enums.ProductCommissionScenarioConditionType | null
+  companyId: string | null
+  partnerId: string | null
   sellerId: string | null
   unitId: string | null
   sortOrder: number | null
@@ -48,6 +50,8 @@ export type ProductCommissionScenarioConditionMaxAggregateOutputType = {
   id: string | null
   scenarioId: string | null
   type: $Enums.ProductCommissionScenarioConditionType | null
+  companyId: string | null
+  partnerId: string | null
   sellerId: string | null
   unitId: string | null
   sortOrder: number | null
@@ -58,6 +62,8 @@ export type ProductCommissionScenarioConditionCountAggregateOutputType = {
   id: number
   scenarioId: number
   type: number
+  companyId: number
+  partnerId: number
   sellerId: number
   unitId: number
   sortOrder: number
@@ -78,6 +84,8 @@ export type ProductCommissionScenarioConditionMinAggregateInputType = {
   id?: true
   scenarioId?: true
   type?: true
+  companyId?: true
+  partnerId?: true
   sellerId?: true
   unitId?: true
   sortOrder?: true
@@ -88,6 +96,8 @@ export type ProductCommissionScenarioConditionMaxAggregateInputType = {
   id?: true
   scenarioId?: true
   type?: true
+  companyId?: true
+  partnerId?: true
   sellerId?: true
   unitId?: true
   sortOrder?: true
@@ -98,6 +108,8 @@ export type ProductCommissionScenarioConditionCountAggregateInputType = {
   id?: true
   scenarioId?: true
   type?: true
+  companyId?: true
+  partnerId?: true
   sellerId?: true
   unitId?: true
   sortOrder?: true
@@ -195,6 +207,8 @@ export type ProductCommissionScenarioConditionGroupByOutputType = {
   id: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId: string | null
+  partnerId: string | null
   sellerId: string | null
   unitId: string | null
   sortOrder: number
@@ -228,11 +242,15 @@ export type ProductCommissionScenarioConditionWhereInput = {
   id?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
   scenarioId?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFilter<"ProductCommissionScenarioCondition"> | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  partnerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   sellerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   unitId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   sortOrder?: Prisma.IntFilter<"ProductCommissionScenarioCondition"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommissionScenarioCondition"> | Date | string
   scenario?: Prisma.XOR<Prisma.ProductCommissionScenarioScalarRelationFilter, Prisma.ProductCommissionScenarioWhereInput>
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
+  partner?: Prisma.XOR<Prisma.PartnerNullableScalarRelationFilter, Prisma.PartnerWhereInput> | null
   seller?: Prisma.XOR<Prisma.SellerNullableScalarRelationFilter, Prisma.SellerWhereInput> | null
   unit?: Prisma.XOR<Prisma.UnitNullableScalarRelationFilter, Prisma.UnitWhereInput> | null
 }
@@ -241,11 +259,15 @@ export type ProductCommissionScenarioConditionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   scenarioId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   sellerId?: Prisma.SortOrderInput | Prisma.SortOrder
   unitId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   scenario?: Prisma.ProductCommissionScenarioOrderByWithRelationInput
+  company?: Prisma.CompanyOrderByWithRelationInput
+  partner?: Prisma.PartnerOrderByWithRelationInput
   seller?: Prisma.SellerOrderByWithRelationInput
   unit?: Prisma.UnitOrderByWithRelationInput
 }
@@ -257,11 +279,15 @@ export type ProductCommissionScenarioConditionWhereUniqueInput = Prisma.AtLeast<
   NOT?: Prisma.ProductCommissionScenarioConditionWhereInput | Prisma.ProductCommissionScenarioConditionWhereInput[]
   scenarioId?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFilter<"ProductCommissionScenarioCondition"> | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  partnerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   sellerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   unitId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
   sortOrder?: Prisma.IntFilter<"ProductCommissionScenarioCondition"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommissionScenarioCondition"> | Date | string
   scenario?: Prisma.XOR<Prisma.ProductCommissionScenarioScalarRelationFilter, Prisma.ProductCommissionScenarioWhereInput>
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
+  partner?: Prisma.XOR<Prisma.PartnerNullableScalarRelationFilter, Prisma.PartnerWhereInput> | null
   seller?: Prisma.XOR<Prisma.SellerNullableScalarRelationFilter, Prisma.SellerWhereInput> | null
   unit?: Prisma.XOR<Prisma.UnitNullableScalarRelationFilter, Prisma.UnitWhereInput> | null
 }, "id">
@@ -270,6 +296,8 @@ export type ProductCommissionScenarioConditionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   scenarioId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   sellerId?: Prisma.SortOrderInput | Prisma.SortOrder
   unitId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -288,6 +316,8 @@ export type ProductCommissionScenarioConditionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string
   scenarioId?: Prisma.StringWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeWithAggregatesFilter<"ProductCommissionScenarioCondition"> | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string | null
+  partnerId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string | null
   sellerId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string | null
   unitId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommissionScenarioCondition"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"ProductCommissionScenarioCondition"> | number
@@ -300,6 +330,8 @@ export type ProductCommissionScenarioConditionCreateInput = {
   sortOrder?: number
   createdAt?: Date | string
   scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutConditionsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  partner?: Prisma.PartnerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   seller?: Prisma.SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   unit?: Prisma.UnitCreateNestedOneWithoutProductCommissionScenarioConditionsInput
 }
@@ -308,6 +340,8 @@ export type ProductCommissionScenarioConditionUncheckedCreateInput = {
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   unitId?: string | null
   sortOrder?: number
@@ -320,6 +354,8 @@ export type ProductCommissionScenarioConditionUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutConditionsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  partner?: Prisma.PartnerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   seller?: Prisma.SellerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   unit?: Prisma.UnitUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
 }
@@ -328,6 +364,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -338,6 +376,8 @@ export type ProductCommissionScenarioConditionCreateManyInput = {
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   unitId?: string | null
   sortOrder?: number
@@ -355,6 +395,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -375,6 +417,8 @@ export type ProductCommissionScenarioConditionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   scenarioId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  partnerId?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
   unitId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -389,6 +433,8 @@ export type ProductCommissionScenarioConditionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   scenarioId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  partnerId?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
   unitId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -399,6 +445,8 @@ export type ProductCommissionScenarioConditionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   scenarioId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  partnerId?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
   unitId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -407,6 +455,48 @@ export type ProductCommissionScenarioConditionMinOrderByAggregateInput = {
 
 export type ProductCommissionScenarioConditionSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
+}
+
+export type ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyCompanyInputEnvelope
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+}
+
+export type ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyCompanyInputEnvelope
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+}
+
+export type ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyCompanyInputEnvelope
+  set?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyCompanyInputEnvelope
+  set?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutCompanyInput | Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
 }
 
 export type ProductCommissionScenarioConditionCreateNestedManyWithoutUnitInput = {
@@ -448,6 +538,48 @@ export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutUnitNest
   connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
   update?: Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutUnitInput | Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutUnitInput[]
   updateMany?: Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutUnitInput | Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutUnitInput[]
+  deleteMany?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+}
+
+export type ProductCommissionScenarioConditionCreateNestedManyWithoutPartnerInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyPartnerInputEnvelope
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+}
+
+export type ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutPartnerInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyPartnerInputEnvelope
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+}
+
+export type ProductCommissionScenarioConditionUpdateManyWithoutPartnerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput[]
+  upsert?: Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutPartnerInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyPartnerInputEnvelope
+  set?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutPartnerInput[]
+  updateMany?: Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutPartnerInput[]
+  deleteMany?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutPartnerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput> | Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput[] | Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput[]
+  connectOrCreate?: Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput[]
+  upsert?: Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutPartnerInput[]
+  createMany?: Prisma.ProductCommissionScenarioConditionCreateManyPartnerInputEnvelope
+  set?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  disconnect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  delete?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  connect?: Prisma.ProductCommissionScenarioConditionWhereUniqueInput | Prisma.ProductCommissionScenarioConditionWhereUniqueInput[]
+  update?: Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutPartnerInput[]
+  updateMany?: Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutPartnerInput | Prisma.ProductCommissionScenarioConditionUpdateManyWithWhereWithoutPartnerInput[]
   deleteMany?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
 }
 
@@ -539,12 +671,77 @@ export type EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput
   set?: $Enums.ProductCommissionScenarioConditionType
 }
 
+export type ProductCommissionScenarioConditionCreateWithoutCompanyInput = {
+  id?: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  sortOrder?: number
+  createdAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutConditionsInput
+  partner?: Prisma.PartnerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  seller?: Prisma.SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  unit?: Prisma.UnitCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+}
+
+export type ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput = {
+  id?: string
+  scenarioId: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  partnerId?: string | null
+  sellerId?: string | null
+  unitId?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type ProductCommissionScenarioConditionCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput>
+}
+
+export type ProductCommissionScenarioConditionCreateManyCompanyInputEnvelope = {
+  data: Prisma.ProductCommissionScenarioConditionCreateManyCompanyInput | Prisma.ProductCommissionScenarioConditionCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutCompanyInput>
+}
+
+export type ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateWithoutCompanyInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateWithoutCompanyInput>
+}
+
+export type ProductCommissionScenarioConditionUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.ProductCommissionScenarioConditionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateManyMutationInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyInput>
+}
+
+export type ProductCommissionScenarioConditionScalarWhereInput = {
+  AND?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+  OR?: Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+  NOT?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
+  id?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
+  scenarioId?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFilter<"ProductCommissionScenarioCondition"> | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  partnerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  sellerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  unitId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
+  sortOrder?: Prisma.IntFilter<"ProductCommissionScenarioCondition"> | number
+  createdAt?: Prisma.DateTimeFilter<"ProductCommissionScenarioCondition"> | Date | string
+}
+
 export type ProductCommissionScenarioConditionCreateWithoutUnitInput = {
   id?: string
   type: $Enums.ProductCommissionScenarioConditionType
   sortOrder?: number
   createdAt?: Date | string
   scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutConditionsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  partner?: Prisma.PartnerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   seller?: Prisma.SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
 }
 
@@ -552,6 +749,8 @@ export type ProductCommissionScenarioConditionUncheckedCreateWithoutUnitInput = 
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   sortOrder?: number
   createdAt?: Date | string
@@ -583,17 +782,52 @@ export type ProductCommissionScenarioConditionUpdateManyWithWhereWithoutUnitInpu
   data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateManyMutationInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutUnitInput>
 }
 
-export type ProductCommissionScenarioConditionScalarWhereInput = {
-  AND?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
-  OR?: Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
-  NOT?: Prisma.ProductCommissionScenarioConditionScalarWhereInput | Prisma.ProductCommissionScenarioConditionScalarWhereInput[]
-  id?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
-  scenarioId?: Prisma.StringFilter<"ProductCommissionScenarioCondition"> | string
-  type?: Prisma.EnumProductCommissionScenarioConditionTypeFilter<"ProductCommissionScenarioCondition"> | $Enums.ProductCommissionScenarioConditionType
-  sellerId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
-  unitId?: Prisma.StringNullableFilter<"ProductCommissionScenarioCondition"> | string | null
-  sortOrder?: Prisma.IntFilter<"ProductCommissionScenarioCondition"> | number
-  createdAt?: Prisma.DateTimeFilter<"ProductCommissionScenarioCondition"> | Date | string
+export type ProductCommissionScenarioConditionCreateWithoutPartnerInput = {
+  id?: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  sortOrder?: number
+  createdAt?: Date | string
+  scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutConditionsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  seller?: Prisma.SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  unit?: Prisma.UnitCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+}
+
+export type ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput = {
+  id?: string
+  scenarioId: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  sellerId?: string | null
+  unitId?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type ProductCommissionScenarioConditionCreateOrConnectWithoutPartnerInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput>
+}
+
+export type ProductCommissionScenarioConditionCreateManyPartnerInputEnvelope = {
+  data: Prisma.ProductCommissionScenarioConditionCreateManyPartnerInput | Prisma.ProductCommissionScenarioConditionCreateManyPartnerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductCommissionScenarioConditionUpsertWithWhereUniqueWithoutPartnerInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateWithoutPartnerInput>
+  create: Prisma.XOR<Prisma.ProductCommissionScenarioConditionCreateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedCreateWithoutPartnerInput>
+}
+
+export type ProductCommissionScenarioConditionUpdateWithWhereUniqueWithoutPartnerInput = {
+  where: Prisma.ProductCommissionScenarioConditionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateWithoutPartnerInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateWithoutPartnerInput>
+}
+
+export type ProductCommissionScenarioConditionUpdateManyWithWhereWithoutPartnerInput = {
+  where: Prisma.ProductCommissionScenarioConditionScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateManyMutationInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutPartnerInput>
 }
 
 export type ProductCommissionScenarioConditionCreateWithoutSellerInput = {
@@ -602,6 +836,8 @@ export type ProductCommissionScenarioConditionCreateWithoutSellerInput = {
   sortOrder?: number
   createdAt?: Date | string
   scenario: Prisma.ProductCommissionScenarioCreateNestedOneWithoutConditionsInput
+  company?: Prisma.CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  partner?: Prisma.PartnerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   unit?: Prisma.UnitCreateNestedOneWithoutProductCommissionScenarioConditionsInput
 }
 
@@ -609,6 +845,8 @@ export type ProductCommissionScenarioConditionUncheckedCreateWithoutSellerInput 
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   unitId?: string | null
   sortOrder?: number
   createdAt?: Date | string
@@ -645,6 +883,8 @@ export type ProductCommissionScenarioConditionCreateWithoutScenarioInput = {
   type: $Enums.ProductCommissionScenarioConditionType
   sortOrder?: number
   createdAt?: Date | string
+  company?: Prisma.CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput
+  partner?: Prisma.PartnerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   seller?: Prisma.SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput
   unit?: Prisma.UnitCreateNestedOneWithoutProductCommissionScenarioConditionsInput
 }
@@ -652,6 +892,8 @@ export type ProductCommissionScenarioConditionCreateWithoutScenarioInput = {
 export type ProductCommissionScenarioConditionUncheckedCreateWithoutScenarioInput = {
   id?: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   unitId?: string | null
   sortOrder?: number
@@ -684,10 +926,56 @@ export type ProductCommissionScenarioConditionUpdateManyWithWhereWithoutScenario
   data: Prisma.XOR<Prisma.ProductCommissionScenarioConditionUpdateManyMutationInput, Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutScenarioInput>
 }
 
+export type ProductCommissionScenarioConditionCreateManyCompanyInput = {
+  id?: string
+  scenarioId: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  partnerId?: string | null
+  sellerId?: string | null
+  unitId?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type ProductCommissionScenarioConditionUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutConditionsNestedInput
+  partner?: Prisma.PartnerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  seller?: Prisma.SellerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  unit?: Prisma.UnitUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ProductCommissionScenarioConditionCreateManyUnitInput = {
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   sortOrder?: number
   createdAt?: Date | string
@@ -699,6 +987,8 @@ export type ProductCommissionScenarioConditionUpdateWithoutUnitInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutConditionsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  partner?: Prisma.PartnerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   seller?: Prisma.SellerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
 }
 
@@ -706,6 +996,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateWithoutUnitInput = 
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -715,7 +1007,53 @@ export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutUnitInpu
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionScenarioConditionCreateManyPartnerInput = {
+  id?: string
+  scenarioId: string
+  type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  sellerId?: string | null
+  unitId?: string | null
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type ProductCommissionScenarioConditionUpdateWithoutPartnerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutConditionsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  seller?: Prisma.SellerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  unit?: Prisma.UnitUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateWithoutPartnerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutPartnerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -724,6 +1062,8 @@ export type ProductCommissionScenarioConditionCreateManySellerInput = {
   id?: string
   scenarioId: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   unitId?: string | null
   sortOrder?: number
   createdAt?: Date | string
@@ -735,6 +1075,8 @@ export type ProductCommissionScenarioConditionUpdateWithoutSellerInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scenario?: Prisma.ProductCommissionScenarioUpdateOneRequiredWithoutConditionsNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  partner?: Prisma.PartnerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   unit?: Prisma.UnitUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
 }
 
@@ -742,6 +1084,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateWithoutSellerInput 
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,6 +1095,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerIn
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scenarioId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -759,6 +1105,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerIn
 export type ProductCommissionScenarioConditionCreateManyScenarioInput = {
   id?: string
   type: $Enums.ProductCommissionScenarioConditionType
+  companyId?: string | null
+  partnerId?: string | null
   sellerId?: string | null
   unitId?: string | null
   sortOrder?: number
@@ -770,6 +1118,8 @@ export type ProductCommissionScenarioConditionUpdateWithoutScenarioInput = {
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
+  partner?: Prisma.PartnerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   seller?: Prisma.SellerUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
   unit?: Prisma.UnitUpdateOneWithoutProductCommissionScenarioConditionsNestedInput
 }
@@ -777,6 +1127,8 @@ export type ProductCommissionScenarioConditionUpdateWithoutScenarioInput = {
 export type ProductCommissionScenarioConditionUncheckedUpdateWithoutScenarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -786,6 +1138,8 @@ export type ProductCommissionScenarioConditionUncheckedUpdateWithoutScenarioInpu
 export type ProductCommissionScenarioConditionUncheckedUpdateManyWithoutScenarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProductCommissionScenarioConditionTypeFieldUpdateOperationsInput | $Enums.ProductCommissionScenarioConditionType
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
@@ -798,11 +1152,15 @@ export type ProductCommissionScenarioConditionSelect<ExtArgs extends runtime.Typ
   id?: boolean
   scenarioId?: boolean
   type?: boolean
+  companyId?: boolean
+  partnerId?: boolean
   sellerId?: boolean
   unitId?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionScenarioCondition"]>
@@ -811,11 +1169,15 @@ export type ProductCommissionScenarioConditionSelectCreateManyAndReturn<ExtArgs 
   id?: boolean
   scenarioId?: boolean
   type?: boolean
+  companyId?: boolean
+  partnerId?: boolean
   sellerId?: boolean
   unitId?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionScenarioCondition"]>
@@ -824,11 +1186,15 @@ export type ProductCommissionScenarioConditionSelectUpdateManyAndReturn<ExtArgs 
   id?: boolean
   scenarioId?: boolean
   type?: boolean
+  companyId?: boolean
+  partnerId?: boolean
   sellerId?: boolean
   unitId?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionScenarioCondition"]>
@@ -837,25 +1203,33 @@ export type ProductCommissionScenarioConditionSelectScalar = {
   id?: boolean
   scenarioId?: boolean
   type?: boolean
+  companyId?: boolean
+  partnerId?: boolean
   sellerId?: boolean
   unitId?: boolean
   sortOrder?: boolean
   createdAt?: boolean
 }
 
-export type ProductCommissionScenarioConditionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "type" | "sellerId" | "unitId" | "sortOrder" | "createdAt", ExtArgs["result"]["productCommissionScenarioCondition"]>
+export type ProductCommissionScenarioConditionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "type" | "companyId" | "partnerId" | "sellerId" | "unitId" | "sortOrder" | "createdAt", ExtArgs["result"]["productCommissionScenarioCondition"]>
 export type ProductCommissionScenarioConditionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }
 export type ProductCommissionScenarioConditionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }
 export type ProductCommissionScenarioConditionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>
+  partner?: boolean | Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>
   seller?: boolean | Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>
   unit?: boolean | Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>
 }
@@ -864,6 +1238,8 @@ export type $ProductCommissionScenarioConditionPayload<ExtArgs extends runtime.T
   name: "ProductCommissionScenarioCondition"
   objects: {
     scenario: Prisma.$ProductCommissionScenarioPayload<ExtArgs>
+    company: Prisma.$CompanyPayload<ExtArgs> | null
+    partner: Prisma.$PartnerPayload<ExtArgs> | null
     seller: Prisma.$SellerPayload<ExtArgs> | null
     unit: Prisma.$UnitPayload<ExtArgs> | null
   }
@@ -871,6 +1247,8 @@ export type $ProductCommissionScenarioConditionPayload<ExtArgs extends runtime.T
     id: string
     scenarioId: string
     type: $Enums.ProductCommissionScenarioConditionType
+    companyId: string | null
+    partnerId: string | null
     sellerId: string | null
     unitId: string | null
     sortOrder: number
@@ -1270,6 +1648,8 @@ readonly fields: ProductCommissionScenarioConditionFieldRefs;
 export interface Prisma__ProductCommissionScenarioConditionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   scenario<T extends Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductCommissionScenarioClient<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  company<T extends Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioCondition$companyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  partner<T extends Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioCondition$partnerArgs<ExtArgs>>): Prisma.Prisma__PartnerClient<runtime.Types.Result.GetResult<Prisma.$PartnerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   seller<T extends Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioCondition$sellerArgs<ExtArgs>>): Prisma.Prisma__SellerClient<runtime.Types.Result.GetResult<Prisma.$SellerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   unit<T extends Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductCommissionScenarioCondition$unitArgs<ExtArgs>>): Prisma.Prisma__UnitClient<runtime.Types.Result.GetResult<Prisma.$UnitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1304,6 +1684,8 @@ export interface ProductCommissionScenarioConditionFieldRefs {
   readonly id: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
   readonly scenarioId: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
   readonly type: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'ProductCommissionScenarioConditionType'>
+  readonly companyId: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
+  readonly partnerId: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
   readonly sellerId: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
   readonly unitId: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'String'>
   readonly sortOrder: Prisma.FieldRef<"ProductCommissionScenarioCondition", 'Int'>
@@ -1701,6 +2083,44 @@ export type ProductCommissionScenarioConditionDeleteManyArgs<ExtArgs extends run
    * Limit how many ProductCommissionScenarioConditions to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductCommissionScenarioCondition.company
+ */
+export type ProductCommissionScenarioCondition$companyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
+}
+
+/**
+ * ProductCommissionScenarioCondition.partner
+ */
+export type ProductCommissionScenarioCondition$partnerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Partner
+   */
+  select?: Prisma.PartnerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Partner
+   */
+  omit?: Prisma.PartnerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PartnerInclude<ExtArgs> | null
+  where?: Prisma.PartnerWhereInput
 }
 
 /**

@@ -48,6 +48,8 @@ export type { GetOrganizationsSlugPartnersPartneridSuspenseQueryKey } from "./ho
 export type { GetOrganizationsSlugPartnersSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugPartnersSuspense.ts";
 export type { GetOrganizationsSlugProductsQueryKey } from "./hooks/useGetOrganizationsSlugProducts.ts";
 export type { GetOrganizationsSlugProductsIdQueryKey } from "./hooks/useGetOrganizationsSlugProductsId.ts";
+export type { GetOrganizationsSlugProductsIdCommissionScenariosQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export type { GetOrganizationsSlugProductsIdCommissionScenariosSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenariosSuspense.ts";
 export type { GetOrganizationsSlugProductsIdSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdSuspense.ts";
 export type { GetOrganizationsSlugProductsSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugProductsSuspense.ts";
 export type { GetOrganizationsSlugRecurrencesQueryKey } from "./hooks/useGetOrganizationsSlugRecurrences.ts";
@@ -99,6 +101,7 @@ export type { PutOrganizationsSlugEmployeesEmployeeidMutationKey } from "./hooks
 export type { PutOrganizationsSlugMembersMemberidMutationKey } from "./hooks/usePutOrganizationsSlugMembersMemberid.ts";
 export type { PutOrganizationsSlugPartnersPartneridMutationKey } from "./hooks/usePutOrganizationsSlugPartnersPartnerid.ts";
 export type { PutOrganizationsSlugProductsIdMutationKey } from "./hooks/usePutOrganizationsSlugProductsId.ts";
+export type { PutOrganizationsSlugProductsIdCommissionScenariosMutationKey } from "./hooks/usePutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export type { PutOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./hooks/usePutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PutOrganizationsSlugSellersSelleridMutationKey } from "./hooks/usePutOrganizationsSlugSellersSellerid.ts";
 export type { PutOrganizationsSlugTransactionsTransactionidMutationKey } from "./hooks/usePutOrganizationsSlugTransactionsTransactionid.ts";
@@ -134,8 +137,9 @@ export type { GetOrganizationsSlugMembershipPathParams, MembershipRoleEnumKey, G
 export type { GetOrganizationsSlugMembersRolePathParamsRoleEnumKey, GetOrganizationsSlugMembersRolePathParams, MembersRoleEnum2Key, GetOrganizationsSlugMembersRole200, GetOrganizationsSlugMembersRoleQueryResponse, GetOrganizationsSlugMembersRoleQuery } from "./models/GetOrganizationsSlugMembersRole.ts";
 export type { GetOrganizationsSlugPartnersPathParams, PartnersDocumentTypeEnumKey, PartnersStatusEnumKey, GetOrganizationsSlugPartners200, GetOrganizationsSlugPartnersQueryResponse, GetOrganizationsSlugPartnersQuery } from "./models/GetOrganizationsSlugPartners.ts";
 export type { GetOrganizationsSlugPartnersPartneridPathParams, PartnerDocumentTypeEnumKey, PartnerStatusEnumKey, GetOrganizationsSlugPartnersPartnerid200, GetOrganizationsSlugPartnersPartneridQueryResponse, GetOrganizationsSlugPartnersPartneridQuery } from "./models/GetOrganizationsSlugPartnersPartnerid.ts";
-export type { GetOrganizationsSlugProductsPathParams, ProductsParentIdEnumKey, GetOrganizationsSlugProducts200, GetOrganizationsSlugProductsQueryResponse, GetOrganizationsSlugProductsQuery } from "./models/GetOrganizationsSlugProducts.ts";
+export type { GetOrganizationsSlugProductsPathParams, GetOrganizationsSlugProducts200, GetOrganizationsSlugProductsQueryResponse, GetOrganizationsSlugProductsQuery } from "./models/GetOrganizationsSlugProducts.ts";
 export type { GetOrganizationsSlugProductsIdPathParams, GetOrganizationsSlugProductsId200, GetOrganizationsSlugProductsIdQueryResponse, GetOrganizationsSlugProductsIdQuery } from "./models/GetOrganizationsSlugProductsId.ts";
+export type { GetOrganizationsSlugProductsIdCommissionScenariosPathParams, ConditionsTypeEnumKey, ConditionsTypeEnum2Key, ConditionsTypeEnum3Key, ConditionsTypeEnum4Key, CommissionsRecipientTypeEnumKey, GetOrganizationsSlugProductsIdCommissionScenarios200, GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse, GetOrganizationsSlugProductsIdCommissionScenariosQuery } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export type { GetOrganizationsSlugRecurrencesPathParams, RecurrencesTypeEnumKey, RecurrencesStatusEnumKey, RecurrencesExecutionDayTypeEnumKey, RecurrencesAdjustmentRuleEnumKey, GetOrganizationsSlugRecurrences200, GetOrganizationsSlugRecurrencesQueryResponse, GetOrganizationsSlugRecurrencesQuery } from "./models/GetOrganizationsSlugRecurrences.ts";
 export type { GetOrganizationsSlugSellersPathParams, SellersDocumentTypeEnumKey, SellersStatusEnumKey, GetOrganizationsSlugSellers200, GetOrganizationsSlugSellersQueryResponse, GetOrganizationsSlugSellersQuery } from "./models/GetOrganizationsSlugSellers.ts";
 export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeEnumKey, SellerStatusEnumKey, GetOrganizationsSlugSellersSellerid200, GetOrganizationsSlugSellersSelleridQueryResponse, GetOrganizationsSlugSellersSelleridQuery } from "./models/GetOrganizationsSlugSellersSellerid.ts";
@@ -178,6 +182,7 @@ export type { PutOrganizationsSlugEmployeesEmployeeidPathParams, PutOrganization
 export type { PutOrganizationsSlugMembersMemberidPathParams, PutOrganizationsSlugMembersMemberid204EnumKey, PutOrganizationsSlugMembersMemberid204, PutOrganizationsSlugMembersMemberidMutationRequestRoleEnumKey, AccessScopeModeEnumKey, PutOrganizationsSlugMembersMemberidMutationRequest, PutOrganizationsSlugMembersMemberidMutationResponse, PutOrganizationsSlugMembersMemberidMutation } from "./models/PutOrganizationsSlugMembersMemberid.ts";
 export type { PutOrganizationsSlugPartnersPartneridPathParams, PutOrganizationsSlugPartnersPartnerid204EnumKey, PutOrganizationsSlugPartnersPartnerid204, PutOrganizationsSlugPartnersPartneridMutationRequestDocumentTypeEnumKey, PutOrganizationsSlugPartnersPartneridMutationRequestStatusEnumKey, PutOrganizationsSlugPartnersPartneridMutationRequest, PutOrganizationsSlugPartnersPartneridMutationResponse, PutOrganizationsSlugPartnersPartneridMutation } from "./models/PutOrganizationsSlugPartnersPartnerid.ts";
 export type { PutOrganizationsSlugProductsIdPathParams, PutOrganizationsSlugProductsId204EnumKey, PutOrganizationsSlugProductsId204, PutOrganizationsSlugProductsIdMutationRequest, PutOrganizationsSlugProductsIdMutationResponse, PutOrganizationsSlugProductsIdMutation } from "./models/PutOrganizationsSlugProductsId.ts";
+export type { PutOrganizationsSlugProductsIdCommissionScenariosPathParams, PutOrganizationsSlugProductsIdCommissionScenarios204EnumKey, PutOrganizationsSlugProductsIdCommissionScenarios204, ConditionsTypeEnum5Key, ConditionsTypeEnum6Key, ConditionsTypeEnum7Key, ConditionsTypeEnum8Key, CommissionsRecipientTypeEnum2Key, PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest, PutOrganizationsSlugProductsIdCommissionScenariosMutationResponse, PutOrganizationsSlugProductsIdCommissionScenariosMutation } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export type { PutOrganizationsSlugRecurrencesRecurrenceidPathParams, PutOrganizationsSlugRecurrencesRecurrenceid201EnumKey, PutOrganizationsSlugRecurrencesRecurrenceid201, PutOrganizationsSlugRecurrencesRecurrenceidMutationRequestTypeEnumKey, PutOrganizationsSlugRecurrencesRecurrenceidMutationRequestStatusEnumKey, PutOrganizationsSlugRecurrencesRecurrenceidMutationRequestExecutionDayTypeEnumKey, PutOrganizationsSlugRecurrencesRecurrenceidMutationRequestAdjustmentRuleEnumKey, PutOrganizationsSlugRecurrencesRecurrenceidMutationRequest, PutOrganizationsSlugRecurrencesRecurrenceidMutationResponse, PutOrganizationsSlugRecurrencesRecurrenceidMutation } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { PutOrganizationsSlugSellersSelleridPathParams, PutOrganizationsSlugSellersSellerid204EnumKey, PutOrganizationsSlugSellersSellerid204, PutOrganizationsSlugSellersSelleridMutationRequestDocumentTypeEnumKey, PutOrganizationsSlugSellersSelleridMutationRequestStatusEnumKey, PutOrganizationsSlugSellersSelleridMutationRequest, PutOrganizationsSlugSellersSelleridMutationResponse, PutOrganizationsSlugSellersSelleridMutation } from "./models/PutOrganizationsSlugSellersSellerid.ts";
 export type { PutOrganizationsSlugTransactionsTransactionidPathParams, PutOrganizationsSlugTransactionsTransactionid204EnumKey, PutOrganizationsSlugTransactionsTransactionid204, PutOrganizationsSlugTransactionsTransactionidMutationRequestTypeEnumKey, PutOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnumKey, PutOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnumKey, PutOrganizationsSlugTransactionsTransactionidMutationRequest, PutOrganizationsSlugTransactionsTransactionidMutationResponse, PutOrganizationsSlugTransactionsTransactionidMutation } from "./models/PutOrganizationsSlugTransactionsTransactionid.ts";
@@ -215,6 +220,7 @@ export { getOrganizationsSlugPartners } from "./getOrganizationsSlugPartners.ts"
 export { getOrganizationsSlugPartnersPartnerid } from "./getOrganizationsSlugPartnersPartnerid.ts";
 export { getOrganizationsSlugProducts } from "./getOrganizationsSlugProducts.ts";
 export { getOrganizationsSlugProductsId } from "./getOrganizationsSlugProductsId.ts";
+export { getOrganizationsSlugProductsIdCommissionScenarios } from "./getOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { getOrganizationsSlugRecurrences } from "./getOrganizationsSlugRecurrences.ts";
 export { getOrganizationsSlugSellers } from "./getOrganizationsSlugSellers.ts";
 export { getOrganizationsSlugSellersSellerid } from "./getOrganizationsSlugSellersSellerid.ts";
@@ -371,6 +377,12 @@ export { useGetOrganizationsSlugProducts } from "./hooks/useGetOrganizationsSlug
 export { getOrganizationsSlugProductsIdQueryKey } from "./hooks/useGetOrganizationsSlugProductsId.ts";
 export { getOrganizationsSlugProductsIdQueryOptions } from "./hooks/useGetOrganizationsSlugProductsId.ts";
 export { useGetOrganizationsSlugProductsId } from "./hooks/useGetOrganizationsSlugProductsId.ts";
+export { getOrganizationsSlugProductsIdCommissionScenariosQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { getOrganizationsSlugProductsIdCommissionScenariosQueryOptions } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { useGetOrganizationsSlugProductsIdCommissionScenarios } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { getOrganizationsSlugProductsIdCommissionScenariosSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenariosSuspense.ts";
+export { getOrganizationsSlugProductsIdCommissionScenariosSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenariosSuspense.ts";
+export { useGetOrganizationsSlugProductsIdCommissionScenariosSuspense } from "./hooks/useGetOrganizationsSlugProductsIdCommissionScenariosSuspense.ts";
 export { getOrganizationsSlugProductsIdSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugProductsIdSuspense.ts";
 export { getOrganizationsSlugProductsIdSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugProductsIdSuspense.ts";
 export { useGetOrganizationsSlugProductsIdSuspense } from "./hooks/useGetOrganizationsSlugProductsIdSuspense.ts";
@@ -524,6 +536,9 @@ export { usePutOrganizationsSlugPartnersPartnerid } from "./hooks/usePutOrganiza
 export { putOrganizationsSlugProductsIdMutationKey } from "./hooks/usePutOrganizationsSlugProductsId.ts";
 export { putOrganizationsSlugProductsIdMutationOptions } from "./hooks/usePutOrganizationsSlugProductsId.ts";
 export { usePutOrganizationsSlugProductsId } from "./hooks/usePutOrganizationsSlugProductsId.ts";
+export { putOrganizationsSlugProductsIdCommissionScenariosMutationKey } from "./hooks/usePutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { putOrganizationsSlugProductsIdCommissionScenariosMutationOptions } from "./hooks/usePutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { usePutOrganizationsSlugProductsIdCommissionScenarios } from "./hooks/usePutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./hooks/usePutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationOptions } from "./hooks/usePutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { usePutOrganizationsSlugRecurrencesRecurrenceid } from "./hooks/usePutOrganizationsSlugRecurrencesRecurrenceid.ts";
@@ -572,7 +587,11 @@ export { partnersDocumentTypeEnum } from "./models/GetOrganizationsSlugPartners.
 export { partnersStatusEnum } from "./models/GetOrganizationsSlugPartners.ts";
 export { partnerDocumentTypeEnum } from "./models/GetOrganizationsSlugPartnersPartnerid.ts";
 export { partnerStatusEnum } from "./models/GetOrganizationsSlugPartnersPartnerid.ts";
-export { productsParentIdEnum } from "./models/GetOrganizationsSlugProducts.ts";
+export { conditionsTypeEnum } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum2 } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum3 } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum4 } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { commissionsRecipientTypeEnum } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { recurrencesTypeEnum } from "./models/GetOrganizationsSlugRecurrences.ts";
 export { recurrencesStatusEnum } from "./models/GetOrganizationsSlugRecurrences.ts";
 export { recurrencesExecutionDayTypeEnum } from "./models/GetOrganizationsSlugRecurrences.ts";
@@ -635,6 +654,12 @@ export { putOrganizationsSlugPartnersPartnerid204Enum } from "./models/PutOrgani
 export { putOrganizationsSlugPartnersPartneridMutationRequestDocumentTypeEnum } from "./models/PutOrganizationsSlugPartnersPartnerid.ts";
 export { putOrganizationsSlugPartnersPartneridMutationRequestStatusEnum } from "./models/PutOrganizationsSlugPartnersPartnerid.ts";
 export { putOrganizationsSlugProductsId204Enum } from "./models/PutOrganizationsSlugProductsId.ts";
+export { putOrganizationsSlugProductsIdCommissionScenarios204Enum } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum5 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum6 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum7 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { conditionsTypeEnum8 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { commissionsRecipientTypeEnum2 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceid201Enum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestTypeEnum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestStatusEnum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
@@ -683,6 +708,7 @@ export { putOrganizationsSlugEmployeesEmployeeid } from "./putOrganizationsSlugE
 export { putOrganizationsSlugMembersMemberid } from "./putOrganizationsSlugMembersMemberid.ts";
 export { putOrganizationsSlugPartnersPartnerid } from "./putOrganizationsSlugPartnersPartnerid.ts";
 export { putOrganizationsSlugProductsId } from "./putOrganizationsSlugProductsId.ts";
+export { putOrganizationsSlugProductsIdCommissionScenarios } from "./putOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceid } from "./putOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugSellersSellerid } from "./putOrganizationsSlugSellersSellerid.ts";
 export { putOrganizationsSlugTransactionsTransactionid } from "./putOrganizationsSlugTransactionsTransactionid.ts";
@@ -718,6 +744,7 @@ export { getOrganizationsSlugMembersRolePathParamsSchema, getOrganizationsSlugMe
 export { getOrganizationsSlugMembersPathParamsSchema, getOrganizationsSlugMembers200Schema, getOrganizationsSlugMembersQueryResponseSchema } from "./zod/getOrganizationsSlugMembersSchema.ts";
 export { getOrganizationsSlugPartnersPartneridPathParamsSchema, getOrganizationsSlugPartnersPartnerid200Schema, getOrganizationsSlugPartnersPartneridQueryResponseSchema } from "./zod/getOrganizationsSlugPartnersPartneridSchema.ts";
 export { getOrganizationsSlugPartnersPathParamsSchema, getOrganizationsSlugPartners200Schema, getOrganizationsSlugPartnersQueryResponseSchema } from "./zod/getOrganizationsSlugPartnersSchema.ts";
+export { getOrganizationsSlugProductsIdCommissionScenariosPathParamsSchema, getOrganizationsSlugProductsIdCommissionScenarios200Schema, getOrganizationsSlugProductsIdCommissionScenariosQueryResponseSchema } from "./zod/getOrganizationsSlugProductsIdCommissionScenariosSchema.ts";
 export { getOrganizationsSlugProductsIdPathParamsSchema, getOrganizationsSlugProductsId200Schema, getOrganizationsSlugProductsIdQueryResponseSchema } from "./zod/getOrganizationsSlugProductsIdSchema.ts";
 export { getOrganizationsSlugProductsPathParamsSchema, getOrganizationsSlugProducts200Schema, getOrganizationsSlugProductsQueryResponseSchema } from "./zod/getOrganizationsSlugProductsSchema.ts";
 export { getOrganizationsSlugRecurrencesPathParamsSchema, getOrganizationsSlugRecurrences200Schema, getOrganizationsSlugRecurrencesQueryResponseSchema } from "./zod/getOrganizationsSlugRecurrencesSchema.ts";
@@ -761,6 +788,7 @@ export { putOrganizationsSlugCustomersCustomeridPathParamsSchema, putOrganizatio
 export { putOrganizationsSlugEmployeesEmployeeidPathParamsSchema, putOrganizationsSlugEmployeesEmployeeid204Schema, putOrganizationsSlugEmployeesEmployeeidMutationRequestSchema, putOrganizationsSlugEmployeesEmployeeidMutationResponseSchema } from "./zod/putOrganizationsSlugEmployeesEmployeeidSchema.ts";
 export { putOrganizationsSlugMembersMemberidPathParamsSchema, putOrganizationsSlugMembersMemberid204Schema, putOrganizationsSlugMembersMemberidMutationRequestSchema, putOrganizationsSlugMembersMemberidMutationResponseSchema } from "./zod/putOrganizationsSlugMembersMemberidSchema.ts";
 export { putOrganizationsSlugPartnersPartneridPathParamsSchema, putOrganizationsSlugPartnersPartnerid204Schema, putOrganizationsSlugPartnersPartneridMutationRequestSchema, putOrganizationsSlugPartnersPartneridMutationResponseSchema } from "./zod/putOrganizationsSlugPartnersPartneridSchema.ts";
+export { putOrganizationsSlugProductsIdCommissionScenariosPathParamsSchema, putOrganizationsSlugProductsIdCommissionScenarios204Schema, putOrganizationsSlugProductsIdCommissionScenariosMutationRequestSchema, putOrganizationsSlugProductsIdCommissionScenariosMutationResponseSchema } from "./zod/putOrganizationsSlugProductsIdCommissionScenariosSchema.ts";
 export { putOrganizationsSlugProductsIdPathParamsSchema, putOrganizationsSlugProductsId204Schema, putOrganizationsSlugProductsIdMutationRequestSchema, putOrganizationsSlugProductsIdMutationResponseSchema } from "./zod/putOrganizationsSlugProductsIdSchema.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidPathParamsSchema, putOrganizationsSlugRecurrencesRecurrenceid201Schema, putOrganizationsSlugRecurrencesRecurrenceidMutationRequestSchema, putOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema } from "./zod/putOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
 export { putOrganizationsSlugSellersSelleridPathParamsSchema, putOrganizationsSlugSellersSellerid204Schema, putOrganizationsSlugSellersSelleridMutationRequestSchema, putOrganizationsSlugSellersSelleridMutationResponseSchema } from "./zod/putOrganizationsSlugSellersSelleridSchema.ts";

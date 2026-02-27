@@ -121,6 +121,8 @@ export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof Seller
 
 
 export const ProductCommissionScenarioConditionType = {
+  COMPANY_EQUALS: 'COMPANY_EQUALS',
+  PARTNER_EQUALS: 'PARTNER_EQUALS',
   SALE_HAS_SELLER: 'SALE_HAS_SELLER',
   SALE_UNIT_EQUALS: 'SALE_UNIT_EQUALS',
   SELLER_EQUALS: 'SELLER_EQUALS'
@@ -131,6 +133,7 @@ export type ProductCommissionScenarioConditionType = (typeof ProductCommissionSc
 
 export const ProductCommissionRecipientType = {
   COMPANY: 'COMPANY',
+  UNIT: 'UNIT',
   SELLER: 'SELLER',
   PARTNER: 'PARTNER',
   SUPERVISOR: 'SUPERVISOR',
