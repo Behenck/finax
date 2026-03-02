@@ -20,8 +20,8 @@ import { auth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/errors/api-error";
 import { resolveErrorMessage } from "@/errors";
-import { sendEmailOTP } from "@/http/auth/send-email-otp";
 import { router } from "@/router";
+import { usePostAuthSendEmailOtp } from "@/http/generated";
 
 const SignInSchema = z.object({
 	email: z.email("Email inválido").min(1, "Email é obrigatório"),
@@ -52,6 +52,7 @@ function SignIn() {
 	const { email: emailParam } = Route.useSearch();
 	const signInMutation = auth.useSignIn();
 	const { data: session, isPending: isSessionPending } = auth.useSession();
+	const { mutateAsync: sendEmailOTP } = usePostAuthSendEmailOtp();
 
 	const { handleSubmit, resetField, control, watch } = useForm<SignInType>({
 		resolver: zodResolver(SignInSchema as any),
@@ -72,9 +73,9 @@ function SignIn() {
 			const message = resolveErrorMessage(apiError);
 
 			if (apiError?.status === 403 && !!email) {
-				console.log("teste")
+				console.log("otp")
 				try {
-					await sendEmailOTP(email)
+					await sendEmailOTP({ data: { email } })
 
 					toast.success("O código foi enviado para o seu email!")
 

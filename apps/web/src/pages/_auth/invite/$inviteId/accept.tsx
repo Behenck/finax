@@ -5,13 +5,12 @@ import { ArrowLeft, Building2, CheckCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ValidatingInvite } from '../-components/validating-invite'
 import { toast } from 'sonner'
-import { getInvite } from '@/http/invites/get-invite'
 import { router } from '@/router'
-import { useSession } from '@/hooks/auth/use-session'
 import { CreateMemberForm, CreateMemberSchema, type CreateMemberType } from '../-components/create-member-form'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { acceptInvite } from '@/http/invites/accept-invite'
+import { useApp } from '@/context/app-context'
+import { getInvitesInviteid, postInvitesInviteidAccept } from '@/http/generated'
 
 export const Route = createFileRoute('/_auth/invite/$inviteId/accept')({
   component: AcceptInvite,
@@ -21,14 +20,13 @@ function AcceptInvite() {
   const { inviteId } = Route.useParams()
   const [isLoading, setIsLoading] = useState(true);
   const [invite, setInvite] = useState<Invite | null>(null);
-  const { data } = useSession()
-  const org = "behenck"
+  const { organization, auth } = useApp()
 
   const userInvitedInOrganization =
-    invite?.organization.slug === org && !!data
+    invite?.organization.slug === organization?.slug
 
   const userInvitedIsAuthenticated =
-    invite?.email === data?.email
+    invite?.email === auth?.email
 
   async function validateInvite(code: string) {
     const token = code.trim();
@@ -40,8 +38,10 @@ function AcceptInvite() {
 
     try {
       setIsLoading(true);
-      const invite = await getInvite(code);
-      setInvite(invite)
+      const { invite } = await getInvitesInviteid({
+        inviteId: token,
+      });
+      setInvite(invite ?? null)
     } catch {
       toast.error("Convite inválido ou expirado!");
       router.navigate({ to: `/invite/${token}`, replace: true })
@@ -70,13 +70,13 @@ function AcceptInvite() {
 
   async function onSubmit(data: CreateMemberType) {
     try {
-      const { confirmPassword, firstName, lastName, ...result } = data
       const payload = {
-        name: `${firstName} ${lastName}`,
-        ...result
+        name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        password: data.password,
       }
 
-      await acceptInvite({
+      await postInvitesInviteidAccept({
         inviteId: invite!.id,
         data: payload
       })
@@ -84,7 +84,7 @@ function AcceptInvite() {
       toast.success("Convite aceito com sucesso!")
       router.navigate({ to: `/sign-in?email=${payload.email}` })
 
-    } catch (err: any) {
+    } catch {
       toast.error("Erro ao aceitar convite.")
     }
   }

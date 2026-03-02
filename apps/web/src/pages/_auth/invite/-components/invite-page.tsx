@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getInvitesInviteid } from '@/http/generated';
 import { getInvite } from '@/http/invites/get-invite';
 import { router } from '@/router';
 import { Mail } from 'lucide-react';
@@ -26,14 +27,14 @@ export function InvitePage({ inviteId }: InvitePageProps) {
     try {
       setIsLoading(true);
 
-      const invite = await getInvite(code);
+      const invite = await getInvitesInviteid({ inviteId: token });
 
       if (!invite) {
         toast.error("Convite inválido ou expirado!");
         return;
       }
 
-      router.navigate({ to: `/invite/${code}/accept`, replace: true })
+      router.navigate({ to: `/invite/${token}/accept`, replace: true })
     } catch {
       toast.error("Convite inválido ou expirado!");
     } finally {

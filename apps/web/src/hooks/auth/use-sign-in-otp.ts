@@ -1,6 +1,6 @@
+import { postAuthVerifyOtp } from "@/http/generated";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import { verifyOTP } from "@/http/auth/verify-otp";
 
 type SignInInput = {
 	email: string;
@@ -12,7 +12,7 @@ export function useSignInOTP() {
 
 	return useMutation({
 		mutationFn: async (payload: SignInInput) => {
-			const data = await verifyOTP(payload)
+			const data = await postAuthVerifyOtp({ data: payload });
 			return data;
 		},
 

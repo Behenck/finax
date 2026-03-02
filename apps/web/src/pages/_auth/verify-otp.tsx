@@ -10,13 +10,8 @@ import {
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "@/lib/axios";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { toast } from "sonner";
-import { router } from '@/router';
-import { verifyOTP } from '@/http/auth/verify-otp';
-import Cookies from 'js-cookie';
-import { useQueryClient } from '@tanstack/react-query';
 import { auth } from '@/hooks/auth';
 
 const VerifySchema = z.object({
@@ -57,6 +52,7 @@ function VerifyOTP() {
 
       toast.success("Verificação feita com sucesso!")
     } catch (error) {
+      console.log(error)
       toast.error(
         (error as any)?.response?.data?.message ??
         "Erro ao entrar. Tente novamente.",

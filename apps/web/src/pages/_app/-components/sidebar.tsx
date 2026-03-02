@@ -18,9 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
 	Building2,
-	ChartPie,
 	ChevronRight,
-	Circle,
 	Contact,
 	CreditCard,
 	Database,
@@ -32,16 +30,13 @@ import {
 	Package,
 	Settings,
 	Tags,
-	Target,
-	TriangleAlert,
-	User,
-	Users,
 	type LucideIcon,
 } from "lucide-react";
 import LogoBranco from "@/assets/logo-finax-branco.png";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@tanstack/react-router";
 import { auth } from "@/hooks/auth";
+import { useApp } from "@/context/app-context";
 
 interface ItemsProps {
 	title: string;
@@ -57,6 +52,7 @@ interface ItemsProps {
 }
 
 export function AppSidebar() {
+	const { organization, auth: currentUser } = useApp();
 	const signOut = auth.useSignOut();
 
 	const items: ItemsProps[] = [
@@ -122,18 +118,11 @@ export function AppSidebar() {
 			url: "/settings",
 			icon: Settings,
 		},
-		{
-			title: "Perfil",
-			url: "#",
-			icon: User,
-		},
-		{
-			title: "Sair",
-			url: "/sign-in",
-			icon: LogOut,
-			action: () => signOut.mutate(),
-		},
 	];
+
+	const companyName = organization?.name ?? "Sem organização";
+	const userName = currentUser?.name?.trim() || "Usuário";
+	const userEmail = currentUser?.email ?? "Sem email";
 
 	return (
 		<Sidebar variant="inset">
@@ -195,7 +184,32 @@ export function AppSidebar() {
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter />
+			<SidebarFooter className="p-2">
+				<Separator className="bg-gray-800" />
+
+				<div className="px-2 py-2 space-y-1 group-data-[collapsible=icon]:hidden">
+					<p className="text-xs text-gray-400 truncate min-w-0">{companyName}</p>
+					<p className="text-sm font-medium text-white truncate min-w-0">{userName}</p>
+					<p className="text-xs text-gray-400 truncate min-w-0">{userEmail}</p>
+				</div>
+
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							type="button"
+							onClick={() => signOut.mutate()}
+							disabled={signOut.isPending}
+							tooltip="Sair"
+							className="p-6 cursor-pointer"
+						>
+							<LogOut className="size-4" />
+							<span className="group-data-[collapsible=icon]:hidden">
+								{signOut.isPending ? "Saindo..." : "Sair"}
+							</span>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

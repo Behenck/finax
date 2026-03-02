@@ -93,7 +93,7 @@ const productCommissionSchema = z
 	});
 
 const productScenarioConditionSchema = z.object({
-	type: z.enum(["COMPANY", "PARTNER", "UNIT", "SELLER"]),
+	type: z.enum(["COMPANY", "PARTNER", "UNIT", "SELLER", "SUPERVISOR"]),
 	valueIds: z
 		.array(z.uuid({ error: "Selecione um valor" }))
 		.min(1, "Selecione ao menos um valor"),
