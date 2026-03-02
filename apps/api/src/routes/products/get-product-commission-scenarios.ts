@@ -11,10 +11,6 @@ import { BadRequestError } from "../_errors/bad-request-error";
 import {
 	fromScaledPercentage,
 	GetProductCommissionScenariosResponseSchema,
-	LINKED_COMPANY_CONDITION_ID,
-	LINKED_PARTNER_CONDITION_ID,
-	LINKED_SELLER_CONDITION_ID,
-	LINKED_UNIT_CONDITION_ID,
 } from "./commission-scenarios-schema";
 
 const paramsSchema = z.object({
@@ -39,7 +35,7 @@ function mapCondition(condition: {
 		case ProductCommissionScenarioConditionType.SALE_HAS_COMPANY:
 			return {
 				type: "COMPANY" as const,
-				valueId: LINKED_COMPANY_CONDITION_ID,
+				valueId: null,
 			};
 		case ProductCommissionScenarioConditionType.PARTNER_EQUALS:
 			if (!condition.partnerId) return null;
@@ -50,17 +46,17 @@ function mapCondition(condition: {
 		case ProductCommissionScenarioConditionType.SALE_HAS_PARTNER:
 			return {
 				type: "PARTNER" as const,
-				valueId: LINKED_PARTNER_CONDITION_ID,
+				valueId: null,
 			};
 		case ProductCommissionScenarioConditionType.SALE_HAS_SELLER:
 			return {
 				type: "SELLER" as const,
-				valueId: LINKED_SELLER_CONDITION_ID,
+				valueId: null,
 			};
 		case ProductCommissionScenarioConditionType.SALE_HAS_UNIT:
 			return {
 				type: "UNIT" as const,
-				valueId: LINKED_UNIT_CONDITION_ID,
+				valueId: null,
 			};
 		case ProductCommissionScenarioConditionType.SALE_UNIT_EQUALS:
 			if (!condition.unitId) return null;

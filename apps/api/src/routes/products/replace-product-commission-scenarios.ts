@@ -12,10 +12,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
-	LINKED_COMPANY_CONDITION_ID,
-	LINKED_PARTNER_CONDITION_ID,
-	LINKED_SELLER_CONDITION_ID,
-	LINKED_UNIT_CONDITION_ID,
 	ReplaceProductCommissionScenariosBodySchema,
 	toScaledPercentage,
 } from "./commission-scenarios-schema";
@@ -109,22 +105,22 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 					for (const condition of scenario.conditions) {
 						switch (condition.type) {
 							case "COMPANY":
-								if (condition.valueId !== LINKED_COMPANY_CONDITION_ID) {
+								if (condition.valueId) {
 									conditionCompanyIds.add(condition.valueId);
 								}
 								break;
 							case "PARTNER":
-								if (condition.valueId !== LINKED_PARTNER_CONDITION_ID) {
+								if (condition.valueId) {
 									conditionPartnerIds.add(condition.valueId);
 								}
 								break;
 							case "UNIT":
-								if (condition.valueId !== LINKED_UNIT_CONDITION_ID) {
+								if (condition.valueId) {
 									conditionUnitIds.add(condition.valueId);
 								}
 								break;
 							case "SELLER":
-								if (condition.valueId !== LINKED_SELLER_CONDITION_ID) {
+								if (condition.valueId) {
 									conditionSellerIds.add(condition.valueId);
 								}
 								break;
@@ -372,10 +368,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 														(condition, conditionIndex) => {
 															switch (condition.type) {
 																case "COMPANY":
-																	if (
-																		condition.valueId ===
-																		LINKED_COMPANY_CONDITION_ID
-																	) {
+																	if (!condition.valueId) {
 																		return {
 																			type: ProductCommissionScenarioConditionType.SALE_HAS_COMPANY,
 																			sortOrder: conditionIndex,
@@ -388,10 +381,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 																		sortOrder: conditionIndex,
 																	};
 																case "PARTNER":
-																	if (
-																		condition.valueId ===
-																		LINKED_PARTNER_CONDITION_ID
-																	) {
+																	if (!condition.valueId) {
 																		return {
 																			type: ProductCommissionScenarioConditionType.SALE_HAS_PARTNER,
 																			sortOrder: conditionIndex,
@@ -404,10 +394,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 																		sortOrder: conditionIndex,
 																	};
 																case "UNIT":
-																	if (
-																		condition.valueId ===
-																		LINKED_UNIT_CONDITION_ID
-																	) {
+																	if (!condition.valueId) {
 																		return {
 																			type: ProductCommissionScenarioConditionType.SALE_HAS_UNIT,
 																			sortOrder: conditionIndex,
@@ -420,10 +407,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 																		sortOrder: conditionIndex,
 																	};
 																case "SELLER":
-																	if (
-																		condition.valueId ===
-																		LINKED_SELLER_CONDITION_ID
-																	) {
+																	if (!condition.valueId) {
 																		return {
 																			type: ProductCommissionScenarioConditionType.SALE_HAS_SELLER,
 																			sortOrder: conditionIndex,

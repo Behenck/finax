@@ -8,12 +8,6 @@ import {
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
-import {
-	LINKED_COMPANY_CONDITION_ID,
-	LINKED_PARTNER_CONDITION_ID,
-	LINKED_SELLER_CONDITION_ID,
-	LINKED_UNIT_CONDITION_ID,
-} from "@/routes/products/commission-scenarios-schema";
 import { makeUser } from "../../factories/make-user";
 import { createTestApp } from "../../utils/test-app";
 
@@ -269,19 +263,19 @@ describe("product commission scenarios", () => {
 						conditions: [
 							{
 								type: "COMPANY",
-								valueId: LINKED_COMPANY_CONDITION_ID,
+								valueId: null,
 							},
 							{
 								type: "UNIT",
-								valueId: LINKED_UNIT_CONDITION_ID,
+								valueId: null,
 							},
 							{
 								type: "SELLER",
-								valueId: LINKED_SELLER_CONDITION_ID,
+								valueId: null,
 							},
 							{
 								type: "PARTNER",
-								valueId: LINKED_PARTNER_CONDITION_ID,
+								valueId: null,
 							},
 						],
 						commissions: [
@@ -308,19 +302,19 @@ describe("product commission scenarios", () => {
 		expect(getResponse.body.scenarios[0].conditions).toEqual([
 			{
 				type: "COMPANY",
-				valueId: LINKED_COMPANY_CONDITION_ID,
+				valueId: null,
 			},
 			{
 				type: "UNIT",
-				valueId: LINKED_UNIT_CONDITION_ID,
+				valueId: null,
 			},
 			{
 				type: "SELLER",
-				valueId: LINKED_SELLER_CONDITION_ID,
+				valueId: null,
 			},
 			{
 				type: "PARTNER",
-				valueId: LINKED_PARTNER_CONDITION_ID,
+				valueId: null,
 			},
 		]);
 	});

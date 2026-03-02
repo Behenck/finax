@@ -66,7 +66,7 @@ export function getMultiSelectLabel(selectedOptions: SelectOption[]) {
 export function mapApiScenarioToForm(
 	scenario: GetOrganizationsSlugProductsIdCommissionScenarios200["scenarios"][number],
 ): ProductCommissionScenarioFormData {
-	const conditionValueIdsByType = new Map<ConditionType, string[]>();
+	const conditionValueIdsByType = new Map<ConditionType, Array<string | null>>();
 	for (const condition of scenario.conditions) {
 		const existingValues = conditionValueIdsByType.get(condition.type) ?? [];
 		if (!existingValues.includes(condition.valueId)) {

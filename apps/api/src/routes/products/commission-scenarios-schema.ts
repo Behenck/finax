@@ -1,13 +1,6 @@
 import z from "zod";
 
 export const COMMISSION_PERCENTAGE_SCALE = 10_000;
-export const LINKED_COMPANY_CONDITION_ID =
-	"00000000-0000-0000-0000-000000000000";
-export const LINKED_PARTNER_CONDITION_ID =
-	"ffffffff-ffff-ffff-ffff-ffffffffffff";
-export const LINKED_UNIT_CONDITION_ID = "11111111-1111-4111-8111-111111111111";
-export const LINKED_SELLER_CONDITION_ID =
-	"22222222-2222-4222-8222-222222222222";
 
 function hasUpTo4DecimalPlaces(value: number) {
 	const scaled = Math.round(
@@ -35,19 +28,19 @@ const TotalPercentageSchema = z
 export const CommissionConditionSchema = z.discriminatedUnion("type", [
 	z.object({
 		type: z.literal("COMPANY"),
-		valueId: z.uuid(),
+		valueId: z.uuid().nullable(),
 	}),
 	z.object({
 		type: z.literal("PARTNER"),
-		valueId: z.uuid(),
+		valueId: z.uuid().nullable(),
 	}),
 	z.object({
 		type: z.literal("UNIT"),
-		valueId: z.uuid(),
+		valueId: z.uuid().nullable(),
 	}),
 	z.object({
 		type: z.literal("SELLER"),
-		valueId: z.uuid(),
+		valueId: z.uuid().nullable(),
 	}),
 ]);
 

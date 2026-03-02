@@ -27,9 +27,7 @@ import { Trash2 } from "lucide-react";
 import {
 	CONDITION_OPTIONS,
 	LINKED_CONDITION_LABEL_BY_TYPE,
-	LINKED_CONDITION_VALUE_BY_TYPE,
 } from "../-utils/constants";
-import { getMultiSelectLabel } from "../-utils/helpers";
 import type { ConditionType, SelectOption } from "../-utils/types";
 
 interface ScenarioConditionRowProps {
@@ -69,18 +67,24 @@ export function ScenarioConditionRow({
 	const conditionErrors =
 		errors.scenarios?.[scenarioIndex]?.conditions?.[conditionIndex];
 
-	const linkedConditionValueId =
-		conditionType === "COMPANY" ||
-		conditionType === "PARTNER" ||
-		conditionType === "UNIT" ||
-		conditionType === "SELLER"
-			? LINKED_CONDITION_VALUE_BY_TYPE[conditionType]
-			: undefined;
-	const linkedConditionLabel = linkedConditionValueId
-		? LINKED_CONDITION_LABEL_BY_TYPE[conditionType]
-		: undefined;
+	const linkedConditionLabel =
+		conditionType === "COMPANY"
+			? LINKED_CONDITION_LABEL_BY_TYPE.COMPANY
+			: conditionType === "PARTNER"
+				? LINKED_CONDITION_LABEL_BY_TYPE.PARTNER
+				: conditionType === "UNIT"
+					? LINKED_CONDITION_LABEL_BY_TYPE.UNIT
+					: conditionType === "SELLER"
+						? LINKED_CONDITION_LABEL_BY_TYPE.SELLER
+						: undefined;
 
 	const valueOptions = useMemo(() => {
+		const linkedConditionOption = linkedConditionLabel
+			? {
+					id: null,
+					label: linkedConditionLabel,
+				}
+			: null;
 		const baseOptions =
 			conditionType === "COMPANY"
 				? companyOptions
@@ -92,20 +96,16 @@ export function ScenarioConditionRow({
 							? sellerOptions
 							: supervisorOptions;
 
-		if (!linkedConditionValueId || !linkedConditionLabel) return baseOptions;
+		if (!linkedConditionOption) return baseOptions;
 
 		return [
-			{
-				id: linkedConditionValueId,
-				label: linkedConditionLabel,
-			},
+			linkedConditionOption,
 			...baseOptions,
 		];
 	}, [
 		companyOptions,
 		conditionType,
 		linkedConditionLabel,
-		linkedConditionValueId,
 		partnerOptions,
 		sellerOptions,
 		supervisorOptions,
@@ -115,12 +115,21 @@ export function ScenarioConditionRow({
 	const selectedValueIds = useWatch({
 		control,
 		name: `scenarios.${scenarioIndex}.conditions.${conditionIndex}.valueIds`,
-	}) as string[] | undefined;
+	}) as Array<string | null> | undefined;
 
 	const selectedOptions = useMemo(
 		() => valueOptions.filter((option) => (selectedValueIds ?? []).includes(option.id)),
 		[selectedValueIds, valueOptions],
 	);
+
+	const triggerLabel = useMemo(() => {
+		if (selectedOptions.length === 0) return "Selecione";
+		if (selectedOptions.length <= 2) {
+			return selectedOptions.map((option) => option.label).join(", ");
+		}
+
+		return `${selectedOptions[0]?.label ?? ""}, ${selectedOptions[1]?.label ?? ""} +${selectedOptions.length - 2}`;
+	}, [selectedOptions]);
 
 	const conditionTypeOptions = useMemo(
 		() =>
@@ -147,17 +156,15 @@ export function ScenarioConditionRow({
 									value={field.value}
 									onValueChange={(value) => {
 										field.onChange(value);
-										const linkedValueId =
+										const shouldUseLinkedDefault =
 											value === "COMPANY" ||
 											value === "PARTNER" ||
 											value === "UNIT" ||
-											value === "SELLER"
-												? LINKED_CONDITION_VALUE_BY_TYPE[value]
-												: undefined;
+											value === "SELLER";
 
 										setValue(
 											`scenarios.${scenarioIndex}.conditions.${conditionIndex}.valueIds`,
-											linkedValueId ? [linkedValueId] : [],
+											shouldUseLinkedDefault ? [null] : [],
 											{
 												shouldDirty: true,
 												shouldValidate: false,
@@ -198,9 +205,7 @@ export function ScenarioConditionRow({
 											variant="outline"
 											className="w-full justify-start overflow-hidden font-normal"
 										>
-											<span className="truncate">
-												{getMultiSelectLabel(selectedOptions)}
-											</span>
+											<span className="truncate">{triggerLabel}</span>
 										</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent
@@ -209,22 +214,20 @@ export function ScenarioConditionRow({
 									>
 										{valueOptions.map((option) => (
 											<DropdownMenuCheckboxItem
-												key={option.id}
+												key={option.id ?? "linked"}
 												checked={(field.value ?? []).includes(option.id)}
 												onSelect={(event) => event.preventDefault()}
 												onCheckedChange={(checked) => {
-													const nextValues = new Set(field.value ?? []);
-
-													if (linkedConditionValueId) {
-														if (option.id === linkedConditionValueId) {
-															field.onChange(
-																checked ? [linkedConditionValueId] : [],
-															);
-															return;
-														}
-
-														nextValues.delete(linkedConditionValueId);
+													if (option.id === null) {
+														field.onChange(checked ? [null] : []);
+														return;
 													}
+
+													const nextValues = new Set(
+														(field.value ?? []).filter(
+															(value): value is string => value !== null,
+														),
+													);
 
 													if (checked) nextValues.add(option.id);
 													else nextValues.delete(option.id);

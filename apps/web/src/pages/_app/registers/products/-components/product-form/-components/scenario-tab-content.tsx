@@ -14,10 +14,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { ProductCommissionScenarioFormData, ProductFormData } from "@/schemas/product-schema";
 import { CirclePlus, Plus, Trash2 } from "lucide-react";
-import {
-	CONDITION_OPTIONS,
-	LINKED_CONDITION_VALUE_BY_TYPE,
-} from "../-utils/constants";
+import { CONDITION_OPTIONS } from "../-utils/constants";
 import { createDefaultCommission } from "../-utils/helpers";
 import type { SelectOption } from "../-utils/types";
 import { ScenarioCommissionCard } from "./scenario-commission-card";
@@ -150,17 +147,15 @@ export function ScenarioTabContent({
 					disabled={availableConditionTypeOptions.length === 0}
 					onClick={() => {
 						const defaultType = availableConditionTypeOptions[0]?.value ?? "COMPANY";
-						const defaultLinkedValueId =
+						const shouldUseLinkedDefault =
 							defaultType === "COMPANY" ||
 							defaultType === "PARTNER" ||
 							defaultType === "UNIT" ||
-							defaultType === "SELLER"
-								? LINKED_CONDITION_VALUE_BY_TYPE[defaultType]
-								: undefined;
+							defaultType === "SELLER";
 
 						appendCondition({
 							type: defaultType,
-							valueIds: defaultLinkedValueId ? [defaultLinkedValueId] : [],
+							valueIds: shouldUseLinkedDefault ? [null] : [],
 						});
 					}}
 				>
