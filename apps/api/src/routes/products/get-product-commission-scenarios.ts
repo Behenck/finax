@@ -11,6 +11,10 @@ import { BadRequestError } from "../_errors/bad-request-error";
 import {
 	fromScaledPercentage,
 	GetProductCommissionScenariosResponseSchema,
+	LINKED_COMPANY_CONDITION_ID,
+	LINKED_PARTNER_CONDITION_ID,
+	LINKED_SELLER_CONDITION_ID,
+	LINKED_UNIT_CONDITION_ID,
 } from "./commission-scenarios-schema";
 
 const paramsSchema = z.object({
@@ -32,11 +36,31 @@ function mapCondition(condition: {
 				type: "COMPANY" as const,
 				valueId: condition.companyId,
 			};
+		case ProductCommissionScenarioConditionType.SALE_HAS_COMPANY:
+			return {
+				type: "COMPANY" as const,
+				valueId: LINKED_COMPANY_CONDITION_ID,
+			};
 		case ProductCommissionScenarioConditionType.PARTNER_EQUALS:
 			if (!condition.partnerId) return null;
 			return {
 				type: "PARTNER" as const,
 				valueId: condition.partnerId,
+			};
+		case ProductCommissionScenarioConditionType.SALE_HAS_PARTNER:
+			return {
+				type: "PARTNER" as const,
+				valueId: LINKED_PARTNER_CONDITION_ID,
+			};
+		case ProductCommissionScenarioConditionType.SALE_HAS_SELLER:
+			return {
+				type: "SELLER" as const,
+				valueId: LINKED_SELLER_CONDITION_ID,
+			};
+		case ProductCommissionScenarioConditionType.SALE_HAS_UNIT:
+			return {
+				type: "UNIT" as const,
+				valueId: LINKED_UNIT_CONDITION_ID,
 			};
 		case ProductCommissionScenarioConditionType.SALE_UNIT_EQUALS:
 			if (!condition.unitId) return null;
@@ -69,15 +93,20 @@ function mapCommission(commission: {
 		percentage: number;
 	}>;
 }) {
-	let recipientType: "COMPANY" | "UNIT" | "SELLER" | "SUPERVISOR" | "OTHER" =
-		"OTHER";
+	let recipientType:
+		| "COMPANY"
+		| "UNIT"
+		| "PARTNER"
+		| "SELLER"
+		| "SUPERVISOR"
+		| "OTHER" = "OTHER";
 	let beneficiaryId: string | undefined;
 	let beneficiaryLabel: string | undefined;
 
 	switch (commission.recipientType) {
 		case ProductCommissionRecipientType.COMPANY:
+			recipientType = "COMPANY";
 			if (commission.recipientCompanyId) {
-				recipientType = "COMPANY";
 				beneficiaryId = commission.recipientCompanyId;
 			} else {
 				beneficiaryLabel =
@@ -85,8 +114,8 @@ function mapCommission(commission: {
 			}
 			break;
 		case ProductCommissionRecipientType.UNIT:
+			recipientType = "UNIT";
 			if (commission.recipientUnitId) {
-				recipientType = "UNIT";
 				beneficiaryId = commission.recipientUnitId;
 			} else {
 				beneficiaryLabel =
@@ -94,8 +123,8 @@ function mapCommission(commission: {
 			}
 			break;
 		case ProductCommissionRecipientType.SELLER:
+			recipientType = "SELLER";
 			if (commission.recipientSellerId) {
-				recipientType = "SELLER";
 				beneficiaryId = commission.recipientSellerId;
 			} else {
 				beneficiaryLabel =
@@ -103,8 +132,8 @@ function mapCommission(commission: {
 			}
 			break;
 		case ProductCommissionRecipientType.SUPERVISOR:
+			recipientType = "SUPERVISOR";
 			if (commission.recipientSupervisorId) {
-				recipientType = "SUPERVISOR";
 				beneficiaryId = commission.recipientSupervisorId;
 			} else {
 				beneficiaryLabel =
@@ -112,6 +141,10 @@ function mapCommission(commission: {
 			}
 			break;
 		case ProductCommissionRecipientType.PARTNER:
+			recipientType = "PARTNER";
+			beneficiaryLabel =
+				commission.recipientOtherDescription ?? commission.description;
+			break;
 		case ProductCommissionRecipientType.OTHER:
 			beneficiaryLabel =
 				commission.recipientOtherDescription ?? commission.description;

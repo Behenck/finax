@@ -12,6 +12,7 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	getOrganizationsSlugProductsIdCommissionScenariosQueryKey,
 	getOrganizationsSlugProductsQueryKey,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugMembersRole,
@@ -105,7 +106,7 @@ export function ProductForm({
 		reset,
 		setValue,
 		getValues,
-		formState: { errors },
+		formState: { errors, isDirty },
 	} = form;
 
 	const {
@@ -175,7 +176,7 @@ export function ProductForm({
 
 	useEffect(() => {
 		if (!isEditMode || !initialData || !scenariosData) return;
-		if (initializedFromApiRef.current) return;
+		if (initializedFromApiRef.current && isDirty) return;
 
 		reset({
 			name: initialData.name,
@@ -185,7 +186,7 @@ export function ProductForm({
 					: [],
 		});
 		initializedFromApiRef.current = true;
-	}, [initialData, isEditMode, reset, scenariosData]);
+	}, [initialData, isDirty, isEditMode, reset, scenariosData]);
 
 	useEffect(() => {
 		if (mode === "create") {
@@ -197,6 +198,15 @@ export function ProductForm({
 		await queryClient.invalidateQueries({
 			queryKey: getOrganizationsSlugProductsQueryKey({
 				slug: organization!.slug,
+			}),
+		});
+	};
+
+	const invalidateProductCommissionScenarios = async (productId: string) => {
+		await queryClient.invalidateQueries({
+			queryKey: getOrganizationsSlugProductsIdCommissionScenariosQueryKey({
+				slug: organization!.slug,
+				id: productId,
 			}),
 		});
 	};
@@ -274,6 +284,7 @@ export function ProductForm({
 			try {
 				if (data.scenarios.length > 0) {
 					await saveProductCommissionScenarios(createdProductId, data.scenarios);
+					await invalidateProductCommissionScenarios(createdProductId);
 				}
 				await invalidateProducts();
 				toast.success("Produto cadastrado com sucesso");
@@ -311,6 +322,7 @@ export function ProductForm({
 
 		try {
 			await saveProductCommissionScenarios(initialData.id, data.scenarios);
+			await invalidateProductCommissionScenarios(initialData.id);
 			await invalidateProducts();
 			toast.success("Produto atualizado com sucesso");
 			onSuccess?.();

@@ -8,6 +8,12 @@ import {
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
+import {
+	LINKED_COMPANY_CONDITION_ID,
+	LINKED_PARTNER_CONDITION_ID,
+	LINKED_SELLER_CONDITION_ID,
+	LINKED_UNIT_CONDITION_ID,
+} from "@/routes/products/commission-scenarios-schema";
 import { makeUser } from "../../factories/make-user";
 import { createTestApp } from "../../utils/test-app";
 
@@ -246,6 +252,149 @@ describe("product commission scenarios", () => {
 			});
 
 		expect(response.statusCode).toBe(400);
+	});
+
+	it("should accept linked company, unit, seller and partner conditions and persist on fetch", async () => {
+		const fixture = await createFixture();
+
+		const saveResponse = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				scenarios: [
+					{
+						name: "Venda padrão",
+						conditions: [
+							{
+								type: "COMPANY",
+								valueId: LINKED_COMPANY_CONDITION_ID,
+							},
+							{
+								type: "UNIT",
+								valueId: LINKED_UNIT_CONDITION_ID,
+							},
+							{
+								type: "SELLER",
+								valueId: LINKED_SELLER_CONDITION_ID,
+							},
+							{
+								type: "PARTNER",
+								valueId: LINKED_PARTNER_CONDITION_ID,
+							},
+						],
+						commissions: [
+							{
+								recipientType: "COMPANY",
+								beneficiaryId: fixture.company.id,
+								totalPercentage: 1,
+								installments: [{ installmentNumber: 1, percentage: 1 }],
+							},
+						],
+					},
+				],
+			});
+
+		expect(saveResponse.statusCode).toBe(204);
+
+		const getResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(getResponse.statusCode).toBe(200);
+		expect(getResponse.body.scenarios[0].conditions).toEqual([
+			{
+				type: "COMPANY",
+				valueId: LINKED_COMPANY_CONDITION_ID,
+			},
+			{
+				type: "UNIT",
+				valueId: LINKED_UNIT_CONDITION_ID,
+			},
+			{
+				type: "SELLER",
+				valueId: LINKED_SELLER_CONDITION_ID,
+			},
+			{
+				type: "PARTNER",
+				valueId: LINKED_PARTNER_CONDITION_ID,
+			},
+		]);
+	});
+
+	it("should accept linked partner, seller and supervisor recipients without beneficiary id", async () => {
+		const fixture = await createFixture();
+
+		const saveResponse = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				scenarios: [
+					{
+						name: "Venda padrão",
+						conditions: [],
+						commissions: [
+							{
+								recipientType: "PARTNER",
+								totalPercentage: 1,
+								installments: [{ installmentNumber: 1, percentage: 1 }],
+							},
+							{
+								recipientType: "SELLER",
+								totalPercentage: 1,
+								installments: [{ installmentNumber: 1, percentage: 1 }],
+							},
+							{
+								recipientType: "SUPERVISOR",
+								totalPercentage: 1,
+								installments: [{ installmentNumber: 1, percentage: 1 }],
+							},
+						],
+					},
+				],
+			});
+
+		expect(saveResponse.statusCode).toBe(204);
+
+		const getResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(getResponse.statusCode).toBe(200);
+		expect(getResponse.body.scenarios[0].commissions[0].recipientType).toBe(
+			"PARTNER",
+		);
+		expect(getResponse.body.scenarios[0].commissions[0].beneficiaryId).toBe(
+			undefined,
+		);
+		expect(getResponse.body.scenarios[0].commissions[0].beneficiaryLabel).toBe(
+			"Parceiro vinculado",
+		);
+		expect(getResponse.body.scenarios[0].commissions[1].recipientType).toBe(
+			"SELLER",
+		);
+		expect(getResponse.body.scenarios[0].commissions[1].beneficiaryId).toBe(
+			undefined,
+		);
+		expect(getResponse.body.scenarios[0].commissions[1].beneficiaryLabel).toBe(
+			"Vendedor vinculado",
+		);
+		expect(getResponse.body.scenarios[0].commissions[2].recipientType).toBe(
+			"SUPERVISOR",
+		);
+		expect(getResponse.body.scenarios[0].commissions[2].beneficiaryId).toBe(
+			undefined,
+		);
+		expect(getResponse.body.scenarios[0].commissions[2].beneficiaryLabel).toBe(
+			"Supervisor vinculado",
+		);
 	});
 
 	it("should reject commission installments when total does not match", async () => {

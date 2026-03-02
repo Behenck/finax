@@ -33,6 +33,7 @@ const productCommissionSchema = z
 		recipientType: z.enum([
 			"COMPANY",
 			"UNIT",
+			"PARTNER",
 			"SELLER",
 			"SUPERVISOR",
 			"OTHER",
@@ -53,7 +54,11 @@ const productCommissionSchema = z
 					path: ["beneficiaryLabel"],
 				});
 			}
-		} else if (!commission.beneficiaryId) {
+		} else if (
+			(commission.recipientType === "COMPANY" ||
+				commission.recipientType === "UNIT") &&
+			!commission.beneficiaryId
+		) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				message: "Selecione o beneficiário",

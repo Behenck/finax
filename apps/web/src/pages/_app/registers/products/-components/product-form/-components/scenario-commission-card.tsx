@@ -111,7 +111,22 @@ export function ScenarioCommissionCard({
 				? unitOptions
 				: recipientType === "SELLER"
 					? sellerOptions
-					: supervisorOptions;
+					: recipientType === "SUPERVISOR"
+						? supervisorOptions
+						: [];
+	const autoLinkedBeneficiaryValue = "__AUTO_LINKED_BENEFICIARY__";
+	const isAutoLinkedRecipient =
+		recipientType === "SELLER" ||
+		recipientType === "SUPERVISOR" ||
+		recipientType === "PARTNER";
+	const autoLinkedBeneficiaryLabel =
+		recipientType === "SELLER"
+			? "Vendedor vinculado"
+			: recipientType === "SUPERVISOR"
+				? "Supervisor vinculado"
+				: recipientType === "PARTNER"
+					? "Parceiro vinculado"
+				: "";
 
 	return (
 		<Card className="space-y-4 p-4">
@@ -186,13 +201,34 @@ export function ScenarioCommissionCard({
 								render={({ field, fieldState }) => (
 									<>
 										<Select
-											value={field.value ?? ""}
-											onValueChange={field.onChange}
+											value={
+												field.value ??
+												(isAutoLinkedRecipient ? autoLinkedBeneficiaryValue : "")
+											}
+											onValueChange={(value) => {
+												field.onChange(
+													value === "" ||
+														value === autoLinkedBeneficiaryValue
+														? undefined
+														: value,
+												);
+											}}
 										>
 											<SelectTrigger>
-												<SelectValue placeholder="Selecione" />
+												<SelectValue
+													placeholder={
+														isAutoLinkedRecipient
+															? autoLinkedBeneficiaryLabel
+															: "Selecione"
+													}
+												/>
 											</SelectTrigger>
 											<SelectContent>
+												{isAutoLinkedRecipient && (
+													<SelectItem value={autoLinkedBeneficiaryValue}>
+														{autoLinkedBeneficiaryLabel}
+													</SelectItem>
+												)}
 												{beneficiaryOptions.map((option) => (
 													<SelectItem key={option.id} value={option.id}>
 														{option.label}

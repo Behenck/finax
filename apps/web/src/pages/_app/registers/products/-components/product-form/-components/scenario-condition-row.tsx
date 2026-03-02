@@ -24,7 +24,11 @@ import {
 } from "@/components/ui/select";
 import type { ProductCommissionScenarioFormData, ProductFormData } from "@/schemas/product-schema";
 import { Trash2 } from "lucide-react";
-import { CONDITION_OPTIONS } from "../-utils/constants";
+import {
+	CONDITION_OPTIONS,
+	LINKED_CONDITION_LABEL_BY_TYPE,
+	LINKED_CONDITION_VALUE_BY_TYPE,
+} from "../-utils/constants";
 import { getMultiSelectLabel } from "../-utils/helpers";
 import type { ConditionType, SelectOption } from "../-utils/types";
 
@@ -65,16 +69,48 @@ export function ScenarioConditionRow({
 	const conditionErrors =
 		errors.scenarios?.[scenarioIndex]?.conditions?.[conditionIndex];
 
-	const valueOptions =
-		conditionType === "COMPANY"
-			? companyOptions
-			: conditionType === "PARTNER"
-				? partnerOptions
-				: conditionType === "UNIT"
-					? unitOptions
-					: conditionType === "SELLER"
-						? sellerOptions
-						: supervisorOptions;
+	const linkedConditionValueId =
+		conditionType === "COMPANY" ||
+		conditionType === "PARTNER" ||
+		conditionType === "UNIT" ||
+		conditionType === "SELLER"
+			? LINKED_CONDITION_VALUE_BY_TYPE[conditionType]
+			: undefined;
+	const linkedConditionLabel = linkedConditionValueId
+		? LINKED_CONDITION_LABEL_BY_TYPE[conditionType]
+		: undefined;
+
+	const valueOptions = useMemo(() => {
+		const baseOptions =
+			conditionType === "COMPANY"
+				? companyOptions
+				: conditionType === "PARTNER"
+					? partnerOptions
+					: conditionType === "UNIT"
+						? unitOptions
+						: conditionType === "SELLER"
+							? sellerOptions
+							: supervisorOptions;
+
+		if (!linkedConditionValueId || !linkedConditionLabel) return baseOptions;
+
+		return [
+			{
+				id: linkedConditionValueId,
+				label: linkedConditionLabel,
+			},
+			...baseOptions,
+		];
+	}, [
+		companyOptions,
+		conditionType,
+		linkedConditionLabel,
+		linkedConditionValueId,
+		partnerOptions,
+		sellerOptions,
+		supervisorOptions,
+		unitOptions,
+	]);
 
 	const selectedValueIds = useWatch({
 		control,
@@ -111,9 +147,17 @@ export function ScenarioConditionRow({
 									value={field.value}
 									onValueChange={(value) => {
 										field.onChange(value);
+										const linkedValueId =
+											value === "COMPANY" ||
+											value === "PARTNER" ||
+											value === "UNIT" ||
+											value === "SELLER"
+												? LINKED_CONDITION_VALUE_BY_TYPE[value]
+												: undefined;
+
 										setValue(
 											`scenarios.${scenarioIndex}.conditions.${conditionIndex}.valueIds`,
-											[],
+											linkedValueId ? [linkedValueId] : [],
 											{
 												shouldDirty: true,
 												shouldValidate: false,
@@ -170,11 +214,20 @@ export function ScenarioConditionRow({
 												onSelect={(event) => event.preventDefault()}
 												onCheckedChange={(checked) => {
 													const nextValues = new Set(field.value ?? []);
-													if (checked) {
-														nextValues.add(option.id);
-													} else {
-														nextValues.delete(option.id);
+
+													if (linkedConditionValueId) {
+														if (option.id === linkedConditionValueId) {
+															field.onChange(
+																checked ? [linkedConditionValueId] : [],
+															);
+															return;
+														}
+
+														nextValues.delete(linkedConditionValueId);
 													}
+
+													if (checked) nextValues.add(option.id);
+													else nextValues.delete(option.id);
 
 													field.onChange(Array.from(nextValues));
 												}}

@@ -12,6 +12,10 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
+	LINKED_COMPANY_CONDITION_ID,
+	LINKED_PARTNER_CONDITION_ID,
+	LINKED_SELLER_CONDITION_ID,
+	LINKED_UNIT_CONDITION_ID,
 	ReplaceProductCommissionScenariosBodySchema,
 	toScaledPercentage,
 } from "./commission-scenarios-schema";
@@ -105,16 +109,24 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 					for (const condition of scenario.conditions) {
 						switch (condition.type) {
 							case "COMPANY":
-								conditionCompanyIds.add(condition.valueId);
+								if (condition.valueId !== LINKED_COMPANY_CONDITION_ID) {
+									conditionCompanyIds.add(condition.valueId);
+								}
 								break;
 							case "PARTNER":
-								conditionPartnerIds.add(condition.valueId);
+								if (condition.valueId !== LINKED_PARTNER_CONDITION_ID) {
+									conditionPartnerIds.add(condition.valueId);
+								}
 								break;
 							case "UNIT":
-								conditionUnitIds.add(condition.valueId);
+								if (condition.valueId !== LINKED_UNIT_CONDITION_ID) {
+									conditionUnitIds.add(condition.valueId);
+								}
 								break;
 							case "SELLER":
-								conditionSellerIds.add(condition.valueId);
+								if (condition.valueId !== LINKED_SELLER_CONDITION_ID) {
+									conditionSellerIds.add(condition.valueId);
+								}
 								break;
 						}
 					}
@@ -360,24 +372,64 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 														(condition, conditionIndex) => {
 															switch (condition.type) {
 																case "COMPANY":
+																	if (
+																		condition.valueId ===
+																		LINKED_COMPANY_CONDITION_ID
+																	) {
+																		return {
+																			type: ProductCommissionScenarioConditionType.SALE_HAS_COMPANY,
+																			sortOrder: conditionIndex,
+																		};
+																	}
+
 																	return {
 																		type: ProductCommissionScenarioConditionType.COMPANY_EQUALS,
 																		companyId: condition.valueId,
 																		sortOrder: conditionIndex,
 																	};
 																case "PARTNER":
+																	if (
+																		condition.valueId ===
+																		LINKED_PARTNER_CONDITION_ID
+																	) {
+																		return {
+																			type: ProductCommissionScenarioConditionType.SALE_HAS_PARTNER,
+																			sortOrder: conditionIndex,
+																		};
+																	}
+
 																	return {
 																		type: ProductCommissionScenarioConditionType.PARTNER_EQUALS,
 																		partnerId: condition.valueId,
 																		sortOrder: conditionIndex,
 																	};
 																case "UNIT":
+																	if (
+																		condition.valueId ===
+																		LINKED_UNIT_CONDITION_ID
+																	) {
+																		return {
+																			type: ProductCommissionScenarioConditionType.SALE_HAS_UNIT,
+																			sortOrder: conditionIndex,
+																		};
+																	}
+
 																	return {
 																		type: ProductCommissionScenarioConditionType.SALE_UNIT_EQUALS,
 																		unitId: condition.valueId,
 																		sortOrder: conditionIndex,
 																	};
 																case "SELLER":
+																	if (
+																		condition.valueId ===
+																		LINKED_SELLER_CONDITION_ID
+																	) {
+																		return {
+																			type: ProductCommissionScenarioConditionType.SALE_HAS_SELLER,
+																			sortOrder: conditionIndex,
+																		};
+																	}
+
 																	return {
 																		type: ProductCommissionScenarioConditionType.SELLER_EQUALS,
 																		sellerId: condition.valueId,
@@ -421,8 +473,14 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 																	? (supervisorNameById.get(
 																			recipientSupervisorId,
 																		) ?? "Supervisor")
-																	: commission.beneficiaryLabel?.trim() ||
-																		"Outro";
+																	: recipientType === "PARTNER"
+																		? "Parceiro vinculado"
+																		: recipientType === "SELLER"
+																			? "Vendedor vinculado"
+																			: recipientType === "SUPERVISOR"
+																				? "Supervisor vinculado"
+																				: commission.beneficiaryLabel?.trim() ||
+																					"Outro";
 
 												return {
 													description,

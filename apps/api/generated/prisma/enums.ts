@@ -123,7 +123,10 @@ export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof Seller
 export const ProductCommissionScenarioConditionType = {
   COMPANY_EQUALS: 'COMPANY_EQUALS',
   PARTNER_EQUALS: 'PARTNER_EQUALS',
+  SALE_HAS_COMPANY: 'SALE_HAS_COMPANY',
+  SALE_HAS_PARTNER: 'SALE_HAS_PARTNER',
   SALE_HAS_SELLER: 'SALE_HAS_SELLER',
+  SALE_HAS_UNIT: 'SALE_HAS_UNIT',
   SALE_UNIT_EQUALS: 'SALE_UNIT_EQUALS',
   SELLER_EQUALS: 'SELLER_EQUALS'
 } as const

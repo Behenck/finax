@@ -14,7 +14,10 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { ProductCommissionScenarioFormData, ProductFormData } from "@/schemas/product-schema";
 import { CirclePlus, Plus, Trash2 } from "lucide-react";
-import { CONDITION_OPTIONS } from "../-utils/constants";
+import {
+	CONDITION_OPTIONS,
+	LINKED_CONDITION_VALUE_BY_TYPE,
+} from "../-utils/constants";
 import { createDefaultCommission } from "../-utils/helpers";
 import type { SelectOption } from "../-utils/types";
 import { ScenarioCommissionCard } from "./scenario-commission-card";
@@ -145,12 +148,21 @@ export function ScenarioTabContent({
 					variant="ghost"
 					className="font-normal text-sm"
 					disabled={availableConditionTypeOptions.length === 0}
-					onClick={() =>
+					onClick={() => {
+						const defaultType = availableConditionTypeOptions[0]?.value ?? "COMPANY";
+						const defaultLinkedValueId =
+							defaultType === "COMPANY" ||
+							defaultType === "PARTNER" ||
+							defaultType === "UNIT" ||
+							defaultType === "SELLER"
+								? LINKED_CONDITION_VALUE_BY_TYPE[defaultType]
+								: undefined;
+
 						appendCondition({
-							type: availableConditionTypeOptions[0]?.value ?? "COMPANY",
-							valueIds: [],
-						})
-					}
+							type: defaultType,
+							valueIds: defaultLinkedValueId ? [defaultLinkedValueId] : [],
+						});
+					}}
 				>
 					<Plus className="size-4" />
 					Adicionar condição
