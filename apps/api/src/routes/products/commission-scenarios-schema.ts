@@ -70,7 +70,7 @@ export const ProductCommissionSchema = z
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: "custom",
 					message: "Beneficiary label is required for OTHER recipient",
 					path: ["beneficiaryLabel"],
 				});
@@ -81,7 +81,7 @@ export const ProductCommissionSchema = z
 			!commission.beneficiaryId
 		) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: "Beneficiary id is required for this recipient type",
 				path: ["beneficiaryId"],
 			});
@@ -92,7 +92,7 @@ export const ProductCommissionSchema = z
 		for (const [index, installment] of commission.installments.entries()) {
 			if (installmentNumbers.has(installment.installmentNumber)) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: "custom",
 					message: "Installment number must be unique within the commission",
 					path: ["installments", index, "installmentNumber"],
 				});
@@ -110,7 +110,7 @@ export const ProductCommissionSchema = z
 
 		if (expectedTotal !== installmentsTotal) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message:
 					"Installments total percentage must match commission total percentage",
 				path: ["installments"],
@@ -132,7 +132,7 @@ export const ReplaceProductCommissionScenariosBodySchema = z
 		for (const [index, scenario] of data.scenarios.entries()) {
 			if (index > 0 && scenario.conditions.length === 0) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: "custom",
 					message: "Non-default scenarios must have at least one condition",
 					path: ["scenarios", index, "conditions"],
 				});

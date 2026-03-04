@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ProductChild, ProductListItem } from "@/schemas/types/product";
 import { CreateProduct } from "./create-product";
+import { ProductScenarioBadges } from "./product-scenario-badges";
 import { UpdateProduct } from "./update-product";
 
 interface ProductRowProps {
@@ -76,17 +77,19 @@ export function ProductRow({
 								<span className="font-medium text-sm">{product.name}</span>
 							</div>
 
-							{product.description && (
-								<p className="mt-1 truncate text-xs text-muted-foreground">
-									{product.description}
-								</p>
-							)}
+								{product.description && (
+									<p className="mt-1 truncate text-xs text-muted-foreground">
+										{product.description}
+									</p>
+								)}
 
-							{hasChildren && (
-								<p className="mt-1 text-xs text-muted-foreground">
-									{children.length} produto(s) filho(s)
-								</p>
-							)}
+								<ProductScenarioBadges productId={product.id} />
+
+								{hasChildren && (
+									<p className="mt-1 text-xs text-muted-foreground">
+										{children.length} produto(s) filho(s)
+									</p>
+								)}
 						</div>
 					</CollapsibleTrigger>
 

@@ -48,32 +48,32 @@ const productCommissionSchema = z
 	.superRefine((commission, ctx) => {
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: "Informe quem receberá esta comissão",
-					path: ["beneficiaryLabel"],
-				});
+					ctx.addIssue({
+						code: "custom",
+						message: "Informe quem receberá esta comissão",
+						path: ["beneficiaryLabel"],
+					});
 			}
 		} else if (
 			(commission.recipientType === "COMPANY" ||
 				commission.recipientType === "UNIT") &&
 			!commission.beneficiaryId
 		) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Selecione o beneficiário",
-				path: ["beneficiaryId"],
-			});
+				ctx.addIssue({
+					code: "custom",
+					message: "Selecione o beneficiário",
+					path: ["beneficiaryId"],
+				});
 		}
 
 		const installmentNumbers = new Set<number>();
 		for (const [installmentIndex, installment] of commission.installments.entries()) {
 			if (installmentNumbers.has(installment.installmentNumber)) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: "Número da parcela repetido",
-					path: ["installments", installmentIndex, "installmentNumber"],
-				});
+					ctx.addIssue({
+						code: "custom",
+						message: "Número da parcela repetido",
+						path: ["installments", installmentIndex, "installmentNumber"],
+					});
 			}
 			installmentNumbers.add(installment.installmentNumber);
 		}
@@ -89,11 +89,11 @@ const productCommissionSchema = z
 		);
 
 		if (totalScaled !== installmentsTotalScaled) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "A soma das parcelas deve ser igual ao % total",
-				path: ["installments"],
-			});
+				ctx.addIssue({
+					code: "custom",
+					message: "A soma das parcelas deve ser igual ao % total",
+					path: ["installments"],
+				});
 		}
 	});
 
@@ -124,20 +124,20 @@ export const productSchema = z.object({
 	const scenarioNames = new Set<string>();
 	for (const [scenarioIndex, scenario] of data.scenarios.entries()) {
 		if (scenarioIndex > 0 && scenario.conditions.length === 0) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Cenários adicionais exigem pelo menos uma condição",
-				path: ["scenarios", scenarioIndex, "conditions"],
-			});
+				ctx.addIssue({
+					code: "custom",
+					message: "Cenários adicionais exigem pelo menos uma condição",
+					path: ["scenarios", scenarioIndex, "conditions"],
+				});
 		}
 
 		const normalizedName = scenario.name.trim().toLowerCase();
 		if (scenarioNames.has(normalizedName)) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Nome de cenário duplicado",
-				path: ["scenarios", scenarioIndex, "name"],
-			});
+				ctx.addIssue({
+					code: "custom",
+					message: "Nome de cenário duplicado",
+					path: ["scenarios", scenarioIndex, "name"],
+				});
 		}
 		scenarioNames.add(normalizedName);
 	}
