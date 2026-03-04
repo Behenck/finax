@@ -133,6 +133,11 @@ export type ProductCommission = Prisma.ProductCommissionModel
  */
 export type ProductCommissionInstallment = Prisma.ProductCommissionInstallmentModel
 /**
+ * Model Sale
+ * 
+ */
+export type Sale = Prisma.SaleModel
+/**
  * Model Transaction
  * 
  */

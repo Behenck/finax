@@ -6,7 +6,12 @@ interface verifyOTPProps {
 }
 
 export async function verifyOTP({ email, code }: verifyOTPProps): Promise<PostAuthVerifyOtp200> {
-  const data = await postAuthVerifyOtp({ email, code });
+  const data = await postAuthVerifyOtp({
+    data: {
+      email,
+      code,
+    },
+  });
 
   return data
 }

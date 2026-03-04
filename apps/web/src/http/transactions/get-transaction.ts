@@ -8,10 +8,10 @@ export async function getTransaction(
 ): Promise<GetOrganizationsSlugTransactionsTransactionid200["transaction"]> {
 	const slug = "behenck";
 
-	const data = await getOrganizationsSlugTransactionsTransactionid(
+	const data = await getOrganizationsSlugTransactionsTransactionid({
 		slug,
-		transactionId
-	);
+		transactionId,
+	});
 
 	return data.transaction;
 }

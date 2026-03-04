@@ -1,5 +1,9 @@
 import { postAuthSendEmailOtp } from "../generated";
 
 export async function sendEmailOTP(email: string) {
-  await postAuthSendEmailOtp({ email });
+  await postAuthSendEmailOtp({
+    data: {
+      email,
+    },
+  });
 }

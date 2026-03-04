@@ -1,7 +1,7 @@
-import { getProfile as getProfileRoute, type GetProfile200 } from "@/http/generated";
+import { getMe, type GetMe200 } from "@/http/generated";
 
-export async function getProfile(): Promise<GetProfile200> {
-  const data = await getProfileRoute();
+export async function getProfile(): Promise<GetMe200["user"]> {
+  const data = await getMe();
 
-  return data.user;
+  return data.user
 }

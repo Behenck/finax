@@ -146,6 +146,24 @@ export const ProductCommissionRecipientType = {
 export type ProductCommissionRecipientType = (typeof ProductCommissionRecipientType)[keyof typeof ProductCommissionRecipientType]
 
 
+export const SaleStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  COMPLETED: 'COMPLETED',
+  CANCELED: 'CANCELED'
+} as const
+
+export type SaleStatus = (typeof SaleStatus)[keyof typeof SaleStatus]
+
+
+export const SaleResponsibleType = {
+  SELLER: 'SELLER',
+  PARTNER: 'PARTNER'
+} as const
+
+export type SaleResponsibleType = (typeof SaleResponsibleType)[keyof typeof SaleResponsibleType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

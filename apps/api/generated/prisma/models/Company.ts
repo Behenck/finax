@@ -179,6 +179,7 @@ export type CompanyWhereInput = {
   transactions?: Prisma.TransactionListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
@@ -194,6 +195,7 @@ export type CompanyOrderByWithRelationInput = {
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   employees?: Prisma.EmployeeOrderByRelationAggregateInput
   recurrences?: Prisma.RecurrenceOrderByRelationAggregateInput
+  sales?: Prisma.SaleOrderByRelationAggregateInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessOrderByRelationAggregateInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionOrderByRelationAggregateInput
   productCommissions?: Prisma.ProductCommissionOrderByRelationAggregateInput
@@ -213,6 +215,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   transactions?: Prisma.TransactionListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  sales?: Prisma.SaleListRelationFilter
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
@@ -247,6 +250,7 @@ export type CompanyCreateInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -261,6 +265,7 @@ export type CompanyUncheckedCreateInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -275,6 +280,7 @@ export type CompanyUpdateInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -289,6 +295,7 @@ export type CompanyUncheckedUpdateInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -476,6 +483,20 @@ export type CompanyUpdateOneWithoutProductCommissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutProductCommissionsInput, Prisma.CompanyUpdateWithoutProductCommissionsInput>, Prisma.CompanyUncheckedUpdateWithoutProductCommissionsInput>
 }
 
+export type CompanyCreateNestedOneWithoutSalesInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutSalesInput, Prisma.CompanyUncheckedCreateWithoutSalesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutSalesInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutSalesNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutSalesInput, Prisma.CompanyUncheckedCreateWithoutSalesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutSalesInput
+  upsert?: Prisma.CompanyUpsertWithoutSalesInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutSalesInput, Prisma.CompanyUpdateWithoutSalesInput>, Prisma.CompanyUncheckedUpdateWithoutSalesInput>
+}
+
 export type CompanyCreateNestedOneWithoutTransactionsInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutTransactionsInput, Prisma.CompanyUncheckedCreateWithoutTransactionsInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutTransactionsInput
@@ -513,6 +534,7 @@ export type CompanyCreateWithoutMemberCompanyAccessesInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
 }
@@ -526,6 +548,7 @@ export type CompanyUncheckedCreateWithoutMemberCompanyAccessesInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
 }
@@ -555,6 +578,7 @@ export type CompanyUpdateWithoutMemberCompanyAccessesInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
 }
@@ -568,6 +592,7 @@ export type CompanyUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
 }
@@ -580,6 +605,7 @@ export type CompanyCreateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -593,6 +619,7 @@ export type CompanyUncheckedCreateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -642,6 +669,7 @@ export type CompanyCreateWithoutUnitsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -655,6 +683,7 @@ export type CompanyUncheckedCreateWithoutUnitsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -684,6 +713,7 @@ export type CompanyUpdateWithoutUnitsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -697,6 +727,7 @@ export type CompanyUncheckedUpdateWithoutUnitsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -710,6 +741,7 @@ export type CompanyCreateWithoutEmployeesInput = {
   units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -723,6 +755,7 @@ export type CompanyUncheckedCreateWithoutEmployeesInput = {
   units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -752,6 +785,7 @@ export type CompanyUpdateWithoutEmployeesInput = {
   units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -765,6 +799,7 @@ export type CompanyUncheckedUpdateWithoutEmployeesInput = {
   units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -779,6 +814,7 @@ export type CompanyCreateWithoutProductCommissionScenarioConditionsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
 }
@@ -792,6 +828,7 @@ export type CompanyUncheckedCreateWithoutProductCommissionScenarioConditionsInpu
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
 }
@@ -821,6 +858,7 @@ export type CompanyUpdateWithoutProductCommissionScenarioConditionsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
 }
@@ -834,6 +872,7 @@ export type CompanyUncheckedUpdateWithoutProductCommissionScenarioConditionsInpu
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
 }
@@ -847,6 +886,7 @@ export type CompanyCreateWithoutProductCommissionsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
 }
@@ -860,6 +900,7 @@ export type CompanyUncheckedCreateWithoutProductCommissionsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
 }
@@ -889,6 +930,7 @@ export type CompanyUpdateWithoutProductCommissionsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
 }
@@ -902,8 +944,81 @@ export type CompanyUncheckedUpdateWithoutProductCommissionsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutSalesInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutCompaniesInput
+  units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutSalesInput = {
+  id?: string
+  name: string
+  organizationId: string
+  createdAt?: Date | string
+  units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutSalesInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutSalesInput, Prisma.CompanyUncheckedCreateWithoutSalesInput>
+}
+
+export type CompanyUpsertWithoutSalesInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutSalesInput, Prisma.CompanyUncheckedUpdateWithoutSalesInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutSalesInput, Prisma.CompanyUncheckedCreateWithoutSalesInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutSalesInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutSalesInput, Prisma.CompanyUncheckedUpdateWithoutSalesInput>
+}
+
+export type CompanyUpdateWithoutSalesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCompaniesNestedInput
+  units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutSalesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
 }
 
 export type CompanyCreateWithoutTransactionsInput = {
@@ -914,6 +1029,7 @@ export type CompanyCreateWithoutTransactionsInput = {
   units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -927,6 +1043,7 @@ export type CompanyUncheckedCreateWithoutTransactionsInput = {
   units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -956,6 +1073,7 @@ export type CompanyUpdateWithoutTransactionsInput = {
   units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -969,6 +1087,7 @@ export type CompanyUncheckedUpdateWithoutTransactionsInput = {
   units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -982,6 +1101,7 @@ export type CompanyCreateWithoutRecurrencesInput = {
   units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
@@ -995,6 +1115,7 @@ export type CompanyUncheckedCreateWithoutRecurrencesInput = {
   units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
@@ -1024,6 +1145,7 @@ export type CompanyUpdateWithoutRecurrencesInput = {
   units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -1037,6 +1159,7 @@ export type CompanyUncheckedUpdateWithoutRecurrencesInput = {
   units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -1056,6 +1179,7 @@ export type CompanyUpdateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
@@ -1069,6 +1193,7 @@ export type CompanyUncheckedUpdateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
@@ -1090,6 +1215,7 @@ export type CompanyCountOutputType = {
   transactions: number
   employees: number
   recurrences: number
+  sales: number
   memberCompanyAccesses: number
   productCommissionScenarioConditions: number
   productCommissions: number
@@ -1100,6 +1226,7 @@ export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   transactions?: boolean | CompanyCountOutputTypeCountTransactionsArgs
   employees?: boolean | CompanyCountOutputTypeCountEmployeesArgs
   recurrences?: boolean | CompanyCountOutputTypeCountRecurrencesArgs
+  sales?: boolean | CompanyCountOutputTypeCountSalesArgs
   memberCompanyAccesses?: boolean | CompanyCountOutputTypeCountMemberCompanyAccessesArgs
   productCommissionScenarioConditions?: boolean | CompanyCountOutputTypeCountProductCommissionScenarioConditionsArgs
   productCommissions?: boolean | CompanyCountOutputTypeCountProductCommissionsArgs
@@ -1146,6 +1273,13 @@ export type CompanyCountOutputTypeCountRecurrencesArgs<ExtArgs extends runtime.T
 /**
  * CompanyCountOutputType without action
  */
+export type CompanyCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleWhereInput
+}
+
+/**
+ * CompanyCountOutputType without action
+ */
 export type CompanyCountOutputTypeCountMemberCompanyAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MemberCompanyAccessWhereInput
 }
@@ -1175,6 +1309,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   transactions?: boolean | Prisma.Company$transactionsArgs<ExtArgs>
   employees?: boolean | Prisma.Company$employeesArgs<ExtArgs>
   recurrences?: boolean | Prisma.Company$recurrencesArgs<ExtArgs>
+  sales?: boolean | Prisma.Company$salesArgs<ExtArgs>
   memberCompanyAccesses?: boolean | Prisma.Company$memberCompanyAccessesArgs<ExtArgs>
   productCommissionScenarioConditions?: boolean | Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Company$productCommissionsArgs<ExtArgs>
@@ -1211,6 +1346,7 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   transactions?: boolean | Prisma.Company$transactionsArgs<ExtArgs>
   employees?: boolean | Prisma.Company$employeesArgs<ExtArgs>
   recurrences?: boolean | Prisma.Company$recurrencesArgs<ExtArgs>
+  sales?: boolean | Prisma.Company$salesArgs<ExtArgs>
   memberCompanyAccesses?: boolean | Prisma.Company$memberCompanyAccessesArgs<ExtArgs>
   productCommissionScenarioConditions?: boolean | Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Company$productCommissionsArgs<ExtArgs>
@@ -1231,6 +1367,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
     employees: Prisma.$EmployeePayload<ExtArgs>[]
     recurrences: Prisma.$RecurrencePayload<ExtArgs>[]
+    sales: Prisma.$SalePayload<ExtArgs>[]
     memberCompanyAccesses: Prisma.$MemberCompanyAccessPayload<ExtArgs>[]
     productCommissionScenarioConditions: Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>[]
     productCommissions: Prisma.$ProductCommissionPayload<ExtArgs>[]
@@ -1639,6 +1776,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   transactions<T extends Prisma.Company$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   employees<T extends Prisma.Company$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$employeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurrences<T extends Prisma.Company$recurrencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$recurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sales<T extends Prisma.Company$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   memberCompanyAccesses<T extends Prisma.Company$memberCompanyAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$memberCompanyAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberCompanyAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissionScenarioConditions<T extends Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissions<T extends Prisma.Company$productCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$productCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2164,6 +2302,30 @@ export type Company$recurrencesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.RecurrenceScalarFieldEnum | Prisma.RecurrenceScalarFieldEnum[]
+}
+
+/**
+ * Company.sales
+ */
+export type Company$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
+  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
+  cursor?: Prisma.SaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
 }
 
 /**

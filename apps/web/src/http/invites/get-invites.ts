@@ -6,7 +6,9 @@ import {
 export async function getInvites(slug: string): Promise<
 	GetOrganizationsSlugInvites200["invites"]
 > {
-	const data = await getOrganizationsSlugInvites(slug);
+	const data = await getOrganizationsSlugInvites({
+		slug,
+	});
 
 	return data.invites;
 }

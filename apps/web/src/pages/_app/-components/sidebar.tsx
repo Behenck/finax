@@ -24,6 +24,7 @@ import {
 	Database,
 	Home,
 	IdCardLanyard,
+	LineChart,
 	LogOut,
 	Network,
 	PersonStanding,
@@ -112,6 +113,11 @@ export function AppSidebar() {
 			title: "Transações",
 			url: "/transactions",
 			icon: CreditCard,
+		},
+		{
+			title: "Vendas",
+			url: "/sales",
+			icon: LineChart,
 		},
 		{
 			title: "Configurações",

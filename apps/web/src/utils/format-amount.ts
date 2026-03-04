@@ -21,3 +21,8 @@ export function parseBRLCurrencyToNumber(value: string | null | undefined): numb
       .replace(",", ".")
   )
 }
+
+export function parseBRLCurrencyToCents(value: string | null | undefined): number {
+  const numericValue = parseBRLCurrencyToNumber(value)
+  return Math.round(numericValue * 100)
+}

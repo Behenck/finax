@@ -28,6 +28,7 @@ model User {
   createdTransactions Transaction[]  @relation("TransactionCreatedBy")
   employees           Employee[]
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
+  createdSales        Sale[]         @relation("SaleCreatedBy")
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
   linkedPartners      Partner[]      @relation("PartnerUser")
   linkedSellers       Seller[]       @relation("SellerUser")
@@ -178,6 +179,7 @@ model Organization {
   partners              Partner[]
   sellers               Seller[]
   products              Product[]
+  sales                 Sale[]
   memberCompanyAccesses MemberCompanyAccess[]
 
   @@index([slug])
@@ -191,14 +193,15 @@ model Company {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  organization          Organization          @relation(fields: [organizationId], references: [id])
-  units                 Unit[]
-  transactions          Transaction[]
-  employees             Employee[]
-  recurrences           Recurrence[]
-  memberCompanyAccesses MemberCompanyAccess[]
+  organization                        Organization                         @relation(fields: [organizationId], references: [id])
+  units                               Unit[]
+  transactions                        Transaction[]
+  employees                           Employee[]
+  recurrences                         Recurrence[]
+  sales                               Sale[]
+  memberCompanyAccesses               MemberCompanyAccess[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionCompany")
-  productCommissions                ProductCommission[]                  @relation("ProductCommissionRecipientCompany")
+  productCommissions                  ProductCommission[]                  @relation("ProductCommissionRecipientCompany")
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -215,6 +218,7 @@ model Unit {
   company                             Company                              @relation(fields: [companyId], references: [id])
   transactions                        Transaction[]
   recurrences                         Recurrence[]
+  sales                               Sale[]
   memberCompanyAccesses               MemberCompanyAccess[]
   employees                           Employee[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionUnit")
@@ -337,6 +341,7 @@ model Customer {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   organization Organization @relation(fields: [organizationId], references: [id])
+  sales        Sale[]
   customerPF   CustomerPF?
   customerPJ   CustomerPJ?
 
@@ -514,6 +519,7 @@ model Product {
   organization Organization @relation(fields: [organizationId], references: [id])
   parent       Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
   children     Product[]    @relation("ProductTree")
+  sales        Sale[]
 
   commissionScenarios ProductCommissionScenario[]
 
@@ -639,6 +645,55 @@ model ProductCommissionInstallment {
   @@unique([commissionId, installmentNumber])
   @@index([commissionId])
   @@map("product_commission_installments")
+}
+
+enum SaleStatus {
+  PENDING
+  APPROVED
+  COMPLETED
+  CANCELED
+}
+
+enum SaleResponsibleType {
+  SELLER
+  PARTNER
+}
+
+model Sale {
+  id String @id @default(uuid())
+
+  organizationId  String              @map("organization_id")
+  companyId       String              @map("company_id")
+  unitId          String?             @map("unit_id")
+  customerId      String              @map("customer_id")
+  productId       String              @map("product_id")
+  saleDate        DateTime            @map("sale_date") @db.Date
+  totalAmount     Int                 @map("total_amount")
+  status          SaleStatus          @default(PENDING)
+  responsibleType SaleResponsibleType @map("responsible_type")
+  responsibleId   String              @map("responsible_id")
+  notes           String?
+  createdById     String              @map("created_by_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  company      Company      @relation(fields: [companyId], references: [id])
+  unit         Unit?        @relation(fields: [unitId], references: [id])
+  customer     Customer     @relation(fields: [customerId], references: [id])
+  product      Product      @relation(fields: [productId], references: [id])
+  createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
+
+  @@index([organizationId, saleDate])
+  @@index([organizationId, status])
+  @@index([organizationId, companyId])
+  @@index([companyId, unitId])
+  @@index([customerId])
+  @@index([productId])
+  @@index([createdById])
+  @@index([organizationId, responsibleType, responsibleId])
+  @@map("sales")
 }
 
 enum TransactionType {

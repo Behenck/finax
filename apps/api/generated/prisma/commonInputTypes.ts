@@ -457,6 +457,40 @@ export type EnumProductCommissionRecipientTypeWithAggregatesFilter<$PrismaModel 
   _max?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
 }
 
+export type EnumSaleStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleStatus | Prisma.EnumSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel> | $Enums.SaleStatus
+}
+
+export type EnumSaleResponsibleTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleResponsibleType | Prisma.EnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel> | $Enums.SaleResponsibleType
+}
+
+export type EnumSaleStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleStatus | Prisma.EnumSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleStatusWithAggregatesFilter<$PrismaModel> | $Enums.SaleStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel>
+}
+
+export type EnumSaleResponsibleTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleResponsibleType | Prisma.EnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleResponsibleTypeWithAggregatesFilter<$PrismaModel> | $Enums.SaleResponsibleType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel>
+}
+
 export type EnumTransactionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.TransactionStatus | Prisma.EnumTransactionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TransactionStatus[] | Prisma.ListEnumTransactionStatusFieldRefInput<$PrismaModel>
@@ -996,6 +1030,40 @@ export type NestedEnumProductCommissionRecipientTypeWithAggregatesFilter<$Prisma
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumSaleStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleStatus | Prisma.EnumSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel> | $Enums.SaleStatus
+}
+
+export type NestedEnumSaleResponsibleTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleResponsibleType | Prisma.EnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel> | $Enums.SaleResponsibleType
+}
+
+export type NestedEnumSaleStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleStatus | Prisma.EnumSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleStatus[] | Prisma.ListEnumSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleStatusWithAggregatesFilter<$PrismaModel> | $Enums.SaleStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSaleResponsibleTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleResponsibleType | Prisma.EnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleResponsibleType[] | Prisma.ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleResponsibleTypeWithAggregatesFilter<$PrismaModel> | $Enums.SaleResponsibleType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleResponsibleTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumTransactionStatusFilter<$PrismaModel = never> = {

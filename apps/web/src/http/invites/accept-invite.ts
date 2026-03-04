@@ -10,5 +10,8 @@ export interface AcceptInviteProps {
 }
 
 export async function acceptInvite({ inviteId, data }: AcceptInviteProps) {
-  await postInvitesInviteidAccept(inviteId, data);
+  await postInvitesInviteidAccept({
+    inviteId,
+    data,
+  });
 }

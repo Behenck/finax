@@ -20,19 +20,19 @@ export const putOrganizationsSlugProductsIdCommissionScenariosMutationRequestSch
     "name": z.string().min(1),
 "conditions": z.array(z.union([z.object({
     "type": z.enum(["COMPANY"]),
-"valueId": z.uuid()
+"valueId": z.nullable(z.uuid())
     }), z.object({
     "type": z.enum(["PARTNER"]),
-"valueId": z.uuid()
+"valueId": z.nullable(z.uuid())
     }), z.object({
     "type": z.enum(["UNIT"]),
-"valueId": z.uuid()
+"valueId": z.nullable(z.uuid())
     }), z.object({
     "type": z.enum(["SELLER"]),
-"valueId": z.uuid()
+"valueId": z.nullable(z.uuid())
     })])),
 "commissions": z.array(z.object({
-    "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "SUPERVISOR", "OTHER"]),
+    "recipientType": z.enum(["COMPANY", "UNIT", "PARTNER", "SELLER", "SUPERVISOR", "OTHER"]),
 "beneficiaryId": z.optional(z.uuid()),
 "beneficiaryLabel": z.optional(z.string()),
 "totalPercentage": z.number().max(100).gt(0),

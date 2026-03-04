@@ -19,10 +19,13 @@ import { Route as AppSettingsLayoutRouteImport } from './pages/_app/settings/lay
 import { Route as AuthInviteIndexRouteImport } from './pages/_auth/invite/index'
 import { Route as AppTransactionsIndexRouteImport } from './pages/_app/transactions/index'
 import { Route as AppSettingsIndexRouteImport } from './pages/_app/settings/index'
+import { Route as AppSalesIndexRouteImport } from './pages/_app/sales/index'
 import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
 import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/reset'
 import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
 import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/forgot'
+import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
+import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
@@ -37,6 +40,7 @@ import { Route as AppRegistersCompaniesIndexRouteImport } from './pages/_app/reg
 import { Route as AppRegistersCategoriesIndexRouteImport } from './pages/_app/registers/categories/index'
 import { Route as AuthInviteInviteIdAcceptRouteImport } from './pages/_auth/invite/$inviteId/accept'
 import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/_app/transactions/update/$transactionId'
+import { Route as AppSalesUpdateSaleIdRouteImport } from './pages/_app/sales/update/$saleId'
 import { Route as AppRegistersSellersUpdateRouteImport } from './pages/_app/registers/sellers/update'
 import { Route as AppRegistersSellersCreateRouteImport } from './pages/_app/registers/sellers/create'
 import { Route as AppRegistersPartnersUpdateRouteImport } from './pages/_app/registers/partners/update'
@@ -92,6 +96,11 @@ const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppSettingsLayoutRoute,
 } as any)
+const AppSalesIndexRoute = AppSalesIndexRouteImport.update({
+  id: '/sales/',
+  path: '/sales/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/_dashboard/',
   path: '/',
@@ -111,6 +120,16 @@ const AuthPasswordForgotRoute = AuthPasswordForgotRouteImport.update({
   id: '/password/forgot',
   path: '/password/forgot',
   getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AppSalesCreateRoute = AppSalesCreateRouteImport.update({
+  id: '/sales/create',
+  path: '/sales/create',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppSalesSaleIdRoute = AppSalesSaleIdRouteImport.update({
+  id: '/sales/$saleId',
+  path: '/sales/$saleId',
+  getParentRoute: () => AppLayoutRoute,
 } as any)
 const AuthInviteInviteIdIndexRoute = AuthInviteInviteIdIndexRouteImport.update({
   id: '/$inviteId/',
@@ -194,6 +213,11 @@ const AppTransactionsUpdateTransactionIdRoute =
     path: '/transactions/update/$transactionId',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppSalesUpdateSaleIdRoute = AppSalesUpdateSaleIdRouteImport.update({
+  id: '/sales/update/$saleId',
+  path: '/sales/update/$saleId',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 const AppRegistersSellersUpdateRoute =
   AppRegistersSellersUpdateRouteImport.update({
     id: '/registers/sellers/update',
@@ -237,10 +261,13 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/sales/$saleId': typeof AppSalesSaleIdRoute
+  '/sales/create': typeof AppSalesCreateRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
+  '/sales': typeof AppSalesIndexRoute
   '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
   '/invite/': typeof AuthInviteIndexRoute
@@ -250,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
   '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
+  '/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
@@ -269,10 +297,13 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/sales/$saleId': typeof AppSalesSaleIdRoute
+  '/sales/create': typeof AppSalesCreateRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
+  '/sales': typeof AppSalesIndexRoute
   '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
   '/invite': typeof AuthInviteIndexRoute
@@ -282,6 +313,7 @@ export interface FileRoutesByTo {
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
   '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
+  '/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
   '/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/registers/categories': typeof AppRegistersCategoriesIndexRoute
@@ -306,10 +338,13 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
+  '/_app/sales/create': typeof AppSalesCreateRoute
   '/_auth/password/forgot': typeof AuthPasswordForgotRoute
   '/_auth/password/recover': typeof AuthPasswordRecoverRoute
   '/_auth/password/reset': typeof AuthPasswordResetRoute
   '/_app/_dashboard/': typeof AppDashboardIndexRoute
+  '/_app/sales/': typeof AppSalesIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
   '/_auth/invite/': typeof AuthInviteIndexRoute
@@ -319,6 +354,7 @@ export interface FileRoutesById {
   '/_app/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
   '/_app/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/_app/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
+  '/_app/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
   '/_app/transactions/update/$transactionId': typeof AppTransactionsUpdateTransactionIdRoute
   '/_auth/invite/$inviteId/accept': typeof AuthInviteInviteIdAcceptRoute
   '/_app/registers/categories/': typeof AppRegistersCategoriesIndexRoute
@@ -342,10 +378,13 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/verify-otp'
+    | '/sales/$saleId'
+    | '/sales/create'
     | '/password/forgot'
     | '/password/recover'
     | '/password/reset'
     | '/'
+    | '/sales'
     | '/settings/'
     | '/transactions'
     | '/invite/'
@@ -355,6 +394,7 @@ export interface FileRouteTypes {
     | '/registers/partners/update'
     | '/registers/sellers/create'
     | '/registers/sellers/update'
+    | '/sales/update/$saleId'
     | '/transactions/update/$transactionId'
     | '/invite/$inviteId/accept'
     | '/registers/categories'
@@ -374,10 +414,13 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/verify-otp'
+    | '/sales/$saleId'
+    | '/sales/create'
     | '/password/forgot'
     | '/password/recover'
     | '/password/reset'
     | '/'
+    | '/sales'
     | '/settings'
     | '/transactions'
     | '/invite'
@@ -387,6 +430,7 @@ export interface FileRouteTypes {
     | '/registers/partners/update'
     | '/registers/sellers/create'
     | '/registers/sellers/update'
+    | '/sales/update/$saleId'
     | '/transactions/update/$transactionId'
     | '/invite/$inviteId/accept'
     | '/registers/categories'
@@ -410,10 +454,13 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/verify-otp'
+    | '/_app/sales/$saleId'
+    | '/_app/sales/create'
     | '/_auth/password/forgot'
     | '/_auth/password/recover'
     | '/_auth/password/reset'
     | '/_app/_dashboard/'
+    | '/_app/sales/'
     | '/_app/settings/'
     | '/_app/transactions/'
     | '/_auth/invite/'
@@ -423,6 +470,7 @@ export interface FileRouteTypes {
     | '/_app/registers/partners/update'
     | '/_app/registers/sellers/create'
     | '/_app/registers/sellers/update'
+    | '/_app/sales/update/$saleId'
     | '/_app/transactions/update/$transactionId'
     | '/_auth/invite/$inviteId/accept'
     | '/_app/registers/categories/'
@@ -516,6 +564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsIndexRouteImport
       parentRoute: typeof AppSettingsLayoutRoute
     }
+    '/_app/sales/': {
+      id: '/_app/sales/'
+      path: '/sales'
+      fullPath: '/sales'
+      preLoaderRoute: typeof AppSalesIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/_dashboard/': {
       id: '/_app/_dashboard/'
       path: '/'
@@ -543,6 +598,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/password/forgot'
       preLoaderRoute: typeof AuthPasswordForgotRouteImport
       parentRoute: typeof AuthLayoutRoute
+    }
+    '/_app/sales/create': {
+      id: '/_app/sales/create'
+      path: '/sales/create'
+      fullPath: '/sales/create'
+      preLoaderRoute: typeof AppSalesCreateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/sales/$saleId': {
+      id: '/_app/sales/$saleId'
+      path: '/sales/$saleId'
+      fullPath: '/sales/$saleId'
+      preLoaderRoute: typeof AppSalesSaleIdRouteImport
+      parentRoute: typeof AppLayoutRoute
     }
     '/_auth/invite/$inviteId/': {
       id: '/_auth/invite/$inviteId/'
@@ -642,6 +711,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTransactionsUpdateTransactionIdRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/sales/update/$saleId': {
+      id: '/_app/sales/update/$saleId'
+      path: '/sales/update/$saleId'
+      fullPath: '/sales/update/$saleId'
+      preLoaderRoute: typeof AppSalesUpdateSaleIdRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/sellers/update': {
       id: '/_app/registers/sellers/update'
       path: '/registers/sellers/update'
@@ -704,7 +780,10 @@ const AppSettingsLayoutRouteWithChildren =
 
 interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
+  AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
+  AppSalesCreateRoute: typeof AppSalesCreateRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppSalesIndexRoute: typeof AppSalesIndexRoute
   AppTransactionsIndexRoute: typeof AppTransactionsIndexRoute
   AppRegistersCustomersCreateRoute: typeof AppRegistersCustomersCreateRoute
   AppRegistersCustomersUpdateRoute: typeof AppRegistersCustomersUpdateRoute
@@ -712,6 +791,7 @@ interface AppLayoutRouteChildren {
   AppRegistersPartnersUpdateRoute: typeof AppRegistersPartnersUpdateRoute
   AppRegistersSellersCreateRoute: typeof AppRegistersSellersCreateRoute
   AppRegistersSellersUpdateRoute: typeof AppRegistersSellersUpdateRoute
+  AppSalesUpdateSaleIdRoute: typeof AppSalesUpdateSaleIdRoute
   AppTransactionsUpdateTransactionIdRoute: typeof AppTransactionsUpdateTransactionIdRoute
   AppRegistersCategoriesIndexRoute: typeof AppRegistersCategoriesIndexRoute
   AppRegistersCompaniesIndexRoute: typeof AppRegistersCompaniesIndexRoute
@@ -726,7 +806,10 @@ interface AppLayoutRouteChildren {
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
+  AppSalesSaleIdRoute: AppSalesSaleIdRoute,
+  AppSalesCreateRoute: AppSalesCreateRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppSalesIndexRoute: AppSalesIndexRoute,
   AppTransactionsIndexRoute: AppTransactionsIndexRoute,
   AppRegistersCustomersCreateRoute: AppRegistersCustomersCreateRoute,
   AppRegistersCustomersUpdateRoute: AppRegistersCustomersUpdateRoute,
@@ -734,6 +817,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersPartnersUpdateRoute: AppRegistersPartnersUpdateRoute,
   AppRegistersSellersCreateRoute: AppRegistersSellersCreateRoute,
   AppRegistersSellersUpdateRoute: AppRegistersSellersUpdateRoute,
+  AppSalesUpdateSaleIdRoute: AppSalesUpdateSaleIdRoute,
   AppTransactionsUpdateTransactionIdRoute:
     AppTransactionsUpdateTransactionIdRoute,
   AppRegistersCategoriesIndexRoute: AppRegistersCategoriesIndexRoute,

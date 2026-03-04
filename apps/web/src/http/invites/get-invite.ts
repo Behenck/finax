@@ -3,7 +3,9 @@ import { getInvitesInviteid, type GetInvitesInviteid200 } from "../generated";
 export async function getInvite(inviteId: string): Promise<
 	GetInvitesInviteid200["invite"]
 > {
-	const { invite } = await getInvitesInviteid(inviteId);
+	const { invite } = await getInvitesInviteid({
+		inviteId,
+	});
 
 	return invite;
 }

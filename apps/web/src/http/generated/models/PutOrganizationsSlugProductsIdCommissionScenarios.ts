@@ -51,6 +51,7 @@ export type ConditionsTypeEnum8Key = (typeof conditionsTypeEnum8)[keyof typeof c
 export const commissionsRecipientTypeEnum2 = {
     "COMPANY": "COMPANY",
     "UNIT": "UNIT",
+    "PARTNER": "PARTNER",
     "SELLER": "SELLER",
     "SUPERVISOR": "SUPERVISOR",
     "OTHER": "OTHER"
@@ -79,7 +80,7 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -88,7 +89,7 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -97,7 +98,7 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -106,7 +107,7 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         })[];
         /**
          * @type array

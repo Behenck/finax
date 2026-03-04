@@ -1,0 +1,143 @@
+import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
+import { CustomerStatus } from "generated/prisma/enums";
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import z from "zod";
+import { BadRequestError } from "../_errors/bad-request-error";
+import {
+	CreateSaleBodySchema,
+	parseSaleDateInput,
+} from "./sale-schemas";
+import { resolveSaleResponsibleData } from "./sale-responsible";
+
+export async function createSale(app: FastifyInstance) {
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.post(
+			"/organizations/:slug/sales",
+			{
+				schema: {
+					tags: ["sales"],
+					summary: "Create a new sale",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+					}),
+					body: CreateSaleBodySchema,
+					response: {
+						201: z.object({
+							saleId: z.uuid(),
+						}),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug } = request.params;
+				const data = request.body;
+				const userId = await request.getCurrentUserId();
+
+				const organization = await prisma.organization.findUnique({
+					where: {
+						slug,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
+
+				const customer = await prisma.customer.findFirst({
+					where: {
+						id: data.customerId,
+						organizationId: organization.id,
+						status: CustomerStatus.ACTIVE,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				if (!customer) {
+					throw new BadRequestError("Customer not found or inactive");
+				}
+
+				const product = await prisma.product.findFirst({
+					where: {
+						id: data.productId,
+						organizationId: organization.id,
+						isActive: true,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				if (!product) {
+					throw new BadRequestError("Product not found or inactive");
+				}
+
+				const company = await prisma.company.findFirst({
+					where: {
+						id: data.companyId,
+						organizationId: organization.id,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				if (!company) {
+					throw new BadRequestError("Company not found");
+				}
+
+				if (data.unitId) {
+					const unit = await prisma.unit.findFirst({
+						where: {
+							id: data.unitId,
+							companyId: data.companyId,
+						},
+						select: {
+							id: true,
+						},
+					});
+
+					if (!unit) {
+						throw new BadRequestError("Unit not found for company");
+					}
+				}
+
+				const responsibleData = await resolveSaleResponsibleData(
+					organization.id,
+					data.responsible,
+				);
+
+				const sale = await db(() =>
+					prisma.sale.create({
+						data: {
+							organizationId: organization.id,
+							companyId: data.companyId,
+							unitId: data.unitId,
+							customerId: data.customerId,
+							productId: data.productId,
+							saleDate: parseSaleDateInput(data.saleDate),
+							totalAmount: data.totalAmount,
+							notes: data.notes ?? null,
+							createdById: userId,
+							...responsibleData,
+						},
+					}),
+				);
+
+				return reply.status(201).send({
+					saleId: sale.id,
+				});
+			},
+		);
+}
+

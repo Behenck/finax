@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import api from "@/lib/axios";
+import { api } from "@/lib/axios";
 import { LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 

@@ -42,6 +42,7 @@ export type ConditionsTypeEnum4Key = (typeof conditionsTypeEnum4)[keyof typeof c
 export const commissionsRecipientTypeEnum = {
     "COMPANY": "COMPANY",
     "UNIT": "UNIT",
+    "PARTNER": "PARTNER",
     "SELLER": "SELLER",
     "SUPERVISOR": "SUPERVISOR",
     "OTHER": "OTHER"
@@ -73,7 +74,7 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -82,7 +83,7 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -91,7 +92,7 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         } | {
             /**
              * @type string
@@ -100,7 +101,7 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
             /**
              * @type string, uuid
             */
-            valueId: string;
+            valueId: string | null;
         })[];
         /**
          * @type array

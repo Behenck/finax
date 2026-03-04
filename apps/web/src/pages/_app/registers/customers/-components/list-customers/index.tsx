@@ -1,4 +1,3 @@
-import { useApp } from "@/context/app-context";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -104,8 +103,19 @@ export function ListCustomers({ customers }: ListCustomersProps) {
                 </TableCell>
                 <TableCell>
                   <div className='flex items-center justify-end'>
-                    <Button variant="link" className='text-muted-foreground text-xs hover:no-underline hover:text-foreground'>
-                      Adicionar Venda
+                    <Button
+                      variant="link"
+                      className='text-muted-foreground text-xs hover:no-underline hover:text-foreground'
+                      asChild
+                    >
+                      <Link
+                        to="/sales/create"
+                        search={{
+                          customerId: customer.id,
+                        }}
+                      >
+                        Adicionar Venda
+                      </Link>
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

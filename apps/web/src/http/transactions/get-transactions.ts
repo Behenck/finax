@@ -7,7 +7,9 @@ export async function getTransactions(): Promise<
 	GetOrganizationsSlugTransactions200["transactions"]
 > {
 	const slug = "behenck";
-	const data = await getOrganizationsSlugTransactions(slug);
+	const data = await getOrganizationsSlugTransactions({
+		slug,
+	});
 
 	return data.transactions;
 }

@@ -74,6 +74,7 @@ export const ModelName = {
   ProductCommissionScenarioCondition: 'ProductCommissionScenarioCondition',
   ProductCommission: 'ProductCommission',
   ProductCommissionInstallment: 'ProductCommissionInstallment',
+  Sale: 'Sale',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -435,6 +436,27 @@ export const ProductCommissionInstallmentScalarFieldEnum = {
 } as const
 
 export type ProductCommissionInstallmentScalarFieldEnum = (typeof ProductCommissionInstallmentScalarFieldEnum)[keyof typeof ProductCommissionInstallmentScalarFieldEnum]
+
+
+export const SaleScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  companyId: 'companyId',
+  unitId: 'unitId',
+  customerId: 'customerId',
+  productId: 'productId',
+  saleDate: 'saleDate',
+  totalAmount: 'totalAmount',
+  status: 'status',
+  responsibleType: 'responsibleType',
+  responsibleId: 'responsibleId',
+  notes: 'notes',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleScalarFieldEnum = (typeof SaleScalarFieldEnum)[keyof typeof SaleScalarFieldEnum]
 
 
 export const TransactionScalarFieldEnum = {
