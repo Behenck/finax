@@ -1,14 +1,11 @@
 import { useApp } from "@/context/app-context";
 import {
-	getOrganizationsSlugProductsIdCommissionScenariosQueryOptions,
-	type GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugCustomers,
 	useGetOrganizationsSlugPartners,
 	useGetOrganizationsSlugProducts,
 	useGetOrganizationsSlugSellers,
 } from "@/http/generated";
-import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export interface SaleProductOption {
@@ -16,7 +13,6 @@ export interface SaleProductOption {
 	name: string;
 	path: string[];
 	label: string;
-	commissionPercentage?: number;
 }
 
 type ProductTreeNode = {
@@ -51,27 +47,6 @@ function flattenActiveProductOptions(
 		];
 	});
 }
-
-function resolveHighestCommissionPercentage(
-	scenarios?: GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse["scenarios"],
-) {
-	const percentages =
-		scenarios?.flatMap((scenario) =>
-			scenario.commissions
-				.map((commission) => commission.totalPercentage)
-				.filter((percentage) => Number.isFinite(percentage) && percentage > 0),
-		) ?? [];
-
-	if (percentages.length === 0) {
-		return undefined;
-	}
-
-	return Math.max(...percentages);
-}
-
-const percentageFormatter = new Intl.NumberFormat("pt-BR", {
-	maximumFractionDigits: 2,
-});
 
 export function useSaleFormOptions() {
 	const { organization } = useApp();
@@ -127,47 +102,7 @@ export function useSaleFormOptions() {
 			),
 		[productsQuery.data?.products],
 	);
-	const productCommissionQueries = useQueries({
-		queries: baseProducts.map((product) =>
-			getOrganizationsSlugProductsIdCommissionScenariosQueryOptions({
-				slug,
-				id: product.id,
-			}),
-		),
-	});
-	const products = useMemo(() => {
-		const percentageByProductId = new Map<string, number>();
-
-		for (const [index, query] of productCommissionQueries.entries()) {
-			const product = baseProducts[index];
-			if (!product) {
-				continue;
-			}
-
-			const percentage = resolveHighestCommissionPercentage(
-				query.data?.scenarios,
-			);
-			if (percentage === undefined) {
-				continue;
-			}
-
-			percentageByProductId.set(product.id, percentage);
-		}
-
-		return baseProducts.map((product) => {
-			const commissionPercentage = percentageByProductId.get(product.id);
-
-			if (commissionPercentage === undefined) {
-				return product;
-			}
-
-			return {
-				...product,
-				commissionPercentage,
-				label: `${product.label} -> ${percentageFormatter.format(commissionPercentage)}%`,
-			};
-		});
-	}, [baseProducts, productCommissionQueries]);
+	const products = baseProducts;
 	const sellers = useMemo(
 		() =>
 			(sellersQuery.data?.sellers ?? []).filter(
