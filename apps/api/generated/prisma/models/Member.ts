@@ -178,6 +178,7 @@ export type MemberWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
+  saleCommissions?: Prisma.SaleCommissionListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -189,6 +190,7 @@ export type MemberOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessOrderByRelationAggregateInput
   productCommissions?: Prisma.ProductCommissionOrderByRelationAggregateInput
+  saleCommissions?: Prisma.SaleCommissionOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -204,6 +206,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
+  saleCommissions?: Prisma.SaleCommissionListRelationFilter
 }, "id" | "organizationId_userId">
 
 export type MemberOrderByWithAggregationInput = {
@@ -233,6 +236,7 @@ export type MemberCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -242,6 +246,7 @@ export type MemberUncheckedCreateInput = {
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUpdateInput = {
@@ -251,6 +256,7 @@ export type MemberUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -260,6 +266,7 @@ export type MemberUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -441,12 +448,29 @@ export type MemberUpdateOneWithoutProductCommissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProductCommissionsInput, Prisma.MemberUpdateWithoutProductCommissionsInput>, Prisma.MemberUncheckedUpdateWithoutProductCommissionsInput>
 }
 
+export type MemberCreateNestedOneWithoutSaleCommissionsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutSaleCommissionsInput, Prisma.MemberUncheckedCreateWithoutSaleCommissionsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutSaleCommissionsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutSaleCommissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutSaleCommissionsInput, Prisma.MemberUncheckedCreateWithoutSaleCommissionsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutSaleCommissionsInput
+  upsert?: Prisma.MemberUpsertWithoutSaleCommissionsInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutSaleCommissionsInput, Prisma.MemberUpdateWithoutSaleCommissionsInput>, Prisma.MemberUncheckedUpdateWithoutSaleCommissionsInput>
+}
+
 export type MemberCreateWithoutUserInput = {
   id?: string
   role?: $Enums.Role
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
@@ -455,6 +479,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   organizationId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -499,6 +524,7 @@ export type MemberCreateWithoutMemberCompanyAccessesInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
@@ -507,6 +533,7 @@ export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
   organizationId: string
   userId: string
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutMemberCompanyAccessesInput = {
@@ -531,6 +558,7 @@ export type MemberUpdateWithoutMemberCompanyAccessesInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
@@ -539,6 +567,7 @@ export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateWithoutOrganizationInput = {
@@ -547,6 +576,7 @@ export type MemberCreateWithoutOrganizationInput = {
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutOrganizationInput = {
@@ -555,6 +585,7 @@ export type MemberUncheckedCreateWithoutOrganizationInput = {
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutOrganizationInput = {
@@ -589,6 +620,7 @@ export type MemberCreateWithoutProductCommissionsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutProductCommissionsInput = {
@@ -597,6 +629,7 @@ export type MemberUncheckedCreateWithoutProductCommissionsInput = {
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutProductCommissionsInput = {
@@ -621,6 +654,7 @@ export type MemberUpdateWithoutProductCommissionsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
@@ -629,6 +663,59 @@ export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberCreateWithoutSaleCommissionsInput = {
+  id?: string
+  role?: $Enums.Role
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+}
+
+export type MemberUncheckedCreateWithoutSaleCommissionsInput = {
+  id?: string
+  role?: $Enums.Role
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+}
+
+export type MemberCreateOrConnectWithoutSaleCommissionsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutSaleCommissionsInput, Prisma.MemberUncheckedCreateWithoutSaleCommissionsInput>
+}
+
+export type MemberUpsertWithoutSaleCommissionsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutSaleCommissionsInput, Prisma.MemberUncheckedUpdateWithoutSaleCommissionsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutSaleCommissionsInput, Prisma.MemberUncheckedCreateWithoutSaleCommissionsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutSaleCommissionsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutSaleCommissionsInput, Prisma.MemberUncheckedUpdateWithoutSaleCommissionsInput>
+}
+
+export type MemberUpdateWithoutSaleCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutSaleCommissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -643,6 +730,7 @@ export type MemberUpdateWithoutUserInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
@@ -651,6 +739,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
@@ -671,6 +760,7 @@ export type MemberUpdateWithoutOrganizationInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutOrganizationInput = {
@@ -679,6 +769,7 @@ export type MemberUncheckedUpdateWithoutOrganizationInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
@@ -695,11 +786,13 @@ export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
 export type MemberCountOutputType = {
   memberCompanyAccesses: number
   productCommissions: number
+  saleCommissions: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberCompanyAccesses?: boolean | MemberCountOutputTypeCountMemberCompanyAccessesArgs
   productCommissions?: boolean | MemberCountOutputTypeCountProductCommissionsArgs
+  saleCommissions?: boolean | MemberCountOutputTypeCountSaleCommissionsArgs
 }
 
 /**
@@ -726,6 +819,13 @@ export type MemberCountOutputTypeCountProductCommissionsArgs<ExtArgs extends run
   where?: Prisma.ProductCommissionWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountSaleCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleCommissionWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -736,6 +836,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   memberCompanyAccesses?: boolean | Prisma.Member$memberCompanyAccessesArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Member$productCommissionsArgs<ExtArgs>
+  saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -770,6 +871,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   memberCompanyAccesses?: boolean | Prisma.Member$memberCompanyAccessesArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Member$productCommissionsArgs<ExtArgs>
+  saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -788,6 +890,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     user: Prisma.$UserPayload<ExtArgs>
     memberCompanyAccesses: Prisma.$MemberCompanyAccessPayload<ExtArgs>[]
     productCommissions: Prisma.$ProductCommissionPayload<ExtArgs>[]
+    saleCommissions: Prisma.$SaleCommissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1192,6 +1295,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   memberCompanyAccesses<T extends Prisma.Member$memberCompanyAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$memberCompanyAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberCompanyAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissions<T extends Prisma.Member$productCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$productCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  saleCommissions<T extends Prisma.Member$saleCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$saleCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1666,6 +1770,30 @@ export type Member$productCommissionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.ProductCommissionScalarFieldEnum | Prisma.ProductCommissionScalarFieldEnum[]
+}
+
+/**
+ * Member.saleCommissions
+ */
+export type Member$saleCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SaleCommission
+   */
+  select?: Prisma.SaleCommissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SaleCommission
+   */
+  omit?: Prisma.SaleCommissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleCommissionInclude<ExtArgs> | null
+  where?: Prisma.SaleCommissionWhereInput
+  orderBy?: Prisma.SaleCommissionOrderByWithRelationInput | Prisma.SaleCommissionOrderByWithRelationInput[]
+  cursor?: Prisma.SaleCommissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleCommissionScalarFieldEnum | Prisma.SaleCommissionScalarFieldEnum[]
 }
 
 /**

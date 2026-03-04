@@ -28,6 +28,24 @@ export const responsibleTypeEnum5 = {
 
 export type ResponsibleTypeEnum5Key = (typeof responsibleTypeEnum5)[keyof typeof responsibleTypeEnum5];
 
+export const commissionsSourceTypeEnum = {
+    "PULLED": "PULLED",
+    "MANUAL": "MANUAL"
+} as const;
+
+export type CommissionsSourceTypeEnumKey = (typeof commissionsSourceTypeEnum)[keyof typeof commissionsSourceTypeEnum];
+
+export const commissionsRecipientTypeEnum3 = {
+    "COMPANY": "COMPANY",
+    "UNIT": "UNIT",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER",
+    "SUPERVISOR": "SUPERVISOR",
+    "OTHER": "OTHER"
+} as const;
+
+export type CommissionsRecipientTypeEnum3Key = (typeof commissionsRecipientTypeEnum3)[keyof typeof commissionsRecipientTypeEnum3];
+
 export type PostOrganizationsSlugSalesMutationRequest = {
     /**
      * @pattern ^\d{4}-\d{2}-\d{2}$
@@ -72,6 +90,49 @@ export type PostOrganizationsSlugSalesMutationRequest = {
      * @type string | undefined
     */
     notes?: string;
+    /**
+     * @type array | undefined
+    */
+    commissions?: {
+        /**
+         * @type string
+        */
+        sourceType: CommissionsSourceTypeEnumKey;
+        /**
+         * @type string
+        */
+        recipientType: CommissionsRecipientTypeEnum3Key;
+        /**
+         * @type string | undefined, uuid
+        */
+        beneficiaryId?: string;
+        /**
+         * @type string | undefined
+        */
+        beneficiaryLabel?: string;
+        /**
+         * @maxLength 100
+         * @type number
+        */
+        totalPercentage: number;
+        /**
+         * @type array
+        */
+        installments: {
+            /**
+             * @minLength 1
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            installmentNumber: number;
+            /**
+             * @minLength 0
+             * @maxLength 100
+             * @type number
+            */
+            percentage: number;
+        }[];
+    }[];
 };
 
 export type PostOrganizationsSlugSalesMutationResponse = PostOrganizationsSlugSales201;

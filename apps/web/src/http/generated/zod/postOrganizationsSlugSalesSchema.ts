@@ -27,7 +27,18 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
     }),
 "companyId": z.uuid(),
 "unitId": z.optional(z.uuid()),
-"notes": z.optional(z.string())
+"notes": z.optional(z.string()),
+"commissions": z.optional(z.array(z.object({
+    "sourceType": z.enum(["PULLED", "MANUAL"]),
+"recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
+"beneficiaryId": z.optional(z.uuid()),
+"beneficiaryLabel": z.optional(z.string()),
+"totalPercentage": z.number().max(100).gt(0),
+"installments": z.array(z.object({
+    "installmentNumber": z.int().min(1).max(9007199254740991),
+"percentage": z.number().min(0).max(100)
+    })).min(1)
+    })))
     })
 
 export const postOrganizationsSlugSalesMutationResponseSchema = z.lazy(() => postOrganizationsSlugSales201Schema)

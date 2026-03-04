@@ -408,6 +408,8 @@ export const ModelName = {
   ProductCommission: 'ProductCommission',
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
+  SaleCommission: 'SaleCommission',
+  SaleCommissionInstallment: 'SaleCommissionInstallment',
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Recurrence: 'Recurrence'
@@ -426,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2206,6 +2208,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SaleCommission: {
+      payload: Prisma.$SaleCommissionPayload<ExtArgs>
+      fields: Prisma.SaleCommissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleCommissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleCommissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        findFirst: {
+          args: Prisma.SaleCommissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleCommissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        findMany: {
+          args: Prisma.SaleCommissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>[]
+        }
+        create: {
+          args: Prisma.SaleCommissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        createMany: {
+          args: Prisma.SaleCommissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleCommissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>[]
+        }
+        delete: {
+          args: Prisma.SaleCommissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        update: {
+          args: Prisma.SaleCommissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleCommissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleCommissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleCommissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleCommissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionPayload>
+        }
+        aggregate: {
+          args: Prisma.SaleCommissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleCommission>
+        }
+        groupBy: {
+          args: Prisma.SaleCommissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleCommissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleCommissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleCommissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SaleCommissionInstallment: {
+      payload: Prisma.$SaleCommissionInstallmentPayload<ExtArgs>
+      fields: Prisma.SaleCommissionInstallmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleCommissionInstallmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleCommissionInstallmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        findFirst: {
+          args: Prisma.SaleCommissionInstallmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleCommissionInstallmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        findMany: {
+          args: Prisma.SaleCommissionInstallmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>[]
+        }
+        create: {
+          args: Prisma.SaleCommissionInstallmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        createMany: {
+          args: Prisma.SaleCommissionInstallmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleCommissionInstallmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>[]
+        }
+        delete: {
+          args: Prisma.SaleCommissionInstallmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        update: {
+          args: Prisma.SaleCommissionInstallmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleCommissionInstallmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleCommissionInstallmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleCommissionInstallmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleCommissionInstallmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleCommissionInstallmentPayload>
+        }
+        aggregate: {
+          args: Prisma.SaleCommissionInstallmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleCommissionInstallment>
+        }
+        groupBy: {
+          args: Prisma.SaleCommissionInstallmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleCommissionInstallmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleCommissionInstallmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleCommissionInstallmentCountAggregateOutputType> | number
+        }
+      }
+    }
     Transaction: {
       payload: Prisma.$TransactionPayload<ExtArgs>
       fields: Prisma.TransactionFieldRefs
@@ -2830,6 +2980,37 @@ export const SaleScalarFieldEnum = {
 export type SaleScalarFieldEnum = (typeof SaleScalarFieldEnum)[keyof typeof SaleScalarFieldEnum]
 
 
+export const SaleCommissionScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  sourceType: 'sourceType',
+  recipientType: 'recipientType',
+  beneficiaryCompanyId: 'beneficiaryCompanyId',
+  beneficiaryUnitId: 'beneficiaryUnitId',
+  beneficiarySellerId: 'beneficiarySellerId',
+  beneficiaryPartnerId: 'beneficiaryPartnerId',
+  beneficiarySupervisorId: 'beneficiarySupervisorId',
+  beneficiaryLabel: 'beneficiaryLabel',
+  totalPercentage: 'totalPercentage',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleCommissionScalarFieldEnum = (typeof SaleCommissionScalarFieldEnum)[keyof typeof SaleCommissionScalarFieldEnum]
+
+
+export const SaleCommissionInstallmentScalarFieldEnum = {
+  id: 'id',
+  saleCommissionId: 'saleCommissionId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt'
+} as const
+
+export type SaleCommissionInstallmentScalarFieldEnum = (typeof SaleCommissionInstallmentScalarFieldEnum)[keyof typeof SaleCommissionInstallmentScalarFieldEnum]
+
+
 export const TransactionScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -3215,6 +3396,34 @@ export type ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'SaleCommissionSourceType'
+ */
+export type EnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionSourceType'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionSourceType[]'
+ */
+export type ListEnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionSourceType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionRecipientType'
+ */
+export type EnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionRecipientType[]'
+ */
+export type ListEnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType[]'>
+    
+
+
+/**
  * Reference to a field of type 'TransactionStatus'
  */
 export type EnumTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionStatus'>
@@ -3416,6 +3625,8 @@ export type GlobalOmitConfig = {
   productCommission?: Prisma.ProductCommissionOmit
   productCommissionInstallment?: Prisma.ProductCommissionInstallmentOmit
   sale?: Prisma.SaleOmit
+  saleCommission?: Prisma.SaleCommissionOmit
+  saleCommissionInstallment?: Prisma.SaleCommissionInstallmentOmit
   transaction?: Prisma.TransactionOmit
   transactionItem?: Prisma.TransactionItemOmit
   recurrence?: Prisma.RecurrenceOmit

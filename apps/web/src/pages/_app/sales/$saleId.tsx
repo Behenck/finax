@@ -1,3 +1,7 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { format, parse, parseISO } from "date-fns";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -11,12 +15,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useDeleteSale, useSale } from "@/hooks/sales";
-import { SALE_RESPONSIBLE_TYPE_LABEL } from "@/schemas/types/sales";
+import {
+	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
+	SALE_COMMISSION_SOURCE_TYPE_LABEL,
+	SALE_RESPONSIBLE_TYPE_LABEL,
+} from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { format, parse, parseISO } from "date-fns";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
 
 export const Route = createFileRoute("/_app/sales/$saleId")({
@@ -37,7 +41,8 @@ function SaleDetailsPage() {
 	const { saleId } = Route.useParams();
 	const navigate = useNavigate();
 	const { data, isLoading, isError } = useSale(saleId);
-	const { mutateAsync: deleteSale, isPending: isDeletingSale } = useDeleteSale();
+	const { mutateAsync: deleteSale, isPending: isDeletingSale } =
+		useDeleteSale();
 
 	async function handleDeleteSale() {
 		try {
@@ -63,7 +68,9 @@ function SaleDetailsPage() {
 	if (isError || !data?.sale) {
 		return (
 			<Card className="p-6">
-				<span className="text-destructive">Não foi possível carregar a venda.</span>
+				<span className="text-destructive">
+					Não foi possível carregar a venda.
+				</span>
 			</Card>
 		);
 	}
@@ -155,6 +162,52 @@ function SaleDetailsPage() {
 			</div>
 
 			<Card className="p-6 space-y-3">
+				<h2 className="font-semibold">Comissões da venda</h2>
+
+				{sale.commissions.length === 0 ? (
+					<p className="text-sm text-muted-foreground">
+						Sem comissões cadastradas.
+					</p>
+				) : (
+					<div className="space-y-3">
+						{sale.commissions.map((commission) => (
+							<div
+								key={commission.id}
+								className="rounded-md border p-3 text-sm"
+							>
+								<div className="flex items-center justify-between gap-3">
+									<p className="font-medium">
+										{SALE_COMMISSION_SOURCE_TYPE_LABEL[commission.sourceType]} •{" "}
+										{
+											SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
+												commission.recipientType
+											]
+										}
+									</p>
+									<p className="font-semibold">{commission.totalPercentage}%</p>
+								</div>
+								<p className="text-muted-foreground text-xs">
+									Beneficiário:{" "}
+									{commission.beneficiaryLabel ??
+										commission.beneficiaryId ??
+										"Não informado"}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									Parcelas:{" "}
+									{commission.installments
+										.map(
+											(installment) =>
+												`${installment.installmentNumber}ª ${installment.percentage}%`,
+										)
+										.join(" • ")}
+								</p>
+							</div>
+						))}
+					</div>
+				)}
+			</Card>
+
+			<Card className="p-6 space-y-3">
 				<h2 className="font-semibold">Auditoria</h2>
 				<div className="space-y-2 text-sm">
 					<p>
@@ -186,7 +239,9 @@ function SaleDetailsPage() {
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isDeletingSale}>Cancelar</AlertDialogCancel>
+						<AlertDialogCancel disabled={isDeletingSale}>
+							Cancelar
+						</AlertDialogCancel>
 						<AlertDialogAction
 							variant="destructive"
 							onClick={handleDeleteSale}
@@ -200,4 +255,3 @@ function SaleDetailsPage() {
 		</main>
 	);
 }
-

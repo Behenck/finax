@@ -164,6 +164,26 @@ export const SaleResponsibleType = {
 export type SaleResponsibleType = (typeof SaleResponsibleType)[keyof typeof SaleResponsibleType]
 
 
+export const SaleCommissionSourceType = {
+  PULLED: 'PULLED',
+  MANUAL: 'MANUAL'
+} as const
+
+export type SaleCommissionSourceType = (typeof SaleCommissionSourceType)[keyof typeof SaleCommissionSourceType]
+
+
+export const SaleCommissionRecipientType = {
+  COMPANY: 'COMPANY',
+  UNIT: 'UNIT',
+  SELLER: 'SELLER',
+  PARTNER: 'PARTNER',
+  SUPERVISOR: 'SUPERVISOR',
+  OTHER: 'OTHER'
+} as const
+
+export type SaleCommissionRecipientType = (typeof SaleCommissionRecipientType)[keyof typeof SaleCommissionRecipientType]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

@@ -1,3 +1,12 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { format, parse, startOfDay } from "date-fns";
+import { Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 import { FieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,32 +37,39 @@ import {
 	useUpdateSale,
 } from "@/hooks/sales";
 import {
+	type GetOrganizationsSlugCustomersQueryResponse,
+	type GetOrganizationsSlugSalesSaleid200,
 	getOrganizationsSlugCustomersQueryKey,
 	postOrganizationsSlugCustomers,
 	useGetOrganizationsSlugProductsIdCommissionScenarios,
-	type GetOrganizationsSlugProductsIdCommissionScenarios200,
-	type GetOrganizationsSlugSalesSaleid200,
 } from "@/http/generated";
 import {
-	saleSchema,
+	type SaleCommissionFormData,
 	type SaleFormData,
 	type SaleFormInput,
+	saleSchema,
 } from "@/schemas/sale-schema";
 import {
 	SALE_RESPONSIBLE_TYPE_LABEL,
 	type SaleResponsibleType,
 } from "@/schemas/types/sales";
+import {
+	formatCurrencyBRL,
+	parseBRLCurrencyToCents,
+} from "@/utils/format-amount";
 import { formatDocument } from "@/utils/format-document";
-import { formatCurrencyBRL, parseBRLCurrencyToCents } from "@/utils/format-amount";
 import { formatPhone } from "@/utils/format-phone";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { format, parse, startOfDay } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
+import { SaleCommissionCard } from "./sale-commission-card";
+import {
+	createDefaultManualSaleCommission,
+	distributeSaleCommissionInstallments,
+	mapSaleCommissionToForm,
+	mapScenarioCommissionsToPulledSaleCommissions,
+	replacePulledSaleCommissions,
+	resolveMatchedCommissionScenario,
+	roundSaleCommissionPercentage,
+	type SaleCommissionMatchContext,
+} from "./sale-commission-helpers";
 
 const OPTIONAL_NONE_VALUE = "__NONE__";
 const QUICK_CUSTOMER_DEFAULT_VALUES = {
@@ -77,111 +93,17 @@ const quickCustomerSchema = z.object({
 		.or(z.literal(""))
 		.refine(
 			(value) =>
-				!value || value.replace(/\D/g, "").length === 10 || value.replace(/\D/g, "").length === 11,
+				!value ||
+				value.replace(/\D/g, "").length === 10 ||
+				value.replace(/\D/g, "").length === 11,
 			"Celular inválido",
 		),
 });
 
 type QuickCustomerInput = z.input<typeof quickCustomerSchema>;
 type QuickCustomerData = z.infer<typeof quickCustomerSchema>;
-type ProductCommissionScenario =
-	GetOrganizationsSlugProductsIdCommissionScenarios200["scenarios"][number];
-type ProductCommissionCondition = ProductCommissionScenario["conditions"][number];
-type ProductCommission = ProductCommissionScenario["commissions"][number];
-
-type SaleCommissionMatchContext = {
-	companyId?: string;
-	unitId?: string;
-	sellerId?: string;
-	partnerId?: string;
-};
-
-const COMMISSION_RECIPIENT_TYPE_LABEL: Record<
-	ProductCommission["recipientType"],
-	string
-> = {
-	COMPANY: "Empresa",
-	UNIT: "Unidade",
-	PARTNER: "Parceiro",
-	SELLER: "Vendedor",
-	SUPERVISOR: "Supervisor",
-	OTHER: "Outro",
-};
-
-function matchesCommissionCondition(
-	condition: ProductCommissionCondition,
-	context: SaleCommissionMatchContext,
-) {
-	switch (condition.type) {
-		case "COMPANY":
-			return condition.valueId === null
-				? Boolean(context.companyId)
-				: context.companyId === condition.valueId;
-		case "UNIT":
-			return condition.valueId === null
-				? Boolean(context.unitId)
-				: context.unitId === condition.valueId;
-		case "SELLER":
-			return condition.valueId === null
-				? Boolean(context.sellerId)
-				: context.sellerId === condition.valueId;
-		case "PARTNER":
-			return condition.valueId === null
-				? Boolean(context.partnerId)
-				: context.partnerId === condition.valueId;
-		default:
-			return false;
-	}
-}
-
-function matchesCommissionScenario(
-	scenario: ProductCommissionScenario,
-	context: SaleCommissionMatchContext,
-) {
-	if (scenario.conditions.length === 0) {
-		return true;
-	}
-
-	const conditionsByType = new Map<
-		ProductCommissionCondition["type"],
-		ProductCommissionCondition[]
-	>();
-
-	for (const condition of scenario.conditions) {
-		const current = conditionsByType.get(condition.type) ?? [];
-		current.push(condition);
-		conditionsByType.set(condition.type, current);
-	}
-
-	return Array.from(conditionsByType.values()).every((conditions) =>
-		conditions.some((condition) =>
-			matchesCommissionCondition(condition, context),
-		),
-	);
-}
-
-function resolveMatchedCommissionScenario(
-	scenarios: ProductCommissionScenario[],
-	context: SaleCommissionMatchContext,
-) {
-	const matchedScenarios = scenarios
-		.map((scenario, index) => ({
-			index,
-			scenario,
-			isMatch: matchesCommissionScenario(scenario, context),
-			specificity: scenario.conditions.length,
-		}))
-		.filter((item) => item.isMatch)
-		.sort((left, right) => {
-			if (right.specificity !== left.specificity) {
-				return right.specificity - left.specificity;
-			}
-
-			return left.index - right.index;
-		});
-
-	return matchedScenarios[0]?.scenario;
-}
+type SaleCustomerOption =
+	GetOrganizationsSlugCustomersQueryResponse["customers"][number];
 
 interface SaleFormProps {
 	mode?: "CREATE" | "UPDATE";
@@ -206,6 +128,25 @@ function parseDateInputValue(value: string) {
 	return parse(value, "yyyy-MM-dd", new Date());
 }
 
+type SaleCommissionDetailLike = {
+	sourceType: "PULLED" | "MANUAL";
+	recipientType: SaleCommissionFormData["recipientType"];
+	beneficiaryId?: string | null;
+	beneficiaryLabel?: string | null;
+	totalPercentage: number;
+	installments: Array<{
+		installmentNumber: number;
+		percentage: number;
+	}>;
+};
+
+function resolveInitialCommissions(initialSale?: SaleDetail) {
+	return ((initialSale?.commissions ?? []) as SaleCommissionDetailLike[]).map(
+		(commission) =>
+		mapSaleCommissionToForm(commission),
+	);
+}
+
 export function SaleForm({
 	mode = "CREATE",
 	initialSale,
@@ -214,14 +155,17 @@ export function SaleForm({
 	const { organization } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const { mutateAsync: createSale, isPending: isCreatingSale } = useCreateSale();
-	const { mutateAsync: updateSale, isPending: isUpdatingSale } = useUpdateSale();
+	const { mutateAsync: createSale, isPending: isCreatingSale } =
+		useCreateSale();
+	const { mutateAsync: updateSale, isPending: isUpdatingSale } =
+		useUpdateSale();
 	const {
 		companies,
 		customers,
 		products,
 		sellers,
 		partners,
+		supervisors,
 		isLoading: isLoadingOptions,
 		isError: isOptionsError,
 		refetch,
@@ -234,6 +178,8 @@ export function SaleForm({
 		useState(false);
 	const [commissionRequestedProductId, setCommissionRequestedProductId] =
 		useState<string | null>(null);
+	const [quickCreatedCustomer, setQuickCreatedCustomer] =
+		useState<SaleCustomerOption | null>(null);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
 		resolver: zodResolver(saleSchema),
@@ -249,6 +195,7 @@ export function SaleForm({
 			responsibleId: initialSale?.responsibleId ?? "",
 			totalAmount: formatCurrencyBRL((initialSale?.totalAmount ?? 0) / 100),
 			notes: initialSale?.notes ?? "",
+			commissions: resolveInitialCommissions(initialSale),
 		},
 	});
 	const quickCustomerForm = useForm<
@@ -268,6 +215,15 @@ export function SaleForm({
 		getValues,
 		formState: { errors },
 	} = form;
+	const {
+		fields: commissionFields,
+		append: appendCommission,
+		remove: removeCommission,
+		replace: replaceCommissions,
+	} = useFieldArray({
+		control,
+		name: "commissions",
+	});
 
 	const selectedCompanyId =
 		(useWatch({
@@ -303,10 +259,25 @@ export function SaleForm({
 	const hasRequestedCommissionForCurrentProduct =
 		Boolean(selectedProductId) &&
 		commissionRequestedProductId === selectedProductId;
+	const customersForSelect = useMemo(() => {
+		if (!quickCreatedCustomer) {
+			return customers;
+		}
+
+		const hasQuickCustomerInQuery = customers.some(
+			(customer) => customer.id === quickCreatedCustomer.id,
+		);
+		if (hasQuickCustomerInQuery) {
+			return customers;
+		}
+
+		return [quickCreatedCustomer, ...customers];
+	}, [customers, quickCreatedCustomer]);
 
 	const selectedCustomer = useMemo(
-		() => customers.find((customer) => customer.id === selectedCustomerId),
-		[customers, selectedCustomerId],
+		() =>
+			customersForSelect.find((customer) => customer.id === selectedCustomerId),
+		[customersForSelect, selectedCustomerId],
 	);
 	const selectedCompany = useMemo(
 		() => companies.find((company) => company.id === selectedCompanyId),
@@ -340,6 +311,26 @@ export function SaleForm({
 			),
 		[companies],
 	);
+	const companyOptions = useMemo(
+		() => companies.map((company) => ({ id: company.id, label: company.name })),
+		[companies],
+	);
+	const sellerOptions = useMemo(
+		() => sellers.map((seller) => ({ id: seller.id, label: seller.name })),
+		[sellers],
+	);
+	const partnerOptions = useMemo(
+		() => partners.map((partner) => ({ id: partner.id, label: partner.name })),
+		[partners],
+	);
+	const supervisorOptions = useMemo(
+		() =>
+			supervisors.map((supervisor) => ({
+				id: supervisor.id,
+				label: supervisor.name,
+			})),
+		[supervisors],
+	);
 	const saleCommissionContext = useMemo<SaleCommissionMatchContext>(
 		() => ({
 			companyId: selectedCompanyId || undefined,
@@ -360,77 +351,59 @@ export function SaleForm({
 			selectedResponsibleType,
 		],
 	);
-	const commissionScenariosQuery = useGetOrganizationsSlugProductsIdCommissionScenarios(
-		{
-			slug: organization?.slug ?? "",
-			id: selectedProductId || "",
-		},
-		{
-			query: {
-				enabled: false,
+	const commissionScenariosQuery =
+		useGetOrganizationsSlugProductsIdCommissionScenarios(
+			{
+				slug: organization?.slug ?? "",
+				id: selectedProductId || "",
 			},
-		},
-	);
+			{
+				query: {
+					enabled: false,
+				},
+			},
+		);
 	const hasLoadedCommissionForCurrentProduct =
 		hasRequestedCommissionForCurrentProduct &&
 		Boolean(commissionScenariosQuery.data);
-	const matchedCommissionScenario = useMemo(
-		() => {
-			if (!hasRequestedCommissionForCurrentProduct) {
-				return undefined;
-			}
+	const matchedCommissionScenario = useMemo(() => {
+		if (!hasRequestedCommissionForCurrentProduct) {
+			return undefined;
+		}
 
-			return resolveMatchedCommissionScenario(
-				commissionScenariosQuery.data?.scenarios ?? [],
-				saleCommissionContext,
+		return resolveMatchedCommissionScenario(
+			commissionScenariosQuery.data?.scenarios ?? [],
+			saleCommissionContext,
+		);
+	}, [
+		commissionScenariosQuery.data?.scenarios,
+		hasRequestedCommissionForCurrentProduct,
+		saleCommissionContext,
+	]);
+	const watchedCommissions =
+		(useWatch({
+			control,
+			name: "commissions",
+		}) as SaleCommissionFormData[] | undefined) ?? [];
+	const pulledCommissionsCount = watchedCommissions.filter(
+		(commission) => commission.sourceType === "PULLED",
+	).length;
+
+	const applyPulledCommissions = useCallback(
+		(nextPulledCommissions: SaleCommissionFormData[]) => {
+			const currentCommissions =
+				(getValues("commissions") as SaleCommissionFormData[] | undefined) ??
+				[];
+			replaceCommissions(
+				replacePulledSaleCommissions(currentCommissions, nextPulledCommissions),
 			);
 		},
-		[
-			commissionScenariosQuery.data?.scenarios,
-			hasRequestedCommissionForCurrentProduct,
-			saleCommissionContext,
-		],
-	);
-	const companyNameById = useMemo(
-		() => new Map(companies.map((company) => [company.id, company.name])),
-		[companies],
-	);
-	const unitLabelById = useMemo(
-		() => new Map(allUnits.map((unit) => [unit.id, unit.label])),
-		[allUnits],
-	);
-	const sellerNameById = useMemo(
-		() => new Map(sellers.map((seller) => [seller.id, seller.name])),
-		[sellers],
-	);
-	const partnerNameById = useMemo(
-		() => new Map(partners.map((partner) => [partner.id, partner.name])),
-		[partners],
+		[getValues, replaceCommissions],
 	);
 
-	function resolveCommissionBeneficiaryLabel(commission: ProductCommission) {
-		if (commission.beneficiaryLabel?.trim()) {
-			return commission.beneficiaryLabel.trim();
-		}
-
-		const beneficiaryId = commission.beneficiaryId;
-		if (!beneficiaryId) {
-			return null;
-		}
-
-		switch (commission.recipientType) {
-			case "COMPANY":
-				return companyNameById.get(beneficiaryId) ?? null;
-			case "UNIT":
-				return unitLabelById.get(beneficiaryId) ?? null;
-			case "SELLER":
-				return sellerNameById.get(beneficiaryId) ?? null;
-			case "PARTNER":
-				return partnerNameById.get(beneficiaryId) ?? null;
-			default:
-				return null;
-		}
-	}
+	const clearPulledCommissions = useCallback(() => {
+		applyPulledCommissions([]);
+	}, [applyPulledCommissions]);
 
 	function handleFetchCommissionScenarios() {
 		if (!selectedProductId) {
@@ -441,54 +414,120 @@ export function SaleForm({
 		void commissionScenariosQuery.refetch();
 	}
 
-	const { mutateAsync: createQuickCustomer, isPending: isCreatingQuickCustomer } =
-		useMutation({
-			mutationFn: async (data: QuickCustomerData) => {
-				if (!organization?.slug) {
-					throw new Error("Organização não encontrada");
-				}
+	function handleAddManualCommission() {
+		appendCommission(createDefaultManualSaleCommission());
+	}
 
-				return postOrganizationsSlugCustomers({
-					slug: organization.slug,
-					data: {
-						name: data.name.trim(),
-						personType: "PF",
-						documentType: "CPF",
-						documentNumber: formatDocument({
-							type: "CPF",
-							value: data.documentNumber,
-						}),
-						phone: data.phone?.trim() ? data.phone.trim() : undefined,
-					},
-				});
+	function handleRemoveCommission(index: number) {
+		removeCommission(index);
+	}
+
+	function handleRemovePulledCommissions() {
+		clearPulledCommissions();
+	}
+
+	function handleInstallmentCountChange(index: number, nextCount: number) {
+		const totalPercentage = Number(
+			getValues(`commissions.${index}.totalPercentage` as const) ?? 0,
+		);
+
+		setValue(
+			`commissions.${index}.installments` as const,
+			distributeSaleCommissionInstallments(totalPercentage, nextCount),
+			{
+				shouldDirty: true,
+				shouldValidate: true,
 			},
-			onSuccess: async (response) => {
-				if (!organization?.slug) {
-					return;
-				}
+		);
+	}
 
-				await queryClient.invalidateQueries({
-					queryKey: getOrganizationsSlugCustomersQueryKey({
-						slug: organization.slug,
+	const {
+		mutateAsync: createQuickCustomer,
+		isPending: isCreatingQuickCustomer,
+	} = useMutation({
+		mutationFn: async (data: QuickCustomerData) => {
+			if (!organization?.slug) {
+				throw new Error("Organização não encontrada");
+			}
+
+			return postOrganizationsSlugCustomers({
+				slug: organization.slug,
+				data: {
+					name: data.name.trim(),
+					personType: "PF",
+					documentType: "CPF",
+					documentNumber: formatDocument({
+						type: "CPF",
+						value: data.documentNumber,
 					}),
-				});
+					phone: data.phone?.trim() ? data.phone.trim() : undefined,
+				},
+			});
+		},
+		onSuccess: async (response, submittedData) => {
+			if (!organization?.slug) {
+				return;
+			}
 
-				setValue("customerId", response.customerId, {
-					shouldDirty: true,
-					shouldTouch: true,
-					shouldValidate: true,
-				});
-				setIsCustomerLocked(false);
-				quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
-				setIsCreateCustomerDialogOpen(false);
+			const customersQueryKey = getOrganizationsSlugCustomersQueryKey({
+				slug: organization.slug,
+			});
+			const normalizedPhone = submittedData.phone?.trim()
+				? submittedData.phone.trim()
+				: null;
+			const normalizedDocumentNumber = formatDocument({
+				type: "CPF",
+				value: submittedData.documentNumber,
+			});
+			const createdCustomer: SaleCustomerOption = {
+				id: response.customerId,
+				name: submittedData.name.trim(),
+				personType: "PF",
+				phone: normalizedPhone,
+				email: null,
+				documentType: "CPF",
+				documentNumber: normalizedDocumentNumber,
+				status: "ACTIVE",
+				responsible: null,
+				pf: null,
+				pj: null,
+			};
 
-				toast.success("Cliente cadastrado e selecionado.");
-			},
-			onError: (error) => {
-				const message = resolveErrorMessage(normalizeApiError(error));
-				toast.error(message);
-			},
-		});
+			setQuickCreatedCustomer(createdCustomer);
+
+			setValue("customerId", response.customerId, {
+				shouldDirty: true,
+				shouldTouch: true,
+				shouldValidate: true,
+			});
+			setIsCustomerLocked(false);
+			quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+			setIsCreateCustomerDialogOpen(false);
+			await queryClient.invalidateQueries({
+				queryKey: customersQueryKey,
+			});
+			await queryClient.refetchQueries({
+				queryKey: customersQueryKey,
+			});
+			const refreshedCustomers =
+				queryClient.getQueryData<GetOrganizationsSlugCustomersQueryResponse>(
+					customersQueryKey,
+				)?.customers ?? [];
+			if (
+				refreshedCustomers.some(
+					(customer) => customer.id === response.customerId,
+				)
+			) {
+				setQuickCreatedCustomer(null);
+			}
+
+			toast.success("Cliente cadastrado e selecionado.");
+		},
+		onError: (error) => {
+			const message = resolveErrorMessage(normalizeApiError(error));
+			toast.error(message);
+		},
+	});
 
 	useEffect(() => {
 		const currentUnitId = getValues("unitId");
@@ -516,9 +555,60 @@ export function SaleForm({
 		}
 	}, [getValues, responsibles, setValue]);
 
+	useEffect(() => {
+		if (!hasRequestedCommissionForCurrentProduct) {
+			return;
+		}
+
+		if (
+			commissionScenariosQuery.isFetching ||
+			commissionScenariosQuery.isError ||
+			!commissionScenariosQuery.data
+		) {
+			return;
+		}
+
+		const pulledCommissions = matchedCommissionScenario
+			? mapScenarioCommissionsToPulledSaleCommissions(
+					matchedCommissionScenario.commissions,
+				)
+			: [];
+
+		applyPulledCommissions(pulledCommissions);
+	}, [
+		applyPulledCommissions,
+		commissionScenariosQuery.data,
+		commissionScenariosQuery.isError,
+		commissionScenariosQuery.isFetching,
+		hasRequestedCommissionForCurrentProduct,
+		matchedCommissionScenario,
+	]);
+
 	const isPending = isCreatingSale || isUpdatingSale;
 
 	async function onSubmit(data: SaleFormData) {
+		const commissions = (data.commissions ?? []).map((commission) => ({
+			sourceType: commission.sourceType,
+			recipientType: commission.recipientType,
+			beneficiaryId:
+				commission.recipientType === "OTHER"
+					? undefined
+					: commission.beneficiaryId,
+			beneficiaryLabel:
+				commission.recipientType === "OTHER"
+					? commission.beneficiaryLabel?.trim() || undefined
+					: undefined,
+			totalPercentage: roundSaleCommissionPercentage(
+				commission.totalPercentage,
+			),
+			installments: commission.installments.map(
+				(installment, installmentIndex) => ({
+					installmentNumber: installmentIndex + 1,
+					percentage: roundSaleCommissionPercentage(installment.percentage),
+				}),
+			),
+		}));
+
 		const payload = {
 			saleDate: format(data.saleDate, "yyyy-MM-dd"),
 			customerId: data.customerId,
@@ -531,6 +621,7 @@ export function SaleForm({
 			companyId: data.companyId,
 			unitId: data.unitId || undefined,
 			notes: data.notes?.trim() ? data.notes.trim() : undefined,
+			commissions,
 		};
 
 		try {
@@ -602,6 +693,7 @@ export function SaleForm({
 										value={field.value || undefined}
 										onValueChange={(value) => {
 											setCommissionRequestedProductId(null);
+											clearPulledCommissions();
 											field.onChange(value);
 										}}
 										disabled={isLoadingOptions}
@@ -720,14 +812,16 @@ export function SaleForm({
 											value={field.value || undefined}
 											onValueChange={field.onChange}
 											disabled={
-												isLoadingOptions || isCustomerLocked || isCreatingQuickCustomer
+												isLoadingOptions ||
+												isCustomerLocked ||
+												isCreatingQuickCustomer
 											}
 										>
 											<SelectTrigger>
 												<SelectValue placeholder="Selecione um cliente" />
 											</SelectTrigger>
 											<SelectContent>
-												{customers.map((customer) => (
+												{customersForSelect.map((customer) => (
 													<SelectItem key={customer.id} value={customer.id}>
 														{customer.name}
 													</SelectItem>
@@ -823,10 +917,13 @@ export function SaleForm({
 									<>
 										<Select
 											value={
-												(field.value as string | undefined) || OPTIONAL_NONE_VALUE
+												(field.value as string | undefined) ||
+												OPTIONAL_NONE_VALUE
 											}
 											onValueChange={(value) =>
-												field.onChange(value === OPTIONAL_NONE_VALUE ? "" : value)
+												field.onChange(
+													value === OPTIONAL_NONE_VALUE ? "" : value,
+												)
 											}
 											disabled={isLoadingOptions || !selectedCompanyId}
 										>
@@ -906,7 +1003,10 @@ export function SaleForm({
 											</SelectTrigger>
 											<SelectContent>
 												{responsibles.map((responsible) => (
-													<SelectItem key={responsible.id} value={responsible.id}>
+													<SelectItem
+														key={responsible.id}
+														value={responsible.id}
+													>
 														{responsible.name}
 													</SelectItem>
 												))}
@@ -918,25 +1018,48 @@ export function SaleForm({
 							/>
 						</Field>
 					</FieldGroup>
-
 				</div>
 			</Card>
 
 			<Card className="p-5 rounded-sm gap-4">
 				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-					<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
-					<Button
-						type="button"
-						variant="outline"
-						onClick={handleFetchCommissionScenarios}
-						disabled={!hasSelectedProduct || commissionScenariosQuery.isFetching}
-					>
-						{commissionScenariosQuery.isFetching
-							? "Carregando..."
-							: hasLoadedCommissionForCurrentProduct
-								? "Atualizar comissão"
-								: "Buscar comissão"}
-					</Button>
+					<div className="flex items-center gap-2">
+						<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
+						<Button
+							type="button"
+							variant="outline"
+							onClick={handleAddManualCommission}
+						>
+							<Plus className="size-4" />
+							Adicionar comissão
+						</Button>
+					</div>
+
+					<div className="flex items-center gap-2">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={handleFetchCommissionScenarios}
+							disabled={
+								!hasSelectedProduct || commissionScenariosQuery.isFetching
+							}
+						>
+							{commissionScenariosQuery.isFetching
+								? "Carregando..."
+								: hasLoadedCommissionForCurrentProduct
+									? "Atualizar comissão"
+									: "Buscar comissão"}
+						</Button>
+						<Button
+							type="button"
+							size="icon"
+							variant="outline"
+							onClick={handleRemovePulledCommissions}
+							disabled={pulledCommissionsCount === 0}
+						>
+							<Trash2 className="size-4" />
+						</Button>
+					</div>
 				</div>
 
 				{!selectedProductId ? (
@@ -971,57 +1094,40 @@ export function SaleForm({
 						venda.
 					</p>
 				) : (
-					<div className="space-y-3">
-						<div className="rounded-md border bg-muted/20 p-3">
-							<p className="text-sm">
-								<span className="text-muted-foreground">Cenário aplicado: </span>
-								<strong>{matchedCommissionScenario.name}</strong>
-							</p>
-						</div>
-
-						<div className="space-y-2">
-							{matchedCommissionScenario.commissions.map((commission, index) => {
-								const beneficiaryLabel =
-									resolveCommissionBeneficiaryLabel(commission);
-
-								return (
-									<div
-										key={`${commission.recipientType}-${index}`}
-										className="rounded-md border p-3 space-y-2"
-									>
-										<div className="flex items-start justify-between gap-3">
-											<div>
-												<p className="font-medium text-sm">
-													{COMMISSION_RECIPIENT_TYPE_LABEL[
-														commission.recipientType
-													]}
-												</p>
-												{beneficiaryLabel ? (
-													<p className="text-xs text-muted-foreground">
-														{beneficiaryLabel}
-													</p>
-												) : null}
-											</div>
-											<span className="font-semibold text-sm">
-												{commission.totalPercentage}%
-											</span>
-										</div>
-
-										<p className="text-xs text-muted-foreground">
-											Parcelas:{" "}
-											{commission.installments
-												.map(
-													(installment) =>
-														`${installment.installmentNumber}ª ${installment.percentage}%`,
-												)
-												.join(" • ")}
-										</p>
-									</div>
-								);
-							})}
-						</div>
+					<div className="rounded-md border bg-muted/20 p-3">
+						<p className="text-sm">
+							<span className="text-muted-foreground">Cenário aplicado: </span>
+							<strong>{matchedCommissionScenario.name}</strong>
+						</p>
 					</div>
 				)}
+
+				<div className="space-y-3">
+					{commissionFields.length === 0 ? (
+						<p className="text-sm text-muted-foreground">
+							Nenhuma comissão adicionada.
+						</p>
+					) : (
+						commissionFields.map((commission, commissionIndex) => (
+							<SaleCommissionCard
+								key={commission.id}
+								index={commissionIndex}
+								control={control}
+								setValue={setValue}
+								getValues={getValues}
+								onRemove={handleRemoveCommission}
+								onInstallmentCountChange={handleInstallmentCountChange}
+								companyOptions={companyOptions}
+								unitOptions={allUnits}
+								sellerOptions={sellerOptions}
+								partnerOptions={partnerOptions}
+								supervisorOptions={supervisorOptions}
+							/>
+						))
+					)}
+				</div>
+
+				<FieldError error={errors.commissions} />
 			</Card>
 
 			<Card className="p-5 rounded-sm gap-4">
@@ -1052,7 +1158,8 @@ export function SaleForm({
 					<DialogHeader>
 						<DialogTitle>Cadastrar cliente rápido</DialogTitle>
 						<DialogDescription>
-							Cria um cliente pessoa física com dados base (nome, CPF e celular).
+							Cria um cliente pessoa física com dados base (nome, CPF e
+							celular).
 						</DialogDescription>
 					</DialogHeader>
 
@@ -1128,7 +1235,9 @@ export function SaleForm({
 						</Button>
 						<Button
 							type="button"
-							onClick={quickCustomerForm.handleSubmit(handleQuickCustomerCreate)}
+							onClick={quickCustomerForm.handleSubmit(
+								handleQuickCustomerCreate,
+							)}
 							disabled={isCreatingQuickCustomer}
 						>
 							{isCreatingQuickCustomer ? "Cadastrando..." : "Cadastrar cliente"}

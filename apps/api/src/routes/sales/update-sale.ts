@@ -1,16 +1,17 @@
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { CustomerStatus } from "generated/prisma/enums";
+import z from "zod";
 import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
-import { CustomerStatus } from "generated/prisma/enums";
-import type { FastifyInstance } from "fastify";
-import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
-	parseSaleDateInput,
-	UpdateSaleBodySchema,
-} from "./sale-schemas";
+	replaceSaleCommissions,
+	resolveSaleCommissionsData,
+} from "./sale-commissions";
 import { resolveSaleResponsibleData } from "./sale-responsible";
+import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
 
 export async function updateSale(app: FastifyInstance) {
 	app
@@ -128,22 +129,35 @@ export async function updateSale(app: FastifyInstance) {
 					organization.id,
 					data.responsible,
 				);
+				const resolvedCommissions =
+					data.commissions === undefined
+						? undefined
+						: await resolveSaleCommissionsData(
+								organization.id,
+								data.commissions,
+							);
 
 				await db(() =>
-					prisma.sale.update({
-						where: {
-							id: saleId,
-						},
-						data: {
-							companyId: data.companyId,
-							unitId: data.unitId,
-							customerId: data.customerId,
-							productId: data.productId,
-							saleDate: parseSaleDateInput(data.saleDate),
-							totalAmount: data.totalAmount,
-							notes: data.notes ?? null,
-							...responsibleData,
-						},
+					prisma.$transaction(async (tx) => {
+						await tx.sale.update({
+							where: {
+								id: saleId,
+							},
+							data: {
+								companyId: data.companyId,
+								unitId: data.unitId,
+								customerId: data.customerId,
+								productId: data.productId,
+								saleDate: parseSaleDateInput(data.saleDate),
+								totalAmount: data.totalAmount,
+								notes: data.notes ?? null,
+								...responsibleData,
+							},
+						});
+
+						if (resolvedCommissions !== undefined) {
+							await replaceSaleCommissions(tx, saleId, resolvedCommissions);
+						}
 					}),
 				);
 
@@ -151,4 +165,3 @@ export async function updateSale(app: FastifyInstance) {
 			},
 		);
 }
-

@@ -128,6 +128,7 @@ model Member {
   userId                String                @map("user_id")
   memberCompanyAccesses MemberCompanyAccess[]
   productCommissions    ProductCommission[]   @relation("ProductCommissionRecipientSupervisor")
+  saleCommissions       SaleCommission[]      @relation("SaleCommissionBeneficiarySupervisor")
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -199,6 +200,7 @@ model Company {
   employees                           Employee[]
   recurrences                         Recurrence[]
   sales                               Sale[]
+  saleCommissions                     SaleCommission[]                  @relation("SaleCommissionBeneficiaryCompany")
   memberCompanyAccesses               MemberCompanyAccess[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionCompany")
   productCommissions                  ProductCommission[]                  @relation("ProductCommissionRecipientCompany")
@@ -219,6 +221,7 @@ model Unit {
   transactions                        Transaction[]
   recurrences                         Recurrence[]
   sales                               Sale[]
+  saleCommissions                     SaleCommission[]                  @relation("SaleCommissionBeneficiaryUnit")
   memberCompanyAccesses               MemberCompanyAccess[]
   employees                           Employee[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionUnit")
@@ -444,6 +447,7 @@ model Partner {
   user         User?        @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
   organization Organization @relation(fields: [organizationId], references: [id])
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionPartner")
+  saleCommissions                    SaleCommission[]                  @relation("SaleCommissionBeneficiaryPartner")
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])
@@ -496,6 +500,7 @@ model Seller {
   organization                        Organization                         @relation(fields: [organizationId], references: [id])
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionSeller")
   productCommissions                  ProductCommission[]                  @relation("ProductCommissionRecipientSeller")
+  saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiarySeller")
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])
@@ -659,6 +664,20 @@ enum SaleResponsibleType {
   PARTNER
 }
 
+enum SaleCommissionSourceType {
+  PULLED
+  MANUAL
+}
+
+enum SaleCommissionRecipientType {
+  COMPANY
+  UNIT
+  SELLER
+  PARTNER
+  SUPERVISOR
+  OTHER
+}
+
 model Sale {
   id String @id @default(uuid())
 
@@ -684,6 +703,7 @@ model Sale {
   customer     Customer     @relation(fields: [customerId], references: [id])
   product      Product      @relation(fields: [productId], references: [id])
   createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
+  commissions  SaleCommission[]
 
   @@index([organizationId, saleDate])
   @@index([organizationId, status])
@@ -694,6 +714,56 @@ model Sale {
   @@index([createdById])
   @@index([organizationId, responsibleType, responsibleId])
   @@map("sales")
+}
+
+model SaleCommission {
+  id                    String                    @id @default(uuid())
+  saleId                String                    @map("sale_id")
+  sourceType            SaleCommissionSourceType  @map("source_type")
+  recipientType         SaleCommissionRecipientType @map("recipient_type")
+  beneficiaryCompanyId  String?                   @map("beneficiary_company_id")
+  beneficiaryUnitId     String?                   @map("beneficiary_unit_id")
+  beneficiarySellerId   String?                   @map("beneficiary_seller_id")
+  beneficiaryPartnerId  String?                   @map("beneficiary_partner_id")
+  beneficiarySupervisorId String?                 @map("beneficiary_supervisor_id")
+  beneficiaryLabel      String?                   @map("beneficiary_label")
+  totalPercentage       Int                       @map("total_percentage")
+  sortOrder             Int                       @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sale                 Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  beneficiaryCompany   Company? @relation("SaleCommissionBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
+  beneficiaryUnit      Unit?    @relation("SaleCommissionBeneficiaryUnit", fields: [beneficiaryUnitId], references: [id], onDelete: SetNull)
+  beneficiarySeller    Seller?  @relation("SaleCommissionBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
+  beneficiaryPartner   Partner? @relation("SaleCommissionBeneficiaryPartner", fields: [beneficiaryPartnerId], references: [id], onDelete: SetNull)
+  beneficiarySupervisor Member? @relation("SaleCommissionBeneficiarySupervisor", fields: [beneficiarySupervisorId], references: [id], onDelete: SetNull)
+  installments         SaleCommissionInstallment[]
+
+  @@index([saleId])
+  @@index([saleId, sortOrder])
+  @@index([beneficiaryCompanyId])
+  @@index([beneficiaryUnitId])
+  @@index([beneficiarySellerId])
+  @@index([beneficiaryPartnerId])
+  @@index([beneficiarySupervisorId])
+  @@map("sale_commissions")
+}
+
+model SaleCommissionInstallment {
+  id                String @id @default(uuid())
+  saleCommissionId  String @map("sale_commission_id")
+  installmentNumber Int    @map("installment_number")
+  percentage        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  saleCommission SaleCommission @relation(fields: [saleCommissionId], references: [id], onDelete: Cascade)
+
+  @@unique([saleCommissionId, installmentNumber])
+  @@index([saleCommissionId])
+  @@map("sale_commission_installments")
 }
 
 enum TransactionType {

@@ -31,6 +31,24 @@ export const responsibleTypeEnum7 = {
 
 export type ResponsibleTypeEnum7Key = (typeof responsibleTypeEnum7)[keyof typeof responsibleTypeEnum7];
 
+export const commissionsSourceTypeEnum2 = {
+    "PULLED": "PULLED",
+    "MANUAL": "MANUAL"
+} as const;
+
+export type CommissionsSourceTypeEnum2Key = (typeof commissionsSourceTypeEnum2)[keyof typeof commissionsSourceTypeEnum2];
+
+export const commissionsRecipientTypeEnum4 = {
+    "COMPANY": "COMPANY",
+    "UNIT": "UNIT",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER",
+    "SUPERVISOR": "SUPERVISOR",
+    "OTHER": "OTHER"
+} as const;
+
+export type CommissionsRecipientTypeEnum4Key = (typeof commissionsRecipientTypeEnum4)[keyof typeof commissionsRecipientTypeEnum4];
+
 export type PutOrganizationsSlugSalesSaleidMutationRequest = {
     /**
      * @pattern ^\d{4}-\d{2}-\d{2}$
@@ -75,6 +93,49 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
      * @type string | undefined
     */
     notes?: string;
+    /**
+     * @type array | undefined
+    */
+    commissions?: {
+        /**
+         * @type string
+        */
+        sourceType: CommissionsSourceTypeEnum2Key;
+        /**
+         * @type string
+        */
+        recipientType: CommissionsRecipientTypeEnum4Key;
+        /**
+         * @type string | undefined, uuid
+        */
+        beneficiaryId?: string;
+        /**
+         * @type string | undefined
+        */
+        beneficiaryLabel?: string;
+        /**
+         * @maxLength 100
+         * @type number
+        */
+        totalPercentage: number;
+        /**
+         * @type array
+        */
+        installments: {
+            /**
+             * @minLength 1
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            installmentNumber: number;
+            /**
+             * @minLength 0
+             * @maxLength 100
+             * @type number
+            */
+            percentage: number;
+        }[];
+    }[];
 };
 
 export type PutOrganizationsSlugSalesSaleidMutationResponse = PutOrganizationsSlugSalesSaleid204;

@@ -13,6 +13,25 @@ export const SaleResponsibleTypeSchema = z.enum(["SELLER", "PARTNER"]);
 
 export type SaleResponsibleType = z.infer<typeof SaleResponsibleTypeSchema>;
 
+export const SaleCommissionSourceTypeSchema = z.enum(["PULLED", "MANUAL"]);
+
+export type SaleCommissionSourceType = z.infer<
+	typeof SaleCommissionSourceTypeSchema
+>;
+
+export const SaleCommissionRecipientTypeSchema = z.enum([
+	"COMPANY",
+	"UNIT",
+	"SELLER",
+	"PARTNER",
+	"SUPERVISOR",
+	"OTHER",
+]);
+
+export type SaleCommissionRecipientType = z.infer<
+	typeof SaleCommissionRecipientTypeSchema
+>;
+
 export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
 	PENDING: "Pendente",
 	APPROVED: "Aprovada",
@@ -20,9 +39,30 @@ export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
 	CANCELED: "Cancelada",
 };
 
-export const SALE_RESPONSIBLE_TYPE_LABEL: Record<SaleResponsibleType, string> = {
+export const SALE_RESPONSIBLE_TYPE_LABEL: Record<SaleResponsibleType, string> =
+	{
+		SELLER: "Vendedor",
+		PARTNER: "Parceiro",
+	};
+
+export const SALE_COMMISSION_SOURCE_TYPE_LABEL: Record<
+	SaleCommissionSourceType,
+	string
+> = {
+	PULLED: "Puxada",
+	MANUAL: "Manual",
+};
+
+export const SALE_COMMISSION_RECIPIENT_TYPE_LABEL: Record<
+	SaleCommissionRecipientType,
+	string
+> = {
+	COMPANY: "Empresa",
+	UNIT: "Unidade",
 	SELLER: "Vendedor",
 	PARTNER: "Parceiro",
+	SUPERVISOR: "Supervisor",
+	OTHER: "Outro",
 };
 
 export const SALE_STATUS_TRANSITIONS: Record<SaleStatus, SaleStatus[]> = {
@@ -31,4 +71,3 @@ export const SALE_STATUS_TRANSITIONS: Record<SaleStatus, SaleStatus[]> = {
 	COMPLETED: [],
 	CANCELED: [],
 };
-

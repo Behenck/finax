@@ -1,11 +1,12 @@
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
-import { SaleDetailSchema } from "./sale-schemas";
+import { loadSaleCommissions } from "./sale-commissions";
 import { loadSaleResponsible } from "./sale-responsible";
+import { SaleDetailSchema } from "./sale-schemas";
 
 export async function getSale(app: FastifyInstance) {
 	app
@@ -108,6 +109,7 @@ export async function getSale(app: FastifyInstance) {
 					responsibleType: sale.responsibleType,
 					responsibleId: sale.responsibleId,
 				});
+				const commissions = await loadSaleCommissions(sale.id, organization.id);
 
 				return {
 					sale: {
@@ -132,9 +134,9 @@ export async function getSale(app: FastifyInstance) {
 						unit: sale.unit,
 						createdBy: sale.createdBy,
 						responsible,
+						commissions,
 					},
 				};
 			},
 		);
 }
-

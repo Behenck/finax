@@ -1,12 +1,13 @@
+import { useMemo } from "react";
 import { useApp } from "@/context/app-context";
 import {
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugCustomers,
+	useGetOrganizationsSlugMembersRole,
 	useGetOrganizationsSlugPartners,
 	useGetOrganizationsSlugProducts,
 	useGetOrganizationsSlugSellers,
 } from "@/http/generated";
-import { useMemo } from "react";
 
 export interface SaleProductOption {
 	id: string;
@@ -83,6 +84,15 @@ export function useSaleFormOptions() {
 			query: { enabled },
 		},
 	);
+	const supervisorsQuery = useGetOrganizationsSlugMembersRole(
+		{
+			slug,
+			role: "SUPERVISOR",
+		},
+		{
+			query: { enabled },
+		},
+	);
 
 	const companies = useMemo(
 		() => companiesQuery.data?.companies ?? [],
@@ -98,7 +108,7 @@ export function useSaleFormOptions() {
 	const baseProducts = useMemo(
 		() =>
 			flattenActiveProductOptions(
-				((productsQuery.data?.products ?? []) as ProductTreeNode[]),
+				(productsQuery.data?.products ?? []) as ProductTreeNode[],
 			),
 		[productsQuery.data?.products],
 	);
@@ -117,6 +127,14 @@ export function useSaleFormOptions() {
 			),
 		[partnersQuery.data?.partners],
 	);
+	const supervisors = useMemo(
+		() =>
+			(supervisorsQuery.data?.members ?? []).map((member) => ({
+				id: member.id,
+				name: member.name ?? member.email,
+			})),
+		[supervisorsQuery.data?.members],
+	);
 
 	const queries = [
 		companiesQuery,
@@ -124,6 +142,7 @@ export function useSaleFormOptions() {
 		productsQuery,
 		sellersQuery,
 		partnersQuery,
+		supervisorsQuery,
 	];
 
 	return {
@@ -132,6 +151,7 @@ export function useSaleFormOptions() {
 		products,
 		sellers,
 		partners,
+		supervisors,
 		isLoading: queries.some((query) => query.isLoading),
 		isError: queries.some((query) => query.isError),
 		refetch: async () => {

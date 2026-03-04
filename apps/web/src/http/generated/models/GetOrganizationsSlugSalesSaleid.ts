@@ -38,6 +38,24 @@ export const saleResponsibleTypeEnum = {
 
 export type SaleResponsibleTypeEnumKey = (typeof saleResponsibleTypeEnum)[keyof typeof saleResponsibleTypeEnum];
 
+export const commissionsSourceTypeEnum3 = {
+    "PULLED": "PULLED",
+    "MANUAL": "MANUAL"
+} as const;
+
+export type CommissionsSourceTypeEnum3Key = (typeof commissionsSourceTypeEnum3)[keyof typeof commissionsSourceTypeEnum3];
+
+export const commissionsRecipientTypeEnum5 = {
+    "COMPANY": "COMPANY",
+    "UNIT": "UNIT",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER",
+    "SUPERVISOR": "SUPERVISOR",
+    "OTHER": "OTHER"
+} as const;
+
+export type CommissionsRecipientTypeEnum5Key = (typeof commissionsRecipientTypeEnum5)[keyof typeof commissionsRecipientTypeEnum5];
+
 /**
  * @description Default Response
 */
@@ -194,6 +212,59 @@ export type GetOrganizationsSlugSalesSaleid200 = {
          * @type string, uuid
         */
         createdById: string;
+        /**
+         * @type array
+        */
+        commissions: {
+            /**
+             * @type string, uuid
+            */
+            id: string;
+            /**
+             * @type string
+            */
+            sourceType: CommissionsSourceTypeEnum3Key;
+            /**
+             * @type string
+            */
+            recipientType: CommissionsRecipientTypeEnum5Key;
+            /**
+             * @type string, uuid
+            */
+            beneficiaryId: string | null;
+            /**
+             * @type string
+            */
+            beneficiaryLabel: string | null;
+            /**
+             * @maxLength 100
+             * @type number
+            */
+            totalPercentage: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            sortOrder: number;
+            /**
+             * @type array
+            */
+            installments: {
+                /**
+                 * @minLength 1
+                 * @maxLength 9007199254740991
+                 * @type integer
+                */
+                installmentNumber: number;
+                /**
+                 * @minLength 0
+                 * @maxLength 100
+                 * @type number
+                */
+                percentage: number;
+            }[];
+        }[];
     };
 };
 

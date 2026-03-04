@@ -1,4 +1,8 @@
-import { SaleStatus } from "generated/prisma/enums";
+import {
+	SaleCommissionRecipientType,
+	SaleCommissionSourceType,
+	SaleStatus,
+} from "generated/prisma/enums";
 import z from "zod";
 
 export const saleResponsibleTypeValues = ["SELLER", "PARTNER"] as const;
@@ -6,18 +10,21 @@ export const SaleResponsibleTypeSchema = z.enum(saleResponsibleTypeValues);
 
 const saleDateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-export const SaleDateInputSchema = z.string().regex(saleDateRegex).refine(
-	(value) => {
-		const parsed = new Date(`${value}T00:00:00.000Z`);
-		return (
-			!Number.isNaN(parsed.getTime()) &&
-			parsed.toISOString().slice(0, 10) === value
-		);
-	},
-	{
-		message: "Invalid date format. Expected YYYY-MM-DD",
-	},
-);
+export const SaleDateInputSchema = z
+	.string()
+	.regex(saleDateRegex)
+	.refine(
+		(value) => {
+			const parsed = new Date(`${value}T00:00:00.000Z`);
+			return (
+				!Number.isNaN(parsed.getTime()) &&
+				parsed.toISOString().slice(0, 10) === value
+			);
+		},
+		{
+			message: "Invalid date format. Expected YYYY-MM-DD",
+		},
+	);
 
 export const SaleResponsibleSchema = z
 	.object({
@@ -25,6 +32,117 @@ export const SaleResponsibleSchema = z
 		id: z.uuid(),
 	})
 	.strict();
+
+export const COMMISSION_PERCENTAGE_SCALE = 10_000;
+
+function hasUpTo4DecimalPlaces(value: number) {
+	const scaled = Math.round(
+		(value + Number.EPSILON) * COMMISSION_PERCENTAGE_SCALE,
+	);
+	return Math.abs(scaled / COMMISSION_PERCENTAGE_SCALE - value) < 1e-10;
+}
+
+const CommissionPercentageSchema = z
+	.number()
+	.min(0)
+	.max(100)
+	.refine(hasUpTo4DecimalPlaces, {
+		message: "Percentage must have up to 4 decimal places",
+	});
+
+const CommissionTotalPercentageSchema = z
+	.number()
+	.gt(0)
+	.max(100)
+	.refine(hasUpTo4DecimalPlaces, {
+		message: "Total percentage must have up to 4 decimal places",
+	});
+
+export const SaleCommissionSourceTypeSchema = z.enum(SaleCommissionSourceType);
+export const SaleCommissionRecipientTypeSchema = z.enum(
+	SaleCommissionRecipientType,
+);
+
+export const SaleCommissionInstallmentInputSchema = z
+	.object({
+		installmentNumber: z.number().int().min(1),
+		percentage: CommissionPercentageSchema,
+	})
+	.strict();
+
+export const SaleCommissionInputSchema = z
+	.object({
+		sourceType: SaleCommissionSourceTypeSchema,
+		recipientType: SaleCommissionRecipientTypeSchema,
+		beneficiaryId: z.uuid().optional(),
+		beneficiaryLabel: z.string().trim().optional(),
+		totalPercentage: CommissionTotalPercentageSchema,
+		installments: z.array(SaleCommissionInstallmentInputSchema).min(1),
+	})
+	.strict()
+	.superRefine((commission, ctx) => {
+		if (commission.recipientType === "OTHER") {
+			if (!commission.beneficiaryLabel) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Beneficiary label is required for OTHER recipient",
+					path: ["beneficiaryLabel"],
+				});
+			}
+		} else if (!commission.beneficiaryId) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Beneficiary id is required for this recipient type",
+				path: ["beneficiaryId"],
+			});
+		}
+
+		const installmentNumbers = new Set<number>();
+
+		for (const [index, installment] of commission.installments.entries()) {
+			if (installmentNumbers.has(installment.installmentNumber)) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Installment number must be unique within the commission",
+					path: ["installments", index, "installmentNumber"],
+				});
+			}
+			installmentNumbers.add(installment.installmentNumber);
+		}
+
+		const expectedTotal = toScaledPercentage(commission.totalPercentage);
+		const installmentsTotal = commission.installments.reduce(
+			(sum, installment) => {
+				return sum + toScaledPercentage(installment.percentage);
+			},
+			0,
+		);
+
+		if (expectedTotal !== installmentsTotal) {
+			ctx.addIssue({
+				code: "custom",
+				message:
+					"Installments total percentage must match commission total percentage",
+				path: ["installments"],
+			});
+		}
+	});
+
+const SaleCommissionInstallmentDetailSchema = z.object({
+	installmentNumber: z.number().int().min(1),
+	percentage: CommissionPercentageSchema,
+});
+
+export const SaleCommissionDetailSchema = z.object({
+	id: z.uuid(),
+	sourceType: SaleCommissionSourceTypeSchema,
+	recipientType: SaleCommissionRecipientTypeSchema,
+	beneficiaryId: z.uuid().nullable(),
+	beneficiaryLabel: z.string().nullable(),
+	totalPercentage: CommissionTotalPercentageSchema,
+	sortOrder: z.number().int().nonnegative(),
+	installments: z.array(SaleCommissionInstallmentDetailSchema).min(1),
+});
 
 export const CreateSaleBodySchema = z
 	.object({
@@ -36,6 +154,7 @@ export const CreateSaleBodySchema = z
 		companyId: z.uuid(),
 		unitId: z.uuid().optional(),
 		notes: z.string().optional(),
+		commissions: z.array(SaleCommissionInputSchema).optional(),
 	})
 	.strict();
 
@@ -89,9 +208,14 @@ export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	responsibleType: SaleResponsibleTypeSchema,
 	responsibleId: z.uuid(),
 	createdById: z.uuid(),
+	commissions: z.array(SaleCommissionDetailSchema),
 });
 
 export type SaleResponsibleInput = z.infer<typeof SaleResponsibleSchema>;
+export type SaleCommissionInput = z.infer<typeof SaleCommissionInputSchema>;
+export type SaleCommissionInstallmentInput = z.infer<
+	typeof SaleCommissionInstallmentInputSchema
+>;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
@@ -100,3 +224,10 @@ export function parseSaleDateInput(value: string) {
 	return new Date(`${value}T00:00:00.000Z`);
 }
 
+export function toScaledPercentage(value: number) {
+	return Math.round((value + Number.EPSILON) * COMMISSION_PERCENTAGE_SCALE);
+}
+
+export function fromScaledPercentage(value: number) {
+	return value / COMMISSION_PERCENTAGE_SCALE;
+}

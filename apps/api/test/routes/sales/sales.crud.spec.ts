@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import {
 	CustomerDocumentType,
 	CustomerPersonType,
@@ -11,6 +10,7 @@ import {
 } from "generated/prisma/enums";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { prisma } from "@/lib/prisma";
 import { makeUser } from "../../factories/make-user";
 import { createTestApp } from "../../utils/test-app";
 
@@ -26,13 +26,33 @@ type ResponsibleInput =
 			id: string;
 	  };
 
+type SaleCommissionInput = {
+	sourceType: "PULLED" | "MANUAL";
+	recipientType:
+		| "COMPANY"
+		| "UNIT"
+		| "SELLER"
+		| "PARTNER"
+		| "SUPERVISOR"
+		| "OTHER";
+	beneficiaryId?: string;
+	beneficiaryLabel?: string;
+	totalPercentage: number;
+	installments: Array<{
+		installmentNumber: number;
+		percentage: number;
+	}>;
+};
+
 async function createFixture() {
 	const { user, org } = await makeUser();
 
-	const loginResponse = await request(app.server).post("/sessions/password").send({
-		email: user.email,
-		password: user.password,
-	});
+	const loginResponse = await request(app.server)
+		.post("/sessions/password")
+		.send({
+			email: user.email,
+			password: user.password,
+		});
 
 	expect(loginResponse.statusCode).toBe(200);
 
@@ -192,6 +212,7 @@ function buildCreatePayload(
 		companyId: string;
 		unitId: string | undefined;
 		notes: string | undefined;
+		commissions: SaleCommissionInput[] | undefined;
 	}>,
 ) {
 	return {
@@ -208,6 +229,41 @@ function buildCreatePayload(
 		notes: "Primeira venda",
 		...overrides,
 	};
+}
+
+function buildCommissionsPayload(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+): SaleCommissionInput[] {
+	return [
+		{
+			sourceType: "PULLED",
+			recipientType: "SELLER",
+			beneficiaryId: fixture.seller.id,
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 0.5,
+				},
+				{
+					installmentNumber: 2,
+					percentage: 0.5,
+				},
+			],
+		},
+		{
+			sourceType: "MANUAL",
+			recipientType: "OTHER",
+			beneficiaryLabel: "Bônus Operacional",
+			totalPercentage: 0.5,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 0.5,
+				},
+			],
+		},
+	];
 }
 
 async function createSaleUsingApi(
@@ -256,6 +312,56 @@ describe("sales crud", () => {
 		expect(sale?.responsibleType).toBe("SELLER");
 		expect(sale?.totalAmount).toBe(125_000);
 		expect(sale?.saleDate.toISOString().slice(0, 10)).toBe("2026-03-04");
+
+		const commissionsCount = await prisma.saleCommission.count({
+			where: {
+				saleId: response.body.saleId,
+			},
+		});
+		expect(commissionsCount).toBe(0);
+	});
+
+	it("should create sale with pulled and manual commissions", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: buildCommissionsPayload(fixture),
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId: response.body.saleId,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			include: {
+				installments: {
+					orderBy: {
+						installmentNumber: "asc",
+					},
+				},
+			},
+		});
+
+		expect(commissions).toHaveLength(2);
+		expect(commissions[0]?.sourceType).toBe("PULLED");
+		expect(commissions[0]?.recipientType).toBe("SELLER");
+		expect(commissions[0]?.beneficiarySellerId).toBe(fixture.seller.id);
+		expect(commissions[0]?.totalPercentage).toBe(10_000);
+		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual(
+			[5_000, 5_000],
+		);
+		expect(commissions[1]?.sourceType).toBe("MANUAL");
+		expect(commissions[1]?.recipientType).toBe("OTHER");
+		expect(commissions[1]?.beneficiaryLabel).toBe("Bônus Operacional");
 	});
 
 	it("should create sale with active partner", async () => {
@@ -354,6 +460,67 @@ describe("sales crud", () => {
 		expect(response.body.message).toBe("Seller not found or inactive");
 	});
 
+	it("should fail when commission installments total does not match total percentage", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 0.4,
+								},
+								{
+									installmentNumber: 2,
+									percentage: 0.4,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should fail when commission beneficiary is outside organization", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "COMPANY",
+							beneficiaryId: "11111111-1111-4111-8111-111111111111",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe("One or more companies were not found");
+	});
+
 	it("should list sales with summary names", async () => {
 		const fixture = await createFixture();
 
@@ -392,7 +559,12 @@ describe("sales crud", () => {
 
 	it("should get sale by id", async () => {
 		const fixture = await createFixture();
-		const saleId = await createSaleUsingApi(fixture);
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
 
 		const response = await request(app.server)
 			.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
@@ -406,6 +578,9 @@ describe("sales crud", () => {
 		expect(response.body.sale.company.id).toBe(fixture.company.id);
 		expect(response.body.sale.unit.id).toBe(fixture.unit.id);
 		expect(response.body.sale.responsible.type).toBe("SELLER");
+		expect(response.body.sale.commissions).toHaveLength(2);
+		expect(response.body.sale.commissions[0].sourceType).toBe("PULLED");
+		expect(response.body.sale.commissions[1].sourceType).toBe("MANUAL");
 	});
 
 	it("should update sale via put without changing status", async () => {
@@ -438,6 +613,55 @@ describe("sales crud", () => {
 		expect(sale?.notes).toBe("Venda atualizada");
 		expect(sale?.responsibleType).toBe("PARTNER");
 		expect(sale?.status).toBe(SaleStatus.PENDING);
+	});
+
+	it("should replace sale commissions on update when commissions is provided", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "COMPANY",
+							beneficiaryId: fixture.company.id,
+							totalPercentage: 1.5,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 0.5,
+								},
+								{
+									installmentNumber: 2,
+									percentage: 1,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId,
+			},
+		});
+		expect(commissions).toHaveLength(1);
+		expect(commissions[0]?.sourceType).toBe("MANUAL");
+		expect(commissions[0]?.recipientType).toBe("COMPANY");
+		expect(commissions[0]?.beneficiaryCompanyId).toBe(fixture.company.id);
+		expect(commissions[0]?.totalPercentage).toBe(15_000);
 	});
 
 	it("should patch status with valid transition", async () => {
@@ -493,7 +717,19 @@ describe("sales crud", () => {
 
 	it("should delete sale", async () => {
 		const fixture = await createFixture();
-		const saleId = await createSaleUsingApi(fixture);
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const commissionsBeforeDelete = await prisma.saleCommission.count({
+			where: {
+				saleId,
+			},
+		});
+		expect(commissionsBeforeDelete).toBeGreaterThan(0);
 
 		const response = await request(app.server)
 			.delete(`/organizations/${fixture.org.slug}/sales/${saleId}`)
@@ -508,6 +744,13 @@ describe("sales crud", () => {
 		});
 
 		expect(sale).toBeNull();
+
+		const commissionsAfterDelete = await prisma.saleCommission.count({
+			where: {
+				saleId,
+			},
+		});
+		expect(commissionsAfterDelete).toBe(0);
 	});
 
 	it("should return not found when sale does not exist", async () => {
@@ -523,4 +766,3 @@ describe("sales crud", () => {
 		expect(response.body.message).toBe("Sale not found");
 	});
 });
-

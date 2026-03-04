@@ -55,7 +55,20 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
 "productId": z.uuid(),
 "responsibleType": z.enum(["SELLER", "PARTNER"]),
 "responsibleId": z.uuid(),
-"createdById": z.uuid()
+"createdById": z.uuid(),
+"commissions": z.array(z.object({
+    "id": z.uuid(),
+"sourceType": z.enum(["PULLED", "MANUAL"]),
+"recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
+"beneficiaryId": z.nullable(z.uuid()),
+"beneficiaryLabel": z.nullable(z.string()),
+"totalPercentage": z.number().max(100).gt(0),
+"sortOrder": z.int().min(0).max(9007199254740991),
+"installments": z.array(z.object({
+    "installmentNumber": z.int().min(1).max(9007199254740991),
+"percentage": z.number().min(0).max(100)
+    })).min(1)
+    }))
     })
     })
 
