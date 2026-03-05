@@ -24,6 +24,7 @@ import {
 	Database,
 	Home,
 	IdCardLanyard,
+	HandCoins,
 	LineChart,
 	LogOut,
 	Network,
@@ -118,6 +119,11 @@ export function AppSidebar() {
 			title: "Vendas",
 			url: "/sales",
 			icon: LineChart,
+		},
+		{
+			title: "Comissões",
+			url: "/commissions",
+			icon: HandCoins,
 		},
 		{
 			title: "Configurações",

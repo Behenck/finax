@@ -11,6 +11,7 @@ import {
 import { FieldError as FormFieldError } from "@/components/field-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -359,11 +360,10 @@ export function SaleCommissionCard({
 							control={control}
 							render={({ field, fieldState }) => (
 								<>
-									<Input
-										type="date"
+									<CalendarDateInput
 										value={toDateInputValue(field.value as Date | undefined)}
-										onChange={(event) =>
-											field.onChange(parseDateInputValue(event.target.value))
+										onChange={(value) =>
+											field.onChange(parseDateInputValue(value))
 										}
 									/>
 									<FormFieldError error={fieldState.error} />

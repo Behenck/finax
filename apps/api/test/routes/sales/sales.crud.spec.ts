@@ -286,6 +286,56 @@ function buildCommissionsPayload(
 	];
 }
 
+function buildMixedDirectionCommissionsPayload(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+): SaleCommissionInput[] {
+	return [
+		{
+			sourceType: "PULLED",
+			recipientType: "SELLER",
+			beneficiaryId: fixture.seller.id,
+			startDate: "2026-03-10",
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 0.5,
+				},
+				{
+					installmentNumber: 2,
+					percentage: 0.5,
+				},
+			],
+		},
+		{
+			sourceType: "MANUAL",
+			recipientType: "COMPANY",
+			beneficiaryId: fixture.company.id,
+			startDate: "2026-03-15",
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 1,
+				},
+			],
+		},
+		{
+			sourceType: "MANUAL",
+			recipientType: "PARTNER",
+			beneficiaryId: fixture.partner.id,
+			startDate: "2026-03-12",
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 1,
+				},
+			],
+		},
+	];
+}
+
 async function createSaleUsingApi(
 	fixture: Awaited<ReturnType<typeof createFixture>>,
 	payload?: ReturnType<typeof buildCreatePayload>,
@@ -1248,6 +1298,301 @@ describe("sales crud", () => {
 		);
 		expect(response.body.installments[1].expectedPaymentDate).toContain(
 			"2026-04-10",
+		);
+	});
+
+	it("should list organization commission installments with pagination and summary by direction", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildMixedDirectionCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		expect(approveResponse.statusCode).toBe(204);
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "COMPLETED",
+			});
+
+		expect(completeResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?page=1&pageSize=2`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.items).toHaveLength(2);
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: 2,
+			total: 4,
+			totalPages: 2,
+		});
+		expect(response.body.items[0].direction).toBe("OUTCOME");
+		expect(response.body.items[0].saleId).toBe(saleId);
+		expect(response.body.items[0].saleStatus).toBe("COMPLETED");
+		expect(response.body.items[0].customer.id).toBe(fixture.customer.id);
+		expect(response.body.items[0].product.id).toBe(fixture.product.id);
+		expect(response.body.items[0].company.id).toBe(fixture.company.id);
+		expect(response.body.summaryByDirection.OUTCOME).toEqual({
+			total: {
+				count: 3,
+				amount: 2_500,
+			},
+			pending: {
+				count: 3,
+				amount: 2_500,
+			},
+			paid: {
+				count: 0,
+				amount: 0,
+			},
+			canceled: {
+				count: 0,
+				amount: 0,
+			},
+		});
+		expect(response.body.summaryByDirection.INCOME).toEqual({
+			total: {
+				count: 1,
+				amount: 1_250,
+			},
+			pending: {
+				count: 1,
+				amount: 1_250,
+			},
+			paid: {
+				count: 0,
+				amount: 0,
+			},
+			canceled: {
+				count: 0,
+				amount: 0,
+			},
+		});
+	});
+
+	it("should not list organization commission installments for approved sales", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildMixedDirectionCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		expect(approveResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/commissions/installments`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.items).toHaveLength(0);
+		expect(response.body.pagination.total).toBe(0);
+		expect(response.body.summaryByDirection.OUTCOME.total).toEqual({
+			count: 0,
+			amount: 0,
+		});
+		expect(response.body.summaryByDirection.INCOME.total).toEqual({
+			count: 0,
+			amount: 0,
+		});
+	});
+
+	it("should filter organization commission installments by product id", async () => {
+		const fixture = await createFixture();
+		const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+
+		const secondProduct = await prisma.product.create({
+			data: {
+				organizationId: fixture.org.id,
+				name: `Product second ${suffix}`,
+				description: "Second product for commission filters",
+				isActive: true,
+			},
+		});
+
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				productId: fixture.product.id,
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				productId: secondProduct.id,
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const sales = await prisma.sale.findMany({
+			where: {
+				organizationId: fixture.org.id,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		for (const sale of sales) {
+			const approveResponse = await request(app.server)
+				.patch(`/organizations/${fixture.org.slug}/sales/${sale.id}/status`)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					status: "APPROVED",
+				});
+
+			expect(approveResponse.statusCode).toBe(204);
+			const completeResponse = await request(app.server)
+				.patch(`/organizations/${fixture.org.slug}/sales/${sale.id}/status`)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					status: "COMPLETED",
+				});
+
+			expect(completeResponse.statusCode).toBe(204);
+		}
+
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?productId=${fixture.product.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.pagination.total).toBe(3);
+		expect(response.body.items).toHaveLength(3);
+		expect(
+			response.body.items.every(
+				(item: { saleId: string; product: { id: string } }) =>
+					item.saleId === firstSaleId && item.product.id === fixture.product.id,
+			),
+		).toBe(true);
+		expect(response.body.summaryByDirection.OUTCOME.total).toEqual({
+			count: 3,
+			amount: 1_875,
+		});
+		expect(response.body.summaryByDirection.INCOME.total).toEqual({
+			count: 0,
+			amount: 0,
+		});
+	});
+
+	it("should filter organization commission installments by direction, status, expected dates and search", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(204);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "COMPLETED",
+			});
+		expect(completeResponse.statusCode).toBe(204);
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		const sellerInstallmentId = installmentsResponse.body.installments.find(
+			(installment: { recipientType: string; installmentNumber: number }) =>
+				installment.recipientType === "SELLER" &&
+				installment.installmentNumber === 1,
+		)?.id as string | undefined;
+
+		expect(sellerInstallmentId).toBeTruthy();
+
+		const paidResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-03-18",
+			});
+
+		expect(paidResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?direction=OUTCOME&status=PAID&expectedFrom=2026-03-01&expectedTo=2026-03-31&productId=${fixture.product.id}&q=${encodeURIComponent(
+					fixture.customer.name.slice(0, 6),
+				)}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.items).toHaveLength(1);
+		expect(response.body.items[0].direction).toBe("OUTCOME");
+		expect(response.body.items[0].status).toBe("PAID");
+		expect(response.body.items[0].saleId).toBe(saleId);
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: 20,
+			total: 1,
+			totalPages: 1,
+		});
+		expect(response.body.summaryByDirection.OUTCOME.paid).toEqual({
+			count: 1,
+			amount: response.body.items[0].amount,
+		});
+		expect(response.body.summaryByDirection.INCOME.total).toEqual({
+			count: 0,
+			amount: 0,
+		});
+	});
+
+	it("should fail when organization commission installments date range is invalid", async () => {
+		const fixture = await createFixture();
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?expectedFrom=2026-04-10&expectedTo=2026-03-10`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"expectedFrom must be less than or equal to expectedTo",
 		);
 	});
 

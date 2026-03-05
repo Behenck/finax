@@ -68,6 +68,11 @@ Aplica-se a tudo dentro de `apps/web`.
 - Manter schemas proximos ao uso quando forem especificos da tela, ou em `src/schemas` quando compartilhados.
 - Reaproveitar componentes de formulario em `src/components/ui` e padroes visuais existentes.
 
+### Datas em formularios
+- Para selecao de datas na UI, usar sempre `Calendar` (ou componente compartilhado baseado em `Calendar`).
+- Evitar `Input` com `type="date"` em novas implementacoes.
+- Ao tocar em campos de data existentes, priorizar migracao para o padrao com `Calendar`.
+
 ### UI e componentes
 - Reaproveitar `src/components/ui` antes de criar novos componentes base.
 - Componentes compartilhados devem ir para `src/components`.

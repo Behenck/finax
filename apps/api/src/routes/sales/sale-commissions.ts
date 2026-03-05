@@ -7,6 +7,7 @@ import {
 	SaleCommissionInstallmentStatus,
 	type SaleCommissionRecipientType,
 	type SaleCommissionSourceType,
+	SaleStatus,
 	SellerStatus,
 } from "generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
@@ -16,6 +17,7 @@ import {
 	fromScaledPercentage,
 	parseSaleDateInput,
 	type SaleCommissionInput,
+	type SaleCommissionInstallmentStatusFilter,
 	toScaledPercentage,
 } from "./sale-schemas";
 
@@ -856,4 +858,517 @@ export async function loadSaleCommissionInstallments(
 			paymentDate: installment.paymentDate,
 		};
 	});
+}
+
+type OrganizationCommissionInstallmentsFilters = {
+	organizationId: string;
+	q: string;
+	productId?: string;
+	status: SaleCommissionInstallmentStatusFilter;
+	expectedFrom?: Date;
+	expectedTo?: Date;
+	direction?: SaleCommissionDirection;
+};
+
+const saleCommissionDirections = ["INCOME", "OUTCOME"] as const;
+
+function buildOrganizationCommissionInstallmentsWhere({
+	organizationId,
+	q,
+	productId,
+	status,
+	expectedFrom,
+	expectedTo,
+	direction,
+	statusOverride,
+}: OrganizationCommissionInstallmentsFilters & {
+	statusOverride?: SaleCommissionInstallmentStatus;
+}): Prisma.SaleCommissionInstallmentWhereInput {
+	const searchTerm = q.trim();
+	const andConditions: Prisma.SaleCommissionInstallmentWhereInput[] = [
+		{
+			saleCommission: {
+				sale: {
+					organizationId,
+					status: SaleStatus.COMPLETED,
+				},
+			},
+		},
+	];
+
+	if (direction) {
+		andConditions.push({
+			saleCommission: {
+				direction,
+			},
+		});
+	}
+
+	if (productId) {
+		andConditions.push({
+			saleCommission: {
+				sale: {
+					productId,
+				},
+			},
+		});
+	}
+
+	const requestedStatus = status === "ALL" ? undefined : status;
+
+	if (statusOverride) {
+		if (requestedStatus && requestedStatus !== statusOverride) {
+			andConditions.push({
+				status: {
+					in: [] as SaleCommissionInstallmentStatus[],
+				},
+			});
+		} else {
+			andConditions.push({
+				status: statusOverride,
+			});
+		}
+	} else if (requestedStatus) {
+		andConditions.push({
+			status: requestedStatus,
+		});
+	}
+
+	if (expectedFrom || expectedTo) {
+		andConditions.push({
+			expectedPaymentDate: {
+				gte: expectedFrom,
+				lte: expectedTo,
+			},
+		});
+	}
+
+	if (searchTerm) {
+		andConditions.push({
+			OR: [
+				{
+					saleCommission: {
+						sale: {
+							customer: {
+								name: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						sale: {
+							product: {
+								name: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						sale: {
+							company: {
+								name: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						sale: {
+							unit: {
+								name: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiaryLabel: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiaryCompany: {
+							name: {
+								contains: searchTerm,
+								mode: "insensitive",
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiaryUnit: {
+							name: {
+								contains: searchTerm,
+								mode: "insensitive",
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiarySeller: {
+							name: {
+								contains: searchTerm,
+								mode: "insensitive",
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiaryPartner: {
+							name: {
+								contains: searchTerm,
+								mode: "insensitive",
+							},
+						},
+					},
+				},
+				{
+					saleCommission: {
+						beneficiarySupervisor: {
+							user: {
+								OR: [
+									{
+										name: {
+											contains: searchTerm,
+											mode: "insensitive",
+										},
+									},
+									{
+										email: {
+											contains: searchTerm,
+											mode: "insensitive",
+										},
+									},
+								],
+							},
+						},
+					},
+				},
+			],
+		});
+	}
+
+	if (andConditions.length === 1) {
+		return andConditions[0] as Prisma.SaleCommissionInstallmentWhereInput;
+	}
+
+	return {
+		AND: andConditions,
+	};
+}
+
+type InstallmentSummaryBucket = {
+	count: number;
+	amount: number;
+};
+
+type InstallmentDirectionSummary = {
+	total: InstallmentSummaryBucket;
+	pending: InstallmentSummaryBucket;
+	paid: InstallmentSummaryBucket;
+	canceled: InstallmentSummaryBucket;
+};
+
+type InstallmentSummaryByDirection = Record<
+	SaleCommissionDirection,
+	InstallmentDirectionSummary
+>;
+
+function toInstallmentSummaryBucket(aggregate: {
+	_count: { _all: number };
+	_sum: { amount: number | null };
+}): InstallmentSummaryBucket {
+	return {
+		count: aggregate._count._all,
+		amount: aggregate._sum.amount ?? 0,
+	};
+}
+
+async function loadOrganizationInstallmentsSummaryByDirection(
+	filters: OrganizationCommissionInstallmentsFilters,
+): Promise<InstallmentSummaryByDirection> {
+	const summaries = await Promise.all(
+		saleCommissionDirections.map(async (direction) => {
+			const [total, pending, paid, canceled] = await Promise.all([
+				prisma.saleCommissionInstallment.aggregate({
+					where: buildOrganizationCommissionInstallmentsWhere({
+						...filters,
+						direction,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.saleCommissionInstallment.aggregate({
+					where: buildOrganizationCommissionInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.PENDING,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.saleCommissionInstallment.aggregate({
+					where: buildOrganizationCommissionInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.PAID,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.saleCommissionInstallment.aggregate({
+					where: buildOrganizationCommissionInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.CANCELED,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+			]);
+
+			return [
+				direction,
+				{
+					total: toInstallmentSummaryBucket(total),
+					pending: toInstallmentSummaryBucket(pending),
+					paid: toInstallmentSummaryBucket(paid),
+					canceled: toInstallmentSummaryBucket(canceled),
+				},
+			] as const;
+		}),
+	);
+
+	return Object.fromEntries(summaries) as InstallmentSummaryByDirection;
+}
+
+export async function loadOrganizationCommissionInstallments({
+	organizationId,
+	page,
+	pageSize,
+	q,
+	productId,
+	direction,
+	status,
+	expectedFrom,
+	expectedTo,
+}: OrganizationCommissionInstallmentsFilters & {
+	page: number;
+	pageSize: number;
+}) {
+	const where = buildOrganizationCommissionInstallmentsWhere({
+		organizationId,
+		q,
+		productId,
+		status,
+		expectedFrom,
+		expectedTo,
+		direction,
+	});
+	const skip = (page - 1) * pageSize;
+
+	const [total, installments, summaryByDirection] = await Promise.all([
+		prisma.saleCommissionInstallment.count({
+			where,
+		}),
+		prisma.saleCommissionInstallment.findMany({
+			where,
+			orderBy: [{ expectedPaymentDate: "asc" }, { createdAt: "desc" }],
+			skip,
+			take: pageSize,
+			select: {
+				id: true,
+				saleCommissionId: true,
+				installmentNumber: true,
+				percentage: true,
+				amount: true,
+				status: true,
+				expectedPaymentDate: true,
+				paymentDate: true,
+				saleCommission: {
+					select: {
+						saleId: true,
+						recipientType: true,
+						sourceType: true,
+						direction: true,
+						beneficiaryCompanyId: true,
+						beneficiaryUnitId: true,
+						beneficiarySellerId: true,
+						beneficiaryPartnerId: true,
+						beneficiarySupervisorId: true,
+						beneficiaryLabel: true,
+						beneficiaryCompany: {
+							select: {
+								name: true,
+							},
+						},
+						beneficiaryUnit: {
+							select: {
+								name: true,
+								company: {
+									select: {
+										name: true,
+									},
+								},
+							},
+						},
+						beneficiarySeller: {
+							select: {
+								name: true,
+							},
+						},
+						beneficiaryPartner: {
+							select: {
+								name: true,
+							},
+						},
+						beneficiarySupervisor: {
+							select: {
+								user: {
+									select: {
+										name: true,
+										email: true,
+									},
+								},
+							},
+						},
+						sale: {
+							select: {
+								id: true,
+								status: true,
+								saleDate: true,
+								customer: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+								product: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+								company: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+								unit: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}),
+		loadOrganizationInstallmentsSummaryByDirection({
+			organizationId,
+			q,
+			productId,
+			status,
+			expectedFrom,
+			expectedTo,
+		}),
+	]);
+
+	return {
+		items: installments.map((installment) => {
+			const beneficiaryId = resolveSaleCommissionBeneficiaryId({
+				recipientType: installment.saleCommission.recipientType,
+				beneficiaryCompanyId: installment.saleCommission.beneficiaryCompanyId,
+				beneficiaryUnitId: installment.saleCommission.beneficiaryUnitId,
+				beneficiarySellerId: installment.saleCommission.beneficiarySellerId,
+				beneficiaryPartnerId: installment.saleCommission.beneficiaryPartnerId,
+				beneficiarySupervisorId:
+					installment.saleCommission.beneficiarySupervisorId,
+			});
+			const beneficiaryLabel = resolveSaleCommissionBeneficiaryLabel({
+				recipientType: installment.saleCommission.recipientType,
+				beneficiaryLabel: installment.saleCommission.beneficiaryLabel,
+				beneficiaryCompany: installment.saleCommission.beneficiaryCompany,
+				beneficiaryUnit: installment.saleCommission.beneficiaryUnit,
+				beneficiarySeller: installment.saleCommission.beneficiarySeller,
+				beneficiaryPartner: installment.saleCommission.beneficiaryPartner,
+				beneficiarySupervisor: installment.saleCommission.beneficiarySupervisor,
+			});
+
+			return {
+				id: installment.id,
+				saleId: installment.saleCommission.sale.id,
+				saleStatus: installment.saleCommission.sale.status,
+				saleDate: installment.saleCommission.sale.saleDate,
+				customer: installment.saleCommission.sale.customer,
+				product: installment.saleCommission.sale.product,
+				company: installment.saleCommission.sale.company,
+				unit: installment.saleCommission.sale.unit,
+				saleCommissionId: installment.saleCommissionId,
+				installmentNumber: installment.installmentNumber,
+				recipientType: installment.saleCommission.recipientType,
+				sourceType: installment.saleCommission.sourceType,
+				direction: installment.saleCommission.direction,
+				beneficiaryId,
+				beneficiaryLabel,
+				beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
+					saleCommissionId: installment.saleCommissionId,
+					recipientType: installment.saleCommission.recipientType,
+					beneficiaryId,
+					beneficiaryLabel,
+				}),
+				percentage: fromScaledPercentage(installment.percentage),
+				amount: installment.amount,
+				status: installment.status,
+				expectedPaymentDate: installment.expectedPaymentDate,
+				paymentDate: installment.paymentDate,
+			};
+		}),
+		pagination: {
+			page,
+			pageSize,
+			total,
+			totalPages: Math.max(1, Math.ceil(total / pageSize)),
+		},
+		summaryByDirection,
+	};
 }

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { FieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
+import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import {
 	Dialog,
@@ -751,20 +752,19 @@ export function SaleForm({
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Data da venda *</FieldLabel>
-							<Controller
-								control={control}
-								name="saleDate"
-								render={({ field, fieldState }) => (
-									<>
-										<Input
-											type="date"
-											value={toDateInputValue(field.value as Date | undefined)}
-											onChange={(event) => {
-												field.onChange(parseDateInputValue(event.target.value));
-											}}
-											aria-invalid={fieldState.invalid}
-										/>
-										<FieldError error={fieldState.error} />
+								<Controller
+									control={control}
+									name="saleDate"
+									render={({ field, fieldState }) => (
+										<>
+											<CalendarDateInput
+												value={toDateInputValue(field.value as Date | undefined)}
+												onChange={(value) => {
+													field.onChange(parseDateInputValue(value));
+												}}
+												aria-invalid={fieldState.invalid}
+											/>
+											<FieldError error={fieldState.error} />
 									</>
 								)}
 							/>

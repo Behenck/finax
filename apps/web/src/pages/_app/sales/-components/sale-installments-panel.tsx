@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import {
 	Dialog,
 	DialogContent,
@@ -575,24 +576,23 @@ export function SaleInstallmentsPanel({
 							/>
 						</div>
 
-						{statusAction?.nextStatus === "PAID" ? (
-							<div className="space-y-1">
-								<p className="text-sm font-medium">Data de pagamento</p>
-								<Input
-									type="date"
-									value={statusAction.paymentDate}
-									onChange={(event) => {
-										setStatusAction((current) =>
-											current
-												? {
-													...current,
-													paymentDate: event.target.value,
-												}
-												: current,
-										);
-									}}
-								/>
-							</div>
+							{statusAction?.nextStatus === "PAID" ? (
+								<div className="space-y-1">
+									<p className="text-sm font-medium">Data de pagamento</p>
+									<CalendarDateInput
+										value={statusAction.paymentDate}
+										onChange={(value) => {
+											setStatusAction((current) =>
+												current
+													? {
+															...current,
+															paymentDate: value,
+														}
+													: current,
+											);
+										}}
+									/>
+								</div>
 						) : null}
 					</div>
 
@@ -693,43 +693,41 @@ export function SaleInstallmentsPanel({
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-1">
-								<p className="text-sm font-medium">Previsão de pagamento</p>
-								<Input
-									type="date"
-									value={editingInstallment?.expectedPaymentDate ?? ""}
-									onChange={(event) => {
-										setEditingInstallment((current) =>
-											current
-												? {
-													...current,
-													expectedPaymentDate: event.target.value,
-												}
-												: current,
-										);
-									}}
-								/>
-							</div>
+								<div className="space-y-1">
+									<p className="text-sm font-medium">Previsão de pagamento</p>
+									<CalendarDateInput
+										value={editingInstallment?.expectedPaymentDate ?? ""}
+										onChange={(value) => {
+											setEditingInstallment((current) =>
+												current
+													? {
+															...current,
+															expectedPaymentDate: value,
+														}
+													: current,
+											);
+										}}
+									/>
+								</div>
 						</div>
 
-						{editingInstallment?.status === "PAID" ? (
-							<div className="space-y-1">
-								<p className="text-sm font-medium">Data de pagamento</p>
-								<Input
-									type="date"
-									value={editingInstallment.paymentDate}
-									onChange={(event) => {
-										setEditingInstallment((current) =>
-											current
-												? {
-													...current,
-													paymentDate: event.target.value,
-												}
-												: current,
-										);
-									}}
-								/>
-							</div>
+							{editingInstallment?.status === "PAID" ? (
+								<div className="space-y-1">
+									<p className="text-sm font-medium">Data de pagamento</p>
+									<CalendarDateInput
+										value={editingInstallment.paymentDate}
+										onChange={(value) => {
+											setEditingInstallment((current) =>
+												current
+													? {
+															...current,
+															paymentDate: value,
+														}
+													: current,
+											);
+										}}
+									/>
+								</div>
 						) : null}
 					</div>
 

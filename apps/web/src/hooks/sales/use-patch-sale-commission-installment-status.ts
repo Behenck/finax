@@ -25,6 +25,7 @@ interface PatchSaleCommissionInstallmentStatusInput {
 	status: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey;
 	paymentDate?: string;
 	amount?: number;
+	silent?: boolean;
 }
 
 export function usePatchSaleCommissionInstallmentStatus() {
@@ -80,11 +81,27 @@ export function usePatchSaleCommissionInstallmentStatus() {
 							saleId: variables.saleId,
 						}),
 				}),
+				queryClient.invalidateQueries({
+					queryKey: [
+						{
+							url: "/organizations/:slug/commissions/installments",
+							params: {
+								slug: organization.slug,
+							},
+						},
+					],
+				}),
 			]);
 
-			toast.success(INSTALLMENT_STATUS_SUCCESS_MESSAGE[variables.status]);
+			if (!variables.silent) {
+				toast.success(INSTALLMENT_STATUS_SUCCESS_MESSAGE[variables.status]);
+			}
 		},
-		onError: (error) => {
+		onError: (error, variables) => {
+			if (variables?.silent) {
+				return;
+			}
+
 			const message = resolveErrorMessage(normalizeApiError(error));
 			toast.error(message);
 		},

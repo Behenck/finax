@@ -20,6 +20,7 @@ export { getMe200Schema, getMeQueryResponseSchema } from "./getMeSchema.ts";
 export { getOrganizationSlugPathParamsSchema, getOrganizationSlug200Schema, getOrganizationSlugQueryResponseSchema } from "./getOrganizationSlugSchema.ts";
 export { getOrganizations200Schema, getOrganizationsQueryResponseSchema } from "./getOrganizationsSchema.ts";
 export { getOrganizationsSlugCategoriesPathParamsSchema, getOrganizationsSlugCategories200Schema, getOrganizationsSlugCategoriesQueryResponseSchema } from "./getOrganizationsSlugCategoriesSchema.ts";
+export { getOrganizationsSlugCommissionsInstallmentsPathParamsSchema, getOrganizationsSlugCommissionsInstallmentsQueryParamsSchema, getOrganizationsSlugCommissionsInstallments200Schema, getOrganizationsSlugCommissionsInstallmentsQueryResponseSchema } from "./getOrganizationsSlugCommissionsInstallmentsSchema.ts";
 export { getOrganizationsSlugCompaniesCompanyidUnitsPathParamsSchema, getOrganizationsSlugCompaniesCompanyidUnits200Schema, getOrganizationsSlugCompaniesCompanyidUnitsQueryResponseSchema } from "./getOrganizationsSlugCompaniesCompanyidUnitsSchema.ts";
 export { getOrganizationsSlugCompaniesPathParamsSchema, getOrganizationsSlugCompanies200Schema, getOrganizationsSlugCompaniesQueryResponseSchema } from "./getOrganizationsSlugCompaniesSchema.ts";
 export { getOrganizationsSlugCostcentersPathParamsSchema, getOrganizationsSlugCostcenters200Schema, getOrganizationsSlugCostcentersQueryResponseSchema } from "./getOrganizationsSlugCostcentersSchema.ts";

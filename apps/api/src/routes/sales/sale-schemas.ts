@@ -183,6 +183,85 @@ export const SaleCommissionInstallmentRowSchema = z.object({
 	paymentDate: z.date().nullable(),
 });
 
+const saleCommissionInstallmentStatusFilterValues = [
+	"ALL",
+	"PENDING",
+	"PAID",
+	"CANCELED",
+] as const;
+
+export const SaleCommissionInstallmentStatusFilterSchema = z.enum(
+	saleCommissionInstallmentStatusFilterValues,
+);
+
+export const GetOrganizationCommissionInstallmentsQuerySchema = z
+	.object({
+		page: z.coerce.number().int().min(1).default(1),
+		pageSize: z.coerce.number().int().min(1).max(100).default(20),
+		q: z.string().trim().default(""),
+		productId: z.uuid().optional(),
+		direction: SaleCommissionDirectionSchema.optional(),
+		status: SaleCommissionInstallmentStatusFilterSchema.default("ALL"),
+		expectedFrom: SaleDateInputSchema.optional(),
+		expectedTo: SaleDateInputSchema.optional(),
+	})
+	.strict();
+
+const SaleContextEntitySchema = z.object({
+	id: z.uuid(),
+	name: z.string(),
+});
+
+export const OrganizationCommissionInstallmentRowSchema = z.object({
+	id: z.uuid(),
+	saleId: z.uuid(),
+	saleStatus: z.enum(SaleStatus),
+	saleDate: z.date(),
+	customer: SaleContextEntitySchema,
+	product: SaleContextEntitySchema,
+	company: SaleContextEntitySchema,
+	unit: SaleContextEntitySchema.nullable(),
+	saleCommissionId: z.uuid(),
+	installmentNumber: z.number().int().min(1),
+	recipientType: SaleCommissionRecipientTypeSchema,
+	sourceType: SaleCommissionSourceTypeSchema,
+	direction: SaleCommissionDirectionSchema,
+	beneficiaryId: z.uuid().nullable(),
+	beneficiaryLabel: z.string().nullable(),
+	beneficiaryKey: z.string().min(1),
+	percentage: CommissionPercentageSchema,
+	amount: z.number().int().nonnegative(),
+	status: SaleCommissionInstallmentStatusSchema,
+	expectedPaymentDate: z.date(),
+	paymentDate: z.date().nullable(),
+});
+
+const CommissionInstallmentSummaryBucketSchema = z.object({
+	count: z.number().int().nonnegative(),
+	amount: z.number().int().nonnegative(),
+});
+
+const CommissionInstallmentDirectionSummarySchema = z.object({
+	total: CommissionInstallmentSummaryBucketSchema,
+	pending: CommissionInstallmentSummaryBucketSchema,
+	paid: CommissionInstallmentSummaryBucketSchema,
+	canceled: CommissionInstallmentSummaryBucketSchema,
+});
+
+export const OrganizationCommissionInstallmentsResponseSchema = z.object({
+	items: z.array(OrganizationCommissionInstallmentRowSchema),
+	pagination: z.object({
+		page: z.number().int().min(1),
+		pageSize: z.number().int().min(1).max(100),
+		total: z.number().int().nonnegative(),
+		totalPages: z.number().int().min(1),
+	}),
+	summaryByDirection: z.object({
+		INCOME: CommissionInstallmentDirectionSummarySchema,
+		OUTCOME: CommissionInstallmentDirectionSummarySchema,
+	}),
+});
+
 export const CreateSaleBodySchema = z
 	.object({
 		saleDate: SaleDateInputSchema,
@@ -283,6 +362,12 @@ export type SaleCommissionInstallmentInput = z.infer<
 >;
 export type SaleCommissionInstallmentRow = z.infer<
 	typeof SaleCommissionInstallmentRowSchema
+>;
+export type SaleCommissionInstallmentStatusFilter = z.infer<
+	typeof SaleCommissionInstallmentStatusFilterSchema
+>;
+export type GetOrganizationCommissionInstallmentsQuery = z.infer<
+	typeof GetOrganizationCommissionInstallmentsQuerySchema
 >;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;

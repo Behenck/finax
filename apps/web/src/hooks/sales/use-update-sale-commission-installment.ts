@@ -64,6 +64,16 @@ export function useUpdateSaleCommissionInstallment() {
 							saleId: variables.saleId,
 						}),
 				}),
+				queryClient.invalidateQueries({
+					queryKey: [
+						{
+							url: "/organizations/:slug/commissions/installments",
+							params: {
+								slug: organization.slug,
+							},
+						},
+					],
+				}),
 			]);
 
 			toast.success("Parcela atualizada.");

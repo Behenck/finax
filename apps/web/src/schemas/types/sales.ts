@@ -65,7 +65,7 @@ export const SALE_COMMISSION_SOURCE_TYPE_LABEL: Record<
 	SaleCommissionSourceType,
 	string
 > = {
-	PULLED: "Puxada",
+	PULLED: "Vinculo",
 	MANUAL: "Manual",
 };
 

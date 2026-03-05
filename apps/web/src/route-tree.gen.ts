@@ -20,6 +20,7 @@ import { Route as AuthInviteIndexRouteImport } from './pages/_auth/invite/index'
 import { Route as AppTransactionsIndexRouteImport } from './pages/_app/transactions/index'
 import { Route as AppSettingsIndexRouteImport } from './pages/_app/settings/index'
 import { Route as AppSalesIndexRouteImport } from './pages/_app/sales/index'
+import { Route as AppCommissionsIndexRouteImport } from './pages/_app/commissions/index'
 import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/index'
 import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/reset'
 import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
@@ -99,6 +100,11 @@ const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
 const AppSalesIndexRoute = AppSalesIndexRouteImport.update({
   id: '/sales/',
   path: '/sales/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppCommissionsIndexRoute = AppCommissionsIndexRouteImport.update({
+  id: '/commissions/',
+  path: '/commissions/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
@@ -267,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
+  '/commissions': typeof AppCommissionsIndexRoute
   '/sales': typeof AppSalesIndexRoute
   '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/': typeof AppDashboardIndexRoute
+  '/commissions': typeof AppCommissionsIndexRoute
   '/sales': typeof AppSalesIndexRoute
   '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/_auth/password/recover': typeof AuthPasswordRecoverRoute
   '/_auth/password/reset': typeof AuthPasswordResetRoute
   '/_app/_dashboard/': typeof AppDashboardIndexRoute
+  '/_app/commissions/': typeof AppCommissionsIndexRoute
   '/_app/sales/': typeof AppSalesIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
@@ -384,6 +393,7 @@ export interface FileRouteTypes {
     | '/password/recover'
     | '/password/reset'
     | '/'
+    | '/commissions'
     | '/sales'
     | '/settings/'
     | '/transactions'
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/password/recover'
     | '/password/reset'
     | '/'
+    | '/commissions'
     | '/sales'
     | '/settings'
     | '/transactions'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/_auth/password/recover'
     | '/_auth/password/reset'
     | '/_app/_dashboard/'
+    | '/_app/commissions/'
     | '/_app/sales/'
     | '/_app/settings/'
     | '/_app/transactions/'
@@ -569,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/sales'
       fullPath: '/sales'
       preLoaderRoute: typeof AppSalesIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/commissions/': {
+      id: '/_app/commissions/'
+      path: '/commissions'
+      fullPath: '/commissions'
+      preLoaderRoute: typeof AppCommissionsIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
     '/_app/_dashboard/': {
@@ -783,6 +802,7 @@ interface AppLayoutRouteChildren {
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppCommissionsIndexRoute: typeof AppCommissionsIndexRoute
   AppSalesIndexRoute: typeof AppSalesIndexRoute
   AppTransactionsIndexRoute: typeof AppTransactionsIndexRoute
   AppRegistersCustomersCreateRoute: typeof AppRegistersCustomersCreateRoute
@@ -809,6 +829,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppCommissionsIndexRoute: AppCommissionsIndexRoute,
   AppSalesIndexRoute: AppSalesIndexRoute,
   AppTransactionsIndexRoute: AppTransactionsIndexRoute,
   AppRegistersCustomersCreateRoute: AppRegistersCustomersCreateRoute,
