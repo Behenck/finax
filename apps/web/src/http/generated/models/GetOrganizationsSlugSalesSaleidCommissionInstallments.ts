@@ -66,6 +66,15 @@ export type GetOrganizationsSlugSalesSaleidCommissionInstallments200 = {
         */
         sourceType: InstallmentsSourceTypeEnumKey;
         /**
+         * @type string, uuid
+        */
+        beneficiaryId: string | null;
+        /**
+         * @minLength 1
+         * @type string
+        */
+        beneficiaryKey: string;
+        /**
          * @type string
         */
         beneficiaryLabel: string | null;

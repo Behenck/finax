@@ -4,30 +4,18 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid,
 	getOrganizationsSlugSalesQueryKey,
 	getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey,
 	getOrganizationsSlugSalesSaleidQueryKey,
-	type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey,
-	patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus,
 } from "@/http/generated";
 
-const INSTALLMENT_STATUS_SUCCESS_MESSAGE: Record<
-	PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey,
-	string
-> = {
-	PAID: "Parcela marcada como paga.",
-	CANCELED: "Parcela cancelada.",
-};
-
-interface PatchSaleCommissionInstallmentStatusInput {
+interface DeleteSaleCommissionInstallmentInput {
 	saleId: string;
 	installmentId: string;
-	status: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey;
-	paymentDate?: string;
-	amount?: number;
 }
 
-export function usePatchSaleCommissionInstallmentStatus() {
+export function useDeleteSaleCommissionInstallment() {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
 
@@ -35,24 +23,16 @@ export function usePatchSaleCommissionInstallmentStatus() {
 		mutationFn: async ({
 			saleId,
 			installmentId,
-			status,
-			paymentDate,
-			amount,
-		}: PatchSaleCommissionInstallmentStatusInput) => {
+		}: DeleteSaleCommissionInstallmentInput) => {
 			if (!organization?.slug) {
 				throw new Error("Organização não encontrada");
 			}
 
-			await patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus(
+			await deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid(
 				{
 					slug: organization.slug,
 					saleId,
 					installmentId,
-					data: {
-						status,
-						paymentDate,
-						amount,
-					},
 				},
 			);
 		},
@@ -82,7 +62,7 @@ export function usePatchSaleCommissionInstallmentStatus() {
 				}),
 			]);
 
-			toast.success(INSTALLMENT_STATUS_SUCCESS_MESSAGE[variables.status]);
+			toast.success("Parcela excluída.");
 		},
 		onError: (error) => {
 			const message = resolveErrorMessage(normalizeApiError(error));

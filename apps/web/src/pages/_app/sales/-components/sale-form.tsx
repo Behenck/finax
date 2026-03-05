@@ -1,24 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { format, parse, parseISO, startOfDay } from "date-fns";
+import { format, parse, startOfDay } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { FieldError } from "@/components/field-error";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -44,14 +33,11 @@ import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
 	useCreateSale,
-	usePatchSaleCommissionInstallmentStatus,
-	useSaleCommissionInstallments,
 	useSaleFormOptions,
 	useUpdateSale,
 } from "@/hooks/sales";
 import {
 	type GetOrganizationsSlugCustomersQueryResponse,
-	type GetOrganizationsSlugSalesSaleidCommissionInstallments200,
 	type GetOrganizationsSlugSalesSaleid200,
 	getOrganizationsSlugCustomersQueryKey,
 	postOrganizationsSlugCustomers,
@@ -64,9 +50,7 @@ import {
 	saleSchema,
 } from "@/schemas/sale-schema";
 import {
-	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL,
 	SALE_RESPONSIBLE_TYPE_LABEL,
-	type SaleCommissionInstallmentStatus,
 	type SaleResponsibleType,
 	type SaleStatus,
 } from "@/schemas/types/sales";
@@ -87,6 +71,7 @@ import {
 	roundSaleCommissionPercentage,
 	type SaleCommissionMatchContext,
 } from "./sale-commission-helpers";
+import { SaleInstallmentsPanel } from "./sale-installments-panel";
 
 const OPTIONAL_NONE_VALUE = "__NONE__";
 const QUICK_CUSTOMER_DEFAULT_VALUES = {
@@ -121,17 +106,6 @@ type QuickCustomerInput = z.input<typeof quickCustomerSchema>;
 type QuickCustomerData = z.infer<typeof quickCustomerSchema>;
 type SaleCustomerOption =
 	GetOrganizationsSlugCustomersQueryResponse["customers"][number];
-type SaleInstallmentRow =
-	GetOrganizationsSlugSalesSaleidCommissionInstallments200["installments"][number];
-
-const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
-	SaleCommissionInstallmentStatus,
-	string
-> = {
-	PENDING: "bg-yellow-500/15 text-yellow-700 border-yellow-500/30",
-	PAID: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
-	CANCELED: "bg-red-500/15 text-red-700 border-red-500/30",
-};
 
 interface SaleFormProps {
 	mode?: "CREATE" | "UPDATE";
@@ -154,10 +128,6 @@ function parseDateInputValue(value: string) {
 	}
 
 	return parse(value, "yyyy-MM-dd", new Date());
-}
-
-function formatInstallmentDate(value: string) {
-	return format(parseISO(value), "dd/MM/yyyy");
 }
 
 type SaleCommissionDetailLike = {
@@ -207,15 +177,10 @@ export function SaleForm({
 		refetch,
 	} = useSaleFormOptions();
 	const isCommissionEditable =
-		mode === "CREATE" || (initialSale?.status as SaleStatus | undefined) === "PENDING";
-	const isInstallmentsSectionVisible = !isCommissionEditable && Boolean(initialSale);
-	const installmentsQuery = useSaleCommissionInstallments(initialSale?.id ?? "", {
-		enabled: isInstallmentsSectionVisible,
-	});
-	const {
-		mutateAsync: patchSaleCommissionInstallmentStatus,
-		isPending: isPatchingInstallmentStatus,
-	} = usePatchSaleCommissionInstallmentStatus();
+		mode === "CREATE" ||
+		(initialSale?.status as SaleStatus | undefined) === "PENDING";
+	const isInstallmentsSectionVisible =
+		!isCommissionEditable && Boolean(initialSale);
 
 	const [isCustomerLocked, setIsCustomerLocked] = useState(
 		mode === "CREATE" && Boolean(prefilledCustomerId),
@@ -226,11 +191,6 @@ export function SaleForm({
 		useState<string | null>(null);
 	const [quickCreatedCustomer, setQuickCreatedCustomer] =
 		useState<SaleCustomerOption | null>(null);
-	const [installmentStatusAction, setInstallmentStatusAction] = useState<{
-		installmentId: string;
-		installmentNumber: number;
-		nextStatus: "PAID" | "CANCELED";
-	} | null>(null);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
 		resolver: zodResolver(saleSchema),
@@ -447,27 +407,6 @@ export function SaleForm({
 	const pulledCommissionsCount = watchedCommissions.filter(
 		(commission) => commission.sourceType === "PULLED",
 	).length;
-	const saleInstallments = useMemo(
-		() =>
-			(installmentsQuery.data?.installments as
-				| SaleInstallmentRow[]
-				| undefined) ?? [],
-		[installmentsQuery.data?.installments],
-	);
-	const saleInstallmentsSummary = useMemo(
-		() => ({
-			total: saleInstallments.length,
-			paid: saleInstallments.filter((installment) => installment.status === "PAID")
-				.length,
-			pending: saleInstallments.filter(
-				(installment) => installment.status === "PENDING",
-			).length,
-			canceled: saleInstallments.filter(
-				(installment) => installment.status === "CANCELED",
-			).length,
-		}),
-		[saleInstallments],
-	);
 
 	const applyPulledCommissions = useCallback(
 		(nextPulledCommissions: SaleCommissionFormData[]) => {
@@ -520,34 +459,6 @@ export function SaleForm({
 				shouldValidate: true,
 			},
 		);
-	}
-
-	function requestInstallmentStatusChange(
-		installment: SaleInstallmentRow,
-		nextStatus: "PAID" | "CANCELED",
-	) {
-		setInstallmentStatusAction({
-			installmentId: installment.id,
-			installmentNumber: installment.installmentNumber,
-			nextStatus,
-		});
-	}
-
-	async function handleConfirmInstallmentStatusChange() {
-		if (!initialSale || !installmentStatusAction) {
-			return;
-		}
-
-		try {
-			await patchSaleCommissionInstallmentStatus({
-				saleId: initialSale.id,
-				installmentId: installmentStatusAction.installmentId,
-				status: installmentStatusAction.nextStatus,
-			});
-			setInstallmentStatusAction(null);
-		} catch {
-			// erro tratado no hook
-		}
 	}
 
 	const {
@@ -1135,236 +1046,130 @@ export function SaleForm({
 				</div>
 			</Card>
 
-				{isCommissionEditable ? (
-					<Card className="p-5 rounded-sm gap-4">
-						<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-							<div className="flex items-center gap-2">
-								<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={handleAddManualCommission}
-								>
-									<Plus className="size-4" />
-									Adicionar comissão
-								</Button>
-							</div>
-
-							<div className="flex items-center gap-2">
-								<Button
-									type="button"
-									variant="outline"
-									onClick={handleFetchCommissionScenarios}
-									disabled={
-										!hasSelectedProduct || commissionScenariosQuery.isFetching
-									}
-								>
-									{commissionScenariosQuery.isFetching
-										? "Carregando..."
-										: hasLoadedCommissionForCurrentProduct
-											? "Atualizar comissão"
-											: "Buscar comissão"}
-								</Button>
-								<Button
-									type="button"
-									size="icon"
-									variant="outline"
-									onClick={handleRemovePulledCommissions}
-									disabled={pulledCommissionsCount === 0}
-								>
-									<Trash2 className="size-4" />
-								</Button>
-							</div>
+			{isCommissionEditable ? (
+				<Card className="p-5 rounded-sm gap-4">
+					<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+						<div className="flex items-center gap-2">
+							<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={handleAddManualCommission}
+							>
+								<Plus className="size-4" />
+								Adicionar comissão
+							</Button>
 						</div>
 
-						{!selectedProductId ? (
-							<p className="text-sm text-muted-foreground">
-								Selecione um produto para buscar comissão.
-							</p>
-						) : !hasRequestedCommissionForCurrentProduct ? (
-							<p className="text-sm text-muted-foreground">
-								Clique em buscar comissão para carregar as regras do produto.
-							</p>
-						) : commissionScenariosQuery.isFetching ? (
-							<p className="text-sm text-muted-foreground">
-								Carregando cenários de comissão...
-							</p>
-						) : commissionScenariosQuery.isError ? (
-							<div className="space-y-3">
-								<p className="text-sm text-destructive">
-									Não foi possível carregar as comissões do produto.
-								</p>
-								<Button
-									type="button"
-									variant="outline"
-									className="w-fit"
-									onClick={handleFetchCommissionScenarios}
-								>
-									Tentar novamente
-								</Button>
-							</div>
-						) : !matchedCommissionScenario ? (
-							<p className="text-sm text-muted-foreground">
-								Nenhum cenário de comissão compatível com as condições atuais da
-								venda.
-							</p>
-						) : (
-							<div className="rounded-md border bg-muted/20 p-3">
-								<p className="text-sm">
-									<span className="text-muted-foreground">
-										Cenário aplicado:{" "}
-									</span>
-									<strong>{matchedCommissionScenario.name}</strong>
-								</p>
-							</div>
-						)}
+						<div className="flex items-center gap-2">
+							<Button
+								type="button"
+								variant="outline"
+								onClick={handleFetchCommissionScenarios}
+								disabled={
+									!hasSelectedProduct || commissionScenariosQuery.isFetching
+								}
+							>
+								{commissionScenariosQuery.isFetching
+									? "Carregando..."
+									: hasLoadedCommissionForCurrentProduct
+										? "Atualizar comissão"
+										: "Buscar comissão"}
+							</Button>
+							<Button
+								type="button"
+								size="icon"
+								variant="outline"
+								onClick={handleRemovePulledCommissions}
+								disabled={pulledCommissionsCount === 0}
+							>
+								<Trash2 className="size-4" />
+							</Button>
+						</div>
+					</div>
 
+					{!selectedProductId ? (
+						<p className="text-sm text-muted-foreground">
+							Selecione um produto para buscar comissão.
+						</p>
+					) : !hasRequestedCommissionForCurrentProduct ? (
+						<p className="text-sm text-muted-foreground">
+							Clique em buscar comissão para carregar as regras do produto.
+						</p>
+					) : commissionScenariosQuery.isFetching ? (
+						<p className="text-sm text-muted-foreground">
+							Carregando cenários de comissão...
+						</p>
+					) : commissionScenariosQuery.isError ? (
 						<div className="space-y-3">
-							{commissionFields.length === 0 ? (
-								<p className="text-sm text-muted-foreground">
-									Nenhuma comissão adicionada.
-								</p>
-							) : (
-								commissionFields.map((commission, commissionIndex) => (
-									<SaleCommissionCard
-										key={commission.id}
-										index={commissionIndex}
-										control={control}
-										setValue={setValue}
-										getValues={getValues}
-										onRemove={handleRemoveCommission}
-										onInstallmentCountChange={handleInstallmentCountChange}
-										companyOptions={companyOptions}
-										unitOptions={allUnits}
-										sellerOptions={sellerOptions}
-										partnerOptions={partnerOptions}
-										supervisorOptions={supervisorOptions}
-										saleTotalAmountInCents={saleTotalAmountInCents}
-									/>
-								))
-							)}
+							<p className="text-sm text-destructive">
+								Não foi possível carregar as comissões do produto.
+							</p>
+							<Button
+								type="button"
+								variant="outline"
+								className="w-fit"
+								onClick={handleFetchCommissionScenarios}
+							>
+								Tentar novamente
+							</Button>
 						</div>
-
-						<FieldError error={errors.commissions} />
-					</Card>
-				) : (
-					<Card className="p-5 rounded-sm gap-4">
-						<div className="space-y-1">
-							<h2 className="font-semibold text-md">Parcelas de comissão</h2>
-							<p className="text-sm text-muted-foreground">
-								Resumo: {saleInstallmentsSummary.paid}/{saleInstallmentsSummary.total}{" "}
-								pagas, {saleInstallmentsSummary.pending} pendentes,{" "}
-								{saleInstallmentsSummary.canceled} canceladas.
+					) : !matchedCommissionScenario ? (
+						<p className="text-sm text-muted-foreground">
+							Nenhum cenário de comissão compatível com as condições atuais da
+							venda.
+						</p>
+					) : (
+						<div className="rounded-md border bg-muted/20 p-3">
+							<p className="text-sm">
+								<span className="text-muted-foreground">
+									Cenário aplicado:{" "}
+								</span>
+								<strong>{matchedCommissionScenario.name}</strong>
 							</p>
 						</div>
+					)}
 
-						{installmentsQuery.isLoading ? (
+					<div className="space-y-3">
+						{commissionFields.length === 0 ? (
 							<p className="text-sm text-muted-foreground">
-								Carregando parcelas...
-							</p>
-						) : installmentsQuery.isError ? (
-							<div className="space-y-3">
-								<p className="text-sm text-destructive">
-									Não foi possível carregar as parcelas da comissão.
-								</p>
-								<Button
-									type="button"
-									variant="outline"
-									className="w-fit"
-									onClick={() => installmentsQuery.refetch()}
-								>
-									Tentar novamente
-								</Button>
-							</div>
-						) : saleInstallments.length === 0 ? (
-							<p className="text-sm text-muted-foreground">
-								Sem parcelas de comissão vinculadas nesta venda.
+								Nenhuma comissão adicionada.
 							</p>
 						) : (
-							<div className="space-y-2">
-								{saleInstallments.map((installment) => {
-									const canUpdateInstallmentStatus =
-										initialSale?.status === "APPROVED" ||
-										initialSale?.status === "COMPLETED";
-									const availableActions = canUpdateInstallmentStatus
-										? (["PAID", "CANCELED"] as const).filter(
-												(status) => status !== installment.status,
-											)
-										: [];
-
-									return (
-										<div
-											key={installment.id}
-											className="rounded-md border p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-										>
-											<div className="space-y-1">
-												<p className="text-sm font-medium">
-													{installment.beneficiaryLabel ??
-														`Comissionado (${installment.recipientType})`}
-												</p>
-												<p className="text-xs text-muted-foreground">
-													P{installment.installmentNumber} •{" "}
-													{installment.percentage}% •{" "}
-													{formatCurrencyBRL(installment.amount / 100)}
-												</p>
-												<p className="text-xs text-muted-foreground">
-													Previsão:{" "}
-													{formatInstallmentDate(
-														installment.expectedPaymentDate,
-													)}
-													{" • "}
-													Pagamento:{" "}
-													{installment.status === "PAID" &&
-													installment.paymentDate
-														? formatInstallmentDate(installment.paymentDate)
-														: "—"}
-												</p>
-											</div>
-
-											<div className="flex items-center gap-2">
-												<Badge
-													variant="outline"
-													className={
-														INSTALLMENT_STATUS_BADGE_CLASSNAME[installment.status]
-													}
-												>
-													{
-														SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-															installment.status
-														]
-													}
-												</Badge>
-
-												{availableActions.map((nextStatus) => (
-													<Button
-														key={`${installment.id}-${nextStatus}`}
-														type="button"
-														variant="outline"
-														size="sm"
-														disabled={isPatchingInstallmentStatus}
-														onClick={() =>
-															requestInstallmentStatusChange(
-																installment,
-																nextStatus,
-															)
-														}
-													>
-														Marcar{" "}
-														{
-															SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																nextStatus
-															]
-														}
-													</Button>
-												))}
-											</div>
-										</div>
-									);
-								})}
-							</div>
+							commissionFields.map((commission, commissionIndex) => (
+								<SaleCommissionCard
+									key={commission.id}
+									index={commissionIndex}
+									control={control}
+									setValue={setValue}
+									getValues={getValues}
+									onRemove={handleRemoveCommission}
+									onInstallmentCountChange={handleInstallmentCountChange}
+									companyOptions={companyOptions}
+									unitOptions={allUnits}
+									sellerOptions={sellerOptions}
+									partnerOptions={partnerOptions}
+									supervisorOptions={supervisorOptions}
+									saleTotalAmountInCents={saleTotalAmountInCents}
+								/>
+							))
 						)}
-					</Card>
-				)}
+					</div>
+
+					<FieldError error={errors.commissions} />
+				</Card>
+			) : (
+				<Card className="p-5 rounded-sm gap-4">
+					<h2 className="font-semibold text-md">Parcelas de comissão</h2>
+					<SaleInstallmentsPanel
+						saleId={initialSale?.id ?? ""}
+						saleStatus={
+							(initialSale?.status as SaleStatus | undefined) ?? "PENDING"
+						}
+						enabled={isInstallmentsSectionVisible}
+					/>
+				</Card>
+			)}
 
 			<Card className="p-5 rounded-sm gap-4">
 				<h2 className="font-semibold text-md">Observações</h2>
@@ -1480,48 +1285,9 @@ export function SaleForm({
 						</Button>
 					</DialogFooter>
 				</DialogContent>
-				</Dialog>
+			</Dialog>
 
-				<AlertDialog
-					open={Boolean(installmentStatusAction)}
-					onOpenChange={(open) => {
-						if (!open) {
-							setInstallmentStatusAction(null);
-						}
-					}}
-				>
-					<AlertDialogContent>
-						<AlertDialogHeader>
-							<AlertDialogTitle>Atualizar status da parcela</AlertDialogTitle>
-							<AlertDialogDescription>
-								Confirmar alteração da parcela{" "}
-								{installmentStatusAction
-									? `P${installmentStatusAction.installmentNumber}`
-									: ""}
-								{" para "}
-								{installmentStatusAction
-									? SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-											installmentStatusAction.nextStatus
-										]
-									: ""}
-								?
-							</AlertDialogDescription>
-						</AlertDialogHeader>
-						<AlertDialogFooter>
-							<AlertDialogCancel disabled={isPatchingInstallmentStatus}>
-								Cancelar
-							</AlertDialogCancel>
-							<AlertDialogAction
-								onClick={handleConfirmInstallmentStatusChange}
-								disabled={isPatchingInstallmentStatus}
-							>
-								{isPatchingInstallmentStatus ? "Salvando..." : "Confirmar"}
-							</AlertDialogAction>
-						</AlertDialogFooter>
-					</AlertDialogContent>
-				</AlertDialog>
-
-				<div className="flex items-center justify-end gap-3">
+			<div className="flex items-center justify-end gap-3">
 				<Button type="button" variant="outline" asChild>
 					<Link to="/sales">Cancelar</Link>
 				</Button>

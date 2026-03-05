@@ -1,3 +1,4 @@
+import { addMonths } from "date-fns";
 import type { Prisma } from "generated/prisma/client";
 import {
 	PartnerStatus,
@@ -7,7 +8,6 @@ import {
 	type SaleCommissionSourceType,
 	SellerStatus,
 } from "generated/prisma/enums";
-import { addMonths } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
@@ -446,6 +446,81 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 	}
 }
 
+export async function syncSaleCommissionTotalPercentage(
+	tx: Prisma.TransactionClient,
+	saleCommissionId: string,
+) {
+	const commissionInstallments = await tx.saleCommissionInstallment.findMany({
+		where: {
+			saleCommissionId,
+		},
+		select: {
+			percentage: true,
+		},
+	});
+
+	if (commissionInstallments.length === 0) {
+		throw new BadRequestError("Cannot leave a commission without installments");
+	}
+
+	const nextTotalPercentage = commissionInstallments.reduce(
+		(sum, installment) => sum + installment.percentage,
+		0,
+	);
+
+	if (nextTotalPercentage <= 0) {
+		throw new BadRequestError(
+			"Commission total percentage must be greater than zero",
+		);
+	}
+
+	await tx.saleCommission.update({
+		where: {
+			id: saleCommissionId,
+		},
+		data: {
+			totalPercentage: nextTotalPercentage,
+		},
+	});
+}
+
+export async function renumberSaleCommissionInstallments(
+	tx: Prisma.TransactionClient,
+	saleCommissionId: string,
+) {
+	const installments = await tx.saleCommissionInstallment.findMany({
+		where: {
+			saleCommissionId,
+		},
+		orderBy: [
+			{ installmentNumber: "asc" },
+			{ createdAt: "asc" },
+			{ id: "asc" },
+		],
+		select: {
+			id: true,
+			installmentNumber: true,
+		},
+	});
+
+	for (const [index, installment] of installments.entries()) {
+		const nextInstallmentNumber = index + 1;
+
+		if (installment.installmentNumber === nextInstallmentNumber) {
+			continue;
+		}
+
+		await tx.saleCommissionInstallment.update({
+			where: {
+				id: installment.id,
+			},
+			data: {
+				installmentNumber: nextInstallmentNumber,
+			},
+		});
+	}
+}
+
 function resolveSaleCommissionBeneficiaryId(commission: {
 	recipientType: SaleCommissionRecipientType;
 	beneficiaryCompanyId: string | null;
@@ -468,6 +543,31 @@ function resolveSaleCommissionBeneficiaryId(commission: {
 		case "OTHER":
 			return null;
 	}
+}
+
+function resolveSaleCommissionBeneficiaryKey({
+	saleCommissionId,
+	recipientType,
+	beneficiaryId,
+	beneficiaryLabel,
+}: {
+	saleCommissionId: string;
+	recipientType: SaleCommissionRecipientType;
+	beneficiaryId: string | null;
+	beneficiaryLabel: string | null;
+}) {
+	if (beneficiaryId) {
+		return `${recipientType}:${beneficiaryId}`;
+	}
+
+	if (recipientType === "OTHER") {
+		const normalizedLabel = beneficiaryLabel?.trim().toLowerCase();
+		return normalizedLabel
+			? `${recipientType}:${normalizedLabel}`
+			: `${recipientType}:${saleCommissionId}`;
+	}
+
+	return `${recipientType}:${saleCommissionId}`;
 }
 
 function resolveSaleCommissionBeneficiaryLabel(commission: {
@@ -648,6 +748,11 @@ export async function loadSaleCommissionInstallments(
 				select: {
 					recipientType: true,
 					sourceType: true,
+					beneficiaryCompanyId: true,
+					beneficiaryUnitId: true,
+					beneficiarySellerId: true,
+					beneficiaryPartnerId: true,
+					beneficiarySupervisorId: true,
 					beneficiaryLabel: true,
 					beneficiaryCompany: {
 						select: {
@@ -689,12 +794,17 @@ export async function loadSaleCommissionInstallments(
 		},
 	});
 
-	return installments.map((installment) => ({
-		id: installment.id,
-		saleCommissionId: installment.saleCommissionId,
-		recipientType: installment.saleCommission.recipientType,
-		sourceType: installment.saleCommission.sourceType,
-		beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel({
+	return installments.map((installment) => {
+		const beneficiaryId = resolveSaleCommissionBeneficiaryId({
+			recipientType: installment.saleCommission.recipientType,
+			beneficiaryCompanyId: installment.saleCommission.beneficiaryCompanyId,
+			beneficiaryUnitId: installment.saleCommission.beneficiaryUnitId,
+			beneficiarySellerId: installment.saleCommission.beneficiarySellerId,
+			beneficiaryPartnerId: installment.saleCommission.beneficiaryPartnerId,
+			beneficiarySupervisorId:
+				installment.saleCommission.beneficiarySupervisorId,
+		});
+		const beneficiaryLabel = resolveSaleCommissionBeneficiaryLabel({
 			recipientType: installment.saleCommission.recipientType,
 			beneficiaryLabel: installment.saleCommission.beneficiaryLabel,
 			beneficiaryCompany: installment.saleCommission.beneficiaryCompany,
@@ -702,12 +812,27 @@ export async function loadSaleCommissionInstallments(
 			beneficiarySeller: installment.saleCommission.beneficiarySeller,
 			beneficiaryPartner: installment.saleCommission.beneficiaryPartner,
 			beneficiarySupervisor: installment.saleCommission.beneficiarySupervisor,
-		}),
-		installmentNumber: installment.installmentNumber,
-		percentage: fromScaledPercentage(installment.percentage),
-		amount: installment.amount,
-		status: installment.status,
-		expectedPaymentDate: installment.expectedPaymentDate,
-		paymentDate: installment.paymentDate,
-	}));
+		});
+
+		return {
+			id: installment.id,
+			saleCommissionId: installment.saleCommissionId,
+			recipientType: installment.saleCommission.recipientType,
+			sourceType: installment.saleCommission.sourceType,
+			beneficiaryId,
+			beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
+				saleCommissionId: installment.saleCommissionId,
+				recipientType: installment.saleCommission.recipientType,
+				beneficiaryId,
+				beneficiaryLabel,
+			}),
+			beneficiaryLabel,
+			installmentNumber: installment.installmentNumber,
+			percentage: fromScaledPercentage(installment.percentage),
+			amount: installment.amount,
+			status: installment.status,
+			expectedPaymentDate: installment.expectedPaymentDate,
+			paymentDate: installment.paymentDate,
+		};
+	});
 }

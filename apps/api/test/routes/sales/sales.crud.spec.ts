@@ -1013,9 +1013,9 @@ describe("sales crud", () => {
 		});
 
 		expect(installments.length).toBeGreaterThan(0);
-		expect(installments.every((installment) => installment.status === "CANCELED")).toBe(
-			true,
-		);
+		expect(
+			installments.every((installment) => installment.status === "CANCELED"),
+		).toBe(true);
 		expect(
 			installments.every((installment) => installment.paymentDate === null),
 		).toBe(true);
@@ -1048,6 +1048,10 @@ describe("sales crud", () => {
 		expect(response.statusCode).toBe(200);
 		expect(response.body.installments).toHaveLength(3);
 		expect(response.body.installments[0].status).toBe("PENDING");
+		expect(response.body.installments[0].beneficiaryId).toBe(fixture.seller.id);
+		expect(response.body.installments[0].beneficiaryKey).toBe(
+			`SELLER:${fixture.seller.id}`,
+		);
 		expect(response.body.installments[0].expectedPaymentDate).toContain(
 			"2026-03-10",
 		);
@@ -1078,7 +1082,8 @@ describe("sales crud", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`);
 
-		const installmentId = installmentsResponse.body.installments[0]?.id as string;
+		const installmentId = installmentsResponse.body.installments[0]
+			?.id as string;
 		expect(installmentId).toBeTruthy();
 
 		const patchResponse = await request(app.server)
@@ -1089,6 +1094,7 @@ describe("sales crud", () => {
 			.send({
 				status: "PAID",
 				paymentDate: "2026-03-21",
+				amount: 777,
 			});
 
 		expect(patchResponse.statusCode).toBe(204);
@@ -1100,6 +1106,7 @@ describe("sales crud", () => {
 			select: {
 				status: true,
 				paymentDate: true,
+				amount: true,
 			},
 		});
 
@@ -1107,6 +1114,7 @@ describe("sales crud", () => {
 		expect(installment?.paymentDate?.toISOString().slice(0, 10)).toBe(
 			"2026-03-21",
 		);
+		expect(installment?.amount).toBe(777);
 	});
 
 	it("should patch commission installment status to paid with current date when omitted", async () => {
@@ -1131,7 +1139,8 @@ describe("sales crud", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`);
 
-		const installmentId = installmentsResponse.body.installments[0]?.id as string;
+		const installmentId = installmentsResponse.body.installments[0]
+			?.id as string;
 
 		const patchResponse = await request(app.server)
 			.patch(
@@ -1156,6 +1165,330 @@ describe("sales crud", () => {
 
 		expect(installment?.status).toBe("PAID");
 		expect(installment?.paymentDate).not.toBeNull();
+	});
+
+	it("should block installment status update when sale is pending", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+				},
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const response = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[0]?.id}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"Cannot update commission installments while sale is pending",
+		);
+	});
+
+	it("should patch commission installment with full edit fields", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		const installment = installmentsResponse.body.installments[0] as {
+			id: string;
+			saleCommissionId: string;
+		};
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				percentage: 0.65,
+				amount: 820,
+				status: "PAID",
+				expectedPaymentDate: "2026-05-10",
+				paymentDate: "2026-05-12",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const updatedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment.id,
+				},
+				select: {
+					percentage: true,
+					amount: true,
+					status: true,
+					expectedPaymentDate: true,
+					paymentDate: true,
+				},
+			});
+		expect(updatedInstallment?.percentage).toBe(6_500);
+		expect(updatedInstallment?.amount).toBe(820);
+		expect(updatedInstallment?.status).toBe("PAID");
+		expect(
+			updatedInstallment?.expectedPaymentDate.toISOString().slice(0, 10),
+		).toBe("2026-05-10");
+		expect(updatedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-05-12",
+		);
+
+		const updatedCommission = await prisma.saleCommission.findUnique({
+			where: {
+				id: installment.saleCommissionId,
+			},
+			select: {
+				totalPercentage: true,
+			},
+		});
+		expect(updatedCommission?.totalPercentage).toBe(11_500);
+	});
+
+	it("should clear payment date when installment status is updated to non-paid", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		const installmentId = installmentsResponse.body.installments[0]
+			?.id as string;
+
+		await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-03-22",
+			});
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PENDING",
+				paymentDate: "2026-03-30",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const installment = await prisma.saleCommissionInstallment.findUnique({
+			where: {
+				id: installmentId,
+			},
+			select: {
+				status: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(installment?.status).toBe("PENDING");
+		expect(installment?.paymentDate).toBeNull();
+	});
+
+	it("should fail when installment patch makes commission total percentage non-positive", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "OTHER",
+				},
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const response = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[0]?.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				percentage: 0,
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"Commission total percentage must be greater than zero",
+		);
+	});
+
+	it("should delete installment and renumber remaining installments", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+				saleCommissionId: true,
+			},
+		});
+
+		const response = await request(app.server)
+			.delete(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[0]?.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(204);
+
+		const remainingInstallments =
+			await prisma.saleCommissionInstallment.findMany({
+				where: {
+					saleCommissionId: installments[0]?.saleCommissionId,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
+					installmentNumber: true,
+					percentage: true,
+				},
+			});
+
+		expect(remainingInstallments).toHaveLength(1);
+		expect(remainingInstallments[0]?.installmentNumber).toBe(1);
+
+		const commission = await prisma.saleCommission.findUnique({
+			where: {
+				id: installments[0]?.saleCommissionId,
+			},
+			select: {
+				totalPercentage: true,
+			},
+		});
+
+		expect(commission?.totalPercentage).toBe(
+			remainingInstallments[0]?.percentage,
+		);
+	});
+
+	it("should fail when deleting the last installment of a commission", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const singleInstallment = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "OTHER",
+				},
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const response = await request(app.server)
+			.delete(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${singleInstallment?.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"Cannot delete the last installment of a commission",
+		);
 	});
 
 	it("should block installment status update when sale is canceled", async () => {

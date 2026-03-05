@@ -7,36 +7,26 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
-	PatchSaleCommissionInstallmentStatusBodySchema,
-	parseSaleDateInput,
-} from "./sale-schemas";
+	renumberSaleCommissionInstallments,
+	syncSaleCommissionTotalPercentage,
+} from "./sale-commissions";
 
-function getCurrentDateUtc() {
-	const now = new Date();
-	return new Date(
-		Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-	);
-}
-
-export async function patchSaleCommissionInstallmentStatus(
-	app: FastifyInstance,
-) {
+export async function deleteSaleCommissionInstallment(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
 		.register(auth)
-		.patch(
-			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/status",
+		.delete(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId",
 			{
 				schema: {
 					tags: ["sales"],
-					summary: "Update sale commission installment status",
+					summary: "Delete sale commission installment",
 					security: [{ bearerAuth: [] }],
 					params: z.object({
 						slug: z.string(),
 						saleId: z.uuid(),
 						installmentId: z.uuid(),
 					}),
-					body: PatchSaleCommissionInstallmentStatusBodySchema,
 					response: {
 						204: z.null(),
 					},
@@ -44,7 +34,6 @@ export async function patchSaleCommissionInstallmentStatus(
 			},
 			async (request, reply) => {
 				const { slug, saleId, installmentId } = request.params;
-				const { status, paymentDate, amount } = request.body;
 
 				const organization = await prisma.organization.findUnique({
 					where: {
@@ -86,44 +75,55 @@ export async function patchSaleCommissionInstallmentStatus(
 					);
 				}
 
-				const installment = await prisma.saleCommissionInstallment.findFirst({
-					where: {
-						id: installmentId,
-						saleCommission: {
-							saleId,
-							sale: {
-								organizationId: organization.id,
-							},
-						},
-					},
-					select: {
-						id: true,
-						status: true,
-						paymentDate: true,
-					},
-				});
-
-				if (!installment) {
-					throw new BadRequestError("Commission installment not found");
-				}
-
 				await db(() =>
-					prisma.saleCommissionInstallment.update({
-						where: {
-							id: installment.id,
-						},
-						data: {
-							status,
-							paymentDate:
-								status === "PAID"
-									? paymentDate
-										? parseSaleDateInput(paymentDate)
-										: installment.status === "PAID" && installment.paymentDate
-											? installment.paymentDate
-											: getCurrentDateUtc()
-									: null,
-							...(amount === undefined ? {} : { amount }),
-						},
+					prisma.$transaction(async (tx) => {
+						const installment = await tx.saleCommissionInstallment.findFirst({
+							where: {
+								id: installmentId,
+								saleCommission: {
+									saleId,
+									sale: {
+										organizationId: organization.id,
+									},
+								},
+							},
+							select: {
+								id: true,
+								saleCommissionId: true,
+							},
+						});
+
+						if (!installment) {
+							throw new BadRequestError("Commission installment not found");
+						}
+
+						const commissionInstallmentsCount =
+							await tx.saleCommissionInstallment.count({
+								where: {
+									saleCommissionId: installment.saleCommissionId,
+								},
+							});
+
+						if (commissionInstallmentsCount <= 1) {
+							throw new BadRequestError(
+								"Cannot delete the last installment of a commission",
+							);
+						}
+
+						await tx.saleCommissionInstallment.delete({
+							where: {
+								id: installment.id,
+							},
+						});
+
+						await renumberSaleCommissionInstallments(
+							tx,
+							installment.saleCommissionId,
+						);
+						await syncSaleCommissionTotalPercentage(
+							tx,
+							installment.saleCommissionId,
+						);
 					}),
 				);
 

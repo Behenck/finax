@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import request from "supertest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createTestApp } from "../../utils/test-app";
 
 const UUID_SAMPLE = "11111111-1111-4111-8111-111111111111";
@@ -76,6 +76,28 @@ describe("sales routes smoke", () => {
 		);
 		const agent = request(app.server);
 		const response = await agent.patch(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("PATCH /organizations/:slug/sales/:saleId/commission-installments/:installmentId should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId",
+		);
+		const agent = request(app.server);
+		const response = await agent.patch(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("DELETE /organizations/:slug/sales/:saleId/commission-installments/:installmentId should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId",
+		);
+		const agent = request(app.server);
+		const response = await agent.delete(url);
 
 		expect(response.statusCode).not.toBe(404);
 		expect(response.statusCode).not.toBe(405);

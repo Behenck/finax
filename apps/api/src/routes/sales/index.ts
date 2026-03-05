@@ -1,12 +1,14 @@
 import type { FastifyInstance } from "fastify";
 import { createSale } from "./create-sale";
-import { getSales } from "./get-sales";
-import { getSale } from "./get-sale";
-import { updateSale } from "./update-sale";
 import { deleteSale } from "./delete-sale";
-import { patchSaleStatus } from "./patch-sale-status";
+import { deleteSaleCommissionInstallment } from "./delete-sale-commission-installment";
+import { getSale } from "./get-sale";
 import { getSaleCommissionInstallments } from "./get-sale-commission-installments";
+import { getSales } from "./get-sales";
+import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
+import { patchSaleStatus } from "./patch-sale-status";
+import { updateSale } from "./update-sale";
 
 export async function saleRoutes(app: FastifyInstance) {
 	await app.register(createSale);
@@ -17,4 +19,6 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(patchSaleStatus);
 	await app.register(getSaleCommissionInstallments);
 	await app.register(patchSaleCommissionInstallmentStatus);
+	await app.register(patchSaleCommissionInstallment);
+	await app.register(deleteSaleCommissionInstallment);
 }

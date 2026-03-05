@@ -45,6 +45,12 @@ export type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid
      * @type string | undefined
     */
     paymentDate?: string;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer | undefined
+    */
+    amount?: number;
 };
 
 export type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationResponse = PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204;

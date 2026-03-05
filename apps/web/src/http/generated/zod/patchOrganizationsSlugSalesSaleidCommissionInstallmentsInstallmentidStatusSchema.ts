@@ -18,7 +18,8 @@ export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmenti
 
 export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestSchema = z.object({
     "status": z.enum(["PAID", "CANCELED"]),
-"paymentDate": z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/))
+"paymentDate": z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+"amount": z.optional(z.int().min(0).max(9007199254740991))
     })
 
 export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationResponseSchema = z.lazy(() => patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204Schema)

@@ -7,27 +7,17 @@ import {
 	getOrganizationsSlugSalesQueryKey,
 	getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey,
 	getOrganizationsSlugSalesSaleidQueryKey,
-	type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey,
-	patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus,
+	type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationRequest,
+	patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid,
 } from "@/http/generated";
 
-const INSTALLMENT_STATUS_SUCCESS_MESSAGE: Record<
-	PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey,
-	string
-> = {
-	PAID: "Parcela marcada como paga.",
-	CANCELED: "Parcela cancelada.",
-};
-
-interface PatchSaleCommissionInstallmentStatusInput {
+interface UpdateSaleCommissionInstallmentInput {
 	saleId: string;
 	installmentId: string;
-	status: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey;
-	paymentDate?: string;
-	amount?: number;
+	data: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationRequest;
 }
 
-export function usePatchSaleCommissionInstallmentStatus() {
+export function useUpdateSaleCommissionInstallment() {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
 
@@ -35,24 +25,18 @@ export function usePatchSaleCommissionInstallmentStatus() {
 		mutationFn: async ({
 			saleId,
 			installmentId,
-			status,
-			paymentDate,
-			amount,
-		}: PatchSaleCommissionInstallmentStatusInput) => {
+			data,
+		}: UpdateSaleCommissionInstallmentInput) => {
 			if (!organization?.slug) {
 				throw new Error("Organização não encontrada");
 			}
 
-			await patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus(
+			await patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid(
 				{
 					slug: organization.slug,
 					saleId,
 					installmentId,
-					data: {
-						status,
-						paymentDate,
-						amount,
-					},
+					data,
 				},
 			);
 		},
@@ -82,7 +66,7 @@ export function usePatchSaleCommissionInstallmentStatus() {
 				}),
 			]);
 
-			toast.success(INSTALLMENT_STATUS_SUCCESS_MESSAGE[variables.status]);
+			toast.success("Parcela atualizada.");
 		},
 		onError: (error) => {
 			const message = resolveErrorMessage(normalizeApiError(error));

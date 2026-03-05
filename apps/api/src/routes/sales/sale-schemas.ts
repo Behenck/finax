@@ -167,6 +167,8 @@ export const SaleCommissionInstallmentRowSchema = z.object({
 	saleCommissionId: z.uuid(),
 	recipientType: SaleCommissionRecipientTypeSchema,
 	sourceType: SaleCommissionSourceTypeSchema,
+	beneficiaryId: z.uuid().nullable(),
+	beneficiaryKey: z.string().min(1),
 	beneficiaryLabel: z.string().nullable(),
 	installmentNumber: z.number().int().min(1),
 	percentage: CommissionPercentageSchema,
@@ -205,8 +207,22 @@ export const PatchSaleCommissionInstallmentStatusBodySchema = z
 			SaleCommissionInstallmentStatus.CANCELED,
 		] as const),
 		paymentDate: SaleDateInputSchema.optional(),
+		amount: z.number().int().nonnegative().optional(),
 	})
 	.strict();
+
+export const PatchSaleCommissionInstallmentBodySchema = z
+	.object({
+		percentage: CommissionPercentageSchema.optional(),
+		amount: z.number().int().nonnegative().optional(),
+		status: SaleCommissionInstallmentStatusSchema.optional(),
+		expectedPaymentDate: SaleDateInputSchema.optional(),
+		paymentDate: SaleDateInputSchema.nullable().optional(),
+	})
+	.strict()
+	.refine((value) => Object.keys(value).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 const NamedEntitySchema = z.object({
 	id: z.uuid(),
@@ -268,6 +284,9 @@ export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
 export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 	typeof PatchSaleCommissionInstallmentStatusBodySchema
+>;
+export type PatchSaleCommissionInstallmentBody = z.infer<
+	typeof PatchSaleCommissionInstallmentBodySchema
 >;
 
 export function parseSaleDateInput(value: string) {

@@ -1,0 +1,156 @@
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { SaleStatus } from "generated/prisma/enums";
+import z from "zod";
+import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
+import { BadRequestError } from "../_errors/bad-request-error";
+import { syncSaleCommissionTotalPercentage } from "./sale-commissions";
+import {
+	PatchSaleCommissionInstallmentBodySchema,
+	parseSaleDateInput,
+	toScaledPercentage,
+} from "./sale-schemas";
+
+function getCurrentDateUtc() {
+	const now = new Date();
+	return new Date(
+		Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+	);
+}
+
+export async function patchSaleCommissionInstallment(app: FastifyInstance) {
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.patch(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId",
+			{
+				schema: {
+					tags: ["sales"],
+					summary: "Update sale commission installment",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+						saleId: z.uuid(),
+						installmentId: z.uuid(),
+					}),
+					body: PatchSaleCommissionInstallmentBodySchema,
+					response: {
+						204: z.null(),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug, saleId, installmentId } = request.params;
+				const data = request.body;
+
+				const organization = await prisma.organization.findUnique({
+					where: {
+						slug,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
+
+				const sale = await prisma.sale.findFirst({
+					where: {
+						id: saleId,
+						organizationId: organization.id,
+					},
+					select: {
+						id: true,
+						status: true,
+					},
+				});
+
+				if (!sale) {
+					throw new BadRequestError("Sale not found");
+				}
+
+				if (sale.status === SaleStatus.PENDING) {
+					throw new BadRequestError(
+						"Cannot update commission installments while sale is pending",
+					);
+				}
+
+				if (sale.status === SaleStatus.CANCELED) {
+					throw new BadRequestError(
+						"Cannot update commission installments for canceled sale",
+					);
+				}
+
+				await db(() =>
+					prisma.$transaction(async (tx) => {
+						const installment = await tx.saleCommissionInstallment.findFirst({
+							where: {
+								id: installmentId,
+								saleCommission: {
+									saleId,
+									sale: {
+										organizationId: organization.id,
+									},
+								},
+							},
+							select: {
+								id: true,
+								saleCommissionId: true,
+								status: true,
+								paymentDate: true,
+							},
+						});
+
+						if (!installment) {
+							throw new BadRequestError("Commission installment not found");
+						}
+
+						const finalStatus = data.status ?? installment.status;
+						const nextPaymentDate =
+							finalStatus === "PAID"
+								? data.paymentDate !== undefined
+									? data.paymentDate
+										? parseSaleDateInput(data.paymentDate)
+										: null
+									: installment.status === "PAID" && installment.paymentDate
+										? installment.paymentDate
+										: getCurrentDateUtc()
+								: null;
+
+						await tx.saleCommissionInstallment.update({
+							where: {
+								id: installment.id,
+							},
+							data: {
+								...(data.percentage === undefined
+									? {}
+									: { percentage: toScaledPercentage(data.percentage) }),
+								...(data.amount === undefined ? {} : { amount: data.amount }),
+								...(data.status === undefined ? {} : { status: data.status }),
+								...(data.expectedPaymentDate === undefined
+									? {}
+									: {
+											expectedPaymentDate: parseSaleDateInput(
+												data.expectedPaymentDate,
+											),
+										}),
+								paymentDate: nextPaymentDate,
+							},
+						});
+
+						await syncSaleCommissionTotalPercentage(
+							tx,
+							installment.saleCommissionId,
+						);
+					}),
+				);
+
+				return reply.status(204).send();
+			},
+		);
+}

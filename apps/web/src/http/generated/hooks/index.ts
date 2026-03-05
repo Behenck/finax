@@ -12,6 +12,7 @@ export type { DeleteOrganizationsSlugPartnersPartneridMutationKey } from "./useD
 export type { DeleteOrganizationsSlugProductsIdMutationKey } from "./useDeleteOrganizationsSlugProductsId.ts";
 export type { DeleteOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./useDeleteOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type { DeleteOrganizationsSlugSalesSaleidMutationKey } from "./useDeleteOrganizationsSlugSalesSaleid.ts";
+export type { DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationKey } from "./useDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
 export type { DeleteOrganizationsSlugSellersSelleridMutationKey } from "./useDeleteOrganizationsSlugSellersSellerid.ts";
 export type { DeleteOrganizationsSlugTransactionsTransactionidMutationKey } from "./useDeleteOrganizationsSlugTransactionsTransactionid.ts";
 export type { GetInvitesInviteidQueryKey } from "./useGetInvitesInviteid.ts";
@@ -74,6 +75,7 @@ export type { GetPendingInvitesQueryKey } from "./useGetPendingInvites.ts";
 export type { GetPendingInvitesSuspenseQueryKey } from "./useGetPendingInvitesSuspense.ts";
 export type { PatchOrganizationsSlugMembersMemberidRoleMutationKey } from "./usePatchOrganizationsSlugMembersMemberidRole.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
 export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export type { PatchOrganizationsSlugSalesSaleidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidMutationKey } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";
@@ -158,6 +160,9 @@ export { useDeleteOrganizationsSlugRecurrencesRecurrenceid } from "./useDeleteOr
 export { deleteOrganizationsSlugSalesSaleidMutationKey } from "./useDeleteOrganizationsSlugSalesSaleid.ts";
 export { deleteOrganizationsSlugSalesSaleidMutationOptions } from "./useDeleteOrganizationsSlugSalesSaleid.ts";
 export { useDeleteOrganizationsSlugSalesSaleid } from "./useDeleteOrganizationsSlugSalesSaleid.ts";
+export { deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationKey } from "./useDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
+export { deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationOptions } from "./useDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
+export { useDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid } from "./useDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
 export { deleteOrganizationsSlugSellersSelleridMutationKey } from "./useDeleteOrganizationsSlugSellersSellerid.ts";
 export { deleteOrganizationsSlugSellersSelleridMutationOptions } from "./useDeleteOrganizationsSlugSellersSellerid.ts";
 export { useDeleteOrganizationsSlugSellersSellerid } from "./useDeleteOrganizationsSlugSellersSellerid.ts";
@@ -344,6 +349,9 @@ export { usePatchOrganizationsSlugMembersMemberidRole } from "./usePatchOrganiza
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationOptions } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { usePatchOrganizationsSlugRecurrencesRecurrenceid } from "./usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationOptions } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
+export { usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
 export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationOptions } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export { usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
