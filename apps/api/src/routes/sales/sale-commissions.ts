@@ -2,14 +2,18 @@ import type { Prisma } from "generated/prisma/client";
 import {
 	PartnerStatus,
 	Role,
+	SaleCommissionInstallmentStatus,
 	type SaleCommissionRecipientType,
 	type SaleCommissionSourceType,
 	SellerStatus,
 } from "generated/prisma/enums";
+import { addMonths } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
+	COMMISSION_PERCENTAGE_SCALE,
 	fromScaledPercentage,
+	parseSaleDateInput,
 	type SaleCommissionInput,
 	toScaledPercentage,
 } from "./sale-schemas";
@@ -23,11 +27,16 @@ type ResolvedSaleCommission = {
 	beneficiaryPartnerId: string | null;
 	beneficiarySupervisorId: string | null;
 	beneficiaryLabel: string | null;
+	startDate: Date;
 	totalPercentage: number;
 	sortOrder: number;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
+		amount: number;
+		status: SaleCommissionInstallmentStatus;
+		expectedPaymentDate: Date;
+		paymentDate: Date | null;
 	}>;
 };
 
@@ -45,9 +54,68 @@ function assertIdsFound({
 	}
 }
 
+const COMMISSION_AMOUNT_DENOMINATOR = BigInt(100 * COMMISSION_PERCENTAGE_SCALE);
+
+function toScaledAmountFloor(totalAmount: number, percentageScaled: number) {
+	const numerator = BigInt(totalAmount) * BigInt(percentageScaled);
+	return Number(numerator / COMMISSION_AMOUNT_DENOMINATOR);
+}
+
+function toScaledAmountRounded(totalAmount: number, percentageScaled: number) {
+	const numerator = BigInt(totalAmount) * BigInt(percentageScaled);
+	return Number(
+		(numerator + COMMISSION_AMOUNT_DENOMINATOR / 2n) /
+			COMMISSION_AMOUNT_DENOMINATOR,
+	);
+}
+
+function calculateInstallmentAmountsFromScaled({
+	totalAmount,
+	totalPercentageScaled,
+	installmentPercentagesScaled,
+}: {
+	totalAmount: number;
+	totalPercentageScaled: number;
+	installmentPercentagesScaled: number[];
+}) {
+	if (installmentPercentagesScaled.length === 0) {
+		return [];
+	}
+
+	const baseAmounts = installmentPercentagesScaled.map((percentageScaled) =>
+		toScaledAmountFloor(totalAmount, percentageScaled),
+	);
+	const roundedCommissionTotal = toScaledAmountRounded(
+		totalAmount,
+		totalPercentageScaled,
+	);
+	const baseTotal = baseAmounts.reduce((sum, amount) => sum + amount, 0);
+	const residual = roundedCommissionTotal - baseTotal;
+
+	const lastInstallmentIndex = baseAmounts.length - 1;
+	const lastInstallmentAmount =
+		(baseAmounts[lastInstallmentIndex] ?? 0) + residual;
+
+	if (lastInstallmentAmount < 0) {
+		throw new BadRequestError("Invalid commission amount calculation");
+	}
+
+	return baseAmounts.map((amount, index) =>
+		index === lastInstallmentIndex ? lastInstallmentAmount : amount,
+	);
+}
+
+function resolveCommissionInstallmentExpectedPaymentDate(
+	startDate: Date,
+	installmentNumber: number,
+) {
+	return addMonths(startDate, Math.max(0, installmentNumber - 1));
+}
+
 export async function resolveSaleCommissionsData(
 	organizationId: string,
 	commissions: SaleCommissionInput[],
+	saleTotalAmount: number,
 ) {
 	const companyIds = new Set<string>();
 	const unitIds = new Set<string>();
@@ -216,6 +284,18 @@ export async function resolveSaleCommissionsData(
 
 	return commissions.map((commission, index): ResolvedSaleCommission => {
 		const beneficiaryId = commission.beneficiaryId ?? null;
+		const startDate = parseSaleDateInput(commission.startDate);
+		const totalPercentageScaled = toScaledPercentage(
+			commission.totalPercentage,
+		);
+		const installmentPercentagesScaled = commission.installments.map(
+			(installment) => toScaledPercentage(installment.percentage),
+		);
+		const installmentAmounts = calculateInstallmentAmountsFromScaled({
+			totalAmount: saleTotalAmount,
+			totalPercentageScaled,
+			installmentPercentagesScaled,
+		});
 
 		const beneficiaryCompanyId =
 			commission.recipientType === "COMPANY" ? beneficiaryId : null;
@@ -252,12 +332,22 @@ export async function resolveSaleCommissionsData(
 			beneficiaryPartnerId,
 			beneficiarySupervisorId,
 			beneficiaryLabel,
-			totalPercentage: toScaledPercentage(commission.totalPercentage),
+			startDate,
+			totalPercentage: totalPercentageScaled,
 			sortOrder: index,
-			installments: commission.installments.map((installment) => ({
-				installmentNumber: installment.installmentNumber,
-				percentage: toScaledPercentage(installment.percentage),
-			})),
+			installments: commission.installments.map(
+				(installment, installmentIndex) => ({
+					installmentNumber: installment.installmentNumber,
+					percentage: toScaledPercentage(installment.percentage),
+					amount: installmentAmounts[installmentIndex] ?? 0,
+					status: SaleCommissionInstallmentStatus.PENDING,
+					expectedPaymentDate: resolveCommissionInstallmentExpectedPaymentDate(
+						startDate,
+						installment.installmentNumber,
+					),
+					paymentDate: null,
+				}),
+			),
 		};
 	});
 }
@@ -285,16 +375,74 @@ export async function replaceSaleCommissions(
 				beneficiaryPartnerId: commission.beneficiaryPartnerId,
 				beneficiarySupervisorId: commission.beneficiarySupervisorId,
 				beneficiaryLabel: commission.beneficiaryLabel,
+				startDate: commission.startDate,
 				totalPercentage: commission.totalPercentage,
 				sortOrder: commission.sortOrder,
 				installments: {
 					create: commission.installments.map((installment) => ({
 						installmentNumber: installment.installmentNumber,
 						percentage: installment.percentage,
+						amount: installment.amount,
+						status: installment.status,
+						expectedPaymentDate: installment.expectedPaymentDate,
+						paymentDate: installment.paymentDate,
 					})),
 				},
 			},
 		});
+	}
+}
+
+export async function recalculatePersistedSaleCommissionsAmounts(
+	tx: Prisma.TransactionClient,
+	saleId: string,
+	saleTotalAmount: number,
+) {
+	const commissions = await tx.saleCommission.findMany({
+		where: {
+			saleId,
+		},
+		orderBy: {
+			sortOrder: "asc",
+		},
+		select: {
+			id: true,
+			totalPercentage: true,
+			installments: {
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
+					id: true,
+					percentage: true,
+				},
+			},
+		},
+	});
+
+	for (const commission of commissions) {
+		if (commission.installments.length === 0) {
+			continue;
+		}
+
+		const installmentAmounts = calculateInstallmentAmountsFromScaled({
+			totalAmount: saleTotalAmount,
+			totalPercentageScaled: commission.totalPercentage,
+			installmentPercentagesScaled: commission.installments.map(
+				(installment) => installment.percentage,
+			),
+		});
+
+		for (const [index, installment] of commission.installments.entries()) {
+			await tx.saleCommissionInstallment.update({
+				where: {
+					id: installment.id,
+				},
+				data: {
+					amount: installmentAmounts[index] ?? 0,
+				},
+			});
+		}
 	}
 }
 
@@ -382,6 +530,7 @@ export async function loadSaleCommissions(
 			beneficiaryPartnerId: true,
 			beneficiarySupervisorId: true,
 			beneficiaryLabel: true,
+			startDate: true,
 			totalPercentage: true,
 			sortOrder: true,
 			beneficiaryCompany: {
@@ -423,6 +572,10 @@ export async function loadSaleCommissions(
 				select: {
 					installmentNumber: true,
 					percentage: true,
+					amount: true,
+					status: true,
+					expectedPaymentDate: true,
+					paymentDate: true,
 				},
 				orderBy: {
 					installmentNumber: "asc",
@@ -431,17 +584,130 @@ export async function loadSaleCommissions(
 		},
 	});
 
-	return commissions.map((commission) => ({
-		id: commission.id,
-		sourceType: commission.sourceType,
-		recipientType: commission.recipientType,
-		beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
-		beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel(commission),
-		totalPercentage: fromScaledPercentage(commission.totalPercentage),
-		sortOrder: commission.sortOrder,
-		installments: commission.installments.map((installment) => ({
+	return commissions.map((commission) => {
+		const installments = commission.installments.map((installment) => ({
 			installmentNumber: installment.installmentNumber,
 			percentage: fromScaledPercentage(installment.percentage),
-		})),
+			amount: installment.amount,
+			status: installment.status,
+			expectedPaymentDate: installment.expectedPaymentDate,
+			paymentDate: installment.paymentDate,
+		}));
+
+		return {
+			id: commission.id,
+			sourceType: commission.sourceType,
+			recipientType: commission.recipientType,
+			beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
+			beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel(commission),
+			startDate: commission.startDate,
+			totalPercentage: fromScaledPercentage(commission.totalPercentage),
+			totalAmount: installments.reduce(
+				(sum, installment) => sum + installment.amount,
+				0,
+			),
+			sortOrder: commission.sortOrder,
+			installments,
+		};
+	});
+}
+
+export async function loadSaleCommissionInstallments(
+	saleId: string,
+	organizationId: string,
+) {
+	const installments = await prisma.saleCommissionInstallment.findMany({
+		where: {
+			saleCommission: {
+				saleId,
+				sale: {
+					organizationId,
+				},
+			},
+		},
+		orderBy: [
+			{
+				saleCommission: {
+					sortOrder: "asc",
+				},
+			},
+			{
+				installmentNumber: "asc",
+			},
+		],
+		select: {
+			id: true,
+			saleCommissionId: true,
+			installmentNumber: true,
+			percentage: true,
+			amount: true,
+			status: true,
+			expectedPaymentDate: true,
+			paymentDate: true,
+			saleCommission: {
+				select: {
+					recipientType: true,
+					sourceType: true,
+					beneficiaryLabel: true,
+					beneficiaryCompany: {
+						select: {
+							name: true,
+						},
+					},
+					beneficiaryUnit: {
+						select: {
+							name: true,
+							company: {
+								select: {
+									name: true,
+								},
+							},
+						},
+					},
+					beneficiarySeller: {
+						select: {
+							name: true,
+						},
+					},
+					beneficiaryPartner: {
+						select: {
+							name: true,
+						},
+					},
+					beneficiarySupervisor: {
+						select: {
+							user: {
+								select: {
+									name: true,
+									email: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+
+	return installments.map((installment) => ({
+		id: installment.id,
+		saleCommissionId: installment.saleCommissionId,
+		recipientType: installment.saleCommission.recipientType,
+		sourceType: installment.saleCommission.sourceType,
+		beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel({
+			recipientType: installment.saleCommission.recipientType,
+			beneficiaryLabel: installment.saleCommission.beneficiaryLabel,
+			beneficiaryCompany: installment.saleCommission.beneficiaryCompany,
+			beneficiaryUnit: installment.saleCommission.beneficiaryUnit,
+			beneficiarySeller: installment.saleCommission.beneficiarySeller,
+			beneficiaryPartner: installment.saleCommission.beneficiaryPartner,
+			beneficiarySupervisor: installment.saleCommission.beneficiarySupervisor,
+		}),
+		installmentNumber: installment.installmentNumber,
+		percentage: fromScaledPercentage(installment.percentage),
+		amount: installment.amount,
+		status: installment.status,
+		expectedPaymentDate: installment.expectedPaymentDate,
+		paymentDate: installment.paymentDate,
 	}));
 }

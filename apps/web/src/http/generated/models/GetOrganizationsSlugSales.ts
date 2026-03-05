@@ -151,6 +151,35 @@ export type GetOrganizationsSlugSales200 = {
             */
             name: string;
         } | null;
+        /**
+         * @type object
+        */
+        commissionInstallmentsSummary: {
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            total: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            pending: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            paid: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            canceled: number;
+        };
     }[];
 };
 

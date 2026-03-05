@@ -1,4 +1,5 @@
 import {
+	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
 	SaleCommissionSourceType,
 	SaleStatus,
@@ -62,6 +63,9 @@ export const SaleCommissionSourceTypeSchema = z.enum(SaleCommissionSourceType);
 export const SaleCommissionRecipientTypeSchema = z.enum(
 	SaleCommissionRecipientType,
 );
+export const SaleCommissionInstallmentStatusSchema = z.enum(
+	SaleCommissionInstallmentStatus,
+);
 
 export const SaleCommissionInstallmentInputSchema = z
 	.object({
@@ -76,6 +80,7 @@ export const SaleCommissionInputSchema = z
 		recipientType: SaleCommissionRecipientTypeSchema,
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		startDate: SaleDateInputSchema,
 		totalPercentage: CommissionTotalPercentageSchema,
 		installments: z.array(SaleCommissionInstallmentInputSchema).min(1),
 	})
@@ -131,6 +136,10 @@ export const SaleCommissionInputSchema = z
 const SaleCommissionInstallmentDetailSchema = z.object({
 	installmentNumber: z.number().int().min(1),
 	percentage: CommissionPercentageSchema,
+	amount: z.number().int().nonnegative(),
+	status: SaleCommissionInstallmentStatusSchema,
+	expectedPaymentDate: z.date(),
+	paymentDate: z.date().nullable(),
 });
 
 export const SaleCommissionDetailSchema = z.object({
@@ -139,9 +148,32 @@ export const SaleCommissionDetailSchema = z.object({
 	recipientType: SaleCommissionRecipientTypeSchema,
 	beneficiaryId: z.uuid().nullable(),
 	beneficiaryLabel: z.string().nullable(),
+	startDate: z.date(),
 	totalPercentage: CommissionTotalPercentageSchema,
+	totalAmount: z.number().int().nonnegative(),
 	sortOrder: z.number().int().nonnegative(),
 	installments: z.array(SaleCommissionInstallmentDetailSchema).min(1),
+});
+
+export const SaleCommissionInstallmentsSummarySchema = z.object({
+	total: z.number().int().nonnegative(),
+	pending: z.number().int().nonnegative(),
+	paid: z.number().int().nonnegative(),
+	canceled: z.number().int().nonnegative(),
+});
+
+export const SaleCommissionInstallmentRowSchema = z.object({
+	id: z.uuid(),
+	saleCommissionId: z.uuid(),
+	recipientType: SaleCommissionRecipientTypeSchema,
+	sourceType: SaleCommissionSourceTypeSchema,
+	beneficiaryLabel: z.string().nullable(),
+	installmentNumber: z.number().int().min(1),
+	percentage: CommissionPercentageSchema,
+	amount: z.number().int().nonnegative(),
+	status: SaleCommissionInstallmentStatusSchema,
+	expectedPaymentDate: z.date(),
+	paymentDate: z.date().nullable(),
 });
 
 export const CreateSaleBodySchema = z
@@ -163,6 +195,16 @@ export const UpdateSaleBodySchema = CreateSaleBodySchema;
 export const PatchSaleStatusBodySchema = z
 	.object({
 		status: z.enum(SaleStatus),
+	})
+	.strict();
+
+export const PatchSaleCommissionInstallmentStatusBodySchema = z
+	.object({
+		status: z.enum([
+			SaleCommissionInstallmentStatus.PAID,
+			SaleCommissionInstallmentStatus.CANCELED,
+		] as const),
+		paymentDate: SaleDateInputSchema.optional(),
 	})
 	.strict();
 
@@ -197,7 +239,9 @@ const SaleBaseResponseSchema = z.object({
 	responsible: SaleResponsiblePayloadSchema.nullable(),
 });
 
-export const SaleSummarySchema = SaleBaseResponseSchema;
+export const SaleSummarySchema = SaleBaseResponseSchema.extend({
+	commissionInstallmentsSummary: SaleCommissionInstallmentsSummarySchema,
+});
 
 export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	organizationId: z.uuid(),
@@ -216,9 +260,15 @@ export type SaleCommissionInput = z.infer<typeof SaleCommissionInputSchema>;
 export type SaleCommissionInstallmentInput = z.infer<
 	typeof SaleCommissionInstallmentInputSchema
 >;
+export type SaleCommissionInstallmentRow = z.infer<
+	typeof SaleCommissionInstallmentRowSchema
+>;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
+export type PatchSaleCommissionInstallmentStatusBody = z.infer<
+	typeof PatchSaleCommissionInstallmentStatusBodySchema
+>;
 
 export function parseSaleDateInput(value: string) {
 	return new Date(`${value}T00:00:00.000Z`);

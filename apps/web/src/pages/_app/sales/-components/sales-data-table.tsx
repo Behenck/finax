@@ -67,12 +67,14 @@ import {
 	EllipsisVertical,
 	Eye,
 	ListFilter,
+	ListTree,
 	Pencil,
 	Plus,
 	RefreshCcw,
 	Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
 
@@ -148,9 +150,10 @@ interface SalesDataTableProps {
 
 interface SaleTableRowActionsProps {
 	sale: SaleTableRow;
+	onOpenInstallments(sale: SaleTableRow): void;
 }
 
-function SaleTableRowActions({ sale }: SaleTableRowActionsProps) {
+function SaleTableRowActions({ sale, onOpenInstallments }: SaleTableRowActionsProps) {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { mutateAsync: deleteSale, isPending } = useDeleteSale();
 
@@ -182,14 +185,23 @@ function SaleTableRowActions({ sale }: SaleTableRowActionsProps) {
 							Ver detalhes
 						</Link>
 					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
-							<Pencil className="size-4" />
-							Editar
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<SaleStatusAction
+						<DropdownMenuItem asChild>
+							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+								<Pencil className="size-4" />
+								Editar
+							</Link>
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							onSelect={(event) => {
+								event.preventDefault();
+								onOpenInstallments(sale);
+							}}
+						>
+							<ListTree className="size-4" />
+							Ver parcelas
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<SaleStatusAction
 						saleId={sale.id}
 						currentStatus={sale.status as SaleStatus}
 						trigger="dropdown-item"
@@ -247,6 +259,8 @@ export function SalesDataTable({
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [globalFilter, setGlobalFilter] = useState("");
+	const [installmentsDrawerSale, setInstallmentsDrawerSale] =
+		useState<SaleTableRow | null>(null);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
@@ -344,6 +358,25 @@ export function SalesDataTable({
 					),
 				},
 				{
+					id: "commissionInstallments",
+					header: "Parcelas",
+					cell: ({ row }) => {
+						const summary = row.original.commissionInstallmentsSummary;
+						return (
+							<Button
+								type="button"
+								variant="ghost"
+								className="h-auto px-2 py-1 justify-start"
+								onClick={() => setInstallmentsDrawerSale(row.original)}
+							>
+								{summary.total === 0
+									? "Sem parcelas"
+									: `${summary.paid}/${summary.total} pagas`}
+							</Button>
+						);
+					},
+				},
+				{
 					accessorKey: "status",
 					header: "Status",
 					filterFn: (row, columnId, value) => {
@@ -374,16 +407,19 @@ export function SalesDataTable({
 			{
 				id: "actions",
 				enableHiding: false,
-				header: "",
-				cell: ({ row }) => (
-					<div className="flex justify-end">
-						<SaleTableRowActions sale={row.original} />
-					</div>
-				),
-			},
-		],
-		[],
-	);
+					header: "",
+					cell: ({ row }) => (
+						<div className="flex justify-end">
+							<SaleTableRowActions
+								sale={row.original}
+								onOpenInstallments={(sale) => setInstallmentsDrawerSale(sale)}
+							/>
+						</div>
+					),
+				},
+			],
+			[],
+		);
 
 	const table = useReactTable({
 		data: tableData,
@@ -508,6 +544,8 @@ export function SalesDataTable({
 														? "responsável"
 														: column.id === "totalAmount"
 															? "valor"
+															: column.id === "commissionInstallments"
+																? "parcelas"
 															: column.id === "status"
 																? "status"
 																: "atualização"}
@@ -560,7 +598,7 @@ export function SalesDataTable({
 				</Table>
 			</div>
 
-			<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between">
 				<span className="text-sm text-muted-foreground">
 					Página {table.getState().pagination.pageIndex + 1} de{" "}
 					{table.getPageCount()}
@@ -583,7 +621,20 @@ export function SalesDataTable({
 						Próxima
 					</Button>
 				</div>
+				</div>
+
+				{installmentsDrawerSale ? (
+					<SaleInstallmentsDrawer
+						open={Boolean(installmentsDrawerSale)}
+						onOpenChange={(open) => {
+							if (!open) {
+								setInstallmentsDrawerSale(null);
+							}
+						}}
+						saleId={installmentsDrawerSale.id}
+						saleStatus={installmentsDrawerSale.status as SaleStatus}
+					/>
+				) : null}
 			</div>
-		</div>
-	);
-}
+		);
+	}

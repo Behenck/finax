@@ -525,6 +525,23 @@ export type EnumSaleCommissionRecipientTypeWithAggregatesFilter<$PrismaModel = n
   _max?: Prisma.NestedEnumSaleCommissionRecipientTypeFilter<$PrismaModel>
 }
 
+export type EnumSaleCommissionInstallmentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionInstallmentStatus | Prisma.EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel> | $Enums.SaleCommissionInstallmentStatus
+}
+
+export type EnumSaleCommissionInstallmentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionInstallmentStatus | Prisma.EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionInstallmentStatusWithAggregatesFilter<$PrismaModel> | $Enums.SaleCommissionInstallmentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel>
+}
+
 export type EnumTransactionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.TransactionStatus | Prisma.EnumTransactionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TransactionStatus[] | Prisma.ListEnumTransactionStatusFieldRefInput<$PrismaModel>
@@ -1132,6 +1149,23 @@ export type NestedEnumSaleCommissionRecipientTypeWithAggregatesFilter<$PrismaMod
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSaleCommissionRecipientTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSaleCommissionRecipientTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionInstallmentStatus | Prisma.EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel> | $Enums.SaleCommissionInstallmentStatus
+}
+
+export type NestedEnumSaleCommissionInstallmentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionInstallmentStatus | Prisma.EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionInstallmentStatus[] | Prisma.ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionInstallmentStatusWithAggregatesFilter<$PrismaModel> | $Enums.SaleCommissionInstallmentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumTransactionStatusFilter<$PrismaModel = never> = {

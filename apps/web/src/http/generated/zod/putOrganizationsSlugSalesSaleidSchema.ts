@@ -32,6 +32,7 @@ export const putOrganizationsSlugSalesSaleidMutationRequestSchema = z.object({
 "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
 "beneficiaryId": z.optional(z.uuid()),
 "beneficiaryLabel": z.optional(z.string()),
+"startDate": z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 "totalPercentage": z.number().max(100).gt(0),
 "installments": z.array(z.object({
     "installmentNumber": z.int().min(1).max(9007199254740991),

@@ -5,4 +5,5 @@ export * from "./use-create-sale";
 export * from "./use-update-sale";
 export * from "./use-delete-sale";
 export * from "./use-patch-sale-status";
-
+export * from "./use-sale-commission-installments";
+export * from "./use-patch-sale-commission-installment-status";

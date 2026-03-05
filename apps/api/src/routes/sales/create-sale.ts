@@ -118,7 +118,11 @@ export async function createSale(app: FastifyInstance) {
 					data.responsible,
 				);
 				const resolvedCommissions = data.commissions
-					? await resolveSaleCommissionsData(organization.id, data.commissions)
+					? await resolveSaleCommissionsData(
+							organization.id,
+							data.commissions,
+							data.totalAmount,
+						)
 					: [];
 
 				const sale = await db(() =>

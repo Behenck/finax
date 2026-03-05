@@ -472,6 +472,7 @@ export const SaleCommissionScalarFieldEnum = {
   beneficiaryPartnerId: 'beneficiaryPartnerId',
   beneficiarySupervisorId: 'beneficiarySupervisorId',
   beneficiaryLabel: 'beneficiaryLabel',
+  startDate: 'startDate',
   totalPercentage: 'totalPercentage',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt',
@@ -486,6 +487,10 @@ export const SaleCommissionInstallmentScalarFieldEnum = {
   saleCommissionId: 'saleCommissionId',
   installmentNumber: 'installmentNumber',
   percentage: 'percentage',
+  amount: 'amount',
+  status: 'status',
+  expectedPaymentDate: 'expectedPaymentDate',
+  paymentDate: 'paymentDate',
   createdAt: 'createdAt'
 } as const
 

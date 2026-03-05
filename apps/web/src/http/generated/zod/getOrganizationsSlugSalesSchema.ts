@@ -46,7 +46,13 @@ export const getOrganizationsSlugSales200Schema = z.object({
     "type": z.enum(["SELLER", "PARTNER"]),
 "id": z.uuid(),
 "name": z.string()
-    }))
+    })),
+"commissionInstallmentsSummary": z.object({
+    "total": z.int().min(0).max(9007199254740991),
+"pending": z.int().min(0).max(9007199254740991),
+"paid": z.int().min(0).max(9007199254740991),
+"canceled": z.int().min(0).max(9007199254740991)
+    })
     }))
     })
 

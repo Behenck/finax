@@ -46,6 +46,9 @@ export const saleCommissionSchema = z
 		recipientType: SaleCommissionRecipientTypeSchema,
 		beneficiaryId: z.string().uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		startDate: z.coerce.date({
+			error: "Selecione a data de início da comissão",
+		}),
 		totalPercentage: commissionTotalPercentageSchema,
 		installments: z
 			.array(saleCommissionInstallmentSchema)

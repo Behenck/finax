@@ -2,6 +2,7 @@ import type { GetOrganizationsSlugProductsIdCommissionScenarios200 } from "@/htt
 import type { SaleCommissionFormData } from "@/schemas/sale-schema";
 
 const COMMISSION_PERCENTAGE_SCALE = 10_000;
+const COMMISSION_AMOUNT_DENOMINATOR = BigInt(100 * COMMISSION_PERCENTAGE_SCALE);
 
 export type ProductCommissionScenario =
 	GetOrganizationsSlugProductsIdCommissionScenarios200["scenarios"][number];
@@ -100,6 +101,69 @@ export function roundSaleCommissionPercentage(value: number) {
 	);
 }
 
+function toScaledPercentage(value: number) {
+	return Math.round(
+		(roundSaleCommissionPercentage(value) + Number.EPSILON) *
+			COMMISSION_PERCENTAGE_SCALE,
+	);
+}
+
+function toScaledAmountFloor(totalAmount: number, percentageScaled: number) {
+	const numerator = BigInt(totalAmount) * BigInt(percentageScaled);
+	return Number(numerator / COMMISSION_AMOUNT_DENOMINATOR);
+}
+
+function toScaledAmountRounded(totalAmount: number, percentageScaled: number) {
+	const numerator = BigInt(totalAmount) * BigInt(percentageScaled);
+	return Number(
+		(numerator + COMMISSION_AMOUNT_DENOMINATOR / 2n) /
+			COMMISSION_AMOUNT_DENOMINATOR,
+	);
+}
+
+export function calculateSaleCommissionInstallmentAmounts({
+	totalAmountInCents,
+	totalPercentage,
+	installments,
+}: {
+	totalAmountInCents: number;
+	totalPercentage: number;
+	installments: Array<{
+		percentage: number;
+	}>;
+}) {
+	if (installments.length === 0) {
+		return [];
+	}
+
+	const safeTotalAmount = Math.max(
+		0,
+		Math.trunc(Number.isFinite(totalAmountInCents) ? totalAmountInCents : 0),
+	);
+	const totalPercentageScaled = toScaledPercentage(totalPercentage);
+	const installmentPercentagesScaled = installments.map((installment) =>
+		toScaledPercentage(installment.percentage),
+	);
+	const baseAmounts = installmentPercentagesScaled.map((percentageScaled) =>
+		toScaledAmountFloor(safeTotalAmount, percentageScaled),
+	);
+	const roundedCommissionTotal = toScaledAmountRounded(
+		safeTotalAmount,
+		totalPercentageScaled,
+	);
+	const baseTotal = baseAmounts.reduce((sum, amount) => sum + amount, 0);
+	const residual = roundedCommissionTotal - baseTotal;
+	const lastInstallmentIndex = baseAmounts.length - 1;
+	const adjustedLastAmount = Math.max(
+		0,
+		(baseAmounts[lastInstallmentIndex] ?? 0) + residual,
+	);
+
+	return baseAmounts.map((amount, index) =>
+		index === lastInstallmentIndex ? adjustedLastAmount : amount,
+	);
+}
+
 export function distributeSaleCommissionInstallments(
 	totalPercentage: number,
 	count: number,
@@ -121,12 +185,31 @@ export function distributeSaleCommissionInstallments(
 	});
 }
 
-export function createDefaultManualSaleCommission(): SaleCommissionFormData {
+function normalizeDateOnly(value: Date | string | null | undefined) {
+	if (value instanceof Date && Number.isFinite(value.getTime())) {
+		return value;
+	}
+
+	if (typeof value === "string") {
+		const dateOnly = value.slice(0, 10);
+		const parsed = new Date(`${dateOnly}T00:00:00`);
+		if (Number.isFinite(parsed.getTime())) {
+			return parsed;
+		}
+	}
+
+	return new Date();
+}
+
+export function createDefaultManualSaleCommission(
+	startDate?: Date,
+): SaleCommissionFormData {
 	return {
 		sourceType: "MANUAL",
 		recipientType: "COMPANY",
 		beneficiaryId: undefined,
 		beneficiaryLabel: undefined,
+		startDate: normalizeDateOnly(startDate),
 		totalPercentage: 1,
 		installments: distributeSaleCommissionInstallments(1, 1),
 	};
@@ -137,6 +220,7 @@ type CommissionFormLike = {
 	recipientType: SaleCommissionFormData["recipientType"];
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
+	startDate?: Date | string | null;
 	totalPercentage: number;
 	installments: Array<{
 		installmentNumber: number;
@@ -146,6 +230,7 @@ type CommissionFormLike = {
 
 export function mapSaleCommissionToForm(
 	commission: CommissionFormLike,
+	fallbackStartDate?: Date,
 ): SaleCommissionFormData {
 	const sortedInstallments = [...commission.installments].sort(
 		(left, right) => left.installmentNumber - right.installmentNumber,
@@ -163,6 +248,7 @@ export function mapSaleCommissionToForm(
 		recipientType: commission.recipientType,
 		beneficiaryId: commission.beneficiaryId ?? undefined,
 		beneficiaryLabel: commission.beneficiaryLabel?.trim() || undefined,
+		startDate: normalizeDateOnly(commission.startDate ?? fallbackStartDate),
 		totalPercentage: roundSaleCommissionPercentage(commission.totalPercentage),
 		installments,
 	};
@@ -170,6 +256,7 @@ export function mapSaleCommissionToForm(
 
 export function mapScenarioCommissionsToPulledSaleCommissions(
 	commissions: ProductCommission[],
+	startDate?: Date,
 ) {
 	return commissions.map((commission) =>
 		mapSaleCommissionToForm({
@@ -177,6 +264,7 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 			recipientType: commission.recipientType,
 			beneficiaryId: commission.beneficiaryId,
 			beneficiaryLabel: commission.beneficiaryLabel,
+			startDate,
 			totalPercentage: commission.totalPercentage,
 			installments: commission.installments,
 		}),

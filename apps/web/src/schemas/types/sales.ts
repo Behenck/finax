@@ -32,6 +32,16 @@ export type SaleCommissionRecipientType = z.infer<
 	typeof SaleCommissionRecipientTypeSchema
 >;
 
+export const SaleCommissionInstallmentStatusSchema = z.enum([
+	"PENDING",
+	"PAID",
+	"CANCELED",
+]);
+
+export type SaleCommissionInstallmentStatus = z.infer<
+	typeof SaleCommissionInstallmentStatusSchema
+>;
+
 export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
 	PENDING: "Pendente",
 	APPROVED: "Aprovada",
@@ -63,6 +73,15 @@ export const SALE_COMMISSION_RECIPIENT_TYPE_LABEL: Record<
 	PARTNER: "Parceiro",
 	SUPERVISOR: "Supervisor",
 	OTHER: "Outro",
+};
+
+export const SALE_COMMISSION_INSTALLMENT_STATUS_LABEL: Record<
+	SaleCommissionInstallmentStatus,
+	string
+> = {
+	PENDING: "Pendente",
+	PAID: "Paga",
+	CANCELED: "Cancelada",
 };
 
 export const SALE_STATUS_TRANSITIONS: Record<SaleStatus, SaleStatus[]> = {

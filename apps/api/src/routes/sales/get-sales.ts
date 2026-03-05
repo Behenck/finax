@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import { SaleCommissionInstallmentStatus } from "generated/prisma/enums";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
@@ -97,6 +98,64 @@ export async function getSales(app: FastifyInstance) {
 					organization.id,
 					sales,
 				);
+				const saleIds = sales.map((sale) => sale.id);
+				const commissionInstallmentsSummaryBySaleId = new Map<
+					string,
+					{ total: number; pending: number; paid: number; canceled: number }
+				>(
+					saleIds.map((saleId) => [
+						saleId,
+						{
+							total: 0,
+							pending: 0,
+							paid: 0,
+							canceled: 0,
+						},
+					]),
+				);
+
+				if (saleIds.length > 0) {
+					const commissionInstallments =
+						await prisma.saleCommissionInstallment.findMany({
+							where: {
+								saleCommission: {
+									saleId: {
+										in: saleIds,
+									},
+								},
+							},
+							select: {
+								status: true,
+								saleCommission: {
+									select: {
+										saleId: true,
+									},
+								},
+							},
+						});
+
+					for (const installment of commissionInstallments) {
+						const summary = commissionInstallmentsSummaryBySaleId.get(
+							installment.saleCommission.saleId,
+						);
+						if (!summary) {
+							continue;
+						}
+
+						summary.total += 1;
+						if (installment.status === SaleCommissionInstallmentStatus.PENDING) {
+							summary.pending += 1;
+						} else if (
+							installment.status === SaleCommissionInstallmentStatus.PAID
+						) {
+							summary.paid += 1;
+						} else if (
+							installment.status === SaleCommissionInstallmentStatus.CANCELED
+						) {
+							summary.canceled += 1;
+						}
+					}
+				}
 
 				const result = sales.map((sale) => {
 					return {
@@ -113,6 +172,13 @@ export async function getSales(app: FastifyInstance) {
 						unit: sale.unit,
 						createdBy: sale.createdBy,
 						responsible: responsibleBySaleId.get(sale.id) ?? null,
+						commissionInstallmentsSummary:
+							commissionInstallmentsSummaryBySaleId.get(sale.id) ?? {
+								total: 0,
+								pending: 0,
+								paid: 0,
+								canceled: 0,
+							},
 					};
 				});
 
@@ -122,4 +188,3 @@ export async function getSales(app: FastifyInstance) {
 			},
 		);
 }
-

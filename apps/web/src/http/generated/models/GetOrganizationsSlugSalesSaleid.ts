@@ -56,6 +56,14 @@ export const commissionsRecipientTypeEnum5 = {
 
 export type CommissionsRecipientTypeEnum5Key = (typeof commissionsRecipientTypeEnum5)[keyof typeof commissionsRecipientTypeEnum5];
 
+export const installmentsStatusEnum = {
+    "PENDING": "PENDING",
+    "PAID": "PAID",
+    "CANCELED": "CANCELED"
+} as const;
+
+export type InstallmentsStatusEnumKey = (typeof installmentsStatusEnum)[keyof typeof installmentsStatusEnum];
+
 /**
  * @description Default Response
 */
@@ -237,10 +245,20 @@ export type GetOrganizationsSlugSalesSaleid200 = {
             */
             beneficiaryLabel: string | null;
             /**
+             * @type string, date-time
+            */
+            startDate: string;
+            /**
              * @maxLength 100
              * @type number
             */
             totalPercentage: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+            */
+            totalAmount: number;
             /**
              * @minLength 0
              * @maxLength 9007199254740991
@@ -263,6 +281,24 @@ export type GetOrganizationsSlugSalesSaleid200 = {
                  * @type number
                 */
                 percentage: number;
+                /**
+                 * @minLength 0
+                 * @maxLength 9007199254740991
+                 * @type integer
+                */
+                amount: number;
+                /**
+                 * @type string
+                */
+                status: InstallmentsStatusEnumKey;
+                /**
+                 * @type string, date-time
+                */
+                expectedPaymentDate: string;
+                /**
+                 * @type string, date-time
+                */
+                paymentDate: string | null;
             }[];
         }[];
     };

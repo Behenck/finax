@@ -2991,6 +2991,7 @@ export const SaleCommissionScalarFieldEnum = {
   beneficiaryPartnerId: 'beneficiaryPartnerId',
   beneficiarySupervisorId: 'beneficiarySupervisorId',
   beneficiaryLabel: 'beneficiaryLabel',
+  startDate: 'startDate',
   totalPercentage: 'totalPercentage',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt',
@@ -3005,6 +3006,10 @@ export const SaleCommissionInstallmentScalarFieldEnum = {
   saleCommissionId: 'saleCommissionId',
   installmentNumber: 'installmentNumber',
   percentage: 'percentage',
+  amount: 'amount',
+  status: 'status',
+  expectedPaymentDate: 'expectedPaymentDate',
+  paymentDate: 'paymentDate',
   createdAt: 'createdAt'
 } as const
 
@@ -3420,6 +3425,20 @@ export type EnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRe
  * Reference to a field of type 'SaleCommissionRecipientType[]'
  */
 export type ListEnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionInstallmentStatus'
+ */
+export type EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionInstallmentStatus[]'
+ */
+export type ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus[]'>
     
 
 

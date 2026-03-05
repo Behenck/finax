@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
+	recalculatePersistedSaleCommissionsAmounts,
 	replaceSaleCommissions,
 	resolveSaleCommissionsData,
 } from "./sale-commissions";
@@ -58,11 +59,18 @@ export async function updateSale(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						status: true,
 					},
 				});
 
 				if (!sale) {
 					throw new BadRequestError("Sale not found");
+				}
+
+				if (sale.status !== "PENDING" && data.commissions !== undefined) {
+					throw new BadRequestError(
+						"Cannot update commissions when sale status is not PENDING",
+					);
 				}
 
 				const customer = await prisma.customer.findFirst({
@@ -135,6 +143,7 @@ export async function updateSale(app: FastifyInstance) {
 						: await resolveSaleCommissionsData(
 								organization.id,
 								data.commissions,
+								data.totalAmount,
 							);
 
 				await db(() =>
@@ -157,6 +166,12 @@ export async function updateSale(app: FastifyInstance) {
 
 						if (resolvedCommissions !== undefined) {
 							await replaceSaleCommissions(tx, saleId, resolvedCommissions);
+						} else {
+							await recalculatePersistedSaleCommissionsAmounts(
+								tx,
+								saleId,
+								data.totalAmount,
+							);
 						}
 					}),
 				);

@@ -37,6 +37,7 @@ type SaleCommissionInput = {
 		| "OTHER";
 	beneficiaryId?: string;
 	beneficiaryLabel?: string;
+	startDate: string;
 	totalPercentage: number;
 	installments: Array<{
 		installmentNumber: number;
@@ -239,6 +240,7 @@ function buildCommissionsPayload(
 			sourceType: "PULLED",
 			recipientType: "SELLER",
 			beneficiaryId: fixture.seller.id,
+			startDate: "2026-03-10",
 			totalPercentage: 1,
 			installments: [
 				{
@@ -255,6 +257,7 @@ function buildCommissionsPayload(
 			sourceType: "MANUAL",
 			recipientType: "OTHER",
 			beneficiaryLabel: "Bônus Operacional",
+			startDate: "2026-03-15",
 			totalPercentage: 0.5,
 			installments: [
 				{
@@ -359,9 +362,135 @@ describe("sales crud", () => {
 		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual(
 			[5_000, 5_000],
 		);
+		expect(commissions[0]?.installments.map((item) => item.amount)).toEqual([
+			625, 625,
+		]);
 		expect(commissions[1]?.sourceType).toBe("MANUAL");
 		expect(commissions[1]?.recipientType).toBe("OTHER");
 		expect(commissions[1]?.beneficiaryLabel).toBe("Bônus Operacional");
+		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
+			625,
+		]);
+	});
+
+	it("should calculate installment amounts from sale total amount", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 100_000,
+					commissions: [
+						{
+							sourceType: "PULLED",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 2,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 3,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 4,
+									percentage: 0.25,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId: response.body.saleId,
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				amount: true,
+			},
+		});
+
+		expect(installments.map((installment) => installment.amount)).toEqual([
+			250, 250, 250, 250,
+		]);
+	});
+
+	it("should apply rounding residual to last installment", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 100_050,
+					commissions: [
+						{
+							sourceType: "PULLED",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 2,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 3,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 4,
+									percentage: 0.25,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId: response.body.saleId,
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				amount: true,
+			},
+		});
+
+		expect(installments.map((installment) => installment.amount)).toEqual([
+			250, 250, 250, 251,
+		]);
 	});
 
 	it("should create sale with active partner", async () => {
@@ -473,6 +602,7 @@ describe("sales crud", () => {
 							sourceType: "MANUAL",
 							recipientType: "SELLER",
 							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
 							totalPercentage: 1,
 							installments: [
 								{
@@ -492,6 +622,33 @@ describe("sales crud", () => {
 		expect(response.statusCode).toBe(400);
 	});
 
+	it("should fail when commission start date is missing", async () => {
+		const fixture = await createFixture();
+
+		const payload = buildCreatePayload(fixture) as Record<string, unknown>;
+		payload.commissions = [
+			{
+				sourceType: "MANUAL",
+				recipientType: "SELLER",
+				beneficiaryId: fixture.seller.id,
+				totalPercentage: 1,
+				installments: [
+					{
+						installmentNumber: 1,
+						percentage: 1,
+					},
+				],
+			},
+		];
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(payload);
+
+		expect(response.statusCode).toBe(400);
+	});
+
 	it("should fail when commission beneficiary is outside organization", async () => {
 		const fixture = await createFixture();
 
@@ -505,6 +662,7 @@ describe("sales crud", () => {
 							sourceType: "MANUAL",
 							recipientType: "COMPANY",
 							beneficiaryId: "11111111-1111-4111-8111-111111111111",
+							startDate: "2026-03-10",
 							totalPercentage: 1,
 							installments: [
 								{
@@ -526,7 +684,7 @@ describe("sales crud", () => {
 
 		const firstSaleId = await createSaleUsingApi(fixture);
 
-		await createSaleUsingApi(
+		const secondSaleId = await createSaleUsingApi(
 			fixture,
 			buildCreatePayload(fixture, {
 				responsible: {
@@ -534,6 +692,7 @@ describe("sales crud", () => {
 					id: fixture.partner.id,
 				},
 				notes: "Venda por parceiro",
+				commissions: buildCommissionsPayload(fixture),
 			}),
 		);
 
@@ -555,6 +714,24 @@ describe("sales crud", () => {
 		expect(firstSale.company.name).toBe(fixture.company.name);
 		expect(firstSale.createdBy.id).toBeDefined();
 		expect(firstSale.responsible.type).toBe("SELLER");
+		expect(firstSale.commissionInstallmentsSummary).toEqual({
+			total: 0,
+			pending: 0,
+			paid: 0,
+			canceled: 0,
+		});
+
+		const secondSale = response.body.sales.find(
+			(sale: { id: string }) => sale.id === secondSaleId,
+		);
+
+		expect(secondSale).toBeDefined();
+		expect(secondSale.commissionInstallmentsSummary).toEqual({
+			total: 3,
+			pending: 3,
+			paid: 0,
+			canceled: 0,
+		});
 	});
 
 	it("should get sale by id", async () => {
@@ -581,6 +758,28 @@ describe("sales crud", () => {
 		expect(response.body.sale.commissions).toHaveLength(2);
 		expect(response.body.sale.commissions[0].sourceType).toBe("PULLED");
 		expect(response.body.sale.commissions[1].sourceType).toBe("MANUAL");
+		expect(response.body.sale.commissions[0].totalAmount).toBe(1_250);
+		expect(response.body.sale.commissions[1].totalAmount).toBe(625);
+		expect(
+			response.body.sale.commissions[0].installments.map(
+				(installment: { amount: number }) => installment.amount,
+			),
+		).toEqual([625, 625]);
+		expect(
+			response.body.sale.commissions[1].installments.map(
+				(installment: { amount: number }) => installment.amount,
+			),
+		).toEqual([625]);
+		for (const commission of response.body.sale.commissions as Array<{
+			totalAmount: number;
+			installments: Array<{ amount: number }>;
+		}>) {
+			const installmentsTotal = commission.installments.reduce(
+				(sum, installment) => sum + installment.amount,
+				0,
+			);
+			expect(installmentsTotal).toBe(commission.totalAmount);
+		}
 	});
 
 	it("should update sale via put without changing status", async () => {
@@ -634,6 +833,7 @@ describe("sales crud", () => {
 							sourceType: "MANUAL",
 							recipientType: "COMPANY",
 							beneficiaryId: fixture.company.id,
+							startDate: "2026-03-10",
 							totalPercentage: 1.5,
 							installments: [
 								{
@@ -662,6 +862,345 @@ describe("sales crud", () => {
 		expect(commissions[0]?.recipientType).toBe("COMPANY");
 		expect(commissions[0]?.beneficiaryCompanyId).toBe(fixture.company.id);
 		expect(commissions[0]?.totalPercentage).toBe(15_000);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommissionId: commissions[0]?.id,
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				amount: true,
+				percentage: true,
+			},
+		});
+		expect(installments.map((installment) => installment.percentage)).toEqual([
+			5_000, 10_000,
+		]);
+		expect(installments.map((installment) => installment.amount)).toEqual([
+			625, 1_250,
+		]);
+	});
+
+	it("should recalculate installment amounts on update without commissions", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				totalAmount: 100_000,
+				commissions: [
+					{
+						sourceType: "PULLED",
+						recipientType: "SELLER",
+						beneficiaryId: fixture.seller.id,
+						startDate: "2026-03-10",
+						totalPercentage: 1,
+						installments: [
+							{
+								installmentNumber: 1,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 2,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 3,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 4,
+								percentage: 0.25,
+							},
+						],
+					},
+				],
+			}),
+		);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 100_500,
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				amount: true,
+			},
+		});
+
+		expect(installments.map((installment) => installment.amount)).toEqual([
+			251, 251, 251, 252,
+		]);
+	});
+
+	it("should block commissions update when sale is not pending", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		expect(approveResponse.statusCode).toBe(204);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: buildCommissionsPayload(fixture),
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(400);
+		expect(updateResponse.body.message).toBe(
+			"Cannot update commissions when sale status is not PENDING",
+		);
+	});
+
+	it("should force commission installments as canceled when sale is canceled", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const cancelResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "CANCELED",
+			});
+
+		expect(cancelResponse.statusCode).toBe(204);
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+				},
+			},
+			select: {
+				status: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(installments.length).toBeGreaterThan(0);
+		expect(installments.every((installment) => installment.status === "CANCELED")).toBe(
+			true,
+		);
+		expect(
+			installments.every((installment) => installment.paymentDate === null),
+		).toBe(true);
+	});
+
+	it("should list commission installments by sale", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		expect(approveResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.installments).toHaveLength(3);
+		expect(response.body.installments[0].status).toBe("PENDING");
+		expect(response.body.installments[0].expectedPaymentDate).toContain(
+			"2026-03-10",
+		);
+		expect(response.body.installments[1].expectedPaymentDate).toContain(
+			"2026-04-10",
+		);
+	});
+
+	it("should patch commission installment status to paid with explicit payment date", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		const installmentId = installmentsResponse.body.installments[0]?.id as string;
+		expect(installmentId).toBeTruthy();
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-03-21",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const installment = await prisma.saleCommissionInstallment.findUnique({
+			where: {
+				id: installmentId,
+			},
+			select: {
+				status: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(installment?.status).toBe("PAID");
+		expect(installment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-03-21",
+		);
+	});
+
+	it("should patch commission installment status to paid with current date when omitted", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		const installmentId = installmentsResponse.body.installments[0]?.id as string;
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const installment = await prisma.saleCommissionInstallment.findUnique({
+			where: {
+				id: installmentId,
+			},
+			select: {
+				status: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(installment?.status).toBe("PAID");
+		expect(installment?.paymentDate).not.toBeNull();
+	});
+
+	it("should block installment status update when sale is canceled", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "CANCELED",
+			});
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+				},
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const installmentId = installments[0]?.id as string;
+		expect(installmentId).toBeTruthy();
+
+		const response = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"Cannot update commission installments for canceled sale",
+		);
 	});
 
 	it("should patch status with valid transition", async () => {

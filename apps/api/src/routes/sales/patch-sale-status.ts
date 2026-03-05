@@ -1,7 +1,10 @@
 import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
-import { SaleStatus } from "generated/prisma/enums";
+import {
+	SaleCommissionInstallmentStatus,
+	SaleStatus,
+} from "generated/prisma/enums";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
@@ -80,13 +83,29 @@ export async function patchSaleStatus(app: FastifyInstance) {
 				}
 
 				await db(() =>
-					prisma.sale.update({
-						where: {
-							id: saleId,
-						},
-						data: {
-							status,
-						},
+					prisma.$transaction(async (tx) => {
+						await tx.sale.update({
+							where: {
+								id: saleId,
+							},
+							data: {
+								status,
+							},
+						});
+
+						if (status === SaleStatus.CANCELED) {
+							await tx.saleCommissionInstallment.updateMany({
+								where: {
+									saleCommission: {
+										saleId,
+									},
+								},
+								data: {
+									status: SaleCommissionInstallmentStatus.CANCELED,
+									paymentDate: null,
+								},
+							});
+						}
 					}),
 				);
 
@@ -94,4 +113,3 @@ export async function patchSaleStatus(app: FastifyInstance) {
 			},
 		);
 }
-

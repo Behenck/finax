@@ -678,6 +678,12 @@ enum SaleCommissionRecipientType {
   OTHER
 }
 
+enum SaleCommissionInstallmentStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
 model Sale {
   id String @id @default(uuid())
 
@@ -727,6 +733,7 @@ model SaleCommission {
   beneficiaryPartnerId  String?                   @map("beneficiary_partner_id")
   beneficiarySupervisorId String?                 @map("beneficiary_supervisor_id")
   beneficiaryLabel      String?                   @map("beneficiary_label")
+  startDate             DateTime                  @map("start_date") @db.Date
   totalPercentage       Int                       @map("total_percentage")
   sortOrder             Int                       @default(0) @map("sort_order")
 
@@ -756,6 +763,10 @@ model SaleCommissionInstallment {
   saleCommissionId  String @map("sale_commission_id")
   installmentNumber Int    @map("installment_number")
   percentage        Int
+  amount            Int
+  status            SaleCommissionInstallmentStatus @default(PENDING)
+  expectedPaymentDate DateTime @map("expected_payment_date") @db.Date
+  paymentDate       DateTime? @map("payment_date") @db.Date
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -763,6 +774,8 @@ model SaleCommissionInstallment {
 
   @@unique([saleCommissionId, installmentNumber])
   @@index([saleCommissionId])
+  @@index([saleCommissionId, status])
+  @@index([expectedPaymentDate])
   @@map("sale_commission_installments")
 }
 

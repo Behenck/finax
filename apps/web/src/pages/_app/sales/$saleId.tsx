@@ -36,6 +36,13 @@ function formatDateTime(value: string) {
 	return format(parseISO(value), "dd/MM/yyyy HH:mm");
 }
 
+function formatCommissionPercentage(value: number) {
+	return `${new Intl.NumberFormat("pt-BR", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 4,
+	}).format(value)}%`;
+}
+
 function SaleDetailsPage() {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { saleId } = Route.useParams();
@@ -184,7 +191,14 @@ function SaleDetailsPage() {
 											]
 										}
 									</p>
-									<p className="font-semibold">{commission.totalPercentage}%</p>
+									<div className="text-right">
+										<p className="font-semibold">
+											{formatCommissionPercentage(commission.totalPercentage)}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{formatCurrencyBRL(commission.totalAmount / 100)}
+										</p>
+									</div>
 								</div>
 								<p className="text-muted-foreground text-xs">
 									Beneficiário:{" "}
@@ -192,15 +206,18 @@ function SaleDetailsPage() {
 										commission.beneficiaryId ??
 										"Não informado"}
 								</p>
-								<p className="text-muted-foreground text-xs">
-									Parcelas:{" "}
-									{commission.installments
-										.map(
-											(installment) =>
-												`${installment.installmentNumber}ª ${installment.percentage}%`,
-										)
-										.join(" • ")}
-								</p>
+								<div className="space-y-1 text-muted-foreground text-xs">
+									<p>Parcelas:</p>
+									{commission.installments.map((installment) => (
+										<p
+											key={`${commission.id}-${installment.installmentNumber}`}
+										>
+											P{installment.installmentNumber} -{" "}
+											{formatCommissionPercentage(installment.percentage)} -{" "}
+											{formatCurrencyBRL(installment.amount / 100)}
+										</p>
+									))}
+								</div>
 							</div>
 						))}
 					</div>

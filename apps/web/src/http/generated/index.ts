@@ -57,6 +57,8 @@ export type { GetOrganizationsSlugRecurrencesQueryKey } from "./hooks/useGetOrga
 export type { GetOrganizationsSlugRecurrencesSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugRecurrencesSuspense.ts";
 export type { GetOrganizationsSlugSalesQueryKey } from "./hooks/useGetOrganizationsSlugSales.ts";
 export type { GetOrganizationsSlugSalesSaleidQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleid.ts";
+export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export type { GetOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export type { GetOrganizationsSlugSalesSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSuspense.ts";
 export type { GetOrganizationsSlugSellersQueryKey } from "./hooks/useGetOrganizationsSlugSellers.ts";
@@ -72,6 +74,7 @@ export type { GetPendingInvitesQueryKey } from "./hooks/useGetPendingInvites.ts"
 export type { GetPendingInvitesSuspenseQueryKey } from "./hooks/useGetPendingInvitesSuspense.ts";
 export type { PatchOrganizationsSlugMembersMemberidRoleMutationKey } from "./hooks/usePatchOrganizationsSlugMembersMemberidRole.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./hooks/usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationKey } from "./hooks/usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export type { PatchOrganizationsSlugSalesSaleidStatusMutationKey } from "./hooks/usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidMutationKey } from "./hooks/usePatchOrganizationsSlugTransactionsTransactionid.ts";
 export type { PostAuthSendEmailOtpMutationKey } from "./hooks/usePostAuthSendEmailOtp.ts";
@@ -151,7 +154,8 @@ export type { GetOrganizationsSlugProductsIdPathParams, GetOrganizationsSlugProd
 export type { GetOrganizationsSlugProductsIdCommissionScenariosPathParams, ConditionsTypeEnumKey, ConditionsTypeEnum2Key, ConditionsTypeEnum3Key, ConditionsTypeEnum4Key, CommissionsRecipientTypeEnumKey, GetOrganizationsSlugProductsIdCommissionScenarios200, GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse, GetOrganizationsSlugProductsIdCommissionScenariosQuery } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export type { GetOrganizationsSlugRecurrencesPathParams, RecurrencesTypeEnumKey, RecurrencesStatusEnumKey, RecurrencesExecutionDayTypeEnumKey, RecurrencesAdjustmentRuleEnumKey, GetOrganizationsSlugRecurrences200, GetOrganizationsSlugRecurrencesQueryResponse, GetOrganizationsSlugRecurrencesQuery } from "./models/GetOrganizationsSlugRecurrences.ts";
 export type { GetOrganizationsSlugSalesPathParams, SalesStatusEnumKey, ResponsibleTypeEnum6Key, GetOrganizationsSlugSales200, GetOrganizationsSlugSalesQueryResponse, GetOrganizationsSlugSalesQuery } from "./models/GetOrganizationsSlugSales.ts";
-export type { GetOrganizationsSlugSalesSaleidPathParams, SaleStatusEnumKey, ResponsibleTypeEnum8Key, SaleResponsibleTypeEnumKey, CommissionsSourceTypeEnum3Key, CommissionsRecipientTypeEnum5Key, GetOrganizationsSlugSalesSaleid200, GetOrganizationsSlugSalesSaleidQueryResponse, GetOrganizationsSlugSalesSaleidQuery } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export type { GetOrganizationsSlugSalesSaleidPathParams, SaleStatusEnumKey, ResponsibleTypeEnum8Key, SaleResponsibleTypeEnumKey, CommissionsSourceTypeEnum3Key, CommissionsRecipientTypeEnum5Key, InstallmentsStatusEnumKey, GetOrganizationsSlugSalesSaleid200, GetOrganizationsSlugSalesSaleidQueryResponse, GetOrganizationsSlugSalesSaleidQuery } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsPathParams, InstallmentsRecipientTypeEnumKey, InstallmentsSourceTypeEnumKey, InstallmentsStatusEnum2Key, GetOrganizationsSlugSalesSaleidCommissionInstallments200, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponse, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQuery } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { GetOrganizationsSlugSellersPathParams, SellersDocumentTypeEnumKey, SellersStatusEnumKey, GetOrganizationsSlugSellers200, GetOrganizationsSlugSellersQueryResponse, GetOrganizationsSlugSellersQuery } from "./models/GetOrganizationsSlugSellers.ts";
 export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeEnumKey, SellerStatusEnumKey, GetOrganizationsSlugSellersSellerid200, GetOrganizationsSlugSellersSelleridQueryResponse, GetOrganizationsSlugSellersSelleridQuery } from "./models/GetOrganizationsSlugSellersSellerid.ts";
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./models/GetOrganizationsSlugTransactions.ts";
@@ -159,6 +163,7 @@ export type { GetOrganizationsSlugTransactionsTransactionidPathParams, Transacti
 export type { InvitesRoleEnum2Key, GetPendingInvites200, GetPendingInvitesQueryResponse, GetPendingInvitesQuery } from "./models/GetPendingInvites.ts";
 export type { PatchOrganizationsSlugMembersMemberidRolePathParams, PatchOrganizationsSlugMembersMemberidRole204EnumKey, PatchOrganizationsSlugMembersMemberidRole204, PatchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnumKey, PatchOrganizationsSlugMembersMemberidRoleMutationRequest, PatchOrganizationsSlugMembersMemberidRoleMutationResponse, PatchOrganizationsSlugMembersMemberidRoleMutation } from "./models/PatchOrganizationsSlugMembersMemberidRole.ts";
 export type { PatchOrganizationsSlugRecurrencesRecurrenceidPathParams, PatchOrganizationsSlugRecurrencesRecurrenceid204EnumKey, PatchOrganizationsSlugRecurrencesRecurrenceid204, PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, PatchOrganizationsSlugRecurrencesRecurrenceidMutation } from "./models/PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusPathParams, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204EnumKey, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequest, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationResponse, PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutation } from "./models/PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export type { PatchOrganizationsSlugSalesSaleidStatusPathParams, PatchOrganizationsSlugSalesSaleidStatus204EnumKey, PatchOrganizationsSlugSalesSaleidStatus204, PatchOrganizationsSlugSalesSaleidStatusMutationRequestStatusEnumKey, PatchOrganizationsSlugSalesSaleidStatusMutationRequest, PatchOrganizationsSlugSalesSaleidStatusMutationResponse, PatchOrganizationsSlugSalesSaleidStatusMutation } from "./models/PatchOrganizationsSlugSalesSaleidStatus.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidPathParams, PatchOrganizationsSlugTransactionsTransactionid204EnumKey, PatchOrganizationsSlugTransactionsTransactionid204, PatchOrganizationsSlugTransactionsTransactionidMutationRequest, PatchOrganizationsSlugTransactionsTransactionidMutationResponse, PatchOrganizationsSlugTransactionsTransactionidMutation } from "./models/PatchOrganizationsSlugTransactionsTransactionid.ts";
 export type { PostAuthSendEmailOtp204EnumKey, PostAuthSendEmailOtp204, PostAuthSendEmailOtpMutationRequest, PostAuthSendEmailOtpMutationResponse, PostAuthSendEmailOtpMutation } from "./models/PostAuthSendEmailOtp.ts";
@@ -239,6 +244,7 @@ export { getOrganizationsSlugProductsIdCommissionScenarios } from "./getOrganiza
 export { getOrganizationsSlugRecurrences } from "./getOrganizationsSlugRecurrences.ts";
 export { getOrganizationsSlugSales } from "./getOrganizationsSlugSales.ts";
 export { getOrganizationsSlugSalesSaleid } from "./getOrganizationsSlugSalesSaleid.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallments } from "./getOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { getOrganizationsSlugSellers } from "./getOrganizationsSlugSellers.ts";
 export { getOrganizationsSlugSellersSellerid } from "./getOrganizationsSlugSellersSellerid.ts";
 export { getOrganizationsSlugTransactions } from "./getOrganizationsSlugTransactions.ts";
@@ -421,6 +427,12 @@ export { useGetOrganizationsSlugSales } from "./hooks/useGetOrganizationsSlugSal
 export { getOrganizationsSlugSalesSaleidQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleid.ts";
 export { getOrganizationsSlugSalesSaleidQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleid.ts";
 export { useGetOrganizationsSlugSalesSaleid } from "./hooks/useGetOrganizationsSlugSalesSaleid.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { useGetOrganizationsSlugSalesSaleidCommissionInstallments } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export { useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { useGetOrganizationsSlugSalesSaleidSuspense } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
@@ -466,6 +478,9 @@ export { usePatchOrganizationsSlugMembersMemberidRole } from "./hooks/usePatchOr
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from "./hooks/usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidMutationOptions } from "./hooks/usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { usePatchOrganizationsSlugRecurrencesRecurrenceid } from "./hooks/usePatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationKey } from "./hooks/usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationOptions } from "./hooks/usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
+export { usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus } from "./hooks/usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatusMutationKey } from "./hooks/usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatusMutationOptions } from "./hooks/usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export { usePatchOrganizationsSlugSalesSaleidStatus } from "./hooks/usePatchOrganizationsSlugSalesSaleidStatus.ts";
@@ -645,6 +660,10 @@ export { responsibleTypeEnum8 } from "./models/GetOrganizationsSlugSalesSaleid.t
 export { saleResponsibleTypeEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { commissionsSourceTypeEnum3 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { commissionsRecipientTypeEnum5 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export { installmentsStatusEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export { installmentsRecipientTypeEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { installmentsSourceTypeEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { installmentsStatusEnum2 } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { sellersDocumentTypeEnum } from "./models/GetOrganizationsSlugSellers.ts";
 export { sellersStatusEnum } from "./models/GetOrganizationsSlugSellers.ts";
 export { sellerDocumentTypeEnum } from "./models/GetOrganizationsSlugSellersSellerid.ts";
@@ -659,6 +678,8 @@ export { invitesRoleEnum2 } from "./models/GetPendingInvites.ts";
 export { patchOrganizationsSlugMembersMemberidRole204Enum } from "./models/PatchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnum } from "./models/PatchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceid204Enum } from "./models/PatchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204Enum } from "./models/PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnum } from "./models/PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatus204Enum } from "./models/PatchOrganizationsSlugSalesSaleidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatusMutationRequestStatusEnum } from "./models/PatchOrganizationsSlugSalesSaleidStatus.ts";
 export { patchOrganizationsSlugTransactionsTransactionid204Enum } from "./models/PatchOrganizationsSlugTransactionsTransactionid.ts";
@@ -732,6 +753,7 @@ export { putOrganizationsSlugTransactionsTransactionidMutationRequestStatusEnum 
 export { putOrganizationsSlugTransactionsTransactionidMutationRequestNatureEnum } from "./models/PutOrganizationsSlugTransactionsTransactionid.ts";
 export { patchOrganizationsSlugMembersMemberidRole } from "./patchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceid } from "./patchOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus } from "./patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatus } from "./patchOrganizationsSlugSalesSaleidStatus.ts";
 export { patchOrganizationsSlugTransactionsTransactionid } from "./patchOrganizationsSlugTransactionsTransactionid.ts";
 export { postAuthSendEmailOtp } from "./postAuthSendEmailOtp.ts";
@@ -810,6 +832,7 @@ export { getOrganizationsSlugProductsIdCommissionScenariosPathParamsSchema, getO
 export { getOrganizationsSlugProductsIdPathParamsSchema, getOrganizationsSlugProductsId200Schema, getOrganizationsSlugProductsIdQueryResponseSchema } from "./zod/getOrganizationsSlugProductsIdSchema.ts";
 export { getOrganizationsSlugProductsPathParamsSchema, getOrganizationsSlugProducts200Schema, getOrganizationsSlugProductsQueryResponseSchema } from "./zod/getOrganizationsSlugProductsSchema.ts";
 export { getOrganizationsSlugRecurrencesPathParamsSchema, getOrganizationsSlugRecurrences200Schema, getOrganizationsSlugRecurrencesQueryResponseSchema } from "./zod/getOrganizationsSlugRecurrencesSchema.ts";
+export { getOrganizationsSlugSalesSaleidCommissionInstallmentsPathParamsSchema, getOrganizationsSlugSalesSaleidCommissionInstallments200Schema, getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSaleidCommissionInstallmentsSchema.ts";
 export { getOrganizationsSlugSalesSaleidPathParamsSchema, getOrganizationsSlugSalesSaleid200Schema, getOrganizationsSlugSalesSaleidQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSaleidSchema.ts";
 export { getOrganizationsSlugSalesPathParamsSchema, getOrganizationsSlugSales200Schema, getOrganizationsSlugSalesQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSchema.ts";
 export { getOrganizationsSlugSellersPathParamsSchema, getOrganizationsSlugSellers200Schema, getOrganizationsSlugSellersQueryResponseSchema } from "./zod/getOrganizationsSlugSellersSchema.ts";
@@ -819,6 +842,7 @@ export { getOrganizationsSlugTransactionsTransactionidPathParamsSchema, getOrgan
 export { getPendingInvites200Schema, getPendingInvitesQueryResponseSchema } from "./zod/getPendingInvitesSchema.ts";
 export { patchOrganizationsSlugMembersMemberidRolePathParamsSchema, patchOrganizationsSlugMembersMemberidRole204Schema, patchOrganizationsSlugMembersMemberidRoleMutationRequestSchema, patchOrganizationsSlugMembersMemberidRoleMutationResponseSchema } from "./zod/patchOrganizationsSlugMembersMemberidRoleSchema.ts";
 export { patchOrganizationsSlugRecurrencesRecurrenceidPathParamsSchema, patchOrganizationsSlugRecurrencesRecurrenceid204Schema, patchOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema } from "./zod/patchOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
+export { patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusPathParamsSchema, patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus204Schema, patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestSchema, patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationResponseSchema } from "./zod/patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusSchema.ts";
 export { patchOrganizationsSlugSalesSaleidStatusPathParamsSchema, patchOrganizationsSlugSalesSaleidStatus204Schema, patchOrganizationsSlugSalesSaleidStatusMutationRequestSchema, patchOrganizationsSlugSalesSaleidStatusMutationResponseSchema } from "./zod/patchOrganizationsSlugSalesSaleidStatusSchema.ts";
 export { patchOrganizationsSlugTransactionsTransactionidPathParamsSchema, patchOrganizationsSlugTransactionsTransactionid204Schema, patchOrganizationsSlugTransactionsTransactionidMutationRequestSchema, patchOrganizationsSlugTransactionsTransactionidMutationResponseSchema } from "./zod/patchOrganizationsSlugTransactionsTransactionidSchema.ts";
 export { postAuthSendEmailOtp204Schema, postAuthSendEmailOtpMutationRequestSchema, postAuthSendEmailOtpMutationResponseSchema } from "./zod/postAuthSendEmailOtpSchema.ts";

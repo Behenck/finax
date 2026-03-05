@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
-import { useEffect } from "react";
+import { format, parse } from "date-fns";
+import { useEffect, useMemo } from "react";
 import {
 	type Control,
 	Controller,
@@ -26,9 +27,25 @@ import {
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
 	type SaleCommissionRecipientType,
 } from "@/schemas/types/sales";
-import { roundSaleCommissionPercentage } from "./sale-commission-helpers";
+import { formatCurrencyBRL } from "@/utils/format-amount";
+import {
+	calculateSaleCommissionInstallmentAmounts,
+	roundSaleCommissionPercentage,
+} from "./sale-commission-helpers";
 
 const OPTIONAL_NONE_VALUE = "__NONE__";
+
+function toDateInputValue(date?: Date) {
+	return date ? format(date, "yyyy-MM-dd") : "";
+}
+
+function parseDateInputValue(value: string) {
+	if (!value) {
+		return undefined;
+	}
+
+	return parse(value, "yyyy-MM-dd", new Date());
+}
 
 const RECIPIENT_OPTIONS: Array<{
 	value: SaleCommissionRecipientType;
@@ -62,6 +79,7 @@ interface SaleCommissionCardProps {
 	sellerOptions: SelectOption[];
 	partnerOptions: SelectOption[];
 	supervisorOptions: SelectOption[];
+	saleTotalAmountInCents: number;
 }
 
 export function SaleCommissionCard({
@@ -76,6 +94,7 @@ export function SaleCommissionCard({
 	sellerOptions,
 	partnerOptions,
 	supervisorOptions,
+	saleTotalAmountInCents,
 }: SaleCommissionCardProps) {
 	const commissionPath = `commissions.${index}` as const;
 	const recipientType = useWatch({
@@ -90,13 +109,27 @@ export function SaleCommissionCard({
 		control,
 		name: `${commissionPath}.totalPercentage`,
 	}) as number;
-	const installments =
-		(useWatch({
-			control,
-			name: `${commissionPath}.installments`,
-		}) as
-			| Array<{ installmentNumber: number; percentage: number }>
-			| undefined) ?? [];
+	const watchedInstallments = useWatch({
+		control,
+		name: `${commissionPath}.installments`,
+	}) as Array<{ installmentNumber: number; percentage: number }> | undefined;
+	const installments = useMemo(
+		() => watchedInstallments ?? [],
+		[watchedInstallments],
+	);
+	const installmentEstimatedAmounts = useMemo(
+		() =>
+			calculateSaleCommissionInstallmentAmounts({
+				totalAmountInCents: saleTotalAmountInCents,
+				totalPercentage: Number(totalPercentage ?? 0),
+				installments,
+			}),
+		[installments, saleTotalAmountInCents, totalPercentage],
+	);
+	const estimatedTotalAmount = installmentEstimatedAmounts.reduce(
+		(sum, amount) => sum + amount,
+		0,
+	);
 
 	useEffect(() => {
 		if (installments.length !== 1) {
@@ -159,9 +192,9 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-			<div className="grid gap-2 md:grid-cols-[180px_1fr_120px_120px] md:items-end">
-				<FieldGroup>
-					<Field className="gap-1">
+				<div className="grid gap-2 md:grid-cols-[180px_1fr_150px_120px_120px] md:items-end">
+					<FieldGroup>
+						<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
 						<Controller
 							name={`${commissionPath}.recipientType`}
@@ -261,10 +294,32 @@ export function SaleCommissionCard({
 							/>
 						</Field>
 					</FieldGroup>
-				)}
+					)}
 
-				<FieldGroup>
-					<Field className="gap-1">
+					<FieldGroup>
+						<Field className="gap-1">
+							<FieldLabel className="font-normal">Início *</FieldLabel>
+							<Controller
+								name={`${commissionPath}.startDate`}
+								control={control}
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											type="date"
+											value={toDateInputValue(field.value as Date | undefined)}
+											onChange={(event) =>
+												field.onChange(parseDateInputValue(event.target.value))
+											}
+										/>
+										<FormFieldError error={fieldState.error} />
+									</>
+								)}
+							/>
+						</Field>
+					</FieldGroup>
+
+					<FieldGroup>
+						<Field className="gap-1">
 						<FieldLabel className="font-normal">% total</FieldLabel>
 						<Controller
 							name={`${commissionPath}.totalPercentage`}
@@ -315,6 +370,10 @@ export function SaleCommissionCard({
 				</FieldGroup>
 			</div>
 
+			<div className="text-xs text-muted-foreground">
+				Total estimado: {formatCurrencyBRL(estimatedTotalAmount / 100)}
+			</div>
+
 			{installments.length > 0 ? (
 				<div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
 					{installments.map((installment, installmentIndex) => (
@@ -349,6 +408,13 @@ export function SaleCommissionCard({
 													/>
 												</div>
 												<FormFieldError error={fieldState.error} />
+												<p className="text-muted-foreground text-xs">
+													Valor estimado:{" "}
+													{formatCurrencyBRL(
+														(installmentEstimatedAmounts[installmentIndex] ??
+															0) / 100,
+													)}
+												</p>
 											</>
 										)}
 									/>

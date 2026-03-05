@@ -59,6 +59,28 @@ describe("sales routes smoke", () => {
 		expect(response.statusCode).not.toBe(405);
 	});
 
+	it("GET /organizations/:slug/sales/:saleId/commission-installments should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/:saleId/commission-installments",
+		);
+		const agent = request(app.server);
+		const response = await agent.get(url);
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("PATCH /organizations/:slug/sales/:saleId/commission-installments/:installmentId/status should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/status",
+		);
+		const agent = request(app.server);
+		const response = await agent.patch(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
 	it("GET /organizations/:slug/sales should be registered", async () => {
 		const url = fillPathParams("/organizations/:slug/sales");
 		const agent = request(app.server);
