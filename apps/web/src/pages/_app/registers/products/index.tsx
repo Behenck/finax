@@ -1,12 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useApp } from "@/context/app-context";
+import { textFilterParser } from "@/hooks/filters/parsers";
 import { useGetOrganizationsSlugProducts } from "@/http/generated";
 import type { Product } from "@/schemas/types/product";
 import { isNotNull } from "@/utils/is-not-null";
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useQueryState } from "nuqs";
 import { CreateProduct } from "./-components/create-product";
 import { ProductCard } from "./-components/product-card";
 
@@ -16,7 +18,7 @@ export const Route = createFileRoute("/_app/registers/products/")({
 
 function Products() {
 	const { organization } = useApp();
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useQueryState("q", textFilterParser);
 
 	const { data, isLoading, isError } = useGetOrganizationsSlugProducts({
 		slug: organization!.slug,

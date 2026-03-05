@@ -53,8 +53,10 @@ import {
 	useSaleCommissionInstallments,
 	useUpdateSaleCommissionInstallment,
 } from "@/hooks/sales";
+import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import type { GetOrganizationsSlugSalesSaleidCommissionInstallments200 } from "@/http/generated";
 import {
+	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
@@ -65,6 +67,7 @@ import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
 } from "@/utils/format-amount";
+import { useQueryState } from "nuqs";
 
 type SaleInstallmentRow =
 	GetOrganizationsSlugSalesSaleidCommissionInstallments200["installments"][number];
@@ -118,7 +121,7 @@ export function SaleInstallmentsPanel({
 	enabled = true,
 }: SaleInstallmentsPanelProps) {
 	const [showZeroValueInstallments, setShowZeroValueInstallments] =
-		useState(false);
+		useQueryState("showZeroInstallments", showZeroInstallmentsParser);
 	const [activeBeneficiaryTab, setActiveBeneficiaryTab] = useState("");
 	const [statusAction, setStatusAction] =
 		useState<InstallmentStatusAction | null>(null);
@@ -387,6 +390,7 @@ export function SaleInstallmentsPanel({
 												<TableHead>Status</TableHead>
 												<TableHead>Previsão</TableHead>
 												<TableHead>Pagamento</TableHead>
+												<TableHead>Direção</TableHead>
 												<TableHead>Origem</TableHead>
 												<TableHead className="w-[90px] text-right">
 													Ações
@@ -434,6 +438,13 @@ export function SaleInstallmentsPanel({
 																installment.paymentDate
 																? formatDate(installment.paymentDate)
 																: "—"}
+														</TableCell>
+														<TableCell>
+															{
+																SALE_COMMISSION_DIRECTION_LABEL[
+																	installment.direction
+																]
+															}
 														</TableCell>
 														<TableCell>
 															{

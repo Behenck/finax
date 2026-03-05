@@ -4,8 +4,10 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useApp } from '@/context/app-context'
-import { useMemo, useState } from 'react'
+import { roleFilterParser, textFilterParser } from '@/hooks/filters/parsers'
+import { useMemo } from 'react'
 import { useGetOrganizationsSlugCompanies, useGetOrganizationsSlugMembers } from '@/http/generated'
+import { useQueryState } from 'nuqs'
 
 import { MemberRow } from './member-row'
 import type { MemberListItem, RoleFilter } from './utils/types'
@@ -13,8 +15,8 @@ import { filterMembers } from './utils'
 
 export function MembersList() {
   const { auth, organization } = useApp()
-  const [search, setSearch] = useState("")
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>('ALL')
+  const [search, setSearch] = useQueryState("membersQ", textFilterParser)
+  const [roleFilter, setRoleFilter] = useQueryState("membersRole", roleFilterParser)
 
   if (!organization) return null
 

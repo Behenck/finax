@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useDeleteSale, useSale } from "@/hooks/sales";
 import {
+	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
 	SALE_RESPONSIBLE_TYPE_LABEL,
@@ -189,7 +190,8 @@ function SaleDetailsPage() {
 											SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
 												commission.recipientType
 											]
-										}
+										}{" "}
+										• {SALE_COMMISSION_DIRECTION_LABEL[commission.direction]}
 									</p>
 									<div className="text-right">
 										<p className="font-semibold">

@@ -1,5 +1,5 @@
-import { Trash2 } from "lucide-react";
 import { format, parse } from "date-fns";
+import { Trash2 } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
 	type Control,
@@ -23,13 +23,16 @@ import {
 } from "@/components/ui/select";
 import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
 import {
+	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
+	type SaleCommissionDirection,
 	type SaleCommissionRecipientType,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import {
 	calculateSaleCommissionInstallmentAmounts,
+	deriveSaleCommissionDirectionFromRecipientType,
 	roundSaleCommissionPercentage,
 } from "./sale-commission-helpers";
 
@@ -60,6 +63,14 @@ const RECIPIENT_OPTIONS: Array<{
 		label: SALE_COMMISSION_RECIPIENT_TYPE_LABEL.SUPERVISOR,
 	},
 	{ value: "OTHER", label: SALE_COMMISSION_RECIPIENT_TYPE_LABEL.OTHER },
+];
+
+const DIRECTION_OPTIONS: Array<{
+	value: SaleCommissionDirection;
+	label: string;
+}> = [
+	{ value: "INCOME", label: SALE_COMMISSION_DIRECTION_LABEL.INCOME },
+	{ value: "OUTCOME", label: SALE_COMMISSION_DIRECTION_LABEL.OUTCOME },
 ];
 
 type SelectOption = {
@@ -192,9 +203,9 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-				<div className="grid gap-2 md:grid-cols-[180px_1fr_150px_120px_120px] md:items-end">
-					<FieldGroup>
-						<Field className="gap-1">
+			<div className="grid gap-2 md:grid-cols-[180px_170px_1fr_150px_120px_120px] md:items-end">
+				<FieldGroup>
+					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
 						<Controller
 							name={`${commissionPath}.recipientType`}
@@ -204,7 +215,9 @@ export function SaleCommissionCard({
 									<Select
 										value={field.value}
 										onValueChange={(value) => {
-											field.onChange(value as SaleCommissionRecipientType);
+											const nextRecipientType =
+												value as SaleCommissionRecipientType;
+											field.onChange(nextRecipientType);
 											setValue(`${commissionPath}.beneficiaryId`, undefined, {
 												shouldDirty: true,
 												shouldValidate: true,
@@ -217,6 +230,16 @@ export function SaleCommissionCard({
 													shouldValidate: true,
 												},
 											);
+											setValue(
+												`${commissionPath}.direction`,
+												deriveSaleCommissionDirectionFromRecipientType(
+													nextRecipientType,
+												),
+												{
+													shouldDirty: true,
+													shouldValidate: true,
+												},
+											);
 										}}
 									>
 										<SelectTrigger>
@@ -224,6 +247,38 @@ export function SaleCommissionCard({
 										</SelectTrigger>
 										<SelectContent>
 											{RECIPIENT_OPTIONS.map((option) => (
+												<SelectItem key={option.value} value={option.value}>
+													{option.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormFieldError error={fieldState.error} />
+								</>
+							)}
+						/>
+					</Field>
+				</FieldGroup>
+
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel className="font-normal">Direção</FieldLabel>
+						<Controller
+							name={`${commissionPath}.direction`}
+							control={control}
+							render={({ field, fieldState }) => (
+								<>
+									<Select
+										value={field.value}
+										onValueChange={(value) =>
+											field.onChange(value as SaleCommissionDirection)
+										}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Selecione" />
+										</SelectTrigger>
+										<SelectContent>
+											{DIRECTION_OPTIONS.map((option) => (
 												<SelectItem key={option.value} value={option.value}>
 													{option.label}
 												</SelectItem>
@@ -294,32 +349,32 @@ export function SaleCommissionCard({
 							/>
 						</Field>
 					</FieldGroup>
-					)}
+				)}
 
-					<FieldGroup>
-						<Field className="gap-1">
-							<FieldLabel className="font-normal">Início *</FieldLabel>
-							<Controller
-								name={`${commissionPath}.startDate`}
-								control={control}
-								render={({ field, fieldState }) => (
-									<>
-										<Input
-											type="date"
-											value={toDateInputValue(field.value as Date | undefined)}
-											onChange={(event) =>
-												field.onChange(parseDateInputValue(event.target.value))
-											}
-										/>
-										<FormFieldError error={fieldState.error} />
-									</>
-								)}
-							/>
-						</Field>
-					</FieldGroup>
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel className="font-normal">Início *</FieldLabel>
+						<Controller
+							name={`${commissionPath}.startDate`}
+							control={control}
+							render={({ field, fieldState }) => (
+								<>
+									<Input
+										type="date"
+										value={toDateInputValue(field.value as Date | undefined)}
+										onChange={(event) =>
+											field.onChange(parseDateInputValue(event.target.value))
+										}
+									/>
+									<FormFieldError error={fieldState.error} />
+								</>
+							)}
+						/>
+					</Field>
+				</FieldGroup>
 
-					<FieldGroup>
-						<Field className="gap-1">
+				<FieldGroup>
+					<Field className="gap-1">
 						<FieldLabel className="font-normal">% total</FieldLabel>
 						<Controller
 							name={`${commissionPath}.totalPercentage`}
@@ -334,9 +389,7 @@ export function SaleCommissionCard({
 										value={field.value ?? ""}
 										onChange={(event) => {
 											const parsedValue = Number(event.target.value);
-											field.onChange(
-												Number.isFinite(parsedValue) ? parsedValue : 0,
-											);
+											field.onChange(Number.isFinite(parsedValue) ? parsedValue : 0);
 										}}
 									/>
 									<FormFieldError error={fieldState.error} />
@@ -411,8 +464,7 @@ export function SaleCommissionCard({
 												<p className="text-muted-foreground text-xs">
 													Valor estimado:{" "}
 													{formatCurrencyBRL(
-														(installmentEstimatedAmounts[installmentIndex] ??
-															0) / 100,
+														(installmentEstimatedAmounts[installmentIndex] ?? 0) / 100,
 													)}
 												</p>
 											</>

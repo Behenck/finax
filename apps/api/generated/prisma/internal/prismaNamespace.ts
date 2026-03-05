@@ -2985,6 +2985,7 @@ export const SaleCommissionScalarFieldEnum = {
   saleId: 'saleId',
   sourceType: 'sourceType',
   recipientType: 'recipientType',
+  direction: 'direction',
   beneficiaryCompanyId: 'beneficiaryCompanyId',
   beneficiaryUnitId: 'beneficiaryUnitId',
   beneficiarySellerId: 'beneficiarySellerId',
@@ -3425,6 +3426,20 @@ export type EnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRe
  * Reference to a field of type 'SaleCommissionRecipientType[]'
  */
 export type ListEnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionDirection'
+ */
+export type EnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionDirection[]'
+ */
+export type ListEnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection[]'>
     
 
 

@@ -56,6 +56,13 @@ export const commissionsRecipientTypeEnum5 = {
 
 export type CommissionsRecipientTypeEnum5Key = (typeof commissionsRecipientTypeEnum5)[keyof typeof commissionsRecipientTypeEnum5];
 
+export const commissionsDirectionEnum3 = {
+    "INCOME": "INCOME",
+    "OUTCOME": "OUTCOME"
+} as const;
+
+export type CommissionsDirectionEnum3Key = (typeof commissionsDirectionEnum3)[keyof typeof commissionsDirectionEnum3];
+
 export const installmentsStatusEnum = {
     "PENDING": "PENDING",
     "PAID": "PAID",
@@ -236,6 +243,10 @@ export type GetOrganizationsSlugSalesSaleid200 = {
              * @type string
             */
             recipientType: CommissionsRecipientTypeEnum5Key;
+            /**
+             * @type string
+            */
+            direction: CommissionsDirectionEnum3Key;
             /**
              * @type string, uuid
             */

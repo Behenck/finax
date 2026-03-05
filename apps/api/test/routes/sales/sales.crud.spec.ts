@@ -35,6 +35,7 @@ type SaleCommissionInput = {
 		| "PARTNER"
 		| "SUPERVISOR"
 		| "OTHER";
+	direction?: "INCOME" | "OUTCOME";
 	beneficiaryId?: string;
 	beneficiaryLabel?: string;
 	startDate: string;
@@ -184,6 +185,21 @@ async function createFixture() {
 		},
 	});
 
+	const supervisorUser = await prisma.user.create({
+		data: {
+			name: `Supervisor ${suffix}`,
+			email: `supervisor-${suffix}@example.com`,
+		},
+	});
+
+	const supervisor = await prisma.member.create({
+		data: {
+			role: "SUPERVISOR",
+			organizationId: org.id,
+			userId: supervisorUser.id,
+		},
+	});
+
 	return {
 		token,
 		org,
@@ -199,6 +215,7 @@ async function createFixture() {
 		inactiveSeller,
 		partner,
 		inactivePartner,
+		supervisor,
 	};
 }
 
@@ -357,6 +374,7 @@ describe("sales crud", () => {
 		expect(commissions).toHaveLength(2);
 		expect(commissions[0]?.sourceType).toBe("PULLED");
 		expect(commissions[0]?.recipientType).toBe("SELLER");
+		expect(commissions[0]?.direction).toBe("OUTCOME");
 		expect(commissions[0]?.beneficiarySellerId).toBe(fixture.seller.id);
 		expect(commissions[0]?.totalPercentage).toBe(10_000);
 		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual(
@@ -367,9 +385,178 @@ describe("sales crud", () => {
 		]);
 		expect(commissions[1]?.sourceType).toBe("MANUAL");
 		expect(commissions[1]?.recipientType).toBe("OTHER");
+		expect(commissions[1]?.direction).toBe("OUTCOME");
 		expect(commissions[1]?.beneficiaryLabel).toBe("Bônus Operacional");
 		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
 			625,
+		]);
+	});
+
+	it("should persist explicit commission direction when provided", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "SELLER",
+							direction: "INCOME",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId: response.body.saleId,
+			},
+			select: {
+				direction: true,
+				recipientType: true,
+			},
+		});
+
+		expect(commissions).toHaveLength(1);
+		expect(commissions[0]?.recipientType).toBe("SELLER");
+		expect(commissions[0]?.direction).toBe("INCOME");
+	});
+
+	it("should derive commission direction from recipient type when omitted", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "COMPANY",
+							beneficiaryId: fixture.company.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "UNIT",
+							beneficiaryId: fixture.unit.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "PARTNER",
+							beneficiaryId: fixture.partner.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "SUPERVISOR",
+							beneficiaryId: fixture.supervisor.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Terceiro",
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId: response.body.saleId,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			select: {
+				recipientType: true,
+				direction: true,
+			},
+		});
+
+		expect(commissions.map((commission) => commission.recipientType)).toEqual([
+			"COMPANY",
+			"UNIT",
+			"SELLER",
+			"PARTNER",
+			"SUPERVISOR",
+			"OTHER",
+		]);
+		expect(commissions.map((commission) => commission.direction)).toEqual([
+			"INCOME",
+			"INCOME",
+			"OUTCOME",
+			"OUTCOME",
+			"OUTCOME",
+			"OUTCOME",
 		]);
 	});
 
@@ -758,6 +945,8 @@ describe("sales crud", () => {
 		expect(response.body.sale.commissions).toHaveLength(2);
 		expect(response.body.sale.commissions[0].sourceType).toBe("PULLED");
 		expect(response.body.sale.commissions[1].sourceType).toBe("MANUAL");
+		expect(response.body.sale.commissions[0].direction).toBe("OUTCOME");
+		expect(response.body.sale.commissions[1].direction).toBe("OUTCOME");
 		expect(response.body.sale.commissions[0].totalAmount).toBe(1_250);
 		expect(response.body.sale.commissions[1].totalAmount).toBe(625);
 		expect(
@@ -860,6 +1049,7 @@ describe("sales crud", () => {
 		expect(commissions).toHaveLength(1);
 		expect(commissions[0]?.sourceType).toBe("MANUAL");
 		expect(commissions[0]?.recipientType).toBe("COMPANY");
+		expect(commissions[0]?.direction).toBe("INCOME");
 		expect(commissions[0]?.beneficiaryCompanyId).toBe(fixture.company.id);
 		expect(commissions[0]?.totalPercentage).toBe(15_000);
 
@@ -1052,6 +1242,7 @@ describe("sales crud", () => {
 		expect(response.body.installments[0].beneficiaryKey).toBe(
 			`SELLER:${fixture.seller.id}`,
 		);
+		expect(response.body.installments[0].direction).toBe("OUTCOME");
 		expect(response.body.installments[0].expectedPaymentDate).toContain(
 			"2026-03-10",
 		);

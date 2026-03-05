@@ -49,6 +49,13 @@ export const commissionsRecipientTypeEnum4 = {
 
 export type CommissionsRecipientTypeEnum4Key = (typeof commissionsRecipientTypeEnum4)[keyof typeof commissionsRecipientTypeEnum4];
 
+export const commissionsDirectionEnum2 = {
+    "INCOME": "INCOME",
+    "OUTCOME": "OUTCOME"
+} as const;
+
+export type CommissionsDirectionEnum2Key = (typeof commissionsDirectionEnum2)[keyof typeof commissionsDirectionEnum2];
+
 export type PutOrganizationsSlugSalesSaleidMutationRequest = {
     /**
      * @pattern ^\d{4}-\d{2}-\d{2}$
@@ -105,6 +112,10 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
          * @type string
         */
         recipientType: CommissionsRecipientTypeEnum4Key;
+        /**
+         * @type string | undefined
+        */
+        direction?: CommissionsDirectionEnum2Key;
         /**
          * @type string | undefined, uuid
         */

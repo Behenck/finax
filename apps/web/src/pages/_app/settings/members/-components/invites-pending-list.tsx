@@ -4,15 +4,17 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { UseInvites } from '@/hooks/invites/use-invites'
+import { roleFilterParser, textFilterParser } from '@/hooks/filters/parsers'
 import { useApp } from '@/context/app-context'
 import { X } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useQueryState } from 'nuqs'
 
 export function InvitesPendingList() {
   const { organization } = useApp()
-  const [search, setSearch] = useState("")
-  const [roleFilter, setRoleFilter] = useState<"ALL" | "ADMIN" | "MEMBER">("ALL")
+  const [search, setSearch] = useQueryState("invitesQ", textFilterParser)
+  const [roleFilter, setRoleFilter] = useQueryState("invitesRole", roleFilterParser)
 
   const { data: invites } = UseInvites(organization?.slug ?? "")
 

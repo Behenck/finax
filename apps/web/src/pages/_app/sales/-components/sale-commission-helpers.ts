@@ -1,5 +1,9 @@
 import type { GetOrganizationsSlugProductsIdCommissionScenarios200 } from "@/http/generated";
 import type { SaleCommissionFormData } from "@/schemas/sale-schema";
+import type {
+	SaleCommissionDirection,
+	SaleCommissionRecipientType,
+} from "@/schemas/types/sales";
 
 const COMMISSION_PERCENTAGE_SCALE = 10_000;
 const COMMISSION_AMOUNT_DENOMINATOR = BigInt(100 * COMMISSION_PERCENTAGE_SCALE);
@@ -17,6 +21,16 @@ export type SaleCommissionMatchContext = {
 	sellerId?: string;
 	partnerId?: string;
 };
+
+export function deriveSaleCommissionDirectionFromRecipientType(
+	recipientType: SaleCommissionRecipientType,
+): SaleCommissionDirection {
+	if (recipientType === "COMPANY" || recipientType === "UNIT") {
+		return "INCOME";
+	}
+
+	return "OUTCOME";
+}
 
 function matchesCommissionCondition(
 	condition: ProductCommissionCondition,
@@ -207,6 +221,7 @@ export function createDefaultManualSaleCommission(
 	return {
 		sourceType: "MANUAL",
 		recipientType: "COMPANY",
+		direction: "INCOME",
 		beneficiaryId: undefined,
 		beneficiaryLabel: undefined,
 		startDate: normalizeDateOnly(startDate),
@@ -218,6 +233,7 @@ export function createDefaultManualSaleCommission(
 type CommissionFormLike = {
 	sourceType: "PULLED" | "MANUAL";
 	recipientType: SaleCommissionFormData["recipientType"];
+	direction?: SaleCommissionDirection | null;
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
 	startDate?: Date | string | null;
@@ -246,6 +262,9 @@ export function mapSaleCommissionToForm(
 	return {
 		sourceType: commission.sourceType,
 		recipientType: commission.recipientType,
+		direction:
+			commission.direction ??
+			deriveSaleCommissionDirectionFromRecipientType(commission.recipientType),
 		beneficiaryId: commission.beneficiaryId ?? undefined,
 		beneficiaryLabel: commission.beneficiaryLabel?.trim() || undefined,
 		startDate: normalizeDateOnly(commission.startDate ?? fallbackStartDate),

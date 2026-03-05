@@ -10,6 +10,7 @@ Aplica-se a tudo dentro de `apps/web`.
 - React 19 + TypeScript + Vite
 - TanStack Router (rotas file-based com arquivos em `src/pages`)
 - TanStack Query (queries/mutations e cache)
+- nuqs (estado de query string para filtros de listagem)
 - React Hook Form + Zod (formularios e validacao)
 - Tailwind CSS v4
 - Radix UI / componentes estilo shadcn (`src/components/ui`)
@@ -57,6 +58,11 @@ Aplica-se a tudo dentro de `apps/web`.
 - Usar TanStack Query para cache, invalidacao e estados async.
 - Reaproveitar query keys/padroes existentes antes de criar novos nomes.
 
+### Filtros de listagem e URL
+- Para filtros de listagem (busca, selects de status/permissao etc.), usar `nuqs` com query string em vez de `useState` local.
+- Preferir parsers compartilhados em `src/hooks/filters/parsers.ts` para manter padrao de serializacao e historico (`history: "replace"`).
+- Manter chave `q` como padrao para busca textual em paginas de listagem; usar chaves especificas somente quando houver multiplos filtros independentes na mesma tela.
+
 ### Formularios e validacao
 - Preferir `react-hook-form` + `zod` para formularios.
 - Manter schemas proximos ao uso quando forem especificos da tela, ou em `src/schemas` quando compartilhados.
@@ -71,6 +77,11 @@ Aplica-se a tudo dentro de `apps/web`.
 ### Imports e aliases
 - Preferir alias `@/` para imports internos (configurado em `tsconfig.json`).
 - Evitar caminhos relativos longos (`../../../../`) quando o alias resolver.
+
+### Tipagem (obrigatorio)
+- Sempre priorizar tipagem forte e explicita em componentes, hooks e utilitarios.
+- Evitar `any` e inferencias ambiguas quando for possivel declarar tipos de dominio.
+- Ao integrar dados de API, propagar tipos do contrato (Kubb/Zod) em vez de estruturar payloads "na mao".
 
 ## HTTP, contrato de API e integracao com backend
 - O frontend consome a API via:
@@ -122,6 +133,7 @@ Aplica-se a tudo dentro de `apps/web`.
 - Seguir padrao de formatacao do Biome (tabs e aspas duplas).
 - Manter nomes e organizacao consistentes com o dominio afetado.
 - Evitar refatoracoes estruturais em paralelo a uma mudanca funcional (a menos que seja solicitado).
+- Em duvidas de implementacao, escolher a opcao com melhor seguranca de tipos.
 
 ## O que nao fazer
 - Nao editar codigo gerado (`src/http/generated`, `src/route-tree.gen.ts`) manualmente.
@@ -141,4 +153,3 @@ Atualize este arquivo quando houver:
 - nova convencao de rotas/pastas no frontend
 - mudanca no fluxo de geracao Kubb
 - mudanca relevante no client HTTP, estado global ou stack de formularios/UI
-

@@ -466,6 +466,7 @@ export const SaleCommissionScalarFieldEnum = {
   saleId: 'saleId',
   sourceType: 'sourceType',
   recipientType: 'recipientType',
+  direction: 'direction',
   beneficiaryCompanyId: 'beneficiaryCompanyId',
   beneficiaryUnitId: 'beneficiaryUnitId',
   beneficiarySellerId: 'beneficiarySellerId',

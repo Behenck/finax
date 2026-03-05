@@ -1,18 +1,20 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CompanyCard } from "./-components/company-card";
 import { CreateCompany } from "./-components/create-company";
 import { createFileRoute } from "@tanstack/react-router";
 import { useGetOrganizationsSlugCompanies } from "@/http/generated";
 import { useApp } from "@/context/app-context";
+import { textFilterParser } from "@/hooks/filters/parsers";
+import { useQueryState } from "nuqs";
 
 export const Route = createFileRoute("/_app/registers/companies/")({
 	component: Companies,
 });
 
 function Companies() {
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const { organization } = useApp()
 	const { data, isLoading, isError } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
 

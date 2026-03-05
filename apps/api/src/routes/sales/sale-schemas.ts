@@ -1,4 +1,5 @@
 import {
+	SaleCommissionDirection,
 	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
 	SaleCommissionSourceType,
@@ -63,6 +64,7 @@ export const SaleCommissionSourceTypeSchema = z.enum(SaleCommissionSourceType);
 export const SaleCommissionRecipientTypeSchema = z.enum(
 	SaleCommissionRecipientType,
 );
+export const SaleCommissionDirectionSchema = z.enum(SaleCommissionDirection);
 export const SaleCommissionInstallmentStatusSchema = z.enum(
 	SaleCommissionInstallmentStatus,
 );
@@ -78,6 +80,7 @@ export const SaleCommissionInputSchema = z
 	.object({
 		sourceType: SaleCommissionSourceTypeSchema,
 		recipientType: SaleCommissionRecipientTypeSchema,
+		direction: SaleCommissionDirectionSchema.optional(),
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
 		startDate: SaleDateInputSchema,
@@ -146,6 +149,7 @@ export const SaleCommissionDetailSchema = z.object({
 	id: z.uuid(),
 	sourceType: SaleCommissionSourceTypeSchema,
 	recipientType: SaleCommissionRecipientTypeSchema,
+	direction: SaleCommissionDirectionSchema,
 	beneficiaryId: z.uuid().nullable(),
 	beneficiaryLabel: z.string().nullable(),
 	startDate: z.date(),
@@ -167,6 +171,7 @@ export const SaleCommissionInstallmentRowSchema = z.object({
 	saleCommissionId: z.uuid(),
 	recipientType: SaleCommissionRecipientTypeSchema,
 	sourceType: SaleCommissionSourceTypeSchema,
+	direction: SaleCommissionDirectionSchema,
 	beneficiaryId: z.uuid().nullable(),
 	beneficiaryKey: z.string().min(1),
 	beneficiaryLabel: z.string().nullable(),

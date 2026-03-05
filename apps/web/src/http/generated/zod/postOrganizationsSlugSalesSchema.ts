@@ -31,6 +31,7 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
 "commissions": z.optional(z.array(z.object({
     "sourceType": z.enum(["PULLED", "MANUAL"]),
 "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
+"direction": z.optional(z.enum(["INCOME", "OUTCOME"])),
 "beneficiaryId": z.optional(z.uuid()),
 "beneficiaryLabel": z.optional(z.string()),
 "startDate": z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { parseBRLCurrencyToCents } from "@/utils/format-amount";
 import {
+	SaleCommissionDirectionSchema,
 	SaleCommissionRecipientTypeSchema,
 	SaleCommissionSourceTypeSchema,
 	SaleResponsibleTypeSchema,
@@ -44,6 +45,7 @@ export const saleCommissionSchema = z
 	.object({
 		sourceType: SaleCommissionSourceTypeSchema,
 		recipientType: SaleCommissionRecipientTypeSchema,
+		direction: SaleCommissionDirectionSchema,
 		beneficiaryId: z.string().uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
 		startDate: z.coerce.date({

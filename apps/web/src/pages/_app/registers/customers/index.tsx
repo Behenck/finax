@@ -1,12 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { textFilterParser } from '@/hooks/filters/parsers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Plus, Search, ShieldUser, User, UserCheck, Users } from 'lucide-react'
 import { ListCustomers } from './-components/list-customers'
 import { useApp } from '@/context/app-context'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useGetOrganizationsSlugCustomers } from '@/http/generated'
+import { useQueryState } from 'nuqs'
 
 export const Route = createFileRoute('/_app/registers/customers/')({
   component: CustomersPage,
@@ -14,7 +16,7 @@ export const Route = createFileRoute('/_app/registers/customers/')({
 
 function CustomersPage() {
   const { organization } = useApp()
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useQueryState("q", textFilterParser)
 
   if (!organization) return null
 

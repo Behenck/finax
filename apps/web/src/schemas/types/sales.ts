@@ -32,6 +32,12 @@ export type SaleCommissionRecipientType = z.infer<
 	typeof SaleCommissionRecipientTypeSchema
 >;
 
+export const SaleCommissionDirectionSchema = z.enum(["INCOME", "OUTCOME"]);
+
+export type SaleCommissionDirection = z.infer<
+	typeof SaleCommissionDirectionSchema
+>;
+
 export const SaleCommissionInstallmentStatusSchema = z.enum([
 	"PENDING",
 	"PAID",
@@ -73,6 +79,14 @@ export const SALE_COMMISSION_RECIPIENT_TYPE_LABEL: Record<
 	PARTNER: "Parceiro",
 	SUPERVISOR: "Supervisor",
 	OTHER: "Outro",
+};
+
+export const SALE_COMMISSION_DIRECTION_LABEL: Record<
+	SaleCommissionDirection,
+	string
+> = {
+	INCOME: "Entrada",
+	OUTCOME: "Saída",
 };
 
 export const SALE_COMMISSION_INSTALLMENT_STATUS_LABEL: Record<

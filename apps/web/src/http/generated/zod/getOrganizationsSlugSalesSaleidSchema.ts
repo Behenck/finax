@@ -60,6 +60,7 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
     "id": z.uuid(),
 "sourceType": z.enum(["PULLED", "MANUAL"]),
 "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
+"direction": z.enum(["INCOME", "OUTCOME"]),
 "beneficiaryId": z.nullable(z.uuid()),
 "beneficiaryLabel": z.nullable(z.string()),
 "startDate": z.iso.datetime(),

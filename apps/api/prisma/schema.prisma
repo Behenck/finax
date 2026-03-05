@@ -678,6 +678,11 @@ enum SaleCommissionRecipientType {
   OTHER
 }
 
+enum SaleCommissionDirection {
+  INCOME
+  OUTCOME
+}
+
 enum SaleCommissionInstallmentStatus {
   PENDING
   PAID
@@ -727,6 +732,7 @@ model SaleCommission {
   saleId                String                    @map("sale_id")
   sourceType            SaleCommissionSourceType  @map("source_type")
   recipientType         SaleCommissionRecipientType @map("recipient_type")
+  direction             SaleCommissionDirection   @map("direction")
   beneficiaryCompanyId  String?                   @map("beneficiary_company_id")
   beneficiaryUnitId     String?                   @map("beneficiary_unit_id")
   beneficiarySellerId   String?                   @map("beneficiary_seller_id")

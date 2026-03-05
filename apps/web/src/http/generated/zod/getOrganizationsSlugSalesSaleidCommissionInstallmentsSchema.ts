@@ -19,6 +19,7 @@ export const getOrganizationsSlugSalesSaleidCommissionInstallments200Schema = z.
 "saleCommissionId": z.uuid(),
 "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
 "sourceType": z.enum(["PULLED", "MANUAL"]),
+"direction": z.enum(["INCOME", "OUTCOME"]),
 "beneficiaryId": z.nullable(z.uuid()),
 "beneficiaryKey": z.string().min(1),
 "beneficiaryLabel": z.nullable(z.string()),

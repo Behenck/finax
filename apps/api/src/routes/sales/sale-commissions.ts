@@ -3,6 +3,7 @@ import type { Prisma } from "generated/prisma/client";
 import {
 	PartnerStatus,
 	Role,
+	type SaleCommissionDirection,
 	SaleCommissionInstallmentStatus,
 	type SaleCommissionRecipientType,
 	type SaleCommissionSourceType,
@@ -21,6 +22,7 @@ import {
 type ResolvedSaleCommission = {
 	sourceType: SaleCommissionSourceType;
 	recipientType: SaleCommissionRecipientType;
+	direction: SaleCommissionDirection;
 	beneficiaryCompanyId: string | null;
 	beneficiaryUnitId: string | null;
 	beneficiarySellerId: string | null;
@@ -110,6 +112,16 @@ function resolveCommissionInstallmentExpectedPaymentDate(
 	installmentNumber: number,
 ) {
 	return addMonths(startDate, Math.max(0, installmentNumber - 1));
+}
+
+export function deriveSaleCommissionDirectionFromRecipientType(
+	recipientType: SaleCommissionRecipientType,
+): SaleCommissionDirection {
+	if (recipientType === "COMPANY" || recipientType === "UNIT") {
+		return "INCOME";
+	}
+
+	return "OUTCOME";
 }
 
 export async function resolveSaleCommissionsData(
@@ -285,6 +297,9 @@ export async function resolveSaleCommissionsData(
 	return commissions.map((commission, index): ResolvedSaleCommission => {
 		const beneficiaryId = commission.beneficiaryId ?? null;
 		const startDate = parseSaleDateInput(commission.startDate);
+		const direction =
+			commission.direction ??
+			deriveSaleCommissionDirectionFromRecipientType(commission.recipientType);
 		const totalPercentageScaled = toScaledPercentage(
 			commission.totalPercentage,
 		);
@@ -326,6 +341,7 @@ export async function resolveSaleCommissionsData(
 		return {
 			sourceType: commission.sourceType,
 			recipientType: commission.recipientType,
+			direction,
 			beneficiaryCompanyId,
 			beneficiaryUnitId,
 			beneficiarySellerId,
@@ -369,6 +385,7 @@ export async function replaceSaleCommissions(
 				saleId,
 				sourceType: commission.sourceType,
 				recipientType: commission.recipientType,
+				direction: commission.direction,
 				beneficiaryCompanyId: commission.beneficiaryCompanyId,
 				beneficiaryUnitId: commission.beneficiaryUnitId,
 				beneficiarySellerId: commission.beneficiarySellerId,
@@ -624,6 +641,7 @@ export async function loadSaleCommissions(
 			id: true,
 			sourceType: true,
 			recipientType: true,
+			direction: true,
 			beneficiaryCompanyId: true,
 			beneficiaryUnitId: true,
 			beneficiarySellerId: true,
@@ -698,6 +716,7 @@ export async function loadSaleCommissions(
 			id: commission.id,
 			sourceType: commission.sourceType,
 			recipientType: commission.recipientType,
+			direction: commission.direction,
 			beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
 			beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel(commission),
 			startDate: commission.startDate,
@@ -748,6 +767,7 @@ export async function loadSaleCommissionInstallments(
 				select: {
 					recipientType: true,
 					sourceType: true,
+					direction: true,
 					beneficiaryCompanyId: true,
 					beneficiaryUnitId: true,
 					beneficiarySellerId: true,
@@ -819,6 +839,7 @@ export async function loadSaleCommissionInstallments(
 			saleCommissionId: installment.saleCommissionId,
 			recipientType: installment.saleCommission.recipientType,
 			sourceType: installment.saleCommission.sourceType,
+			direction: installment.saleCommission.direction,
 			beneficiaryId,
 			beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
 				saleCommissionId: installment.saleCommissionId,

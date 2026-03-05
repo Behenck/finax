@@ -41,6 +41,7 @@ export type SaleCommissionMinAggregateOutputType = {
   saleId: string | null
   sourceType: $Enums.SaleCommissionSourceType | null
   recipientType: $Enums.SaleCommissionRecipientType | null
+  direction: $Enums.SaleCommissionDirection | null
   beneficiaryCompanyId: string | null
   beneficiaryUnitId: string | null
   beneficiarySellerId: string | null
@@ -59,6 +60,7 @@ export type SaleCommissionMaxAggregateOutputType = {
   saleId: string | null
   sourceType: $Enums.SaleCommissionSourceType | null
   recipientType: $Enums.SaleCommissionRecipientType | null
+  direction: $Enums.SaleCommissionDirection | null
   beneficiaryCompanyId: string | null
   beneficiaryUnitId: string | null
   beneficiarySellerId: string | null
@@ -77,6 +79,7 @@ export type SaleCommissionCountAggregateOutputType = {
   saleId: number
   sourceType: number
   recipientType: number
+  direction: number
   beneficiaryCompanyId: number
   beneficiaryUnitId: number
   beneficiarySellerId: number
@@ -107,6 +110,7 @@ export type SaleCommissionMinAggregateInputType = {
   saleId?: true
   sourceType?: true
   recipientType?: true
+  direction?: true
   beneficiaryCompanyId?: true
   beneficiaryUnitId?: true
   beneficiarySellerId?: true
@@ -125,6 +129,7 @@ export type SaleCommissionMaxAggregateInputType = {
   saleId?: true
   sourceType?: true
   recipientType?: true
+  direction?: true
   beneficiaryCompanyId?: true
   beneficiaryUnitId?: true
   beneficiarySellerId?: true
@@ -143,6 +148,7 @@ export type SaleCommissionCountAggregateInputType = {
   saleId?: true
   sourceType?: true
   recipientType?: true
+  direction?: true
   beneficiaryCompanyId?: true
   beneficiaryUnitId?: true
   beneficiarySellerId?: true
@@ -248,6 +254,7 @@ export type SaleCommissionGroupByOutputType = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId: string | null
   beneficiaryUnitId: string | null
   beneficiarySellerId: string | null
@@ -289,6 +296,7 @@ export type SaleCommissionWhereInput = {
   saleId?: Prisma.StringFilter<"SaleCommission"> | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFilter<"SaleCommission"> | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFilter<"SaleCommission"> | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFilter<"SaleCommission"> | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiaryUnitId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiarySellerId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
@@ -314,6 +322,7 @@ export type SaleCommissionOrderByWithRelationInput = {
   saleId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   beneficiaryCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   beneficiaryUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   beneficiarySellerId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -342,6 +351,7 @@ export type SaleCommissionWhereUniqueInput = Prisma.AtLeast<{
   saleId?: Prisma.StringFilter<"SaleCommission"> | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFilter<"SaleCommission"> | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFilter<"SaleCommission"> | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFilter<"SaleCommission"> | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiaryUnitId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiarySellerId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
@@ -367,6 +377,7 @@ export type SaleCommissionOrderByWithAggregationInput = {
   saleId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   beneficiaryCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   beneficiaryUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   beneficiarySellerId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -393,6 +404,7 @@ export type SaleCommissionScalarWhereWithAggregatesInput = {
   saleId?: Prisma.StringWithAggregatesFilter<"SaleCommission"> | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeWithAggregatesFilter<"SaleCommission"> | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeWithAggregatesFilter<"SaleCommission"> | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionWithAggregatesFilter<"SaleCommission"> | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.StringNullableWithAggregatesFilter<"SaleCommission"> | string | null
   beneficiaryUnitId?: Prisma.StringNullableWithAggregatesFilter<"SaleCommission"> | string | null
   beneficiarySellerId?: Prisma.StringNullableWithAggregatesFilter<"SaleCommission"> | string | null
@@ -410,6 +422,7 @@ export type SaleCommissionCreateInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -430,6 +443,7 @@ export type SaleCommissionUncheckedCreateInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -448,6 +462,7 @@ export type SaleCommissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -468,6 +483,7 @@ export type SaleCommissionUncheckedUpdateInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -487,6 +503,7 @@ export type SaleCommissionCreateManyInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -504,6 +521,7 @@ export type SaleCommissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -517,6 +535,7 @@ export type SaleCommissionUncheckedUpdateManyInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -545,6 +564,7 @@ export type SaleCommissionCountOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   beneficiaryCompanyId?: Prisma.SortOrder
   beneficiaryUnitId?: Prisma.SortOrder
   beneficiarySellerId?: Prisma.SortOrder
@@ -568,6 +588,7 @@ export type SaleCommissionMaxOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   beneficiaryCompanyId?: Prisma.SortOrder
   beneficiaryUnitId?: Prisma.SortOrder
   beneficiarySellerId?: Prisma.SortOrder
@@ -586,6 +607,7 @@ export type SaleCommissionMinOrderByAggregateInput = {
   saleId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   beneficiaryCompanyId?: Prisma.SortOrder
   beneficiaryUnitId?: Prisma.SortOrder
   beneficiarySellerId?: Prisma.SortOrder
@@ -869,6 +891,10 @@ export type EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput = {
   set?: $Enums.SaleCommissionRecipientType
 }
 
+export type EnumSaleCommissionDirectionFieldUpdateOperationsInput = {
+  set?: $Enums.SaleCommissionDirection
+}
+
 export type SaleCommissionCreateNestedOneWithoutInstallmentsInput = {
   create?: Prisma.XOR<Prisma.SaleCommissionCreateWithoutInstallmentsInput, Prisma.SaleCommissionUncheckedCreateWithoutInstallmentsInput>
   connectOrCreate?: Prisma.SaleCommissionCreateOrConnectWithoutInstallmentsInput
@@ -887,6 +913,7 @@ export type SaleCommissionCreateWithoutBeneficiarySupervisorInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -906,6 +933,7 @@ export type SaleCommissionUncheckedCreateWithoutBeneficiarySupervisorInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -953,6 +981,7 @@ export type SaleCommissionScalarWhereInput = {
   saleId?: Prisma.StringFilter<"SaleCommission"> | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFilter<"SaleCommission"> | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFilter<"SaleCommission"> | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFilter<"SaleCommission"> | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiaryUnitId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
   beneficiarySellerId?: Prisma.StringNullableFilter<"SaleCommission"> | string | null
@@ -970,6 +999,7 @@ export type SaleCommissionCreateWithoutBeneficiaryCompanyInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -989,6 +1019,7 @@ export type SaleCommissionUncheckedCreateWithoutBeneficiaryCompanyInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1032,6 +1063,7 @@ export type SaleCommissionCreateWithoutBeneficiaryUnitInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -1051,6 +1083,7 @@ export type SaleCommissionUncheckedCreateWithoutBeneficiaryUnitInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiarySellerId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1094,6 +1127,7 @@ export type SaleCommissionCreateWithoutBeneficiaryPartnerInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -1113,6 +1147,7 @@ export type SaleCommissionUncheckedCreateWithoutBeneficiaryPartnerInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1156,6 +1191,7 @@ export type SaleCommissionCreateWithoutBeneficiarySellerInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -1175,6 +1211,7 @@ export type SaleCommissionUncheckedCreateWithoutBeneficiarySellerInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1218,6 +1255,7 @@ export type SaleCommissionCreateWithoutSaleInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -1236,6 +1274,7 @@ export type SaleCommissionUncheckedCreateWithoutSaleInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1280,6 +1319,7 @@ export type SaleCommissionCreateWithoutInstallmentsInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryLabel?: string | null
   startDate: Date | string
   totalPercentage: number
@@ -1299,6 +1339,7 @@ export type SaleCommissionUncheckedCreateWithoutInstallmentsInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1332,6 +1373,7 @@ export type SaleCommissionUpdateWithoutInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1351,6 +1393,7 @@ export type SaleCommissionUncheckedUpdateWithoutInstallmentsInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1369,6 +1412,7 @@ export type SaleCommissionCreateManyBeneficiarySupervisorInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1385,6 +1429,7 @@ export type SaleCommissionUpdateWithoutBeneficiarySupervisorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1404,6 +1449,7 @@ export type SaleCommissionUncheckedUpdateWithoutBeneficiarySupervisorInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1422,6 +1468,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorInput =
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1439,6 +1486,7 @@ export type SaleCommissionCreateManyBeneficiaryCompanyInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1455,6 +1503,7 @@ export type SaleCommissionUpdateWithoutBeneficiaryCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1474,6 +1523,7 @@ export type SaleCommissionUncheckedUpdateWithoutBeneficiaryCompanyInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1492,6 +1542,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1509,6 +1560,7 @@ export type SaleCommissionCreateManyBeneficiaryUnitInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiarySellerId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1525,6 +1577,7 @@ export type SaleCommissionUpdateWithoutBeneficiaryUnitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1544,6 +1597,7 @@ export type SaleCommissionUncheckedUpdateWithoutBeneficiaryUnitInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1562,6 +1616,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutBeneficiaryUnitInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1579,6 +1634,7 @@ export type SaleCommissionCreateManyBeneficiaryPartnerInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1595,6 +1651,7 @@ export type SaleCommissionUpdateWithoutBeneficiaryPartnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1614,6 +1671,7 @@ export type SaleCommissionUncheckedUpdateWithoutBeneficiaryPartnerInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1632,6 +1690,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutBeneficiaryPartnerInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1649,6 +1708,7 @@ export type SaleCommissionCreateManyBeneficiarySellerInput = {
   saleId: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiaryPartnerId?: string | null
@@ -1665,6 +1725,7 @@ export type SaleCommissionUpdateWithoutBeneficiarySellerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1684,6 +1745,7 @@ export type SaleCommissionUncheckedUpdateWithoutBeneficiarySellerInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1702,6 +1764,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerInput = {
   saleId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1718,6 +1781,7 @@ export type SaleCommissionCreateManySaleInput = {
   id?: string
   sourceType: $Enums.SaleCommissionSourceType
   recipientType: $Enums.SaleCommissionRecipientType
+  direction: $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: string | null
   beneficiaryUnitId?: string | null
   beneficiarySellerId?: string | null
@@ -1735,6 +1799,7 @@ export type SaleCommissionUpdateWithoutSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1753,6 +1818,7 @@ export type SaleCommissionUncheckedUpdateWithoutSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1771,6 +1837,7 @@ export type SaleCommissionUncheckedUpdateManyWithoutSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSaleCommissionSourceTypeFieldUpdateOperationsInput | $Enums.SaleCommissionSourceType
   recipientType?: Prisma.EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.SaleCommissionRecipientType
+  direction?: Prisma.EnumSaleCommissionDirectionFieldUpdateOperationsInput | $Enums.SaleCommissionDirection
   beneficiaryCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiaryUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   beneficiarySellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1820,6 +1887,7 @@ export type SaleCommissionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   saleId?: boolean
   sourceType?: boolean
   recipientType?: boolean
+  direction?: boolean
   beneficiaryCompanyId?: boolean
   beneficiaryUnitId?: boolean
   beneficiarySellerId?: boolean
@@ -1846,6 +1914,7 @@ export type SaleCommissionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   saleId?: boolean
   sourceType?: boolean
   recipientType?: boolean
+  direction?: boolean
   beneficiaryCompanyId?: boolean
   beneficiaryUnitId?: boolean
   beneficiarySellerId?: boolean
@@ -1870,6 +1939,7 @@ export type SaleCommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   saleId?: boolean
   sourceType?: boolean
   recipientType?: boolean
+  direction?: boolean
   beneficiaryCompanyId?: boolean
   beneficiaryUnitId?: boolean
   beneficiarySellerId?: boolean
@@ -1894,6 +1964,7 @@ export type SaleCommissionSelectScalar = {
   saleId?: boolean
   sourceType?: boolean
   recipientType?: boolean
+  direction?: boolean
   beneficiaryCompanyId?: boolean
   beneficiaryUnitId?: boolean
   beneficiarySellerId?: boolean
@@ -1907,7 +1978,7 @@ export type SaleCommissionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SaleCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleId" | "sourceType" | "recipientType" | "beneficiaryCompanyId" | "beneficiaryUnitId" | "beneficiarySellerId" | "beneficiaryPartnerId" | "beneficiarySupervisorId" | "beneficiaryLabel" | "startDate" | "totalPercentage" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["saleCommission"]>
+export type SaleCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleId" | "sourceType" | "recipientType" | "direction" | "beneficiaryCompanyId" | "beneficiaryUnitId" | "beneficiarySellerId" | "beneficiaryPartnerId" | "beneficiarySupervisorId" | "beneficiaryLabel" | "startDate" | "totalPercentage" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["saleCommission"]>
 export type SaleCommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
   beneficiaryCompany?: boolean | Prisma.SaleCommission$beneficiaryCompanyArgs<ExtArgs>
@@ -1951,6 +2022,7 @@ export type $SaleCommissionPayload<ExtArgs extends runtime.Types.Extensions.Inte
     saleId: string
     sourceType: $Enums.SaleCommissionSourceType
     recipientType: $Enums.SaleCommissionRecipientType
+    direction: $Enums.SaleCommissionDirection
     beneficiaryCompanyId: string | null
     beneficiaryUnitId: string | null
     beneficiarySellerId: string | null
@@ -2396,6 +2468,7 @@ export interface SaleCommissionFieldRefs {
   readonly saleId: Prisma.FieldRef<"SaleCommission", 'String'>
   readonly sourceType: Prisma.FieldRef<"SaleCommission", 'SaleCommissionSourceType'>
   readonly recipientType: Prisma.FieldRef<"SaleCommission", 'SaleCommissionRecipientType'>
+  readonly direction: Prisma.FieldRef<"SaleCommission", 'SaleCommissionDirection'>
   readonly beneficiaryCompanyId: Prisma.FieldRef<"SaleCommission", 'String'>
   readonly beneficiaryUnitId: Prisma.FieldRef<"SaleCommission", 'String'>
   readonly beneficiarySellerId: Prisma.FieldRef<"SaleCommission", 'String'>

@@ -184,6 +184,14 @@ export const SaleCommissionRecipientType = {
 export type SaleCommissionRecipientType = (typeof SaleCommissionRecipientType)[keyof typeof SaleCommissionRecipientType]
 
 
+export const SaleCommissionDirection = {
+  INCOME: 'INCOME',
+  OUTCOME: 'OUTCOME'
+} as const
+
+export type SaleCommissionDirection = (typeof SaleCommissionDirection)[keyof typeof SaleCommissionDirection]
+
+
 export const SaleCommissionInstallmentStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',

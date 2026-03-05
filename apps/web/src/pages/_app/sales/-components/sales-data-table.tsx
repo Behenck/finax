@@ -46,6 +46,7 @@ import {
 	SaleStatusSchema,
 	type SaleStatus,
 } from "@/schemas/types/sales";
+import { textFilterParser } from "@/hooks/filters/parsers";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { Link } from "@tanstack/react-router";
 import {
@@ -73,6 +74,7 @@ import {
 	RefreshCcw,
 	Trash2,
 } from "lucide-react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleStatusAction } from "./sale-status-action";
@@ -88,6 +90,20 @@ type ProductTreeNode = {
 	name: string;
 	children?: ProductTreeNode[];
 };
+
+const SALE_STATUS_FILTER_VALUES = [
+	"ALL",
+	"PENDING",
+	"APPROVED",
+	"COMPLETED",
+	"CANCELED",
+] as const;
+
+type SaleStatusFilter = (typeof SALE_STATUS_FILTER_VALUES)[number];
+
+const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
+	.withDefault("ALL")
+	.withOptions({ history: "replace" });
 
 function formatSaleDate(value: string) {
 	const dateOnly = value.slice(0, 10);
@@ -256,9 +272,19 @@ export function SalesDataTable({
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-	const [globalFilter, setGlobalFilter] = useState("");
+	const [globalFilter, setGlobalFilter] = useQueryState("q", textFilterParser);
+	const [statusFilter, setStatusFilter] = useQueryState(
+		"status",
+		saleStatusFilterParser,
+	);
+	const columnFilters = useMemo<ColumnFiltersState>(
+		() =>
+			statusFilter === "ALL"
+				? []
+				: [{ id: "status", value: statusFilter }],
+		[statusFilter],
+	);
 	const [installmentsDrawerSale, setInstallmentsDrawerSale] =
 		useState<SaleTableRow | null>(null);
 	const productsQuery = useGetOrganizationsSlugProducts(
@@ -431,18 +457,13 @@ export function SalesDataTable({
 			globalFilter,
 		},
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		onColumnVisibilityChange: setColumnVisibility,
-		onGlobalFilterChange: setGlobalFilter,
 		globalFilterFn: salesGlobalFilterFn,
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
-
-	const statusFilterValue =
-		(table.getColumn("status")?.getFilterValue() as string | undefined) ?? "ALL";
 
 	if (isLoading) {
 		return (
@@ -494,11 +515,9 @@ export function SalesDataTable({
 				/>
 
 				<Select
-					value={statusFilterValue}
+					value={statusFilter}
 					onValueChange={(value) => {
-						table
-							.getColumn("status")
-							?.setFilterValue(value === "ALL" ? undefined : value);
+						setStatusFilter(value as SaleStatusFilter);
 					}}
 				>
 					<SelectTrigger className="w-52 h-10">

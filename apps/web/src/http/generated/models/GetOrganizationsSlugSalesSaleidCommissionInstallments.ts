@@ -33,6 +33,13 @@ export const installmentsSourceTypeEnum = {
 
 export type InstallmentsSourceTypeEnumKey = (typeof installmentsSourceTypeEnum)[keyof typeof installmentsSourceTypeEnum];
 
+export const installmentsDirectionEnum = {
+    "INCOME": "INCOME",
+    "OUTCOME": "OUTCOME"
+} as const;
+
+export type InstallmentsDirectionEnumKey = (typeof installmentsDirectionEnum)[keyof typeof installmentsDirectionEnum];
+
 export const installmentsStatusEnum2 = {
     "PENDING": "PENDING",
     "PAID": "PAID",
@@ -65,6 +72,10 @@ export type GetOrganizationsSlugSalesSaleidCommissionInstallments200 = {
          * @type string
         */
         sourceType: InstallmentsSourceTypeEnumKey;
+        /**
+         * @type string
+        */
+        direction: InstallmentsDirectionEnumKey;
         /**
          * @type string, uuid
         */

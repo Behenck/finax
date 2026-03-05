@@ -1,11 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CreateEmployee } from "./-components/create-employee";
 import { EmployeeCard } from "./-components/employee-card";
 import { createFileRoute } from "@tanstack/react-router";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugEmployees } from "@/http/generated";
+import { textFilterParser } from "@/hooks/filters/parsers";
+import { useQueryState } from "nuqs";
 
 export const Route = createFileRoute("/_app/registers/employees/")({
 	component: Employees,
@@ -14,7 +16,7 @@ export const Route = createFileRoute("/_app/registers/employees/")({
 function Employees() {
 	const { organization } = useApp()
 
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const { data, isLoading, isError } = useGetOrganizationsSlugEmployees({ slug: organization!.slug });
 
 	const safeEmployees = data?.employees ?? [];

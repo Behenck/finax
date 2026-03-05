@@ -52,6 +52,11 @@ Aplica-se a tudo dentro de `apps/api`.
 - Preferir respostas tipadas e consistentes com os schemas declarados.
 - Reutilizar erros customizados em `src/routes/_errors` quando aplicavel.
 
+### Tipagem (obrigatorio)
+- Sempre priorizar tipagem forte e explicita em rotas, utilitarios e acesso a dados.
+- Evitar `any` e tipos implicitos quando houver tipo derivado de schema Zod/Prisma.
+- Em respostas HTTP, garantir coerencia entre implementacao e tipo declarado no `schema.response`.
+
 ### Autenticacao e middleware
 - Antes de criar novo middleware, verificar se o plugin existente em `src/middleware/auth.ts` cobre o caso.
 - Reaproveitar helpers de request ja adicionados pelo middleware (ex.: identificacao de usuario/membership).
@@ -115,6 +120,7 @@ Aplica-se a tudo dentro de `apps/api`.
 - Seguir formatacao do Biome (tabs e aspas duplas).
 - Usar alias `@/` para imports internos quando aplicavel.
 - Manter consistencia com o dominio/arquivo existente em vez de introduzir um novo padrao local.
+- Em duvidas de implementacao, escolher a opcao com melhor seguranca de tipos.
 
 ## O que nao fazer
 - Nao editar `generated/prisma/*` manualmente.
@@ -135,4 +141,3 @@ Atualize este arquivo quando houver:
 - mudanca na stack de docs/OpenAPI
 - mudanca no fluxo Prisma (schema, geracao, migracao)
 - mudanca importante na estrategia de testes
-

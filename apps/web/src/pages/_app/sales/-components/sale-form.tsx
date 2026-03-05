@@ -133,6 +133,7 @@ function parseDateInputValue(value: string) {
 type SaleCommissionDetailLike = {
 	sourceType: "PULLED" | "MANUAL";
 	recipientType: SaleCommissionFormData["recipientType"];
+	direction?: SaleCommissionFormData["direction"];
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
 	startDate?: string | null;
@@ -613,6 +614,7 @@ export function SaleForm({
 			? (data.commissions ?? []).map((commission) => ({
 					sourceType: commission.sourceType,
 					recipientType: commission.recipientType,
+					direction: commission.direction,
 					beneficiaryId:
 						commission.recipientType === "OTHER"
 							? undefined

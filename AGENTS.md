@@ -34,6 +34,7 @@ Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/
 - Preferir mudancas minimas e aderentes aos padroes ja existentes do projeto.
 - Preservar a organizacao atual por dominio/pasta; nao reorganizar estrutura sem necessidade explicita.
 - Respeitar aliases `@/*` tanto no frontend quanto no backend.
+- Sempre priorizar tipagem forte e explicita; evitar `any` e tipos implicitos quando houver alternativa tipada.
 - Nao editar manualmente codigo gerado.
 - Quando uma mudanca alterar estrutura, fluxo de geracao ou convencoes, atualizar o `AGENTS.md` correspondente no mesmo ciclo de mudanca.
 - Em mudancas full-stack, tratar backend + contrato + frontend como um fluxo unico (nao parar no meio).
@@ -48,6 +49,7 @@ Executar a partir da raiz:
 ## Integracao frontend <-> backend (visao global)
 - A API expoe documentacao OpenAPI em `http://localhost:3333/docs/json` (definido em `apps/api/src/app.ts`).
 - O frontend usa Kubb (`apps/web/kubb.config.ts`) para gerar client em `apps/web/src/http/generated`.
+- O frontend usa `nuqs` para gerenciamento de filtros de listagem via query string.
 - Mudancas no contrato da API (rotas, request/response, schemas) podem exigir:
 - atualizacao do OpenAPI no backend
 - regeneracao do client Kubb no frontend
@@ -90,4 +92,3 @@ Atualize este arquivo quando houver:
 - nova app/pasta estrutural relevante (ex.: `packages/*`, `apps/mobile`)
 - mudanca na forma de integrar frontend e backend
 - mudanca em scripts globais do monorepo
-
