@@ -1,105 +1,140 @@
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { EmployeePixKeyType } from "generated/prisma/enums";
 import z from "zod";
-import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/middleware/auth";
+import { BadRequestError } from "../_errors/bad-request-error";
+import { resolveEmployeeUserIdByEmail } from "./resolve-employee-user-id-by-email";
 
 export async function createEmployee(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>()
-    .register(auth)
-    .post("/organizations/:slug/employees", {
-      schema: {
-        tags: ["employees"],
-        summary: "Create a new employee",
-        security: [{ bearerAuth: [] }],
-        params: z.object({
-          slug: z.string(),
-        }),
-        body: z.object({
-          name: z.string(),
-          role: z.string().optional(),
-          email: z.string(),
-          department: z.string().optional(),
-          userId: z.string().optional(),
-          companyId: z.uuid(),
-          unitId: z.uuid().optional(),
-        }),
-        response: {
-          201: z.object({
-            employeeId: z.uuid()
-          })
-        }
-      }
-    },
-      async (request, reply) => {
-        const { slug } = request.params
-        const { name, department, userId, role, email, companyId, unitId } = request.body
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.post(
+			"/organizations/:slug/employees",
+			{
+				schema: {
+					tags: ["employees"],
+					summary: "Create a new employee",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+					}),
+					body: z.object({
+						name: z.string(),
+						role: z.string().optional(),
+						email: z.string(),
+						phone: z.string().optional(),
+						department: z.string().optional(),
+						cpf: z.string().optional(),
+						pixKeyType: z.enum(EmployeePixKeyType).optional(),
+						pixKey: z.string().optional(),
+						paymentNotes: z.string().optional(),
+						country: z.string().optional(),
+						state: z.string().optional(),
+						city: z.string().optional(),
+						street: z.string().optional(),
+						zipCode: z.string().optional(),
+						neighborhood: z.string().optional(),
+						number: z.string().optional(),
+						complement: z.string().optional(),
+						companyId: z.uuid(),
+						unitId: z.uuid().optional(),
+					}),
+					response: {
+						201: z.object({
+							employeeId: z.uuid(),
+						}),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug } = request.params;
+				const data = request.body;
 
-        const organization = await prisma.organization.findUnique({
-          where: {
-            slug,
-          },
-          select: {
-            id: true,
-          },
-        })
+				const organization = await prisma.organization.findUnique({
+					where: {
+						slug,
+					},
+					select: {
+						id: true,
+					},
+				});
 
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
 
-        const company = await prisma.company.findFirst({
-          where: {
-            id: companyId,
-            organizationId: organization.id
-          },
-          select: {
-            id: true
-          }
-        })
+				const company = await prisma.company.findFirst({
+					where: {
+						id: data.companyId,
+						organizationId: organization.id,
+					},
+					select: {
+						id: true,
+					},
+				});
 
-        if (!company) {
-          throw new BadRequestError("Company not found")
-        }
+				if (!company) {
+					throw new BadRequestError("Company not found");
+				}
 
-        let unitIdVerify = unitId
-        if (!!unitId) {
-          const unit = await prisma.unit.findFirst({
-            where: {
-              id: unitId,
-            },
-            select: {
-              id: true
-            }
-          })
+				let unitIdVerify = data.unitId;
+				if (data.unitId) {
+					const unit = await prisma.unit.findFirst({
+						where: {
+							id: data.unitId,
+						},
+						select: {
+							id: true,
+						},
+					});
 
-          unitIdVerify = unit?.id
+					unitIdVerify = unit?.id;
 
-          if (!unit) {
-            throw new BadRequestError("Unit not found")
-          }
-        }
+					if (!unit) {
+						throw new BadRequestError("Unit not found");
+					}
+				}
 
-        const employee = await db(() =>
-          prisma.employee.create({
-            data: {
-              name,
-              role,
-              email,
-              department,
-              userId,
-              companyId: company.id,
-              unitId: unitIdVerify,
-              organizationId: organization.id
-            },
-          })
-        )
+				const { normalizedEmail, userId } = await resolveEmployeeUserIdByEmail({
+					organizationId: organization.id,
+					email: data.email,
+				});
 
-        return reply.status(201).send({
-          employeeId: employee.id,
-        })
-      }
-    )
+				const employee = await db(() =>
+					prisma.employee.create({
+						data: {
+							name: data.name,
+							role: data.role,
+							email: normalizedEmail,
+							phone: data.phone,
+							department: data.department,
+							cpf: data.cpf,
+							pixKeyType: data.pixKeyType,
+							pixKey: data.pixKey,
+							paymentNotes: data.paymentNotes,
+							country: data.country,
+							state: data.state,
+							city: data.city,
+							street: data.street,
+							zipCode: data.zipCode,
+							neighborhood: data.neighborhood,
+							number: data.number,
+							complement: data.complement,
+							userId,
+							companyId: company.id,
+							unitId: unitIdVerify,
+							organizationId: organization.id,
+						},
+					}),
+				);
+
+				return reply.status(201).send({
+					employeeId: employee.id,
+				});
+			},
+		);
 }

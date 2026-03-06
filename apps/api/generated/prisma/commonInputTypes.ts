@@ -233,6 +233,23 @@ export type EnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
 }
 
+export type EnumEmployeePixKeyTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePixKeyType | Prisma.EnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel> | $Enums.EmployeePixKeyType | null
+}
+
+export type EnumEmployeePixKeyTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePixKeyType | Prisma.EnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEmployeePixKeyTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EmployeePixKeyType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel>
+}
+
 export type EnumCustomerPersonTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.CustomerPersonType | Prisma.EnumCustomerPersonTypeFieldRefInput<$PrismaModel>
   in?: $Enums.CustomerPersonType[] | Prisma.ListEnumCustomerPersonTypeFieldRefInput<$PrismaModel>
@@ -874,6 +891,23 @@ export type NestedEnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTransactionTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePixKeyType | Prisma.EnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel> | $Enums.EmployeePixKeyType | null
+}
+
+export type NestedEnumEmployeePixKeyTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePixKeyType | Prisma.EnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EmployeePixKeyType[] | Prisma.ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEmployeePixKeyTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EmployeePixKeyType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeePixKeyTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumCustomerPersonTypeFilter<$PrismaModel = never> = {

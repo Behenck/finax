@@ -274,12 +274,33 @@ model CostCenter {
   @@map("cost_centers")
 }
 
+enum EmployeePixKeyType {
+  CPF
+  CNPJ
+  EMAIL
+  PHONE
+  RANDOM
+}
+
 model Employee {
   id             String  @id @default(uuid())
   name           String
   department     String?
   email          String
+  phone          String?
   role           String?
+  cpf            String?
+  pixKeyType     EmployeePixKeyType? @map("pix_key_type")
+  pixKey         String?             @map("pix_key")
+  paymentNotes   String?             @map("payment_notes")
+  street         String?
+  number         String?
+  complement     String?
+  neighborhood   String?
+  city           String?
+  state          String?
+  zipCode        String?             @map("zip_code")
+  country        String?
   userId         String? @map("user_id")
   organizationId String
   companyId      String

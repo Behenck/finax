@@ -2766,7 +2766,20 @@ export const EmployeeScalarFieldEnum = {
   name: 'name',
   department: 'department',
   email: 'email',
+  phone: 'phone',
   role: 'role',
+  cpf: 'cpf',
+  pixKeyType: 'pixKeyType',
+  pixKey: 'pixKey',
+  paymentNotes: 'paymentNotes',
+  street: 'street',
+  number: 'number',
+  complement: 'complement',
+  neighborhood: 'neighborhood',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
   userId: 'userId',
   organizationId: 'organizationId',
   companyId: 'companyId',
@@ -3216,6 +3229,20 @@ export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'TransactionType[]'
  */
 export type ListEnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'EmployeePixKeyType'
+ */
+export type EnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeePixKeyType'>
+    
+
+
+/**
+ * Reference to a field of type 'EmployeePixKeyType[]'
+ */
+export type ListEnumEmployeePixKeyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeePixKeyType[]'>
     
 
 

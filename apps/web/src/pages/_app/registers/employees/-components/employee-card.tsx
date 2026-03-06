@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Employee } from "@/schemas/types/employee";
-import { Briefcase, Building, Building2, Mail, Trash2 } from "lucide-react";
+import {
+	Briefcase,
+	Building,
+	Building2,
+	IdCard,
+	KeyRound,
+	Mail,
+	Trash2,
+} from "lucide-react";
 import { UpdateEmployee } from "./update-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useApp } from "@/context/app-context";
@@ -12,6 +20,17 @@ import { getInitials } from "@/utils/get-initials";
 interface EmployeeCardProps {
 	employee: Employee;
 }
+
+const PIX_KEY_TYPE_LABEL: Record<
+	Exclude<Employee["pixKeyType"], null>,
+	string
+> = {
+	CPF: "CPF",
+	CNPJ: "CNPJ",
+	EMAIL: "E-mail",
+	PHONE: "Telefone",
+	RANDOM: "Aleatória",
+};
 
 export function EmployeeCard({ employee }: EmployeeCardProps) {
 	const { organization } = useApp()
@@ -66,6 +85,24 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
 								<Mail className="size-3" />
 								<span>{employee.email}</span>
 							</div>
+							{employee.cpf && (
+								<div className="flex items-center gap-1 text-gray-500 text-xs">
+									<IdCard className="size-3" />
+									<span>CPF: {employee.cpf}</span>
+								</div>
+							)}
+							{employee.pixKey && (
+								<div className="flex items-center gap-1 text-gray-500 text-xs">
+									<KeyRound className="size-3" />
+									<span>
+										PIX
+										{employee.pixKeyType
+											? ` (${PIX_KEY_TYPE_LABEL[employee.pixKeyType]})`
+											: ""}
+										: {employee.pixKey}
+									</span>
+								</div>
+							)}
 							<div className="flex items-center gap-1 text-gray-500 text-xs">
 								<Building2 className="size-3" />
 								<span>{employee.company.name}</span>

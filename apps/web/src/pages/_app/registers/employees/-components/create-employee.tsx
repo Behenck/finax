@@ -20,7 +20,7 @@ export function CreateEmployee() {
 					Novo Funcionário
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
 				<DialogTitle>Novo Funcionário</DialogTitle>
 				<EmployeeForm onSuccess={() => setOpen(false)} />
 			</DialogContent>

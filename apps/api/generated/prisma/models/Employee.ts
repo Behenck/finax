@@ -29,7 +29,20 @@ export type EmployeeMinAggregateOutputType = {
   name: string | null
   department: string | null
   email: string | null
+  phone: string | null
   role: string | null
+  cpf: string | null
+  pixKeyType: $Enums.EmployeePixKeyType | null
+  pixKey: string | null
+  paymentNotes: string | null
+  street: string | null
+  number: string | null
+  complement: string | null
+  neighborhood: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  country: string | null
   userId: string | null
   organizationId: string | null
   companyId: string | null
@@ -42,7 +55,20 @@ export type EmployeeMaxAggregateOutputType = {
   name: string | null
   department: string | null
   email: string | null
+  phone: string | null
   role: string | null
+  cpf: string | null
+  pixKeyType: $Enums.EmployeePixKeyType | null
+  pixKey: string | null
+  paymentNotes: string | null
+  street: string | null
+  number: string | null
+  complement: string | null
+  neighborhood: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  country: string | null
   userId: string | null
   organizationId: string | null
   companyId: string | null
@@ -55,7 +81,20 @@ export type EmployeeCountAggregateOutputType = {
   name: number
   department: number
   email: number
+  phone: number
   role: number
+  cpf: number
+  pixKeyType: number
+  pixKey: number
+  paymentNotes: number
+  street: number
+  number: number
+  complement: number
+  neighborhood: number
+  city: number
+  state: number
+  zipCode: number
+  country: number
   userId: number
   organizationId: number
   companyId: number
@@ -70,7 +109,20 @@ export type EmployeeMinAggregateInputType = {
   name?: true
   department?: true
   email?: true
+  phone?: true
   role?: true
+  cpf?: true
+  pixKeyType?: true
+  pixKey?: true
+  paymentNotes?: true
+  street?: true
+  number?: true
+  complement?: true
+  neighborhood?: true
+  city?: true
+  state?: true
+  zipCode?: true
+  country?: true
   userId?: true
   organizationId?: true
   companyId?: true
@@ -83,7 +135,20 @@ export type EmployeeMaxAggregateInputType = {
   name?: true
   department?: true
   email?: true
+  phone?: true
   role?: true
+  cpf?: true
+  pixKeyType?: true
+  pixKey?: true
+  paymentNotes?: true
+  street?: true
+  number?: true
+  complement?: true
+  neighborhood?: true
+  city?: true
+  state?: true
+  zipCode?: true
+  country?: true
   userId?: true
   organizationId?: true
   companyId?: true
@@ -96,7 +161,20 @@ export type EmployeeCountAggregateInputType = {
   name?: true
   department?: true
   email?: true
+  phone?: true
   role?: true
+  cpf?: true
+  pixKeyType?: true
+  pixKey?: true
+  paymentNotes?: true
+  street?: true
+  number?: true
+  complement?: true
+  neighborhood?: true
+  city?: true
+  state?: true
+  zipCode?: true
+  country?: true
   userId?: true
   organizationId?: true
   companyId?: true
@@ -182,7 +260,20 @@ export type EmployeeGroupByOutputType = {
   name: string
   department: string | null
   email: string
+  phone: string | null
   role: string | null
+  cpf: string | null
+  pixKeyType: $Enums.EmployeePixKeyType | null
+  pixKey: string | null
+  paymentNotes: string | null
+  street: string | null
+  number: string | null
+  complement: string | null
+  neighborhood: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  country: string | null
   userId: string | null
   organizationId: string
   companyId: string
@@ -216,7 +307,20 @@ export type EmployeeWhereInput = {
   name?: Prisma.StringFilter<"Employee"> | string
   department?: Prisma.StringNullableFilter<"Employee"> | string | null
   email?: Prisma.StringFilter<"Employee"> | string
+  phone?: Prisma.StringNullableFilter<"Employee"> | string | null
   role?: Prisma.StringNullableFilter<"Employee"> | string | null
+  cpf?: Prisma.StringNullableFilter<"Employee"> | string | null
+  pixKeyType?: Prisma.EnumEmployeePixKeyTypeNullableFilter<"Employee"> | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.StringNullableFilter<"Employee"> | string | null
+  paymentNotes?: Prisma.StringNullableFilter<"Employee"> | string | null
+  street?: Prisma.StringNullableFilter<"Employee"> | string | null
+  number?: Prisma.StringNullableFilter<"Employee"> | string | null
+  complement?: Prisma.StringNullableFilter<"Employee"> | string | null
+  neighborhood?: Prisma.StringNullableFilter<"Employee"> | string | null
+  city?: Prisma.StringNullableFilter<"Employee"> | string | null
+  state?: Prisma.StringNullableFilter<"Employee"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"Employee"> | string | null
+  country?: Prisma.StringNullableFilter<"Employee"> | string | null
   userId?: Prisma.StringNullableFilter<"Employee"> | string | null
   organizationId?: Prisma.StringFilter<"Employee"> | string
   companyId?: Prisma.StringFilter<"Employee"> | string
@@ -234,7 +338,20 @@ export type EmployeeOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  cpf?: Prisma.SortOrderInput | Prisma.SortOrder
+  pixKeyType?: Prisma.SortOrderInput | Prisma.SortOrder
+  pixKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  complement?: Prisma.SortOrderInput | Prisma.SortOrder
+  neighborhood?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -256,7 +373,20 @@ export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Employee"> | string
   department?: Prisma.StringNullableFilter<"Employee"> | string | null
   email?: Prisma.StringFilter<"Employee"> | string
+  phone?: Prisma.StringNullableFilter<"Employee"> | string | null
   role?: Prisma.StringNullableFilter<"Employee"> | string | null
+  cpf?: Prisma.StringNullableFilter<"Employee"> | string | null
+  pixKeyType?: Prisma.EnumEmployeePixKeyTypeNullableFilter<"Employee"> | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.StringNullableFilter<"Employee"> | string | null
+  paymentNotes?: Prisma.StringNullableFilter<"Employee"> | string | null
+  street?: Prisma.StringNullableFilter<"Employee"> | string | null
+  number?: Prisma.StringNullableFilter<"Employee"> | string | null
+  complement?: Prisma.StringNullableFilter<"Employee"> | string | null
+  neighborhood?: Prisma.StringNullableFilter<"Employee"> | string | null
+  city?: Prisma.StringNullableFilter<"Employee"> | string | null
+  state?: Prisma.StringNullableFilter<"Employee"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"Employee"> | string | null
+  country?: Prisma.StringNullableFilter<"Employee"> | string | null
   userId?: Prisma.StringNullableFilter<"Employee"> | string | null
   organizationId?: Prisma.StringFilter<"Employee"> | string
   companyId?: Prisma.StringFilter<"Employee"> | string
@@ -274,7 +404,20 @@ export type EmployeeOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  cpf?: Prisma.SortOrderInput | Prisma.SortOrder
+  pixKeyType?: Prisma.SortOrderInput | Prisma.SortOrder
+  pixKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  complement?: Prisma.SortOrderInput | Prisma.SortOrder
+  neighborhood?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -293,7 +436,20 @@ export type EmployeeScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Employee"> | string
   department?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   email?: Prisma.StringWithAggregatesFilter<"Employee"> | string
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   role?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  cpf?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  pixKeyType?: Prisma.EnumEmployeePixKeyTypeNullableWithAggregatesFilter<"Employee"> | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  paymentNotes?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  street?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  number?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  complement?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  neighborhood?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  state?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  zipCode?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   userId?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   organizationId?: Prisma.StringWithAggregatesFilter<"Employee"> | string
   companyId?: Prisma.StringWithAggregatesFilter<"Employee"> | string
@@ -306,7 +462,20 @@ export type EmployeeCreateInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
@@ -320,7 +489,20 @@ export type EmployeeUncheckedCreateInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   companyId: string
@@ -334,7 +516,20 @@ export type EmployeeUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
@@ -348,7 +543,20 @@ export type EmployeeUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -362,7 +570,20 @@ export type EmployeeCreateManyInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   companyId: string
@@ -375,7 +596,20 @@ export type EmployeeUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -384,7 +618,20 @@ export type EmployeeUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,7 +659,20 @@ export type EmployeeCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   department?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  cpf?: Prisma.SortOrder
+  pixKeyType?: Prisma.SortOrder
+  pixKey?: Prisma.SortOrder
+  paymentNotes?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  number?: Prisma.SortOrder
+  complement?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -425,7 +685,20 @@ export type EmployeeMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   department?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  cpf?: Prisma.SortOrder
+  pixKeyType?: Prisma.SortOrder
+  pixKey?: Prisma.SortOrder
+  paymentNotes?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  number?: Prisma.SortOrder
+  complement?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -438,7 +711,20 @@ export type EmployeeMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   department?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  cpf?: Prisma.SortOrder
+  pixKeyType?: Prisma.SortOrder
+  pixKey?: Prisma.SortOrder
+  paymentNotes?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  number?: Prisma.SortOrder
+  complement?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zipCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -619,6 +905,10 @@ export type EmployeeUncheckedUpdateManyWithoutUnitNestedInput = {
   deleteMany?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
 }
 
+export type NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput = {
+  set?: $Enums.EmployeePixKeyType | null
+}
+
 export type EmployeeCreateNestedOneWithoutTransactionsInput = {
   create?: Prisma.XOR<Prisma.EmployeeCreateWithoutTransactionsInput, Prisma.EmployeeUncheckedCreateWithoutTransactionsInput>
   connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutTransactionsInput
@@ -640,7 +930,20 @@ export type EmployeeCreateWithoutUserInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
@@ -653,7 +956,20 @@ export type EmployeeUncheckedCreateWithoutUserInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   organizationId: string
   companyId: string
   unitId?: string | null
@@ -695,7 +1011,20 @@ export type EmployeeScalarWhereInput = {
   name?: Prisma.StringFilter<"Employee"> | string
   department?: Prisma.StringNullableFilter<"Employee"> | string | null
   email?: Prisma.StringFilter<"Employee"> | string
+  phone?: Prisma.StringNullableFilter<"Employee"> | string | null
   role?: Prisma.StringNullableFilter<"Employee"> | string | null
+  cpf?: Prisma.StringNullableFilter<"Employee"> | string | null
+  pixKeyType?: Prisma.EnumEmployeePixKeyTypeNullableFilter<"Employee"> | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.StringNullableFilter<"Employee"> | string | null
+  paymentNotes?: Prisma.StringNullableFilter<"Employee"> | string | null
+  street?: Prisma.StringNullableFilter<"Employee"> | string | null
+  number?: Prisma.StringNullableFilter<"Employee"> | string | null
+  complement?: Prisma.StringNullableFilter<"Employee"> | string | null
+  neighborhood?: Prisma.StringNullableFilter<"Employee"> | string | null
+  city?: Prisma.StringNullableFilter<"Employee"> | string | null
+  state?: Prisma.StringNullableFilter<"Employee"> | string | null
+  zipCode?: Prisma.StringNullableFilter<"Employee"> | string | null
+  country?: Prisma.StringNullableFilter<"Employee"> | string | null
   userId?: Prisma.StringNullableFilter<"Employee"> | string | null
   organizationId?: Prisma.StringFilter<"Employee"> | string
   companyId?: Prisma.StringFilter<"Employee"> | string
@@ -708,7 +1037,20 @@ export type EmployeeCreateWithoutOrganizationInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
@@ -721,7 +1063,20 @@ export type EmployeeUncheckedCreateWithoutOrganizationInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   companyId: string
   unitId?: string | null
@@ -760,7 +1115,20 @@ export type EmployeeCreateWithoutCompanyInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
@@ -773,7 +1141,20 @@ export type EmployeeUncheckedCreateWithoutCompanyInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   unitId?: string | null
@@ -812,7 +1193,20 @@ export type EmployeeCreateWithoutUnitInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
@@ -825,7 +1219,20 @@ export type EmployeeUncheckedCreateWithoutUnitInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   companyId: string
@@ -864,7 +1271,20 @@ export type EmployeeCreateWithoutTransactionsInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   createdAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutEmployeesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutEmployeesInput
@@ -877,7 +1297,20 @@ export type EmployeeUncheckedCreateWithoutTransactionsInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   companyId: string
@@ -906,7 +1339,20 @@ export type EmployeeUpdateWithoutTransactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
@@ -919,7 +1365,20 @@ export type EmployeeUncheckedUpdateWithoutTransactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -932,7 +1391,20 @@ export type EmployeeCreateManyUserInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   organizationId: string
   companyId: string
   unitId?: string | null
@@ -944,7 +1416,20 @@ export type EmployeeUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
@@ -957,7 +1442,20 @@ export type EmployeeUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -970,7 +1468,20 @@ export type EmployeeUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -982,7 +1493,20 @@ export type EmployeeCreateManyOrganizationInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   companyId: string
   unitId?: string | null
@@ -994,7 +1518,20 @@ export type EmployeeUpdateWithoutOrganizationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
@@ -1007,7 +1544,20 @@ export type EmployeeUncheckedUpdateWithoutOrganizationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1020,7 +1570,20 @@ export type EmployeeUncheckedUpdateManyWithoutOrganizationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1032,7 +1595,20 @@ export type EmployeeCreateManyCompanyInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   unitId?: string | null
@@ -1044,7 +1620,20 @@ export type EmployeeUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
@@ -1057,7 +1646,20 @@ export type EmployeeUncheckedUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1070,7 +1672,20 @@ export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1082,7 +1697,20 @@ export type EmployeeCreateManyUnitInput = {
   name: string
   department?: string | null
   email: string
+  phone?: string | null
   role?: string | null
+  cpf?: string | null
+  pixKeyType?: $Enums.EmployeePixKeyType | null
+  pixKey?: string | null
+  paymentNotes?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
+  zipCode?: string | null
+  country?: string | null
   userId?: string | null
   organizationId: string
   companyId: string
@@ -1094,7 +1722,20 @@ export type EmployeeUpdateWithoutUnitInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutEmployeesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutEmployeesNestedInput
@@ -1107,7 +1748,20 @@ export type EmployeeUncheckedUpdateWithoutUnitInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1120,7 +1774,20 @@ export type EmployeeUncheckedUpdateManyWithoutUnitInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pixKeyType?: Prisma.NullableEnumEmployeePixKeyTypeFieldUpdateOperationsInput | $Enums.EmployeePixKeyType | null
+  pixKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1163,7 +1830,20 @@ export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name?: boolean
   department?: boolean
   email?: boolean
+  phone?: boolean
   role?: boolean
+  cpf?: boolean
+  pixKeyType?: boolean
+  pixKey?: boolean
+  paymentNotes?: boolean
+  street?: boolean
+  number?: boolean
+  complement?: boolean
+  neighborhood?: boolean
+  city?: boolean
+  state?: boolean
+  zipCode?: boolean
+  country?: boolean
   userId?: boolean
   organizationId?: boolean
   companyId?: boolean
@@ -1182,7 +1862,20 @@ export type EmployeeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   department?: boolean
   email?: boolean
+  phone?: boolean
   role?: boolean
+  cpf?: boolean
+  pixKeyType?: boolean
+  pixKey?: boolean
+  paymentNotes?: boolean
+  street?: boolean
+  number?: boolean
+  complement?: boolean
+  neighborhood?: boolean
+  city?: boolean
+  state?: boolean
+  zipCode?: boolean
+  country?: boolean
   userId?: boolean
   organizationId?: boolean
   companyId?: boolean
@@ -1199,7 +1892,20 @@ export type EmployeeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   department?: boolean
   email?: boolean
+  phone?: boolean
   role?: boolean
+  cpf?: boolean
+  pixKeyType?: boolean
+  pixKey?: boolean
+  paymentNotes?: boolean
+  street?: boolean
+  number?: boolean
+  complement?: boolean
+  neighborhood?: boolean
+  city?: boolean
+  state?: boolean
+  zipCode?: boolean
+  country?: boolean
   userId?: boolean
   organizationId?: boolean
   companyId?: boolean
@@ -1216,7 +1922,20 @@ export type EmployeeSelectScalar = {
   name?: boolean
   department?: boolean
   email?: boolean
+  phone?: boolean
   role?: boolean
+  cpf?: boolean
+  pixKeyType?: boolean
+  pixKey?: boolean
+  paymentNotes?: boolean
+  street?: boolean
+  number?: boolean
+  complement?: boolean
+  neighborhood?: boolean
+  city?: boolean
+  state?: boolean
+  zipCode?: boolean
+  country?: boolean
   userId?: boolean
   organizationId?: boolean
   companyId?: boolean
@@ -1224,7 +1943,7 @@ export type EmployeeSelectScalar = {
   createdAt?: boolean
 }
 
-export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "department" | "email" | "role" | "userId" | "organizationId" | "companyId" | "unitId" | "createdAt", ExtArgs["result"]["employee"]>
+export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "department" | "email" | "phone" | "role" | "cpf" | "pixKeyType" | "pixKey" | "paymentNotes" | "street" | "number" | "complement" | "neighborhood" | "city" | "state" | "zipCode" | "country" | "userId" | "organizationId" | "companyId" | "unitId" | "createdAt", ExtArgs["result"]["employee"]>
 export type EmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Employee$userArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1260,7 +1979,20 @@ export type $EmployeePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     name: string
     department: string | null
     email: string
+    phone: string | null
     role: string | null
+    cpf: string | null
+    pixKeyType: $Enums.EmployeePixKeyType | null
+    pixKey: string | null
+    paymentNotes: string | null
+    street: string | null
+    number: string | null
+    complement: string | null
+    neighborhood: string | null
+    city: string | null
+    state: string | null
+    zipCode: string | null
+    country: string | null
     userId: string | null
     organizationId: string
     companyId: string
@@ -1698,7 +2430,20 @@ export interface EmployeeFieldRefs {
   readonly name: Prisma.FieldRef<"Employee", 'String'>
   readonly department: Prisma.FieldRef<"Employee", 'String'>
   readonly email: Prisma.FieldRef<"Employee", 'String'>
+  readonly phone: Prisma.FieldRef<"Employee", 'String'>
   readonly role: Prisma.FieldRef<"Employee", 'String'>
+  readonly cpf: Prisma.FieldRef<"Employee", 'String'>
+  readonly pixKeyType: Prisma.FieldRef<"Employee", 'EmployeePixKeyType'>
+  readonly pixKey: Prisma.FieldRef<"Employee", 'String'>
+  readonly paymentNotes: Prisma.FieldRef<"Employee", 'String'>
+  readonly street: Prisma.FieldRef<"Employee", 'String'>
+  readonly number: Prisma.FieldRef<"Employee", 'String'>
+  readonly complement: Prisma.FieldRef<"Employee", 'String'>
+  readonly neighborhood: Prisma.FieldRef<"Employee", 'String'>
+  readonly city: Prisma.FieldRef<"Employee", 'String'>
+  readonly state: Prisma.FieldRef<"Employee", 'String'>
+  readonly zipCode: Prisma.FieldRef<"Employee", 'String'>
+  readonly country: Prisma.FieldRef<"Employee", 'String'>
   readonly userId: Prisma.FieldRef<"Employee", 'String'>
   readonly organizationId: Prisma.FieldRef<"Employee", 'String'>
   readonly companyId: Prisma.FieldRef<"Employee", 'String'>

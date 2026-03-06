@@ -11,6 +11,26 @@ export type GetOrganizationsSlugEmployeesPathParams = {
     slug: string;
 };
 
+export const employeesPixKeyTypeEnum = {
+    "CPF": "CPF",
+    "CNPJ": "CNPJ",
+    "EMAIL": "EMAIL",
+    "PHONE": "PHONE",
+    "RANDOM": "RANDOM"
+} as const;
+
+export type EmployeesPixKeyTypeEnumKey = (typeof employeesPixKeyTypeEnum)[keyof typeof employeesPixKeyTypeEnum];
+
+export const membershipRoleEnum2 = {
+    "ADMIN": "ADMIN",
+    "MEMBER": "MEMBER",
+    "SUPERVISOR": "SUPERVISOR",
+    "SELLER": "SELLER",
+    "PARTNER": "PARTNER"
+} as const;
+
+export type MembershipRoleEnum2Key = (typeof membershipRoleEnum2)[keyof typeof membershipRoleEnum2];
+
 /**
  * @description Default Response
 */
@@ -38,11 +58,118 @@ export type GetOrganizationsSlugEmployees200 = {
         /**
          * @type string
         */
+        phone: string | null;
+        /**
+         * @type string
+        */
         department: string | null;
+        /**
+         * @type string
+        */
+        cpf: string | null;
+        /**
+         * @type string
+        */
+        pixKeyType: EmployeesPixKeyTypeEnumKey | null;
+        /**
+         * @type string
+        */
+        pixKey: string | null;
+        /**
+         * @type string
+        */
+        paymentNotes: string | null;
+        /**
+         * @type string
+        */
+        country: string | null;
+        /**
+         * @type string
+        */
+        state: string | null;
+        /**
+         * @type string
+        */
+        city: string | null;
+        /**
+         * @type string
+        */
+        street: string | null;
+        /**
+         * @type string
+        */
+        zipCode: string | null;
+        /**
+         * @type string
+        */
+        neighborhood: string | null;
+        /**
+         * @type string
+        */
+        number: string | null;
+        /**
+         * @type string
+        */
+        complement: string | null;
         /**
          * @type string, uuid
         */
         userId: string | null;
+        /**
+         * @type object
+        */
+        linkedUser: {
+            /**
+             * @type string, uuid
+            */
+            id: string;
+            /**
+             * @type string
+            */
+            name: string | null;
+            /**
+             * @type string
+            */
+            email: string;
+            /**
+             * @type string
+            */
+            avatarUrl: string | null;
+            /**
+             * @type object
+            */
+            membership: {
+                /**
+                 * @type string, uuid
+                */
+                id: string;
+                /**
+                 * @type string
+                */
+                role: MembershipRoleEnum2Key;
+                /**
+                 * @type array
+                */
+                accesses: {
+                    /**
+                     * @type string, uuid
+                    */
+                    companyId: string;
+                    /**
+                     * @type string
+                    */
+                    companyName: string;
+                    /**
+                     * @type string, uuid
+                    */
+                    unitId: string | null;
+                    /**
+                     * @type string
+                    */
+                    unitName: string | null;
+                }[];
+            } | null;
+        } | null;
         /**
          * @type object
         */

@@ -16,6 +16,7 @@ export { deleteOrganizationsSlugSalesSaleidPathParamsSchema, deleteOrganizations
 export { deleteOrganizationsSlugSellersSelleridPathParamsSchema, deleteOrganizationsSlugSellersSellerid204Schema, deleteOrganizationsSlugSellersSelleridMutationResponseSchema } from "./deleteOrganizationsSlugSellersSelleridSchema.ts";
 export { deleteOrganizationsSlugTransactionsTransactionidPathParamsSchema, deleteOrganizationsSlugTransactionsTransactionid204Schema, deleteOrganizationsSlugTransactionsTransactionidMutationResponseSchema } from "./deleteOrganizationsSlugTransactionsTransactionidSchema.ts";
 export { getInvitesInviteidPathParamsSchema, getInvitesInviteid200Schema, getInvitesInviteidQueryResponseSchema } from "./getInvitesInviteidSchema.ts";
+export { getMeGoogleStatus200Schema, getMeGoogleStatusQueryResponseSchema } from "./getMeGoogleStatusSchema.ts";
 export { getMe200Schema, getMeQueryResponseSchema } from "./getMeSchema.ts";
 export { getOrganizationSlugPathParamsSchema, getOrganizationSlug200Schema, getOrganizationSlugQueryResponseSchema } from "./getOrganizationSlugSchema.ts";
 export { getOrganizations200Schema, getOrganizationsQueryResponseSchema } from "./getOrganizationsSchema.ts";
@@ -59,6 +60,8 @@ export { postAuthSendEmailOtp204Schema, postAuthSendEmailOtpMutationRequestSchem
 export { postAuthVerifyOtp200Schema, postAuthVerifyOtpMutationRequestSchema, postAuthVerifyOtpMutationResponseSchema } from "./postAuthVerifyOtpSchema.ts";
 export { postInvitesInviteidAcceptPathParamsSchema, postInvitesInviteidAccept200Schema, postInvitesInviteidAccept204Schema, postInvitesInviteidAcceptMutationRequestSchema, postInvitesInviteidAcceptMutationResponseSchema } from "./postInvitesInviteidAcceptSchema.ts";
 export { postInvitesInviteidRejectPathParamsSchema, postInvitesInviteidReject204Schema, postInvitesInviteidRejectMutationResponseSchema } from "./postInvitesInviteidRejectSchema.ts";
+export { postMeGoogleLink200Schema, postMeGoogleLink500Schema, postMeGoogleLinkMutationResponseSchema } from "./postMeGoogleLinkSchema.ts";
+export { postMeGoogleSync200Schema, postMeGoogleSync500Schema, postMeGoogleSyncMutationResponseSchema } from "./postMeGoogleSyncSchema.ts";
 export { postOrganizations201Schema, postOrganizationsMutationRequestSchema, postOrganizationsMutationResponseSchema } from "./postOrganizationsSchema.ts";
 export { postOrganizationsSlugCategoriesPathParamsSchema, postOrganizationsSlugCategories201Schema, postOrganizationsSlugCategoriesMutationRequestSchema, postOrganizationsSlugCategoriesMutationResponseSchema } from "./postOrganizationsSlugCategoriesSchema.ts";
 export { postOrganizationsSlugCompaniesCompanyidUnitsPathParamsSchema, postOrganizationsSlugCompaniesCompanyidUnits201Schema, postOrganizationsSlugCompaniesCompanyidUnitsMutationRequestSchema, postOrganizationsSlugCompaniesCompanyidUnitsMutationResponseSchema } from "./postOrganizationsSlugCompaniesCompanyidUnitsSchema.ts";

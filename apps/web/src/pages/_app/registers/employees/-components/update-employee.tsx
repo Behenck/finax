@@ -24,7 +24,7 @@ export function UpdateEmployee({ employee }: UpdateEmployeeProps) {
 					<Pencil className="text-gray-500" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
 				<DialogTitle>Atualizar Funcionário</DialogTitle>
 				<EmployeeForm
 					onSuccess={() => setOpen(false)}

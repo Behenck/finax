@@ -21,6 +21,16 @@ export type PostOrganizationsSlugEmployees201 = {
     employeeId: string;
 };
 
+export const postOrganizationsSlugEmployeesMutationRequestPixKeyTypeEnum = {
+    "CPF": "CPF",
+    "CNPJ": "CNPJ",
+    "EMAIL": "EMAIL",
+    "PHONE": "PHONE",
+    "RANDOM": "RANDOM"
+} as const;
+
+export type PostOrganizationsSlugEmployeesMutationRequestPixKeyTypeEnumKey = (typeof postOrganizationsSlugEmployeesMutationRequestPixKeyTypeEnum)[keyof typeof postOrganizationsSlugEmployeesMutationRequestPixKeyTypeEnum];
+
 export type PostOrganizationsSlugEmployeesMutationRequest = {
     /**
      * @type string
@@ -37,11 +47,59 @@ export type PostOrganizationsSlugEmployeesMutationRequest = {
     /**
      * @type string | undefined
     */
+    phone?: string;
+    /**
+     * @type string | undefined
+    */
     department?: string;
     /**
      * @type string | undefined
     */
-    userId?: string;
+    cpf?: string;
+    /**
+     * @type string | undefined
+    */
+    pixKeyType?: PostOrganizationsSlugEmployeesMutationRequestPixKeyTypeEnumKey;
+    /**
+     * @type string | undefined
+    */
+    pixKey?: string;
+    /**
+     * @type string | undefined
+    */
+    paymentNotes?: string;
+    /**
+     * @type string | undefined
+    */
+    country?: string;
+    /**
+     * @type string | undefined
+    */
+    state?: string;
+    /**
+     * @type string | undefined
+    */
+    city?: string;
+    /**
+     * @type string | undefined
+    */
+    street?: string;
+    /**
+     * @type string | undefined
+    */
+    zipCode?: string;
+    /**
+     * @type string | undefined
+    */
+    neighborhood?: string;
+    /**
+     * @type string | undefined
+    */
+    number?: string;
+    /**
+     * @type string | undefined
+    */
+    complement?: string;
     /**
      * @type string, uuid
     */

@@ -4,12 +4,19 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useApp } from '@/context/app-context'
-import { roleFilterParser, textFilterParser } from '@/hooks/filters/parsers'
+import {
+	memberTargetParser,
+	memberViewParser,
+	roleFilterParser,
+	textFilterParser,
+} from '@/hooks/filters/parsers'
 import { useMemo } from 'react'
 import { useGetOrganizationsSlugCompanies, useGetOrganizationsSlugMembers } from '@/http/generated'
 import { useQueryState } from 'nuqs'
 
+import { MemberAccessManager } from './member-access-manager'
 import { MemberRow } from './member-row'
+import { MemberRoleManager } from './member-role-manager'
 import type { MemberListItem, RoleFilter } from './utils/types'
 import { filterMembers } from './utils'
 
@@ -17,12 +24,19 @@ export function MembersList() {
   const { auth, organization } = useApp()
   const [search, setSearch] = useQueryState("membersQ", textFilterParser)
   const [roleFilter, setRoleFilter] = useQueryState("membersRole", roleFilterParser)
+  const [targetMemberUserId, setTargetMemberUserId] = useQueryState(
+    "memberUserId",
+    memberTargetParser,
+  )
+  const [targetMemberView, setTargetMemberView] = useQueryState(
+    "memberView",
+    memberViewParser,
+  )
+  const organizationSlug = organization?.slug ?? ''
 
-  if (!organization) return null
-
-  const { data } = useGetOrganizationsSlugMembers({ slug: organization!.slug })
+  const { data } = useGetOrganizationsSlugMembers({ slug: organizationSlug })
   const { data: companiesData, isLoading: isLoadingCompanies } = useGetOrganizationsSlugCompanies({
-    slug: organization.slug,
+    slug: organizationSlug,
   })
 
   const members = (data?.members as MemberListItem[] | undefined)
@@ -32,8 +46,19 @@ export function MembersList() {
     () => filterMembers(members, search, roleFilter),
     [members, roleFilter, search],
   )
+  const targetMember = useMemo(
+    () => members?.find((member) => member.userId === targetMemberUserId) ?? null,
+    [members, targetMemberUserId],
+  )
 
   const totalMembers = members?.length ?? 0
+
+  function clearTargetMember() {
+    void setTargetMemberUserId(null)
+    void setTargetMemberView(null)
+  }
+
+  if (!organization) return null
 
   return (
     <div className='space-y-2'>
@@ -57,6 +82,13 @@ export function MembersList() {
           </SelectContent>
         </Select>
       </div>
+
+      {targetMemberUserId && !targetMember && (
+        <div className='rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900'>
+          O usuário vinculado existe, mas não participa desta organização. Convide-o em Membros para gerenciar os acessos por aqui.
+        </div>
+      )}
+
       <div className='space-y-3'>
         <div className='flex items-center gap-2 rounded-lg border bg-muted/20 px-4 py-3'>
           <Checkbox />
@@ -73,9 +105,10 @@ export function MembersList() {
                 member={member}
                 ownerId={organization.ownerId}
                 authUserId={auth?.id}
-                organizationSlug={organization.slug}
+                organizationSlug={organizationSlug}
                 companies={companies}
                 isLoadingCompanies={isLoadingCompanies}
+                isHighlighted={member.userId === targetMemberUserId}
               />
             ))}
           </div>
@@ -98,9 +131,10 @@ export function MembersList() {
                   member={member}
                   ownerId={organization.ownerId}
                   authUserId={auth?.id}
-                  organizationSlug={organization.slug}
+                  organizationSlug={organizationSlug}
                   companies={companies}
                   isLoadingCompanies={isLoadingCompanies}
+                  isHighlighted={member.userId === targetMemberUserId}
                 />
               ))}
             </TableBody>
@@ -112,6 +146,33 @@ export function MembersList() {
         <div className='rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground'>
           Nenhum membro encontrado com os filtros atuais.
         </div>
+      )}
+
+      {targetMember && (
+        <>
+          <MemberAccessManager
+            member={targetMember}
+            organizationSlug={organizationSlug}
+            companies={companies}
+            isLoadingCompanies={isLoadingCompanies}
+            open={targetMemberView === 'access'}
+            onOpenChange={(open) => {
+              if (!open) {
+                clearTargetMember()
+              }
+            }}
+          />
+          <MemberRoleManager
+            member={targetMember}
+            organizationSlug={organizationSlug}
+            open={targetMemberView === 'role'}
+            onOpenChange={(open) => {
+              if (!open) {
+                clearTargetMember()
+              }
+            }}
+          />
+        </>
       )}
     </div>
   )

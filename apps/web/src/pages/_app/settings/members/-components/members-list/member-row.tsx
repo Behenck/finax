@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 import { getInitials } from '@/utils/get-initials'
 
 import { MemberAccessSummary } from './member-access-summary'
@@ -16,6 +17,7 @@ type Props = {
   organizationSlug: string
   companies: CompanyOption[]
   isLoadingCompanies: boolean
+  isHighlighted?: boolean
 }
 
 export function MemberRow({
@@ -25,13 +27,19 @@ export function MemberRow({
   organizationSlug,
   companies,
   isLoadingCompanies,
+  isHighlighted = false,
 }: Props) {
   const userLogged = authUserId === member.userId
   const owner = member.userId === ownerId
 
   return (
     <>
-      <div className='rounded-xl border bg-background p-3 shadow-xs md:hidden'>
+      <div
+        className={cn(
+          'rounded-xl border bg-background p-3 shadow-xs md:hidden',
+          isHighlighted && 'border-primary/40 bg-primary/5 shadow-sm',
+        )}
+      >
         <div className='flex items-start justify-between gap-3'>
           <div className='flex min-w-0 items-center gap-2'>
             <Checkbox />
@@ -72,7 +80,12 @@ export function MemberRow({
         </div>
       </div>
 
-      <TableRow className='hidden md:table-row'>
+      <TableRow
+        className={cn(
+          'hidden md:table-row',
+          isHighlighted && 'bg-primary/5 hover:bg-primary/10',
+        )}
+      >
         <TableCell className='px-3 py-3'>
           <div className='flex min-w-0 items-center gap-2'>
             <Checkbox />

@@ -52,6 +52,17 @@ export const InviteType = {
 export type InviteType = (typeof InviteType)[keyof typeof InviteType]
 
 
+export const EmployeePixKeyType = {
+  CPF: 'CPF',
+  CNPJ: 'CNPJ',
+  EMAIL: 'EMAIL',
+  PHONE: 'PHONE',
+  RANDOM: 'RANDOM'
+} as const
+
+export type EmployeePixKeyType = (typeof EmployeePixKeyType)[keyof typeof EmployeePixKeyType]
+
+
 export const CustomerPersonType = {
   PF: 'PF',
   PJ: 'PJ'

@@ -13,6 +13,7 @@ const COMMISSION_INSTALLMENT_STATUS_FILTER_VALUES = [
 	"PAID",
 	"CANCELED",
 ] as const;
+const MEMBER_VIEW_VALUES = ["access", "role"] as const;
 
 export const textFilterParser = parseAsString
 	.withDefault("")
@@ -21,6 +22,14 @@ export const textFilterParser = parseAsString
 export const roleFilterParser = parseAsStringLiteral(ROLE_FILTER_VALUES)
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
+
+export const memberTargetParser = parseAsString.withOptions({
+	history: "replace",
+});
+
+export const memberViewParser = parseAsStringLiteral(MEMBER_VIEW_VALUES).withOptions(
+	{ history: "replace" },
+);
 
 export const showZeroInstallmentsParser = parseAsBoolean
 	.withDefault(false)
