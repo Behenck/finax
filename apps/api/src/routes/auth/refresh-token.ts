@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { randomUUID } from "node:crypto";
 import z from "zod";
+import { issueAuthTokenPair } from "./google-session-helpers";
 
 export async function refreshTokenRoute(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -26,7 +26,7 @@ export async function refreshTokenRoute(app: FastifyInstance) {
     async (req, reply) => {
       const { refreshToken } = req.body
 
-      const stored = await (prisma as any).refreshToken.findUnique({
+      const stored = await prisma.refreshToken.findUnique({
         where: { token: refreshToken }
       })
 
@@ -36,8 +36,8 @@ export async function refreshTokenRoute(app: FastifyInstance) {
 
       let payload: { sub: string }
       try {
-        payload = app.jwt.verify<{ sub: string }>(refreshToken) as any
-      } catch (err) {
+        payload = app.jwt.verify<{ sub: string }>(refreshToken)
+      } catch {
         return reply.status(401).send({ message: 'Invalid refresh token' })
       }
 
@@ -49,18 +49,11 @@ export async function refreshTokenRoute(app: FastifyInstance) {
       }
 
       // revoke old token
-      await (prisma as any).refreshToken.update({ where: { token: refreshToken }, data: { revoked: true } })
+      await prisma.refreshToken.update({ where: { token: refreshToken }, data: { revoked: true } })
 
-      // issue new tokens
-      const newAccess = await reply.jwtSign({ sub: user.id })
-      const newRefresh = await reply.jwtSign(
-        { sub: user.id, nonce: randomUUID() },
-        { expiresIn: '30d' }
-      )
+      const tokenPair = await issueAuthTokenPair(reply, user.id)
 
-      await (prisma as any).refreshToken.create({ data: { token: newRefresh, userId: user.id } })
-
-      return reply.send({ accessToken: newAccess, refreshToken: newRefresh })
+      return reply.send(tokenPair)
     }
   )
 }

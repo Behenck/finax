@@ -26,6 +26,7 @@ import { Route as AppDashboardIndexRouteImport } from './pages/_app/_dashboard/i
 import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/reset'
 import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
 import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/forgot'
+import { Route as AuthGoogleCallbackRouteImport } from './pages/_auth/google/callback'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
@@ -131,6 +132,11 @@ const AuthPasswordRecoverRoute = AuthPasswordRecoverRouteImport.update({
 const AuthPasswordForgotRoute = AuthPasswordForgotRouteImport.update({
   id: '/password/forgot',
   path: '/password/forgot',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
+  id: '/google/callback',
+  path: '/google/callback',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 const AppSalesCreateRoute = AppSalesCreateRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
@@ -313,6 +320,7 @@ export interface FileRoutesByTo {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
   '/password/reset': typeof AuthPasswordResetRoute
@@ -356,6 +364,7 @@ export interface FileRoutesById {
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
+  '/_auth/google/callback': typeof AuthGoogleCallbackRoute
   '/_auth/password/forgot': typeof AuthPasswordForgotRoute
   '/_auth/password/recover': typeof AuthPasswordRecoverRoute
   '/_auth/password/reset': typeof AuthPasswordResetRoute
@@ -398,6 +407,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
     | '/password/reset'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
     | '/password/reset'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/_auth/verify-otp'
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
+    | '/_auth/google/callback'
     | '/_auth/password/forgot'
     | '/_auth/password/recover'
     | '/_auth/password/reset'
@@ -635,6 +647,13 @@ declare module '@tanstack/react-router' {
       path: '/password/forgot'
       fullPath: '/password/forgot'
       preLoaderRoute: typeof AuthPasswordForgotRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/_auth/google/callback': {
+      id: '/_auth/google/callback'
+      path: '/google/callback'
+      fullPath: '/google/callback'
+      preLoaderRoute: typeof AuthGoogleCallbackRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
     '/_app/sales/create': {
@@ -897,6 +916,7 @@ interface AuthLayoutRouteChildren {
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignOutRoute: typeof AuthSignOutRoute
   AuthVerifyOtpRoute: typeof AuthVerifyOtpRoute
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
   AuthPasswordForgotRoute: typeof AuthPasswordForgotRoute
   AuthPasswordRecoverRoute: typeof AuthPasswordRecoverRoute
   AuthPasswordResetRoute: typeof AuthPasswordResetRoute
@@ -907,6 +927,7 @@ const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthSignInRoute: AuthSignInRoute,
   AuthSignOutRoute: AuthSignOutRoute,
   AuthVerifyOtpRoute: AuthVerifyOtpRoute,
+  AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
   AuthPasswordForgotRoute: AuthPasswordForgotRoute,
   AuthPasswordRecoverRoute: AuthPasswordRecoverRoute,
   AuthPasswordResetRoute: AuthPasswordResetRoute,

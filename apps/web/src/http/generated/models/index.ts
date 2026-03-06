@@ -45,6 +45,8 @@ export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeE
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./GetOrganizationsSlugTransactions.ts";
 export type { GetOrganizationsSlugTransactionsTransactionidPathParams, TransactionTypeEnumKey, TransactionStatusEnumKey, TransactionNatureEnumKey, GetOrganizationsSlugTransactionsTransactionid200, GetOrganizationsSlugTransactionsTransactionidQueryResponse, GetOrganizationsSlugTransactionsTransactionidQuery } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export type { InvitesRoleEnum2Key, GetPendingInvites200, GetPendingInvitesQueryResponse, GetPendingInvitesQuery } from "./GetPendingInvites.ts";
+export type { GetSessionsGoogle302EnumKey, GetSessionsGoogle302, GetSessionsGoogle500, GetSessionsGoogleQueryResponse, GetSessionsGoogleQuery } from "./GetSessionsGoogle.ts";
+export type { GetSessionsGoogleCallbackQueryParams, GetSessionsGoogleCallback302EnumKey, GetSessionsGoogleCallback302, GetSessionsGoogleCallbackQueryResponse, GetSessionsGoogleCallbackQuery } from "./GetSessionsGoogleCallback.ts";
 export type { PatchMe200, PatchMe400, PatchMeMutationRequest, PatchMeMutationResponse, PatchMeMutation } from "./PatchMe.ts";
 export type { PatchMePassword204EnumKey, PatchMePassword204, PatchMePassword400, PatchMePasswordMutationRequest, PatchMePasswordMutationResponse, PatchMePasswordMutation } from "./PatchMePassword.ts";
 export type { PatchOrganizationsSlugMembersMemberidRolePathParams, PatchOrganizationsSlugMembersMemberidRole204EnumKey, PatchOrganizationsSlugMembersMemberidRole204, PatchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnumKey, PatchOrganizationsSlugMembersMemberidRoleMutationRequest, PatchOrganizationsSlugMembersMemberidRoleMutationResponse, PatchOrganizationsSlugMembersMemberidRoleMutation } from "./PatchOrganizationsSlugMembersMemberidRole.ts";
@@ -74,6 +76,7 @@ export type { PostOrganizationsSlugSellersPathParams, PostOrganizationsSlugSelle
 export type { PostOrganizationsSlugTransactionsPathParams, PostOrganizationsSlugTransactions201EnumKey, PostOrganizationsSlugTransactions201, PostOrganizationsSlugTransactionsMutationRequestTypeEnumKey, PostOrganizationsSlugTransactionsMutationRequestStatusEnumKey, PostOrganizationsSlugTransactionsMutationRequestNatureEnumKey, PostOrganizationsSlugTransactionsMutationRequestInstallmentRecurrenceTypeEnumKey, PostOrganizationsSlugTransactionsMutationRequest, PostOrganizationsSlugTransactionsMutationResponse, PostOrganizationsSlugTransactionsMutation } from "./PostOrganizationsSlugTransactions.ts";
 export type { PostPasswordRecover201EnumKey, PostPasswordRecover201, PostPasswordRecoverMutationRequest, PostPasswordRecoverMutationResponse, PostPasswordRecoverMutation } from "./PostPasswordRecover.ts";
 export type { PostPasswordReset200EnumKey, PostPasswordReset200, PostPasswordResetMutationRequest, PostPasswordResetMutationResponse, PostPasswordResetMutation } from "./PostPasswordReset.ts";
+export type { PostSessionsGoogleComplete200, PostSessionsGoogleComplete401, PostSessionsGoogleCompleteMutationRequest, PostSessionsGoogleCompleteMutationResponse, PostSessionsGoogleCompleteMutation } from "./PostSessionsGoogleComplete.ts";
 export type { PostSessionsPassword200, PostSessionsPassword401, PostSessionsPassword403, PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationResponse, PostSessionsPasswordMutation } from "./PostSessionsPassword.ts";
 export type { PostSessionsRefresh200, PostSessionsRefresh401, PostSessionsRefreshMutationRequest, PostSessionsRefreshMutationResponse, PostSessionsRefreshMutation } from "./PostSessionsRefresh.ts";
 export type { PostUsers201, PostUsers400, PostUsersMutationRequest, PostUsersMutationResponse, PostUsersMutation } from "./PostUsers.ts";
@@ -173,6 +176,8 @@ export { transactionTypeEnum } from "./GetOrganizationsSlugTransactionsTransacti
 export { transactionStatusEnum } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export { transactionNatureEnum } from "./GetOrganizationsSlugTransactionsTransactionid.ts";
 export { invitesRoleEnum2 } from "./GetPendingInvites.ts";
+export { getSessionsGoogle302Enum } from "./GetSessionsGoogle.ts";
+export { getSessionsGoogleCallback302Enum } from "./GetSessionsGoogleCallback.ts";
 export { patchMePassword204Enum } from "./PatchMePassword.ts";
 export { patchOrganizationsSlugMembersMemberidRole204Enum } from "./PatchOrganizationsSlugMembersMemberidRole.ts";
 export { patchOrganizationsSlugMembersMemberidRoleMutationRequestRoleEnum } from "./PatchOrganizationsSlugMembersMemberidRole.ts";

@@ -2,13 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { randomUUID } from "node:crypto";
 import z from "zod";
-
-type TokenPair = {
-  accessToken: string
-  refreshToken: string
-}
+import { issueAuthTokenPair } from "./google-session-helpers";
 
 export async function authenticateWithPassword(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post("/sessions/password", {
@@ -62,27 +57,7 @@ export async function authenticateWithPassword(app: FastifyInstance) {
         })
       }
 
-      const token = await reply.jwtSign({
-        sub: userFromEmail.id,
-      })
-      // create a refresh token string (random long value) and persist
-      const refreshTokenValue = await reply.jwtSign({
-        sub: userFromEmail.id,
-        nonce: randomUUID(),
-      }, { expiresIn: '30d' })
-
-      // prisma client might need regeneration after schema change; use any to avoid type errors until generated client is updated
-      await prisma.refreshToken.create({
-        data: {
-          token: refreshTokenValue,
-          userId: userFromEmail.id
-        }
-      })
-
-      const payload: TokenPair = {
-        accessToken: token,
-        refreshToken: refreshTokenValue
-      }
+      const payload = await issueAuthTokenPair(reply, userFromEmail.id)
 
       return reply.status(200).send(payload)
     }

@@ -22,6 +22,8 @@ import { normalizeApiError } from "@/errors/api-error";
 import { resolveErrorMessage } from "@/errors";
 import { router } from "@/router";
 import { usePostAuthSendEmailOtp } from "@/http/generated";
+import { useEffect } from "react";
+import GoogleLogo from "@/assets/google-logo.png";
 
 const SignInSchema = z.object({
 	email: z.email("Email inválido").min(1, "Email é obrigatório"),
@@ -34,6 +36,7 @@ export type SignInType = z.infer<typeof SignInSchema>;
 
 const signInSearchSchema = z.object({
 	email: z.string().optional(),
+	oauthError: z.string().optional(),
 });
 
 export const Route = createFileRoute("/_auth/sign-in")({
@@ -49,13 +52,13 @@ export const Route = createFileRoute("/_auth/sign-in")({
 });
 
 function SignIn() {
-	const { email: emailParam } = Route.useSearch();
+	const { email: emailParam, oauthError } = Route.useSearch();
 	const signInMutation = auth.useSignIn();
 	const { data: session, isPending: isSessionPending } = auth.useSession();
 	const { mutateAsync: sendEmailOTP } = usePostAuthSendEmailOtp();
 
 	const { handleSubmit, resetField, control, watch } = useForm<SignInType>({
-		resolver: zodResolver(SignInSchema as any),
+		resolver: zodResolver(SignInSchema),
 		defaultValues: {
 			email: emailParam ?? "",
 			password: "",
@@ -63,6 +66,24 @@ function SignIn() {
 	});
 
 	const email = watch("email")
+
+	useEffect(() => {
+		if (!oauthError) {
+			return;
+		}
+
+		toast.error(oauthError);
+	}, [oauthError]);
+
+	function handleGoogleSignIn() {
+		const apiUrl = import.meta.env.VITE_API_URL;
+		if (!apiUrl) {
+			toast.error("VITE_API_URL não configurada.");
+			return;
+		}
+
+		window.location.href = `${apiUrl}/sessions/google`;
+	}
 
 	async function onSubmit(data: SignInType) {
 		try {
@@ -185,6 +206,15 @@ function SignIn() {
 				>
 					Entrar
 					<ArrowRight className="size-5" />
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					className="w-full h-10 text-md flex items-center gap-3"
+					onClick={handleGoogleSignIn}
+				>
+					<img src={GoogleLogo} alt="Google" className="size-5" />
+					Continuar com Google
 				</Button>
 				<p className="flex gap-2 items-center justify-center text-sm text-muted-foreground">
 					Esqueceu a senha?

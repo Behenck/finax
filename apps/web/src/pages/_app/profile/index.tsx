@@ -1,10 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Eye, KeyRound, UserRound } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import GoogleLogo from "@/assets/google-logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,30 +26,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { useApp } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
+import { router } from "@/router";
 import { getInitials } from "@/utils/get-initials";
 
 const ProfileSchema = z.object({
 	name: z.string().trim().min(2, "Informe um nome com pelo menos 2 caracteres."),
 	email: z.email(),
-	avatarUrl: z
-		.string()
-		.trim()
-		.optional()
-		.refine(
-			(value) => {
-				if (!value) {
-					return true;
-				}
-
-				return z.url().safeParse(value).success;
-			},
-			{
-				message: "Informe uma URL válida.",
-			},
-		),
 });
 
 type ProfileFormData = z.infer<typeof ProfileSchema>;
+
+const profileSearchSchema = z.object({
+	googleLinked: z.enum(["true"]).optional(),
+	googleSynced: z.enum(["true"]).optional(),
+	googleError: z.string().optional(),
+});
 
 const ChangePasswordSchema = z
 	.object({
@@ -73,19 +67,25 @@ type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>;
 
 export const Route = createFileRoute("/_app/profile/")({
 	component: ProfilePage,
+	validateSearch: (search) => profileSearchSchema.parse(search),
 });
 
 function ProfilePage() {
 	const { auth: currentUser } = useApp();
+	const { googleLinked, googleSynced, googleError } = Route.useSearch();
+	const queryClient = useQueryClient();
+
 	const updateProfile = auth.useUpdateProfile();
 	const changePassword = auth.useChangePassword();
+	const googleLinkStatus = auth.useGoogleLinkStatus();
+	const linkGoogleAccount = auth.useLinkGoogleAccount();
+	const syncGoogleProfile = auth.useSyncGoogleProfile();
 
 	const profileForm = useForm<ProfileFormData>({
 		resolver: zodResolver(ProfileSchema),
 		defaultValues: {
 			name: currentUser?.name ?? "",
 			email: currentUser?.email ?? "",
-			avatarUrl: currentUser?.avatarUrl ?? "",
 		},
 	});
 
@@ -98,10 +98,6 @@ function ProfilePage() {
 		},
 	});
 
-	const avatarPreview = useWatch({
-		control: profileForm.control,
-		name: "avatarUrl",
-	});
 	const profileName = useWatch({
 		control: profileForm.control,
 		name: "name",
@@ -111,14 +107,43 @@ function ProfilePage() {
 		profileForm.reset({
 			name: currentUser?.name ?? "",
 			email: currentUser?.email ?? "",
-			avatarUrl: currentUser?.avatarUrl ?? "",
 		});
-	}, [currentUser?.avatarUrl, currentUser?.email, currentUser?.name, profileForm]);
+	}, [currentUser?.email, currentUser?.name, profileForm]);
+
+	useEffect(() => {
+		if (!googleLinked && !googleSynced && !googleError) {
+			return;
+		}
+
+		if (googleLinked) {
+			toast.success("Conta Google vinculada com sucesso.");
+		}
+
+		if (googleSynced) {
+			toast.success("Dados sincronizados com o Google.");
+		}
+
+		if (googleError) {
+			toast.error(googleError);
+		}
+
+		void queryClient.invalidateQueries({
+			queryKey: ["session"],
+		});
+
+		void queryClient.invalidateQueries({
+			queryKey: ["google-link-status"],
+		});
+
+		void router.navigate({
+			to: "/profile",
+			replace: true,
+		});
+	}, [googleError, googleLinked, googleSynced, queryClient]);
 
 	const handleUpdateProfile = profileForm.handleSubmit(async (data) => {
 		await updateProfile.mutateAsync({
 			name: data.name.trim(),
-			avatarUrl: data.avatarUrl?.trim() ? data.avatarUrl.trim() : null,
 		});
 	});
 
@@ -128,6 +153,19 @@ function ProfilePage() {
 			newPassword: data.newPassword,
 		});
 	});
+
+	const isGoogleLinked = googleLinkStatus.data?.isLinked ?? false;
+	const isGoogleActionPending =
+		linkGoogleAccount.isPending || syncGoogleProfile.isPending;
+
+	const handleGoogleAction = () => {
+		if (isGoogleLinked) {
+			syncGoogleProfile.mutate();
+			return;
+		}
+
+		linkGoogleAccount.mutate();
+	};
 
 	const nameForInitials = profileName || currentUser?.name || "Usuário";
 
@@ -144,17 +182,15 @@ function ProfilePage() {
 				<CardHeader>
 					<CardTitle>Dados do perfil</CardTitle>
 					<CardDescription>
-						Atualize seu nome e a URL do avatar. O e-mail é somente leitura.
+						Atualize seu nome. O e-mail é somente leitura.
 					</CardDescription>
 				</CardHeader>
 
 				<CardContent className="space-y-5">
 					<div className="flex items-center gap-3">
 						<Avatar className="size-14">
-							<AvatarImage src={avatarPreview || currentUser?.avatarUrl || undefined} />
-							<AvatarFallback>
-								{getInitials(nameForInitials)}
-							</AvatarFallback>
+							<AvatarImage src={currentUser?.avatarUrl ?? undefined} />
+							<AvatarFallback>{getInitials(nameForInitials)}</AvatarFallback>
 						</Avatar>
 						<div className="space-y-0.5">
 							<p className="text-sm font-medium">{currentUser?.name ?? "Usuário"}</p>
@@ -206,24 +242,6 @@ function ProfilePage() {
 									</Field>
 								)}
 							/>
-
-							<Controller
-								name="avatarUrl"
-								control={profileForm.control}
-								render={({ field, fieldState }) => (
-									<Field data-invalid={fieldState.invalid} className="gap-1">
-										<FieldLabel htmlFor="profile-avatar-url">Avatar URL</FieldLabel>
-										<Input
-											id="profile-avatar-url"
-											{...field}
-											value={field.value ?? ""}
-											placeholder="https://exemplo.com/avatar.png"
-											aria-invalid={fieldState.invalid}
-										/>
-										<FieldError errors={[fieldState.error]} />
-									</Field>
-								)}
-							/>
 						</FieldGroup>
 
 						<div className="flex justify-end">
@@ -236,6 +254,45 @@ function ProfilePage() {
 							</Button>
 						</div>
 					</form>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Conta Google</CardTitle>
+					<CardDescription>
+						Vincule sua conta Google para login social e sincronize nome/avatar.
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					<div className="flex items-center gap-3 rounded-lg border px-3 py-2">
+						<img src={GoogleLogo} alt="Google" className="size-6" />
+						<div className="space-y-0.5">
+							<p className="text-sm font-medium">Google</p>
+							<p className="text-muted-foreground text-xs">
+								{googleLinkStatus.isPending
+									? "Verificando vínculo..."
+									: isGoogleLinked
+										? "Conta vinculada"
+										: "Conta não vinculada"}
+							</p>
+						</div>
+					</div>
+
+					<div className="flex justify-end">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={handleGoogleAction}
+							disabled={googleLinkStatus.isPending || isGoogleActionPending}
+						>
+							{isGoogleActionPending
+								? "Redirecionando..."
+								: isGoogleLinked
+									? "Sincronizar dados do Google"
+									: "Vincular conta Google"}
+						</Button>
+					</div>
 				</CardContent>
 			</Card>
 
