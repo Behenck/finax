@@ -3,7 +3,8 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useEmployees } from "@/hooks/employees/use-employees";
+import { useApp } from "@/context/app-context";
+import { useGetOrganizationsSlugEmployees } from "@/http/generated";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
 import { useState } from "react";
 import { Controller, type Control } from "react-hook-form";
@@ -13,8 +14,13 @@ interface RefundFieldProps {
 }
 
 export function RefundField({ control }: RefundFieldProps) {
+  const { organization } = useApp()
   const [isRefund, setIsRefund] = useState(false)
-  const { data: employees } = useEmployees()
+  const { data } = useGetOrganizationsSlugEmployees({
+    slug: organization?.slug ?? "",
+  })
+
+  const employees = data?.employees ?? []
 
   return (
     <Card className="p-5 rounded-sm gap-3">
@@ -40,7 +46,7 @@ export function RefundField({ control }: RefundFieldProps) {
                     </SelectTrigger>
 
                     <SelectContent>
-                      {employees?.map((employee) => (
+                      {employees.map((employee) => (
                         <SelectItem key={employee.id} value={employee.id}>
                           {employee.name}
                         </SelectItem>

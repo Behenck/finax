@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import type { GetOrganizationsSlugPartners200 } from "@/http/generated"
 import { Link } from "@tanstack/react-router"
-import { Edit3, EllipsisVertical, ListChevronsUpDown, Receipt, UserRoundCheck, UserPlus, UserRoundX } from "lucide-react"
+import { Edit3, EllipsisVertical, Receipt, UserRoundCheck, UserRoundX } from "lucide-react"
 import { AssignSupervisor } from "./assign-supervisor"
 import { DetailsPartner } from "./details-partner"
 import { DeletePartner } from "./delete-partner"

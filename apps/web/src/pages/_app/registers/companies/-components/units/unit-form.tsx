@@ -14,7 +14,7 @@ import type { Unit } from "@/schemas/types/unit";
 import { unitSchema, type UnitFormData } from "@/schemas/unity-schema";
 import { useApp } from "@/context/app-context";
 import { useQueryClient } from "@tanstack/react-query";
-import { getOrganizationsSlugCompaniesCompanyidUnitsQueryKey, getOrganizationsSlugCompaniesQueryKey, usePostOrganizationsSlugCompaniesCompanyidUnits, usePutOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "@/http/generated";
+import { getOrganizationsSlugCompaniesQueryKey, usePostOrganizationsSlugCompaniesCompanyidUnits, usePutOrganizationsSlugCompaniesCompanyidUnitsUnitid } from "@/http/generated";
 
 export type CreateUnitType = z.infer<typeof unitSchema>;
 

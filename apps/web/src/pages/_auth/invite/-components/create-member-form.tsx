@@ -2,7 +2,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input";
 import type { Invite } from "@/schemas/types/invite";
 import { useEffect } from "react";
-import { Controller, type Control, type SetFieldValue, type UseFormSetValue } from "react-hook-form";
+import { Controller, type Control, type UseFormSetValue } from "react-hook-form";
 import z from "zod";
 
 export const CreateMemberSchema = z

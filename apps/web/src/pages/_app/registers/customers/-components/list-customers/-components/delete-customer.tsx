@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useApp } from "@/context/app-context";
 import { getOrganizationsSlugCustomersQueryKey, useDeleteOrganizationsSlugCustomersCustomerid, type GetOrganizationsSlugCustomers200 } from "@/http/generated";

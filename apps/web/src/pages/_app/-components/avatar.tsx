@@ -19,7 +19,7 @@ export function AvatarDropDown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger>
 				<Avatar>
-					<AvatarImage src={auth?.avatarUrl} alt="@behenck" />
+					<AvatarImage src={auth?.avatarUrl ?? undefined} alt="@behenck" />
 					<AvatarFallback>
 						{auth?.name ? getInitials(auth.name) : <User className="h-4 w-4" />}
 					</AvatarFallback>

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/transactions/update/$transactionId")
 
 function UpdateTransaction() {
   const { transactionId } = Route.useParams()
-  const { data: transaction, isLoading } = useTransaction(transactionId)
+  const { data: transaction } = useTransaction(transactionId)
 
   return (
     <main className="space-y-6">

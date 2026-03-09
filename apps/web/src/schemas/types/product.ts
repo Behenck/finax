@@ -1,21 +1,12 @@
-export interface ProductChild {
+export interface ProductListItem {
 	id: string;
 	name: string;
 	description: string | null;
-	parentId: string;
+	parentId: string | null;
 	isActive: boolean;
 	sortOrder: number;
-	children?: ProductChild[];
+	children?: ProductListItem[];
 }
 
-export interface Product {
-	id: string;
-	name: string;
-	description: string | null;
-	parentId: null;
-	isActive: boolean;
-	sortOrder: number;
-	children?: ProductChild[];
-}
-
-export type ProductListItem = Product | ProductChild;
+export type Product = ProductListItem;
+export type ProductChild = ProductListItem;

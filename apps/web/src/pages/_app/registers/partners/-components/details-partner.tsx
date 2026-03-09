@@ -3,7 +3,6 @@ import { BookUser, Building2, ListChevronsUpDown, Mail, Percent, Phone, Trending
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,

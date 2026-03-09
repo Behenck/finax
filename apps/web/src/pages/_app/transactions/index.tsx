@@ -4,7 +4,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { useTransactions } from "@/hooks/transactions/use-transactions";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { EllipsisVertical, Plus, Search, TrendingDown, TrendingUp } from "lucide-react";
+import { EllipsisVertical, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { BadgeStatus } from "./-components/badge-status";
 import { TransactionAmount } from "./-components/transaction-amount";
@@ -14,11 +14,6 @@ import { TransactionType } from "./-components/transaction-type";
 export const Route = createFileRoute("/_app/transactions/")({
 	component: RouteComponent,
 });
-
-const TRANSACTION_NATURE: Record<string, string> = {
-	FIXED: "Fixo",
-	VARIABLE: "Variável"
-}
 
 function RouteComponent() {
 	const [search, setSearch] = useState("");

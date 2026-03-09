@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useCategories } from "@/hooks/categories/use-category";
+import { useApp } from "@/context/app-context";
+import { useGetOrganizationsSlugCategories } from "@/http/generated";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
 import { formatCurrencyBRL, parseBRLCurrencyToNumber } from "@/utils/format-amount";
 import { Plus, Trash2 } from "lucide-react";
@@ -17,15 +18,19 @@ interface AmountItemsFieldProps {
 }
 
 export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
+  const { organization } = useApp()
   const [multipleItems, setMultipleItems] = useState(isItems)
-  const { data: categories } = useCategories()
+  const { data } = useGetOrganizationsSlugCategories({
+    slug: organization?.slug ?? "",
+  })
+  const categories = data?.categories ?? []
   const { setValue, control } = useFormContext<TransactionFormData>()
 
   const selectedCategoryId = useWatch({
     control,
     name: 'categoryId',
   })
-  const selectedCategory = categories?.find(
+  const selectedCategory = categories.find(
     (category) => category.id === selectedCategoryId,
   )
   const subCategories = selectedCategory?.children ?? []
@@ -135,7 +140,7 @@ export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
                         </SelectTrigger>
 
                         <SelectContent>
-                          {categories?.map((category) => (
+                          {categories.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                               {category.name}
                             </SelectItem>
@@ -162,7 +167,7 @@ export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
                         </SelectTrigger>
 
                         <SelectContent>
-                          {subCategories?.map((subCategory) => (
+                          {subCategories.map((subCategory) => (
                             <SelectItem key={subCategory.id} value={subCategory.id}>
                               {subCategory.name}
                             </SelectItem>

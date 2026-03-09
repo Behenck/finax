@@ -1,5 +1,5 @@
 import type { MemberListItem, RoleFilter } from './types'
-import type { MemberAccessScopeValue } from '../member-access-scope-picker'
+import type { MemberAccessScopeValue } from '../../member-access-scope-picker'
 import { MEMBER_ROLE_BADGE_CLASSNAME, MEMBER_ROLE_OPTIONS } from './constants'
 
 export function getMemberScope(member: MemberListItem): MemberAccessScopeValue {

@@ -1,9 +1,9 @@
-import type { InviteRoleEnum2Key, InviteRoleEnumKey, InviteTypeEnumKey } from "@/http/generated";
+import type { InviteRoleEnumKey, InviteTypeEnumKey } from "@/http/generated";
 
 export interface Invite {
   id: string;
   email: string | null;
-  role: InviteRoleEnumKey | InviteRoleEnum2Key;
+  role: InviteRoleEnumKey;
   type: InviteTypeEnumKey;
   createdAt: string;
   author: {

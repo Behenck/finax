@@ -13,7 +13,6 @@ export const CONDITION_OPTIONS = [
 	{ value: "PARTNER", label: "Parceiro" },
 	{ value: "UNIT", label: "Unidade" },
 	{ value: "SELLER", label: "Vendedor" },
-	{ value: "SUPERVISOR", label: "Supervisor" },
 ] as const;
 
 export const RECIPIENT_OPTIONS = [

@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getInvitesInviteid } from '@/http/generated';
-import { getInvite } from '@/http/invites/get-invite';
 import { router } from '@/router';
 import { Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';

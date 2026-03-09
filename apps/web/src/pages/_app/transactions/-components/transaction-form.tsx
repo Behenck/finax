@@ -43,7 +43,7 @@ export function TransactionForm({ initialData }: TransactionFormProps) {
       costCenterId: initialData?.costCenterId ?? "",
       categoryId: initialData?.categoryId ?? "",
       totalAmount: formatCurrencyBRL(initialData?.totalAmount ?? 0),
-      employeeIdRefunded: initialData?.refundedById ?? "",
+      employeeIdRefunded: initialData?.refundedByEmployeeId ?? "",
       notes: initialData?.notes ?? "",
       items: mappedItems ?? [],
       installmentRecurrenceType: "SINGLE",

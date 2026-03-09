@@ -1,9 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCategories } from "@/hooks/categories/use-category";
-import { useCompanies } from "@/hooks/companies/use-companies";
-import { useCostCenters } from "@/hooks/cost-centers/use-cost-centers";
+import { useApp } from "@/context/app-context";
+import {
+  useGetOrganizationsSlugCategories,
+  useGetOrganizationsSlugCompanies,
+  useGetOrganizationsSlugCostcenters,
+} from "@/http/generated";
 import type { TransactionFormData } from "@/schemas/transaction-schema";
 import { Controller, useWatch, type Control } from "react-hook-form";
 
@@ -12,15 +15,26 @@ interface ClassificationFieldProps {
 }
 
 export function ClassificationField({ control }: ClassificationFieldProps) {
-  const { data: companies } = useCompanies()
-  const { data: categories } = useCategories()
-  const { data: costCenters } = useCostCenters()
+  const { organization } = useApp()
+  const { data: companiesData } = useGetOrganizationsSlugCompanies({
+    slug: organization?.slug ?? "",
+  })
+  const { data: categoriesData } = useGetOrganizationsSlugCategories({
+    slug: organization?.slug ?? "",
+  })
+  const { data: costCentersData } = useGetOrganizationsSlugCostcenters({
+    slug: organization?.slug ?? "",
+  })
+
+  const companies = companiesData?.companies ?? []
+  const categories = categoriesData?.categories ?? []
+  const costCenters = costCentersData?.costCenters ?? []
 
   const selectedCompanyId = useWatch({
     control,
     name: 'companyId',
   })
-  const selectedCompany = companies?.find(
+  const selectedCompany = companies.find(
     (company) => company.id === selectedCompanyId,
   )
   const units = selectedCompany?.units ?? []
@@ -29,7 +43,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
     control,
     name: 'categoryId',
   })
-  const selectedCategory = categories?.find(
+  const selectedCategory = categories.find(
     (category) => category.id === selectedCategoryId,
   )
   const subCategories = selectedCategory?.children ?? []
@@ -52,7 +66,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {companies?.map((company) => (
+                    {companies.map((company) => (
                       <SelectItem key={company.id} value={company.id}>
                         {company.name}
                       </SelectItem>
@@ -109,7 +123,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
                 </SelectTrigger>
 
                 <SelectContent>
-                  {costCenters?.map((costCenter) => (
+                  {costCenters.map((costCenter) => (
                     <SelectItem key={costCenter.id} value={costCenter.id}>
                       {costCenter.name}
                     </SelectItem>
@@ -139,7 +153,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {categories?.map((category) => (
+                    {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -166,7 +180,7 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {subCategories?.map((subCategory) => (
+                    {subCategories.map((subCategory) => (
                       <SelectItem key={subCategory.id} value={subCategory.id}>
                         {subCategory.name}
                       </SelectItem>

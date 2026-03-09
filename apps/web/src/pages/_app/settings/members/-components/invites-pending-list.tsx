@@ -25,7 +25,7 @@ export function InvitesPendingList() {
     return items.filter((invite) => {
       const matchesSearch =
         !query ||
-        invite.email.toLowerCase().includes(query) ||
+        (invite.email ?? "").toLowerCase().includes(query) ||
         invite.author?.name?.toLowerCase().includes(query)
 
       const matchesRole = roleFilter === "ALL" || invite.role === roleFilter

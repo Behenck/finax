@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import type { GetOrganizationsSlugSellers200 } from "@/http/generated"
 import { Link } from "@tanstack/react-router"
-import { Edit3, EllipsisVertical, Receipt, UserRoundCheck, UserPlus, Trash2, UserRoundX } from "lucide-react"
+import { Edit3, EllipsisVertical, Receipt, UserRoundCheck, Trash2, UserRoundX } from "lucide-react"
 import { DetailsSeller } from "./details-seller"
 
 interface ListSellersProps {
