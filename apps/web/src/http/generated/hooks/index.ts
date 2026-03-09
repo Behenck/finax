@@ -61,6 +61,8 @@ export type { GetOrganizationsSlugProductsSuspenseQueryKey } from "./useGetOrgan
 export type { GetOrganizationsSlugRecurrencesQueryKey } from "./useGetOrganizationsSlugRecurrences.ts";
 export type { GetOrganizationsSlugRecurrencesSuspenseQueryKey } from "./useGetOrganizationsSlugRecurrencesSuspense.ts";
 export type { GetOrganizationsSlugSalesQueryKey } from "./useGetOrganizationsSlugSales.ts";
+export type { GetOrganizationsSlugSalesDashboardQueryKey } from "./useGetOrganizationsSlugSalesDashboard.ts";
+export type { GetOrganizationsSlugSalesDashboardSuspenseQueryKey } from "./useGetOrganizationsSlugSalesDashboardSuspense.ts";
 export type { GetOrganizationsSlugSalesSaleidQueryKey } from "./useGetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
@@ -320,6 +322,12 @@ export { useGetOrganizationsSlugRecurrencesSuspense } from "./useGetOrganization
 export { getOrganizationsSlugSalesQueryKey } from "./useGetOrganizationsSlugSales.ts";
 export { getOrganizationsSlugSalesQueryOptions } from "./useGetOrganizationsSlugSales.ts";
 export { useGetOrganizationsSlugSales } from "./useGetOrganizationsSlugSales.ts";
+export { getOrganizationsSlugSalesDashboardQueryKey } from "./useGetOrganizationsSlugSalesDashboard.ts";
+export { getOrganizationsSlugSalesDashboardQueryOptions } from "./useGetOrganizationsSlugSalesDashboard.ts";
+export { useGetOrganizationsSlugSalesDashboard } from "./useGetOrganizationsSlugSalesDashboard.ts";
+export { getOrganizationsSlugSalesDashboardSuspenseQueryKey } from "./useGetOrganizationsSlugSalesDashboardSuspense.ts";
+export { getOrganizationsSlugSalesDashboardSuspenseQueryOptions } from "./useGetOrganizationsSlugSalesDashboardSuspense.ts";
+export { useGetOrganizationsSlugSalesDashboardSuspense } from "./useGetOrganizationsSlugSalesDashboardSuspense.ts";
 export { getOrganizationsSlugSalesSaleidQueryKey } from "./useGetOrganizationsSlugSalesSaleid.ts";
 export { getOrganizationsSlugSalesSaleidQueryOptions } from "./useGetOrganizationsSlugSalesSaleid.ts";
 export { useGetOrganizationsSlugSalesSaleid } from "./useGetOrganizationsSlugSalesSaleid.ts";

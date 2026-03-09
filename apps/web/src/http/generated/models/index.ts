@@ -39,6 +39,7 @@ export type { GetOrganizationsSlugProductsIdPathParams, GetOrganizationsSlugProd
 export type { GetOrganizationsSlugProductsIdCommissionScenariosPathParams, ConditionsTypeEnumKey, ConditionsTypeEnum2Key, ConditionsTypeEnum3Key, ConditionsTypeEnum4Key, CommissionsRecipientTypeEnumKey, GetOrganizationsSlugProductsIdCommissionScenarios200, GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse, GetOrganizationsSlugProductsIdCommissionScenariosQuery } from "./GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export type { GetOrganizationsSlugRecurrencesPathParams, RecurrencesTypeEnumKey, RecurrencesStatusEnumKey, RecurrencesExecutionDayTypeEnumKey, RecurrencesAdjustmentRuleEnumKey, GetOrganizationsSlugRecurrences200, GetOrganizationsSlugRecurrencesQueryResponse, GetOrganizationsSlugRecurrencesQuery } from "./GetOrganizationsSlugRecurrences.ts";
 export type { GetOrganizationsSlugSalesPathParams, SalesStatusEnumKey, ResponsibleTypeEnum6Key, GetOrganizationsSlugSales200, GetOrganizationsSlugSalesQueryResponse, GetOrganizationsSlugSalesQuery } from "./GetOrganizationsSlugSales.ts";
+export type { GetOrganizationsSlugSalesDashboardPathParams, GetOrganizationsSlugSalesDashboardQueryParams, TopResponsiblesTypeEnumKey, CommissionsReferenceEnumKey, GetOrganizationsSlugSalesDashboard200, GetOrganizationsSlugSalesDashboardQueryResponse, GetOrganizationsSlugSalesDashboardQuery } from "./GetOrganizationsSlugSalesDashboard.ts";
 export type { GetOrganizationsSlugSalesSaleidPathParams, SaleStatusEnumKey, ResponsibleTypeEnum8Key, SaleResponsibleTypeEnumKey, CommissionsSourceTypeEnum3Key, CommissionsRecipientTypeEnum5Key, CommissionsDirectionEnum3Key, InstallmentsStatusEnumKey, GetOrganizationsSlugSalesSaleid200, GetOrganizationsSlugSalesSaleidQueryResponse, GetOrganizationsSlugSalesSaleidQuery } from "./GetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsPathParams, InstallmentsRecipientTypeEnumKey, InstallmentsSourceTypeEnumKey, InstallmentsDirectionEnumKey, InstallmentsStatusEnum2Key, GetOrganizationsSlugSalesSaleidCommissionInstallments200, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponse, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQuery } from "./GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { GetOrganizationsSlugSellersPathParams, SellersDocumentTypeEnumKey, SellersStatusEnumKey, GetOrganizationsSlugSellers200, GetOrganizationsSlugSellersQueryResponse, GetOrganizationsSlugSellersQuery } from "./GetOrganizationsSlugSellers.ts";
@@ -159,6 +160,8 @@ export { recurrencesExecutionDayTypeEnum } from "./GetOrganizationsSlugRecurrenc
 export { recurrencesAdjustmentRuleEnum } from "./GetOrganizationsSlugRecurrences.ts";
 export { salesStatusEnum } from "./GetOrganizationsSlugSales.ts";
 export { responsibleTypeEnum6 } from "./GetOrganizationsSlugSales.ts";
+export { topResponsiblesTypeEnum } from "./GetOrganizationsSlugSalesDashboard.ts";
+export { commissionsReferenceEnum } from "./GetOrganizationsSlugSalesDashboard.ts";
 export { saleStatusEnum } from "./GetOrganizationsSlugSalesSaleid.ts";
 export { responsibleTypeEnum8 } from "./GetOrganizationsSlugSalesSaleid.ts";
 export { saleResponsibleTypeEnum } from "./GetOrganizationsSlugSalesSaleid.ts";

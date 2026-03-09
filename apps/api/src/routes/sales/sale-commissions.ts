@@ -1104,7 +1104,7 @@ function toInstallmentSummaryBucket(aggregate: {
 	};
 }
 
-async function loadOrganizationInstallmentsSummaryByDirection(
+export async function loadOrganizationInstallmentsSummaryByDirection(
 	filters: OrganizationCommissionInstallmentsFilters,
 ): Promise<InstallmentSummaryByDirection> {
 	const summaries = await Promise.all(

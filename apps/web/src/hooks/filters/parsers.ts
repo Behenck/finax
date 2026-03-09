@@ -14,6 +14,7 @@ const COMMISSION_INSTALLMENT_STATUS_FILTER_VALUES = [
 	"CANCELED",
 ] as const;
 const MEMBER_VIEW_VALUES = ["access", "role"] as const;
+const DASHBOARD_VIEW_VALUES = ["commercial", "operational"] as const;
 
 export const textFilterParser = parseAsString
 	.withDefault("")
@@ -30,6 +31,10 @@ export const memberTargetParser = parseAsString.withOptions({
 export const memberViewParser = parseAsStringLiteral(MEMBER_VIEW_VALUES).withOptions(
 	{ history: "replace" },
 );
+
+export const dashboardViewParser = parseAsStringLiteral(DASHBOARD_VIEW_VALUES)
+	.withDefault("commercial")
+	.withOptions({ history: "replace" });
 
 export const showZeroInstallmentsParser = parseAsBoolean
 	.withDefault(false)
@@ -50,6 +55,10 @@ export const commissionInstallmentStatusParser = parseAsStringLiteral(
 export const dateFilterParser = parseAsString
 	.withDefault("")
 	.withOptions({ history: "replace" });
+
+export const monthFilterParser = parseAsString.withOptions({
+	history: "replace",
+});
 
 export const pageParser = parseAsInteger
 	.withDefault(1)

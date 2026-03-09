@@ -6,6 +6,7 @@ import { getOrganizationCommissionInstallments } from "./get-organization-commis
 import { getSale } from "./get-sale";
 import { getSaleCommissionInstallments } from "./get-sale-commission-installments";
 import { getSales } from "./get-sales";
+import { getSalesDashboard } from "./get-sales-dashboard";
 import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
 import { patchSaleStatus } from "./patch-sale-status";
@@ -16,6 +17,7 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(updateSale);
 	await app.register(deleteSale);
 	await app.register(getOrganizationCommissionInstallments);
+	await app.register(getSalesDashboard);
 	await app.register(getSales);
 	await app.register(getSale);
 	await app.register(patchSaleStatus);

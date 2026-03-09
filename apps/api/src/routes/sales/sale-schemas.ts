@@ -11,6 +11,7 @@ export const saleResponsibleTypeValues = ["SELLER", "PARTNER"] as const;
 export const SaleResponsibleTypeSchema = z.enum(saleResponsibleTypeValues);
 
 const saleDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+const saleMonthRegex = /^\d{4}-\d{2}$/;
 
 export const SaleDateInputSchema = z
 	.string()
@@ -25,6 +26,27 @@ export const SaleDateInputSchema = z
 		},
 		{
 			message: "Invalid date format. Expected YYYY-MM-DD",
+		},
+	);
+
+export const SaleMonthInputSchema = z
+	.string()
+	.regex(saleMonthRegex)
+	.refine(
+		(value) => {
+			const [yearString, monthString] = value.split("-");
+			const year = Number(yearString);
+			const month = Number(monthString);
+
+			return (
+				Number.isInteger(year) &&
+				Number.isInteger(month) &&
+				month >= 1 &&
+				month <= 12
+			);
+		},
+		{
+			message: "Invalid month format. Expected YYYY-MM",
 		},
 	);
 
@@ -236,12 +258,12 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 	paymentDate: z.date().nullable(),
 });
 
-const CommissionInstallmentSummaryBucketSchema = z.object({
+export const CommissionInstallmentSummaryBucketSchema = z.object({
 	count: z.number().int().nonnegative(),
 	amount: z.number().int().nonnegative(),
 });
 
-const CommissionInstallmentDirectionSummarySchema = z.object({
+export const CommissionInstallmentDirectionSummarySchema = z.object({
 	total: CommissionInstallmentSummaryBucketSchema,
 	pending: CommissionInstallmentSummaryBucketSchema,
 	paid: CommissionInstallmentSummaryBucketSchema,
@@ -259,6 +281,77 @@ export const OrganizationCommissionInstallmentsResponseSchema = z.object({
 	summaryByDirection: z.object({
 		INCOME: CommissionInstallmentDirectionSummarySchema,
 		OUTCOME: CommissionInstallmentDirectionSummarySchema,
+	}),
+});
+
+export const GetSalesDashboardQuerySchema = z
+	.object({
+		month: SaleMonthInputSchema,
+	})
+	.strict();
+
+const SalesDashboardPeriodRangeSchema = z.object({
+	month: SaleMonthInputSchema,
+	from: z.date(),
+	to: z.date(),
+});
+
+const SalesDashboardSalesSummarySchema = z.object({
+	count: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	averageTicket: z.number().int().nonnegative(),
+});
+
+const SalesDashboardTimelineItemSchema = z.object({
+	date: z.date(),
+	count: z.number().int().nonnegative(),
+	amount: z.number().int().nonnegative(),
+});
+
+const SalesDashboardTopProductSchema = z.object({
+	id: z.uuid(),
+	name: z.string(),
+	count: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const SalesDashboardTopResponsibleSchema = z.object({
+	id: z.uuid(),
+	type: SaleResponsibleTypeSchema,
+	name: z.string(),
+	count: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const SalesDashboardCommissionsPeriodSchema = z.object({
+	INCOME: CommissionInstallmentDirectionSummarySchema,
+	OUTCOME: CommissionInstallmentDirectionSummarySchema,
+	netAmount: z.number().int(),
+});
+
+export const SalesDashboardResponseSchema = z.object({
+	period: z.object({
+		selectedMonth: SaleMonthInputSchema,
+		current: SalesDashboardPeriodRangeSchema,
+		previous: SalesDashboardPeriodRangeSchema,
+	}),
+	sales: z.object({
+		current: SalesDashboardSalesSummarySchema,
+		previous: SalesDashboardSalesSummarySchema,
+		byStatus: z.object({
+			PENDING: CommissionInstallmentSummaryBucketSchema,
+			APPROVED: CommissionInstallmentSummaryBucketSchema,
+			COMPLETED: CommissionInstallmentSummaryBucketSchema,
+			CANCELED: CommissionInstallmentSummaryBucketSchema,
+		}),
+		timeline: z.array(SalesDashboardTimelineItemSchema),
+		topProducts: z.array(SalesDashboardTopProductSchema),
+		topResponsibles: z.array(SalesDashboardTopResponsibleSchema),
+	}),
+	commissions: z.object({
+		reference: z.literal("EXPECTED_PAYMENT_DATE"),
+		current: SalesDashboardCommissionsPeriodSchema,
+		previous: SalesDashboardCommissionsPeriodSchema,
 	}),
 });
 
@@ -368,6 +461,9 @@ export type SaleCommissionInstallmentStatusFilter = z.infer<
 >;
 export type GetOrganizationCommissionInstallmentsQuery = z.infer<
 	typeof GetOrganizationCommissionInstallmentsQuerySchema
+>;
+export type GetSalesDashboardQuery = z.infer<
+	typeof GetSalesDashboardQuerySchema
 >;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
