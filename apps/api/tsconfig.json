@@ -11,13 +11,9 @@
       "@/*": [
         "./src/*"
       ],
-      "target": "ES2022",
-      "module": "ESNext",
-      "moduleResolution": "bundler",
-      "outDir": "dist",
-      "rootDir": "src",
-      "strict": true
     },
+    "outDir": "dist",
+    "rootDir": "src",
     "lib": [
       "es2024",
       "ESNext.Array",
