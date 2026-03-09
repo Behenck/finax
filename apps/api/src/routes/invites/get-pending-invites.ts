@@ -23,7 +23,7 @@ export async function getPendingInvites(app: FastifyInstance) {
               invites: z.array(
                 z.object({
                   id: z.uuid(),
-                  email: z.email(),
+                  email: z.email().nullable(),
                   role: z.enum(Role),
                   createdAt: z.date(),
                   author: z

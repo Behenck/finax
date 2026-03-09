@@ -3,7 +3,8 @@
   "_version": "22.0.0",
   "include": [
     "src/**/*",
-    "@types/**/*.d.ts"
+    "@types/**/*.d.ts",
+    "generated/**/*.ts"
   ],
   "compilerOptions": {
     "baseUrl": ".",
@@ -11,9 +12,12 @@
       "@/*": [
         "./src/*"
       ],
+      "generated/*": [
+        "./generated/*"
+      ]
     },
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "lib": [
       "es2024",
       "ESNext.Array",
