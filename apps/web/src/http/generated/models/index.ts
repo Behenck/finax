@@ -42,6 +42,7 @@ export type { GetOrganizationsSlugSalesPathParams, SalesStatusEnumKey, Responsib
 export type { GetOrganizationsSlugSalesDashboardPathParams, GetOrganizationsSlugSalesDashboardQueryParams, TopResponsiblesTypeEnumKey, CommissionsReferenceEnumKey, GetOrganizationsSlugSalesDashboard200, GetOrganizationsSlugSalesDashboardQueryResponse, GetOrganizationsSlugSalesDashboardQuery } from "./GetOrganizationsSlugSalesDashboard.ts";
 export type { GetOrganizationsSlugSalesSaleidPathParams, SaleStatusEnumKey, ResponsibleTypeEnum8Key, SaleResponsibleTypeEnumKey, CommissionsSourceTypeEnum3Key, CommissionsRecipientTypeEnum5Key, CommissionsDirectionEnum3Key, InstallmentsStatusEnumKey, GetOrganizationsSlugSalesSaleid200, GetOrganizationsSlugSalesSaleidQueryResponse, GetOrganizationsSlugSalesSaleidQuery } from "./GetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsPathParams, InstallmentsRecipientTypeEnumKey, InstallmentsSourceTypeEnumKey, InstallmentsDirectionEnumKey, InstallmentsStatusEnum2Key, GetOrganizationsSlugSalesSaleidCommissionInstallments200, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponse, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQuery } from "./GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export type { GetOrganizationsSlugSalesSaleidHistoryPathParams, HistoryActionEnumKey, GetOrganizationsSlugSalesSaleidHistory200, GetOrganizationsSlugSalesSaleidHistoryQueryResponse, GetOrganizationsSlugSalesSaleidHistoryQuery } from "./GetOrganizationsSlugSalesSaleidHistory.ts";
 export type { GetOrganizationsSlugSellersPathParams, SellersDocumentTypeEnumKey, SellersStatusEnumKey, GetOrganizationsSlugSellers200, GetOrganizationsSlugSellersQueryResponse, GetOrganizationsSlugSellersQuery } from "./GetOrganizationsSlugSellers.ts";
 export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeEnumKey, SellerStatusEnumKey, GetOrganizationsSlugSellersSellerid200, GetOrganizationsSlugSellersSelleridQueryResponse, GetOrganizationsSlugSellersSelleridQuery } from "./GetOrganizationsSlugSellersSellerid.ts";
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./GetOrganizationsSlugTransactions.ts";
@@ -173,6 +174,7 @@ export { installmentsRecipientTypeEnum } from "./GetOrganizationsSlugSalesSaleid
 export { installmentsSourceTypeEnum } from "./GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { installmentsDirectionEnum } from "./GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { installmentsStatusEnum2 } from "./GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { historyActionEnum } from "./GetOrganizationsSlugSalesSaleidHistory.ts";
 export { sellersDocumentTypeEnum } from "./GetOrganizationsSlugSellers.ts";
 export { sellersStatusEnum } from "./GetOrganizationsSlugSellers.ts";
 export { sellerDocumentTypeEnum } from "./GetOrganizationsSlugSellersSellerid.ts";

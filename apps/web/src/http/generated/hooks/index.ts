@@ -66,6 +66,8 @@ export type { GetOrganizationsSlugSalesDashboardSuspenseQueryKey } from "./useGe
 export type { GetOrganizationsSlugSalesSaleidQueryKey } from "./useGetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export type { GetOrganizationsSlugSalesSaleidHistoryQueryKey } from "./useGetOrganizationsSlugSalesSaleidHistory.ts";
+export type { GetOrganizationsSlugSalesSaleidHistorySuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
 export type { GetOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export type { GetOrganizationsSlugSalesSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSuspense.ts";
 export type { GetOrganizationsSlugSellersQueryKey } from "./useGetOrganizationsSlugSellers.ts";
@@ -337,6 +339,12 @@ export { useGetOrganizationsSlugSalesSaleidCommissionInstallments } from "./useG
 export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryOptions } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export { useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense } from "./useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export { getOrganizationsSlugSalesSaleidHistoryQueryKey } from "./useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { getOrganizationsSlugSalesSaleidHistoryQueryOptions } from "./useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { useGetOrganizationsSlugSalesSaleidHistory } from "./useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { getOrganizationsSlugSalesSaleidHistorySuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
+export { getOrganizationsSlugSalesSaleidHistorySuspenseQueryOptions } from "./useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
+export { useGetOrganizationsSlugSalesSaleidHistorySuspense } from "./useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryOptions } from "./useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { useGetOrganizationsSlugSalesSaleidSuspense } from "./useGetOrganizationsSlugSalesSaleidSuspense.ts";

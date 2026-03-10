@@ -11,7 +11,7 @@ import { z } from "zod/v4";
 export const getPendingInvites200Schema = z.object({
     "invites": z.array(z.object({
     "id": z.uuid(),
-"email": z.email(),
+"email": z.nullable(z.email()),
 "role": z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
 "createdAt": z.iso.datetime(),
 "author": z.nullable(z.object({

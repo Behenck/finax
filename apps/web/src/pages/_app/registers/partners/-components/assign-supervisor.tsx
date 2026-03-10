@@ -7,7 +7,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,17 +15,22 @@ import { getOrganizationsSlugPartnersQueryKey, useAssignPartnerSupervisor, useGe
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface AssignSupervisorProps {
   partner: GetOrganizationsSlugPartnersPartnerid200["partner"]
+  supervisorPartnerCounts: Record<string, number>
 }
 
-export function AssignSupervisor({ partner }: AssignSupervisorProps) {
+export function AssignSupervisor({
+  partner,
+  supervisorPartnerCounts,
+}: AssignSupervisorProps) {
   const [open, setOpen] = useState(false)
 
   const { data, isLoading } = useGetOrganizationsSlugMembersRole({
     slug: partner.organization.slug,
-    role: "ADMIN" //mudar para role de supervisor
+    role: "SUPERVISOR",
   })
 
   const supervisors = data?.members ?? []
@@ -42,34 +46,42 @@ export function AssignSupervisor({ partner }: AssignSupervisorProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    await assignSupervisor({
-      slug: partner.organization.slug,
-      partnerId: partner.id,
-      data: {
-        supervisorId: selectedSupervisorId,
-      },
-    })
-
-    await queryClient.invalidateQueries({
-      queryKey: getOrganizationsSlugPartnersQueryKey({
+    try {
+      await assignSupervisor({
         slug: partner.organization.slug,
-      }),
-    })
+        partnerId: partner.id,
+        data: {
+          supervisorId: selectedSupervisorId,
+        },
+      })
 
-    setOpen(false)
+      await queryClient.invalidateQueries({
+        queryKey: getOrganizationsSlugPartnersQueryKey({
+          slug: partner.organization.slug,
+        }),
+      })
+
+      toast.success("Supervisor atualizado com sucesso.")
+      setOpen(false)
+    } catch {
+      toast.error("Não foi possível atualizar o supervisor.")
+    }
   }
 
   if (isLoading) return <span>Carregando...</span>
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <div className='flex gap-4 items-center'>
-            <UserPlus className='size-3.5 text-foreground' />
-            <span className='font-light text-sm'>Atribuir Supervisor</span>
-          </div>
-        </DropdownMenuItem>
-      </DialogTrigger>
+      <DropdownMenuItem
+        onSelect={(event) => {
+          event.preventDefault()
+          setOpen(true)
+        }}
+      >
+        <div className='flex gap-4 items-center'>
+          <UserPlus className='size-3.5 text-foreground' />
+          <span className='font-light text-sm'>Atribuir Supervisor</span>
+        </div>
+      </DropdownMenuItem>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Atribuir Supervisor</DialogTitle>
@@ -89,34 +101,38 @@ export function AssignSupervisor({ partner }: AssignSupervisorProps) {
               <Check className="size-4 text-green-500" />
             )}
           </Card>
-          {supervisors.map((supervisor) => (
-            <Card
-              key={supervisor.userId}
-              onClick={() => setSelectedSupervisorId(supervisor.userId)}
-              className={cn(
-                "p-4 flex-row items-center justify-between cursor-pointer transition-all hover:bg-gray-200",
-                isSelected(supervisor.userId) && "border-green-500 bg-green-50"
-              )}
-            >
-              <div className="flex gap-4">
-                <div className="flex items-center justify-center p-2 w-10 h-10 rounded-full bg-muted-foreground">
-                  <UserCheck className="size-4 text-muted" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium">{supervisor.name}</span>
-                  <span className="text-muted-foreground text-xs">{supervisor.email}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">
-                  3 parceiros
-                </Badge>
-                {isSelected(supervisor.id) && (
-                  <Check className="size-4 text-green-500" />
+          {supervisors.map((supervisor) => {
+            const partnersCount = supervisorPartnerCounts[supervisor.userId] ?? 0
+
+            return (
+              <Card
+                key={supervisor.userId}
+                onClick={() => setSelectedSupervisorId(supervisor.userId)}
+                className={cn(
+                  "p-4 flex-row items-center justify-between cursor-pointer transition-all hover:bg-gray-200",
+                  isSelected(supervisor.userId) && "border-green-500 bg-green-50"
                 )}
-              </div>
-            </Card>
-          ))}
+              >
+                <div className="flex gap-4">
+                  <div className="flex items-center justify-center p-2 w-10 h-10 rounded-full bg-muted-foreground">
+                    <UserCheck className="size-4 text-muted" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{supervisor.name}</span>
+                    <span className="text-muted-foreground text-xs">{supervisor.email}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">
+                    {partnersCount} {partnersCount === 1 ? "parceiro" : "parceiros"}
+                  </Badge>
+                  {isSelected(supervisor.userId) && (
+                    <Check className="size-4 text-green-500" />
+                  )}
+                </div>
+              </Card>
+            )
+          })}
           <div className="flex items-center justify-end gap-2 mt-6">
             <DialogClose asChild>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { Role } from "generated/prisma/enums";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
@@ -56,19 +57,22 @@ export async function assignSupervisorPartner(app: FastifyInstance) {
           throw new BadRequestError("Partner not found")
         }
 
-        // if (supervisorId) {
-        //   const supervisor = await prisma.user.findFirst({
-        //     where: {
-        //       id: supervisorId,
-        //       organizationId: organization.id,
-        //     },
-        //     select: { id: true },
-        //   })
+        if (supervisorId) {
+          const supervisor = await prisma.member.findFirst({
+            where: {
+              organizationId: organization.id,
+              userId: supervisorId,
+              role: Role.SUPERVISOR,
+            },
+            select: {
+              id: true,
+            },
+          })
 
-        //   if (!supervisor) {
-        //     throw new BadRequestError("Supervisor not found")
-        //   }
-        // }
+          if (!supervisor) {
+            throw new BadRequestError("Supervisor not found")
+          }
+        }
 
         await db(() => prisma.partner.update({
           where: {

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { CustomerStatus } from "generated/prisma/enums";
+import { CustomerStatus, SaleHistoryAction } from "generated/prisma/enums";
 import z from "zod";
 import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
@@ -11,6 +11,10 @@ import {
 	replaceSaleCommissions,
 	resolveSaleCommissionsData,
 } from "./sale-commissions";
+import {
+	createSaleDiffHistoryEvent,
+	loadSaleHistorySnapshot,
+} from "./sale-history";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
 
@@ -38,6 +42,7 @@ export async function updateSale(app: FastifyInstance) {
 			async (request, reply) => {
 				const { slug, saleId } = request.params;
 				const data = request.body;
+				const actorId = await request.getCurrentUserId();
 
 				const organization = await prisma.organization.findUnique({
 					where: {
@@ -64,6 +69,16 @@ export async function updateSale(app: FastifyInstance) {
 				});
 
 				if (!sale) {
+					throw new BadRequestError("Sale not found");
+				}
+
+				const beforeSnapshot = await loadSaleHistorySnapshot(
+					prisma,
+					saleId,
+					organization.id,
+				);
+
+				if (!beforeSnapshot) {
 					throw new BadRequestError("Sale not found");
 				}
 
@@ -173,6 +188,25 @@ export async function updateSale(app: FastifyInstance) {
 								data.totalAmount,
 							);
 						}
+
+						const afterSnapshot = await loadSaleHistorySnapshot(
+							tx,
+							saleId,
+							organization.id,
+						);
+
+						if (!afterSnapshot) {
+							throw new BadRequestError("Sale not found");
+						}
+
+						await createSaleDiffHistoryEvent(tx, {
+							saleId,
+							organizationId: organization.id,
+							actorId,
+							action: SaleHistoryAction.UPDATED,
+							beforeSnapshot,
+							afterSnapshot,
+						});
 					}),
 				);
 

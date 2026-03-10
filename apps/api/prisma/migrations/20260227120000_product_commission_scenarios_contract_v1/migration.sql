@@ -5,7 +5,7 @@ BEGIN
     SELECT 1
     FROM pg_enum
     WHERE enumlabel = 'COMPANY_EQUALS'
-      AND enumtypid = 'ProductCommissionScenarioConditionType'::regtype
+      AND enumtypid = '"ProductCommissionScenarioConditionType"'::regtype
   ) THEN
     ALTER TYPE "ProductCommissionScenarioConditionType" ADD VALUE 'COMPANY_EQUALS';
   END IF;
@@ -18,7 +18,7 @@ BEGIN
     SELECT 1
     FROM pg_enum
     WHERE enumlabel = 'UNIT'
-      AND enumtypid = 'ProductCommissionRecipientType'::regtype
+      AND enumtypid = '"ProductCommissionRecipientType"'::regtype
   ) THEN
     ALTER TYPE "ProductCommissionRecipientType" ADD VALUE 'UNIT';
   END IF;

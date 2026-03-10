@@ -201,6 +201,7 @@ async function createFixture() {
 	});
 
 	return {
+		user,
 		token,
 		org,
 		company,
@@ -349,6 +350,34 @@ async function createSaleUsingApi(
 	expect(response.body).toHaveProperty("saleId");
 
 	return response.body.saleId as string;
+}
+
+async function getSaleHistoryEvents(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+	saleId: string,
+) {
+	const response = await request(app.server)
+		.get(`/organizations/${fixture.org.slug}/sales/${saleId}/history`)
+		.set("Authorization", `Bearer ${fixture.token}`);
+
+	expect(response.statusCode).toBe(200);
+	expect(Array.isArray(response.body.history)).toBe(true);
+
+	return response.body.history as Array<{
+		id: string;
+		action: string;
+		createdAt: string;
+		actor: {
+			id: string;
+			name: string | null;
+			avatarUrl: string | null;
+		};
+		changes: Array<{
+			path: string;
+			before: unknown;
+			after: unknown;
+		}>;
+	}>;
 }
 
 describe("sales crud", () => {
@@ -1021,6 +1050,169 @@ describe("sales crud", () => {
 		}
 	});
 
+	it("should create sale history events for create and update", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+
+		const createdHistory = await getSaleHistoryEvents(fixture, saleId);
+		expect(createdHistory).toHaveLength(1);
+		expect(createdHistory[0]?.action).toBe("CREATED");
+		expect(createdHistory[0]?.actor.id).toBe(fixture.user.id);
+		expect(createdHistory[0]?.changes.length).toBeGreaterThan(0);
+		expect(
+			createdHistory[0]?.changes.some((change) => change.path === "sale.totalAmount"),
+		).toBe(true);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 130_000,
+					notes: "Venda com valor atualizado",
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const updatedHistory = await getSaleHistoryEvents(fixture, saleId);
+		expect(updatedHistory[0]?.action).toBe("UPDATED");
+		expect(updatedHistory[1]?.action).toBe("CREATED");
+		expect(
+			new Date(updatedHistory[0]?.createdAt ?? "").getTime(),
+		).toBeGreaterThanOrEqual(new Date(updatedHistory[1]?.createdAt ?? "").getTime());
+
+		const totalAmountChange = updatedHistory[0]?.changes.find(
+			(change) => change.path === "sale.totalAmount",
+		);
+		expect(totalAmountChange).toBeDefined();
+		expect(totalAmountChange?.before).toBe(125_000);
+		expect(totalAmountChange?.after).toBe(130_000);
+	});
+
+	it("should create sale history events for status and commission installment changes", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(204);
+
+		const commission = await prisma.saleCommission.findFirst({
+			where: {
+				saleId,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			select: {
+				id: true,
+			},
+		});
+		expect(commission?.id).toBeDefined();
+
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommissionId: commission?.id,
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+				expectedPaymentDate: true,
+			},
+		});
+		expect(installments.length).toBeGreaterThan(1);
+
+		const updateInstallmentResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[0]?.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				amount: 777,
+				expectedPaymentDate: "2026-04-15",
+			});
+		expect(updateInstallmentResponse.statusCode).toBe(204);
+
+		const patchInstallmentStatusResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[0]?.id}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-04-20",
+				amount: 778,
+			});
+		expect(patchInstallmentStatusResponse.statusCode).toBe(204);
+
+		const deleteInstallmentResponse = await request(app.server)
+			.delete(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installments[1]?.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		expect(deleteInstallmentResponse.statusCode).toBe(204);
+
+		const history = await getSaleHistoryEvents(fixture, saleId);
+		const actions = history.map((event) => event.action);
+
+		expect(actions).toContain("CREATED");
+		expect(actions).toContain("STATUS_CHANGED");
+		expect(actions).toContain("COMMISSION_INSTALLMENT_UPDATED");
+		expect(actions).toContain("COMMISSION_INSTALLMENT_STATUS_UPDATED");
+		expect(actions).toContain("COMMISSION_INSTALLMENT_DELETED");
+
+		const statusEvent = history.find((event) => event.action === "STATUS_CHANGED");
+		expect(statusEvent).toBeDefined();
+		expect(
+			statusEvent?.changes.some(
+				(change) =>
+					change.path === "sale.status" &&
+					change.before === "PENDING" &&
+					change.after === "APPROVED",
+			),
+		).toBe(true);
+	});
+
+	it("should return history scoped by sale", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(fixture);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				notes: "Segunda venda",
+			}),
+		);
+
+		const firstSaleUpdateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${firstSaleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 150_000,
+				}),
+			);
+		expect(firstSaleUpdateResponse.statusCode).toBe(204);
+
+		const firstHistory = await getSaleHistoryEvents(fixture, firstSaleId);
+		const secondHistory = await getSaleHistoryEvents(fixture, secondSaleId);
+
+		expect(firstHistory).toHaveLength(2);
+		expect(secondHistory).toHaveLength(1);
+		expect(secondHistory[0]?.action).toBe("CREATED");
+	});
+
 	it("should update sale via put without changing status", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(fixture);
@@ -1258,6 +1450,28 @@ describe("sales crud", () => {
 		).toBe(true);
 		expect(
 			installments.every((installment) => installment.paymentDate === null),
+		).toBe(true);
+
+		const history = await getSaleHistoryEvents(fixture, saleId);
+		const statusEvent = history.find((event) => event.action === "STATUS_CHANGED");
+
+		expect(statusEvent).toBeDefined();
+		expect(
+			statusEvent?.changes.some(
+				(change) =>
+					change.path === "sale.status" &&
+					change.before === "PENDING" &&
+					change.after === "CANCELED",
+			),
+		).toBe(true);
+		expect(
+			statusEvent?.changes.some(
+				(change) =>
+					change.path.startsWith("commissions[") &&
+					change.path.endsWith(".status") &&
+					change.before === "PENDING" &&
+					change.after === "CANCELED",
+			),
 		).toBe(true);
 	});
 

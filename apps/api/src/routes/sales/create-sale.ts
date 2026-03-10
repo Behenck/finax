@@ -10,6 +10,10 @@ import {
 	replaceSaleCommissions,
 	resolveSaleCommissionsData,
 } from "./sale-commissions";
+import {
+	createSaleCreatedHistoryEvent,
+	loadSaleHistorySnapshot,
+} from "./sale-history";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { CreateSaleBodySchema, parseSaleDateInput } from "./sale-schemas";
 
@@ -149,6 +153,23 @@ export async function createSale(app: FastifyInstance) {
 								resolvedCommissions,
 							);
 						}
+
+						const snapshot = await loadSaleHistorySnapshot(
+							tx,
+							createdSale.id,
+							organization.id,
+						);
+
+						if (!snapshot) {
+							throw new BadRequestError("Sale not found");
+						}
+
+						await createSaleCreatedHistoryEvent(tx, {
+							saleId: createdSale.id,
+							organizationId: organization.id,
+							actorId: userId,
+							snapshot,
+						});
 
 						return createdSale;
 					}),

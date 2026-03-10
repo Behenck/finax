@@ -303,6 +303,7 @@ export type SaleWhereInput = {
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   commissions?: Prisma.SaleCommissionListRelationFilter
+  historyEvents?: Prisma.SaleHistoryEventListRelationFilter
 }
 
 export type SaleOrderByWithRelationInput = {
@@ -328,6 +329,7 @@ export type SaleOrderByWithRelationInput = {
   product?: Prisma.ProductOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   commissions?: Prisma.SaleCommissionOrderByRelationAggregateInput
+  historyEvents?: Prisma.SaleHistoryEventOrderByRelationAggregateInput
 }
 
 export type SaleWhereUniqueInput = Prisma.AtLeast<{
@@ -356,6 +358,7 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   commissions?: Prisma.SaleCommissionListRelationFilter
+  historyEvents?: Prisma.SaleHistoryEventListRelationFilter
 }, "id">
 
 export type SaleOrderByWithAggregationInput = {
@@ -419,6 +422,7 @@ export type SaleCreateInput = {
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateInput = {
@@ -438,6 +442,7 @@ export type SaleUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUpdateInput = {
@@ -457,6 +462,7 @@ export type SaleUpdateInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateInput = {
@@ -476,6 +482,7 @@ export type SaleUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleCreateManyInput = {
@@ -863,6 +870,20 @@ export type EnumSaleResponsibleTypeFieldUpdateOperationsInput = {
   set?: $Enums.SaleResponsibleType
 }
 
+export type SaleCreateNestedOneWithoutHistoryEventsInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutHistoryEventsInput, Prisma.SaleUncheckedCreateWithoutHistoryEventsInput>
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutHistoryEventsInput
+  connect?: Prisma.SaleWhereUniqueInput
+}
+
+export type SaleUpdateOneRequiredWithoutHistoryEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutHistoryEventsInput, Prisma.SaleUncheckedCreateWithoutHistoryEventsInput>
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutHistoryEventsInput
+  upsert?: Prisma.SaleUpsertWithoutHistoryEventsInput
+  connect?: Prisma.SaleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SaleUpdateToOneWithWhereWithoutHistoryEventsInput, Prisma.SaleUpdateWithoutHistoryEventsInput>, Prisma.SaleUncheckedUpdateWithoutHistoryEventsInput>
+}
+
 export type SaleCreateNestedOneWithoutCommissionsInput = {
   create?: Prisma.XOR<Prisma.SaleCreateWithoutCommissionsInput, Prisma.SaleUncheckedCreateWithoutCommissionsInput>
   connectOrCreate?: Prisma.SaleCreateOrConnectWithoutCommissionsInput
@@ -893,6 +914,7 @@ export type SaleCreateWithoutCreatedByInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutSalesInput
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutCreatedByInput = {
@@ -911,6 +933,7 @@ export type SaleUncheckedCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutCreatedByInput = {
@@ -976,6 +999,7 @@ export type SaleCreateWithoutOrganizationInput = {
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutOrganizationInput = {
@@ -994,6 +1018,7 @@ export type SaleUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutOrganizationInput = {
@@ -1038,6 +1063,7 @@ export type SaleCreateWithoutCompanyInput = {
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutCompanyInput = {
@@ -1056,6 +1082,7 @@ export type SaleUncheckedCreateWithoutCompanyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutCompanyInput = {
@@ -1100,6 +1127,7 @@ export type SaleCreateWithoutUnitInput = {
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutUnitInput = {
@@ -1118,6 +1146,7 @@ export type SaleUncheckedCreateWithoutUnitInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutUnitInput = {
@@ -1162,6 +1191,7 @@ export type SaleCreateWithoutCustomerInput = {
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutCustomerInput = {
@@ -1180,6 +1210,7 @@ export type SaleUncheckedCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutCustomerInput = {
@@ -1224,6 +1255,7 @@ export type SaleCreateWithoutProductInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
   commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutProductInput = {
@@ -1242,6 +1274,7 @@ export type SaleUncheckedCreateWithoutProductInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutProductInput = {
@@ -1270,6 +1303,98 @@ export type SaleUpdateManyWithWhereWithoutProductInput = {
   data: Prisma.XOR<Prisma.SaleUpdateManyMutationInput, Prisma.SaleUncheckedUpdateManyWithoutProductInput>
 }
 
+export type SaleCreateWithoutHistoryEventsInput = {
+  id?: string
+  saleDate: Date | string
+  totalAmount: number
+  status?: $Enums.SaleStatus
+  responsibleType: $Enums.SaleResponsibleType
+  responsibleId: string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
+  company: Prisma.CompanyCreateNestedOneWithoutSalesInput
+  unit?: Prisma.UnitCreateNestedOneWithoutSalesInput
+  customer: Prisma.CustomerCreateNestedOneWithoutSalesInput
+  product: Prisma.ProductCreateNestedOneWithoutSalesInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
+  commissions?: Prisma.SaleCommissionCreateNestedManyWithoutSaleInput
+}
+
+export type SaleUncheckedCreateWithoutHistoryEventsInput = {
+  id?: string
+  organizationId: string
+  companyId: string
+  unitId?: string | null
+  customerId: string
+  productId: string
+  saleDate: Date | string
+  totalAmount: number
+  status?: $Enums.SaleStatus
+  responsibleType: $Enums.SaleResponsibleType
+  responsibleId: string
+  notes?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
+}
+
+export type SaleCreateOrConnectWithoutHistoryEventsInput = {
+  where: Prisma.SaleWhereUniqueInput
+  create: Prisma.XOR<Prisma.SaleCreateWithoutHistoryEventsInput, Prisma.SaleUncheckedCreateWithoutHistoryEventsInput>
+}
+
+export type SaleUpsertWithoutHistoryEventsInput = {
+  update: Prisma.XOR<Prisma.SaleUpdateWithoutHistoryEventsInput, Prisma.SaleUncheckedUpdateWithoutHistoryEventsInput>
+  create: Prisma.XOR<Prisma.SaleCreateWithoutHistoryEventsInput, Prisma.SaleUncheckedCreateWithoutHistoryEventsInput>
+  where?: Prisma.SaleWhereInput
+}
+
+export type SaleUpdateToOneWithWhereWithoutHistoryEventsInput = {
+  where?: Prisma.SaleWhereInput
+  data: Prisma.XOR<Prisma.SaleUpdateWithoutHistoryEventsInput, Prisma.SaleUncheckedUpdateWithoutHistoryEventsInput>
+}
+
+export type SaleUpdateWithoutHistoryEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
+  responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
+  responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutSalesNestedInput
+  unit?: Prisma.UnitUpdateOneWithoutSalesNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutSalesNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
+  commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+}
+
+export type SaleUncheckedUpdateWithoutHistoryEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
+  responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
+  responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+}
+
 export type SaleCreateWithoutCommissionsInput = {
   id?: string
   saleDate: Date | string
@@ -1286,6 +1411,7 @@ export type SaleCreateWithoutCommissionsInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutSalesInput
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedSalesInput
+  historyEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutSaleInput
 }
 
 export type SaleUncheckedCreateWithoutCommissionsInput = {
@@ -1304,6 +1430,7 @@ export type SaleUncheckedCreateWithoutCommissionsInput = {
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  historyEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutSaleInput
 }
 
 export type SaleCreateOrConnectWithoutCommissionsInput = {
@@ -1338,6 +1465,7 @@ export type SaleUpdateWithoutCommissionsInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSalesNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutCommissionsInput = {
@@ -1356,6 +1484,7 @@ export type SaleUncheckedUpdateWithoutCommissionsInput = {
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleCreateManyCreatedByInput = {
@@ -1391,6 +1520,7 @@ export type SaleUpdateWithoutCreatedByInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSalesNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutCreatedByInput = {
@@ -1409,6 +1539,7 @@ export type SaleUncheckedUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1461,6 +1592,7 @@ export type SaleUpdateWithoutOrganizationInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutOrganizationInput = {
@@ -1479,6 +1611,7 @@ export type SaleUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1531,6 +1664,7 @@ export type SaleUpdateWithoutCompanyInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutCompanyInput = {
@@ -1549,6 +1683,7 @@ export type SaleUncheckedUpdateWithoutCompanyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutCompanyInput = {
@@ -1601,6 +1736,7 @@ export type SaleUpdateWithoutUnitInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutUnitInput = {
@@ -1619,6 +1755,7 @@ export type SaleUncheckedUpdateWithoutUnitInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutUnitInput = {
@@ -1671,6 +1808,7 @@ export type SaleUpdateWithoutCustomerInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutCustomerInput = {
@@ -1689,6 +1827,7 @@ export type SaleUncheckedUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutCustomerInput = {
@@ -1741,6 +1880,7 @@ export type SaleUpdateWithoutProductInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSalesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedSalesNestedInput
   commissions?: Prisma.SaleCommissionUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateWithoutProductInput = {
@@ -1759,6 +1899,7 @@ export type SaleUncheckedUpdateWithoutProductInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
+  historyEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutSaleNestedInput
 }
 
 export type SaleUncheckedUpdateManyWithoutProductInput = {
@@ -1785,10 +1926,12 @@ export type SaleUncheckedUpdateManyWithoutProductInput = {
 
 export type SaleCountOutputType = {
   commissions: number
+  historyEvents: number
 }
 
 export type SaleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   commissions?: boolean | SaleCountOutputTypeCountCommissionsArgs
+  historyEvents?: boolean | SaleCountOutputTypeCountHistoryEventsArgs
 }
 
 /**
@@ -1806,6 +1949,13 @@ export type SaleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  */
 export type SaleCountOutputTypeCountCommissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SaleCommissionWhereInput
+}
+
+/**
+ * SaleCountOutputType without action
+ */
+export type SaleCountOutputTypeCountHistoryEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleHistoryEventWhereInput
 }
 
 
@@ -1832,6 +1982,7 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   commissions?: boolean | Prisma.Sale$commissionsArgs<ExtArgs>
+  historyEvents?: boolean | Prisma.Sale$historyEventsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
 
@@ -1910,6 +2061,7 @@ export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   commissions?: boolean | Prisma.Sale$commissionsArgs<ExtArgs>
+  historyEvents?: boolean | Prisma.Sale$historyEventsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SaleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1939,6 +2091,7 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     product: Prisma.$ProductPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
     commissions: Prisma.$SaleCommissionPayload<ExtArgs>[]
+    historyEvents: Prisma.$SaleHistoryEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2357,6 +2510,7 @@ export interface Prisma__SaleClient<T, Null = never, ExtArgs extends runtime.Typ
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   commissions<T extends Prisma.Sale$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historyEvents<T extends Prisma.Sale$historyEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$historyEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleHistoryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2837,6 +2991,30 @@ export type Sale$commissionsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.SaleCommissionScalarFieldEnum | Prisma.SaleCommissionScalarFieldEnum[]
+}
+
+/**
+ * Sale.historyEvents
+ */
+export type Sale$historyEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SaleHistoryEvent
+   */
+  select?: Prisma.SaleHistoryEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SaleHistoryEvent
+   */
+  omit?: Prisma.SaleHistoryEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleHistoryEventInclude<ExtArgs> | null
+  where?: Prisma.SaleHistoryEventWhereInput
+  orderBy?: Prisma.SaleHistoryEventOrderByWithRelationInput | Prisma.SaleHistoryEventOrderByWithRelationInput[]
+  cursor?: Prisma.SaleHistoryEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleHistoryEventScalarFieldEnum | Prisma.SaleHistoryEventScalarFieldEnum[]
 }
 
 /**

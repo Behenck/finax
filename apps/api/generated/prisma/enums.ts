@@ -212,6 +212,18 @@ export const SaleCommissionInstallmentStatus = {
 export type SaleCommissionInstallmentStatus = (typeof SaleCommissionInstallmentStatus)[keyof typeof SaleCommissionInstallmentStatus]
 
 
+export const SaleHistoryAction = {
+  CREATED: 'CREATED',
+  UPDATED: 'UPDATED',
+  STATUS_CHANGED: 'STATUS_CHANGED',
+  COMMISSION_INSTALLMENT_UPDATED: 'COMMISSION_INSTALLMENT_UPDATED',
+  COMMISSION_INSTALLMENT_STATUS_UPDATED: 'COMMISSION_INSTALLMENT_STATUS_UPDATED',
+  COMMISSION_INSTALLMENT_DELETED: 'COMMISSION_INSTALLMENT_DELETED'
+} as const
+
+export type SaleHistoryAction = (typeof SaleHistoryAction)[keyof typeof SaleHistoryAction]
+
+
 export const TransactionType = {
   INCOME: 'INCOME',
   OUTCOME: 'OUTCOME'

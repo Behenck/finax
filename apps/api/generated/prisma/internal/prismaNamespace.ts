@@ -408,6 +408,7 @@ export const ModelName = {
   ProductCommission: 'ProductCommission',
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
+  SaleHistoryEvent: 'SaleHistoryEvent',
   SaleCommission: 'SaleCommission',
   SaleCommissionInstallment: 'SaleCommissionInstallment',
   Transaction: 'Transaction',
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2208,6 +2209,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SaleHistoryEvent: {
+      payload: Prisma.$SaleHistoryEventPayload<ExtArgs>
+      fields: Prisma.SaleHistoryEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleHistoryEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleHistoryEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        findFirst: {
+          args: Prisma.SaleHistoryEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleHistoryEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        findMany: {
+          args: Prisma.SaleHistoryEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>[]
+        }
+        create: {
+          args: Prisma.SaleHistoryEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        createMany: {
+          args: Prisma.SaleHistoryEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleHistoryEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>[]
+        }
+        delete: {
+          args: Prisma.SaleHistoryEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        update: {
+          args: Prisma.SaleHistoryEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleHistoryEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleHistoryEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleHistoryEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleHistoryEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleHistoryEventPayload>
+        }
+        aggregate: {
+          args: Prisma.SaleHistoryEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleHistoryEvent>
+        }
+        groupBy: {
+          args: Prisma.SaleHistoryEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleHistoryEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleHistoryEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleHistoryEventCountAggregateOutputType> | number
+        }
+      }
+    }
     SaleCommission: {
       payload: Prisma.$SaleCommissionPayload<ExtArgs>
       fields: Prisma.SaleCommissionFieldRefs
@@ -2993,6 +3068,19 @@ export const SaleScalarFieldEnum = {
 export type SaleScalarFieldEnum = (typeof SaleScalarFieldEnum)[keyof typeof SaleScalarFieldEnum]
 
 
+export const SaleHistoryEventScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  organizationId: 'organizationId',
+  actorId: 'actorId',
+  action: 'action',
+  changes: 'changes',
+  createdAt: 'createdAt'
+} as const
+
+export type SaleHistoryEventScalarFieldEnum = (typeof SaleHistoryEventScalarFieldEnum)[keyof typeof SaleHistoryEventScalarFieldEnum]
+
+
 export const SaleCommissionScalarFieldEnum = {
   id: 'id',
   saleId: 'saleId',
@@ -3105,6 +3193,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -3119,6 +3214,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -3429,6 +3533,34 @@ export type ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'SaleHistoryAction'
+ */
+export type EnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleHistoryAction[]'
+ */
+export type ListEnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'SaleCommissionSourceType'
  */
 export type EnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionSourceType'>
@@ -3686,6 +3818,7 @@ export type GlobalOmitConfig = {
   productCommission?: Prisma.ProductCommissionOmit
   productCommissionInstallment?: Prisma.ProductCommissionInstallmentOmit
   sale?: Prisma.SaleOmit
+  saleHistoryEvent?: Prisma.SaleHistoryEventOmit
   saleCommission?: Prisma.SaleCommissionOmit
   saleCommissionInstallment?: Prisma.SaleCommissionInstallmentOmit
   transaction?: Prisma.TransactionOmit

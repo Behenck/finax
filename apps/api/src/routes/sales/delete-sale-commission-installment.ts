@@ -1,11 +1,15 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { SaleStatus } from "generated/prisma/enums";
+import { SaleHistoryAction, SaleStatus } from "generated/prisma/enums";
 import z from "zod";
 import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
+import {
+	createSaleDiffHistoryEvent,
+	loadSaleHistorySnapshot,
+} from "./sale-history";
 import {
 	renumberSaleCommissionInstallments,
 	syncSaleCommissionTotalPercentage,
@@ -34,6 +38,7 @@ export async function deleteSaleCommissionInstallment(app: FastifyInstance) {
 			},
 			async (request, reply) => {
 				const { slug, saleId, installmentId } = request.params;
+				const actorId = await request.getCurrentUserId();
 
 				const organization = await prisma.organization.findUnique({
 					where: {
@@ -73,6 +78,16 @@ export async function deleteSaleCommissionInstallment(app: FastifyInstance) {
 					throw new BadRequestError(
 						"Cannot update commission installments for canceled sale",
 					);
+				}
+
+				const beforeSnapshot = await loadSaleHistorySnapshot(
+					prisma,
+					saleId,
+					organization.id,
+				);
+
+				if (!beforeSnapshot) {
+					throw new BadRequestError("Sale not found");
 				}
 
 				await db(() =>
@@ -124,6 +139,25 @@ export async function deleteSaleCommissionInstallment(app: FastifyInstance) {
 							tx,
 							installment.saleCommissionId,
 						);
+
+						const afterSnapshot = await loadSaleHistorySnapshot(
+							tx,
+							saleId,
+							organization.id,
+						);
+
+						if (!afterSnapshot) {
+							throw new BadRequestError("Sale not found");
+						}
+
+						await createSaleDiffHistoryEvent(tx, {
+							saleId,
+							organizationId: organization.id,
+							actorId,
+							action: SaleHistoryAction.COMMISSION_INSTALLMENT_DELETED,
+							beforeSnapshot,
+							afterSnapshot,
+						});
 					}),
 				);
 

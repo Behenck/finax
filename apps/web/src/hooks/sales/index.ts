@@ -4,6 +4,7 @@ export * from "./use-delete-sale-commission-installment";
 export * from "./use-patch-sale-commission-installment-status";
 export * from "./use-patch-sale-status";
 export * from "./use-sale";
+export * from "./use-sale-history";
 export * from "./use-sale-commission-installments";
 export * from "./use-sale-form-options";
 export * from "./use-sales-dashboard";

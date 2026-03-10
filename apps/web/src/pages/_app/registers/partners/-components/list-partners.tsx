@@ -23,6 +23,20 @@ interface ListPartnersProps {
 }
 
 export function ListPartners({ partners }: ListPartnersProps) {
+  const supervisorPartnerCounts = partners.reduce<Record<string, number>>(
+    (accumulator, currentPartner) => {
+      const supervisorId = currentPartner.supervisor?.id
+
+      if (!supervisorId) {
+        return accumulator
+      }
+
+      accumulator[supervisorId] = (accumulator[supervisorId] ?? 0) + 1
+      return accumulator
+    },
+    {},
+  )
+
   return (
     <Table>
       <TableCaption>Lista de parceiros</TableCaption>
@@ -105,7 +119,10 @@ export function ListPartners({ partners }: ListPartnersProps) {
                             </div>
                           </Link>
                         </DropdownMenuItem>
-                        <AssignSupervisor partner={partner} />
+                        <AssignSupervisor
+                          partner={partner}
+                          supervisorPartnerCounts={supervisorPartnerCounts}
+                        />
                         <Separator />
                         <DeletePartner partner={partner} />
                       </DropdownMenuGroup>

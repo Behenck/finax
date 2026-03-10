@@ -1,6 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { format, parse, parseISO } from "date-fns";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import {
+	ArrowLeft,
+	CheckCircle2,
+	FilePenLine,
+	Pencil,
+	PlusCircle,
+	Trash2,
+	WalletCards,
+	type LucideIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
 	AlertDialog,
@@ -12,9 +21,10 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useDeleteSale, useSale } from "@/hooks/sales";
+import { useDeleteSale, useSale, useSaleHistory } from "@/hooks/sales";
 import {
 	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
@@ -22,6 +32,11 @@ import {
 	SALE_RESPONSIBLE_TYPE_LABEL,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
+import {
+	SALE_HISTORY_ACTION_LABEL,
+	type SaleHistoryEvent,
+	toSaleHistoryTimelineEvent,
+} from "./-components/sale-history-presenter";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
 
 export const Route = createFileRoute("/_app/sales/$saleId")({
@@ -44,13 +59,54 @@ function formatCommissionPercentage(value: number) {
 	}).format(value)}%`;
 }
 
+const SALE_HISTORY_ACTION_ICON: Record<SaleHistoryEvent["action"], LucideIcon> = {
+	CREATED: PlusCircle,
+	UPDATED: FilePenLine,
+	STATUS_CHANGED: CheckCircle2,
+	COMMISSION_INSTALLMENT_UPDATED: WalletCards,
+	COMMISSION_INSTALLMENT_STATUS_UPDATED: CheckCircle2,
+	COMMISSION_INSTALLMENT_DELETED: Trash2,
+};
+
+const SALE_HISTORY_ACTION_ICON_CLASS: Record<SaleHistoryEvent["action"], string> = {
+	CREATED: "bg-emerald-50 text-emerald-600 border-emerald-200",
+	UPDATED: "bg-blue-50 text-blue-600 border-blue-200",
+	STATUS_CHANGED: "bg-amber-50 text-amber-600 border-amber-200",
+	COMMISSION_INSTALLMENT_UPDATED: "bg-indigo-50 text-indigo-600 border-indigo-200",
+	COMMISSION_INSTALLMENT_STATUS_UPDATED:
+		"bg-orange-50 text-orange-600 border-orange-200",
+	COMMISSION_INSTALLMENT_DELETED: "bg-rose-50 text-rose-600 border-rose-200",
+};
+
+function getActorInitials(name: string | null) {
+	if (!name) {
+		return "US";
+	}
+
+	return name
+		.trim()
+		.split(/\s+/)
+		.slice(0, 2)
+		.map((part) => part.slice(0, 1).toUpperCase())
+		.join("");
+}
+
 function SaleDetailsPage() {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { saleId } = Route.useParams();
 	const navigate = useNavigate();
 	const { data, isLoading, isError } = useSale(saleId);
+	const {
+		data: historyData,
+		isLoading: isHistoryLoading,
+		isError: isHistoryError,
+	} = useSaleHistory(saleId);
 	const { mutateAsync: deleteSale, isPending: isDeletingSale } =
 		useDeleteSale();
+	const historyEvents = historyData?.history ?? [];
+	const timelineEvents = historyEvents.map((event) =>
+		toSaleHistoryTimelineEvent(event),
+	);
 
 	async function handleDeleteSale() {
 		try {
@@ -239,6 +295,73 @@ function SaleDetailsPage() {
 						<strong>Atualizado em:</strong> {formatDateTime(sale.updatedAt)}
 					</p>
 				</div>
+			</Card>
+
+			<Card className="p-6 space-y-4">
+				<h2 className="font-semibold">Histórico de alterações</h2>
+
+				{isHistoryLoading ? (
+					<p className="text-sm text-muted-foreground">
+						Carregando histórico...
+					</p>
+				) : isHistoryError ? (
+					<p className="text-sm text-destructive">
+						Não foi possível carregar o histórico.
+					</p>
+				) : historyEvents.length === 0 ? (
+					<p className="text-sm text-muted-foreground">
+						Nenhuma alteração registrada.
+					</p>
+				) : (
+					<div className="relative space-y-5">
+						<div className="absolute left-5 top-3 bottom-3 w-px bg-border" />
+						{timelineEvents.map((event) => {
+							const ActionIcon = SALE_HISTORY_ACTION_ICON[event.action];
+
+							return (
+								<article key={event.id} className="relative flex gap-3">
+									<div
+										className={`z-10 mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border ${SALE_HISTORY_ACTION_ICON_CLASS[event.action]}`}
+									>
+										<ActionIcon className="size-5" />
+									</div>
+
+									<div className="w-full rounded-lg border bg-muted/20 p-4">
+										<div className="flex flex-wrap items-center justify-between gap-2">
+											<p className="font-semibold">
+												{SALE_HISTORY_ACTION_LABEL[event.action]}
+											</p>
+											<span className="text-muted-foreground text-xs">
+												{formatDateTime(event.createdAt)}
+											</span>
+										</div>
+
+										<div className="mt-2 flex items-center gap-2 text-muted-foreground text-xs">
+											<Avatar className="size-5">
+												<AvatarImage
+													src={event.actor.avatarUrl ?? undefined}
+													alt={event.actor.name ?? "Usuário"}
+												/>
+												<AvatarFallback className="text-[10px]">
+													{getActorInitials(event.actor.name)}
+												</AvatarFallback>
+											</Avatar>
+											<span>{event.actor.name ?? "Usuário sem nome"}</span>
+										</div>
+
+										<ul className="mt-3 space-y-1.5 text-sm">
+											{event.messages.map((message, index) => (
+												<li key={`${event.id}-${index}`} className="leading-relaxed">
+													{message}
+												</li>
+											))}
+										</ul>
+									</div>
+								</article>
+							);
+						})}
+					</div>
+				)}
 			</Card>
 
 			<Card className="p-6 space-y-3">

@@ -1,37 +1,140 @@
-/*
-  Warnings:
+-- Legacy hotfix migration.
+-- This migration used to run before product commission tables were created in this repo history.
+-- Keep it defensive so the migration chain can run both on old and fresh databases.
 
-  - You are about to drop the column `percentage_x100` on the `product_commission_installments` table. All the data in the column will be lost.
-  - You are about to drop the column `total_percentage_x100` on the `product_commissions` table. All the data in the column will be lost.
-  - Added the required column `percentage` to the `product_commission_installments` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `total_percentage` to the `product_commissions` table without a default value. This is not possible if the table is not empty.
+DO $$
+BEGIN
+	IF to_regclass('public.product_commission_scenario_conditions') IS NOT NULL THEN
+		ALTER TABLE "product_commission_scenario_conditions"
+		DROP CONSTRAINT IF EXISTS "product_commission_scenario_conditions_seller_id_fkey";
 
-*/
--- DropForeignKey
-ALTER TABLE "product_commission_scenario_conditions" DROP CONSTRAINT "product_commission_scenario_conditions_seller_id_fkey";
+		ALTER TABLE "product_commission_scenario_conditions"
+		DROP CONSTRAINT IF EXISTS "product_commission_scenario_conditions_unit_id_fkey";
+	END IF;
+END $$;
 
--- DropForeignKey
-ALTER TABLE "product_commission_scenario_conditions" DROP CONSTRAINT "product_commission_scenario_conditions_unit_id_fkey";
+DO $$
+BEGIN
+	IF to_regclass('public.product_commission_installments') IS NOT NULL THEN
+		IF EXISTS (
+			SELECT 1
+			FROM information_schema.columns
+			WHERE table_schema = 'public'
+				AND table_name = 'product_commission_installments'
+				AND column_name = 'percentage_x100'
+		) THEN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM information_schema.columns
+				WHERE table_schema = 'public'
+					AND table_name = 'product_commission_installments'
+					AND column_name = 'percentage'
+			) THEN
+				ALTER TABLE "product_commission_installments"
+				ADD COLUMN "percentage" INTEGER;
+			END IF;
 
--- AlterTable
-ALTER TABLE "product_commission_installments" DROP COLUMN "percentage_x100",
-ADD COLUMN     "percentage" INTEGER NOT NULL;
+			UPDATE "product_commission_installments"
+			SET "percentage" = COALESCE("percentage", "percentage_x100");
 
--- AlterTable
-ALTER TABLE "product_commissions" DROP COLUMN "total_percentage_x100",
-ADD COLUMN     "total_percentage" INTEGER NOT NULL;
+			ALTER TABLE "product_commission_installments"
+			ALTER COLUMN "percentage" SET NOT NULL;
 
--- AddForeignKey
-ALTER TABLE "product_commission_scenario_conditions" ADD CONSTRAINT "product_commission_scenario_conditions_seller_id_fkey" FOREIGN KEY ("seller_id") REFERENCES "sellers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+			ALTER TABLE "product_commission_installments"
+			DROP COLUMN "percentage_x100";
+		END IF;
+	END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "product_commission_scenario_conditions" ADD CONSTRAINT "product_commission_scenario_conditions_unit_id_fkey" FOREIGN KEY ("unit_id") REFERENCES "units"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$
+BEGIN
+	IF to_regclass('public.product_commissions') IS NOT NULL THEN
+		IF EXISTS (
+			SELECT 1
+			FROM information_schema.columns
+			WHERE table_schema = 'public'
+				AND table_name = 'product_commissions'
+				AND column_name = 'total_percentage_x100'
+		) THEN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM information_schema.columns
+				WHERE table_schema = 'public'
+					AND table_name = 'product_commissions'
+					AND column_name = 'total_percentage'
+			) THEN
+				ALTER TABLE "product_commissions"
+				ADD COLUMN "total_percentage" INTEGER;
+			END IF;
 
--- RenameIndex
-ALTER INDEX "product_commission_installments_commission_id_installment_numbe" RENAME TO "product_commission_installments_commission_id_installment_n_key";
+			UPDATE "product_commissions"
+			SET "total_percentage" = COALESCE("total_percentage", "total_percentage_x100");
 
--- RenameIndex
-ALTER INDEX "product_commission_scenario_conditions_scenario_id_sort_order_i" RENAME TO "product_commission_scenario_conditions_scenario_id_sort_ord_idx";
+			ALTER TABLE "product_commissions"
+			ALTER COLUMN "total_percentage" SET NOT NULL;
 
--- RenameIndex
-ALTER INDEX "product_commission_scenarios_product_id_is_active_sort_order_id" RENAME TO "product_commission_scenarios_product_id_is_active_sort_orde_idx";
+			ALTER TABLE "product_commissions"
+			DROP COLUMN "total_percentage_x100";
+		END IF;
+	END IF;
+END $$;
+
+DO $$
+BEGIN
+	IF to_regclass('public.product_commission_scenario_conditions') IS NOT NULL THEN
+		IF NOT EXISTS (
+			SELECT 1
+			FROM pg_constraint
+			WHERE conname = 'product_commission_scenario_conditions_seller_id_fkey'
+		) THEN
+			ALTER TABLE "product_commission_scenario_conditions"
+			ADD CONSTRAINT "product_commission_scenario_conditions_seller_id_fkey"
+			FOREIGN KEY ("seller_id") REFERENCES "sellers"("id")
+			ON DELETE SET NULL ON UPDATE CASCADE;
+		END IF;
+
+		IF NOT EXISTS (
+			SELECT 1
+			FROM pg_constraint
+			WHERE conname = 'product_commission_scenario_conditions_unit_id_fkey'
+		) THEN
+			ALTER TABLE "product_commission_scenario_conditions"
+			ADD CONSTRAINT "product_commission_scenario_conditions_unit_id_fkey"
+			FOREIGN KEY ("unit_id") REFERENCES "units"("id")
+			ON DELETE SET NULL ON UPDATE CASCADE;
+		END IF;
+	END IF;
+END $$;
+
+DO $$
+BEGIN
+	IF EXISTS (
+		SELECT 1
+		FROM pg_indexes
+		WHERE schemaname = 'public'
+			AND indexname = 'product_commission_installments_commission_id_installment_numbe'
+	) THEN
+		ALTER INDEX "product_commission_installments_commission_id_installment_numbe"
+		RENAME TO "product_commission_installments_commission_id_installment_n_key";
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM pg_indexes
+		WHERE schemaname = 'public'
+			AND indexname = 'product_commission_scenario_conditions_scenario_id_sort_order_i'
+	) THEN
+		ALTER INDEX "product_commission_scenario_conditions_scenario_id_sort_order_i"
+		RENAME TO "product_commission_scenario_conditions_scenario_id_sort_ord_idx";
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM pg_indexes
+		WHERE schemaname = 'public'
+			AND indexname = 'product_commission_scenarios_product_id_is_active_sort_order_id'
+	) THEN
+		ALTER INDEX "product_commission_scenarios_product_id_is_active_sort_order_id"
+		RENAME TO "product_commission_scenarios_product_id_is_active_sort_orde_idx";
+	END IF;
+END $$;

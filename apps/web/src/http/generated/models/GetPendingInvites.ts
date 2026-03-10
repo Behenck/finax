@@ -29,7 +29,7 @@ export type GetPendingInvites200 = {
         /**
          * @type string, email
         */
-        email: string;
+        email: string | null;
         /**
          * @type string
         */

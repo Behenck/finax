@@ -3,6 +3,7 @@ import {
 	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
 	SaleCommissionSourceType,
+	SaleHistoryAction,
 	SaleStatus,
 } from "generated/prisma/enums";
 import z from "zod";
@@ -448,6 +449,26 @@ export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	commissions: z.array(SaleCommissionDetailSchema),
 });
 
+export const SaleHistoryActionSchema = z.enum(SaleHistoryAction);
+
+export const SaleHistoryChangeSchema = z.object({
+	path: z.string(),
+	before: z.unknown().nullable(),
+	after: z.unknown().nullable(),
+});
+
+export const SaleHistoryEventSchema = z.object({
+	id: z.uuid(),
+	action: SaleHistoryActionSchema,
+	createdAt: z.date(),
+	actor: z.object({
+		id: z.uuid(),
+		name: z.string().nullable(),
+		avatarUrl: z.string().nullable(),
+	}),
+	changes: z.array(SaleHistoryChangeSchema),
+});
+
 export type SaleResponsibleInput = z.infer<typeof SaleResponsibleSchema>;
 export type SaleCommissionInput = z.infer<typeof SaleCommissionInputSchema>;
 export type SaleCommissionInstallmentInput = z.infer<
@@ -474,6 +495,8 @@ export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 export type PatchSaleCommissionInstallmentBody = z.infer<
 	typeof PatchSaleCommissionInstallmentBodySchema
 >;
+export type SaleHistoryChange = z.infer<typeof SaleHistoryChangeSchema>;
+export type SaleHistoryEvent = z.infer<typeof SaleHistoryEventSchema>;
 
 export function parseSaleDateInput(value: string) {
 	return new Date(`${value}T00:00:00.000Z`);

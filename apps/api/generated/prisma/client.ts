@@ -160,6 +160,11 @@ export type ProductCommissionInstallment = Prisma.ProductCommissionInstallmentMo
  */
 export type Sale = Prisma.SaleModel
 /**
+ * Model SaleHistoryEvent
+ * 
+ */
+export type SaleHistoryEvent = Prisma.SaleHistoryEventModel
+/**
  * Model SaleCommission
  * 
  */

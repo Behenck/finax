@@ -29,6 +29,7 @@ model User {
   employees           Employee[]
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
   createdSales        Sale[]         @relation("SaleCreatedBy")
+  saleHistoryEvents   SaleHistoryEvent[] @relation("SaleHistoryActor")
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
   linkedPartners      Partner[]      @relation("PartnerUser")
   linkedSellers       Seller[]       @relation("SellerUser")
@@ -181,6 +182,7 @@ model Organization {
   sellers               Seller[]
   products              Product[]
   sales                 Sale[]
+  saleHistoryEvents     SaleHistoryEvent[]
   memberCompanyAccesses MemberCompanyAccess[]
 
   @@index([slug])
@@ -710,6 +712,15 @@ enum SaleCommissionInstallmentStatus {
   CANCELED
 }
 
+enum SaleHistoryAction {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  COMMISSION_INSTALLMENT_UPDATED
+  COMMISSION_INSTALLMENT_STATUS_UPDATED
+  COMMISSION_INSTALLMENT_DELETED
+}
+
 model Sale {
   id String @id @default(uuid())
 
@@ -736,6 +747,7 @@ model Sale {
   product      Product      @relation(fields: [productId], references: [id])
   createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
   commissions  SaleCommission[]
+  historyEvents SaleHistoryEvent[]
 
   @@index([organizationId, saleDate])
   @@index([organizationId, status])
@@ -746,6 +758,26 @@ model Sale {
   @@index([createdById])
   @@index([organizationId, responsibleType, responsibleId])
   @@map("sales")
+}
+
+model SaleHistoryEvent {
+  id             String            @id @default(uuid())
+  saleId         String            @map("sale_id")
+  organizationId String            @map("organization_id")
+  actorId        String            @map("actor_id")
+  action         SaleHistoryAction
+  changes        Json
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  sale         Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id])
+  actor        User         @relation("SaleHistoryActor", fields: [actorId], references: [id])
+
+  @@index([saleId])
+  @@index([organizationId, saleId, createdAt])
+  @@index([actorId])
+  @@map("sale_history_events")
 }
 
 model SaleCommission {

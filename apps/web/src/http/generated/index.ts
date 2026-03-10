@@ -66,6 +66,8 @@ export type { GetOrganizationsSlugSalesDashboardSuspenseQueryKey } from "./hooks
 export type { GetOrganizationsSlugSalesSaleidQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export type { GetOrganizationsSlugSalesSaleidHistoryQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidHistory.ts";
+export type { GetOrganizationsSlugSalesSaleidHistorySuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
 export type { GetOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export type { GetOrganizationsSlugSalesSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSuspense.ts";
 export type { GetOrganizationsSlugSellersQueryKey } from "./hooks/useGetOrganizationsSlugSellers.ts";
@@ -177,6 +179,7 @@ export type { GetOrganizationsSlugSalesPathParams, SalesStatusEnumKey, Responsib
 export type { GetOrganizationsSlugSalesDashboardPathParams, GetOrganizationsSlugSalesDashboardQueryParams, TopResponsiblesTypeEnumKey, CommissionsReferenceEnumKey, GetOrganizationsSlugSalesDashboard200, GetOrganizationsSlugSalesDashboardQueryResponse, GetOrganizationsSlugSalesDashboardQuery } from "./models/GetOrganizationsSlugSalesDashboard.ts";
 export type { GetOrganizationsSlugSalesSaleidPathParams, SaleStatusEnumKey, ResponsibleTypeEnum8Key, SaleResponsibleTypeEnumKey, CommissionsSourceTypeEnum3Key, CommissionsRecipientTypeEnum5Key, CommissionsDirectionEnum3Key, InstallmentsStatusEnumKey, GetOrganizationsSlugSalesSaleid200, GetOrganizationsSlugSalesSaleidQueryResponse, GetOrganizationsSlugSalesSaleidQuery } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export type { GetOrganizationsSlugSalesSaleidCommissionInstallmentsPathParams, InstallmentsRecipientTypeEnumKey, InstallmentsSourceTypeEnumKey, InstallmentsDirectionEnumKey, InstallmentsStatusEnum2Key, GetOrganizationsSlugSalesSaleidCommissionInstallments200, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponse, GetOrganizationsSlugSalesSaleidCommissionInstallmentsQuery } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export type { GetOrganizationsSlugSalesSaleidHistoryPathParams, HistoryActionEnumKey, GetOrganizationsSlugSalesSaleidHistory200, GetOrganizationsSlugSalesSaleidHistoryQueryResponse, GetOrganizationsSlugSalesSaleidHistoryQuery } from "./models/GetOrganizationsSlugSalesSaleidHistory.ts";
 export type { GetOrganizationsSlugSellersPathParams, SellersDocumentTypeEnumKey, SellersStatusEnumKey, GetOrganizationsSlugSellers200, GetOrganizationsSlugSellersQueryResponse, GetOrganizationsSlugSellersQuery } from "./models/GetOrganizationsSlugSellers.ts";
 export type { GetOrganizationsSlugSellersSelleridPathParams, SellerDocumentTypeEnumKey, SellerStatusEnumKey, GetOrganizationsSlugSellersSellerid200, GetOrganizationsSlugSellersSelleridQueryResponse, GetOrganizationsSlugSellersSelleridQuery } from "./models/GetOrganizationsSlugSellersSellerid.ts";
 export type { GetOrganizationsSlugTransactionsPathParams, TransactionsTypeEnumKey, TransactionsStatusEnumKey, TransactionsNatureEnumKey, GetOrganizationsSlugTransactions200, GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsQuery } from "./models/GetOrganizationsSlugTransactions.ts";
@@ -278,6 +281,7 @@ export { getOrganizationsSlugSales } from "./getOrganizationsSlugSales.ts";
 export { getOrganizationsSlugSalesDashboard } from "./getOrganizationsSlugSalesDashboard.ts";
 export { getOrganizationsSlugSalesSaleid } from "./getOrganizationsSlugSalesSaleid.ts";
 export { getOrganizationsSlugSalesSaleidCommissionInstallments } from "./getOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { getOrganizationsSlugSalesSaleidHistory } from "./getOrganizationsSlugSalesSaleidHistory.ts";
 export { getOrganizationsSlugSellers } from "./getOrganizationsSlugSellers.ts";
 export { getOrganizationsSlugSellersSellerid } from "./getOrganizationsSlugSellersSellerid.ts";
 export { getOrganizationsSlugTransactions } from "./getOrganizationsSlugTransactions.ts";
@@ -489,6 +493,12 @@ export { useGetOrganizationsSlugSalesSaleidCommissionInstallments } from "./hook
 export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export { getOrganizationsSlugSalesSaleidCommissionInstallmentsSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
 export { useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense } from "./hooks/useGetOrganizationsSlugSalesSaleidCommissionInstallmentsSuspense.ts";
+export { getOrganizationsSlugSalesSaleidHistoryQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { getOrganizationsSlugSalesSaleidHistoryQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { useGetOrganizationsSlugSalesSaleidHistory } from "./hooks/useGetOrganizationsSlugSalesSaleidHistory.ts";
+export { getOrganizationsSlugSalesSaleidHistorySuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
+export { getOrganizationsSlugSalesSaleidHistorySuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
+export { useGetOrganizationsSlugSalesSaleidHistorySuspense } from "./hooks/useGetOrganizationsSlugSalesSaleidHistorySuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryKey } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { getOrganizationsSlugSalesSaleidSuspenseQueryOptions } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
 export { useGetOrganizationsSlugSalesSaleidSuspense } from "./hooks/useGetOrganizationsSlugSalesSaleidSuspense.ts";
@@ -764,6 +774,7 @@ export { installmentsRecipientTypeEnum } from "./models/GetOrganizationsSlugSale
 export { installmentsSourceTypeEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { installmentsDirectionEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { installmentsStatusEnum2 } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { historyActionEnum } from "./models/GetOrganizationsSlugSalesSaleidHistory.ts";
 export { sellersDocumentTypeEnum } from "./models/GetOrganizationsSlugSellers.ts";
 export { sellersStatusEnum } from "./models/GetOrganizationsSlugSellers.ts";
 export { sellerDocumentTypeEnum } from "./models/GetOrganizationsSlugSellersSellerid.ts";
@@ -952,6 +963,7 @@ export { getOrganizationsSlugProductsPathParamsSchema, getOrganizationsSlugProdu
 export { getOrganizationsSlugRecurrencesPathParamsSchema, getOrganizationsSlugRecurrences200Schema, getOrganizationsSlugRecurrencesQueryResponseSchema } from "./zod/getOrganizationsSlugRecurrencesSchema.ts";
 export { getOrganizationsSlugSalesDashboardPathParamsSchema, getOrganizationsSlugSalesDashboardQueryParamsSchema, getOrganizationsSlugSalesDashboard200Schema, getOrganizationsSlugSalesDashboardQueryResponseSchema } from "./zod/getOrganizationsSlugSalesDashboardSchema.ts";
 export { getOrganizationsSlugSalesSaleidCommissionInstallmentsPathParamsSchema, getOrganizationsSlugSalesSaleidCommissionInstallments200Schema, getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSaleidCommissionInstallmentsSchema.ts";
+export { getOrganizationsSlugSalesSaleidHistoryPathParamsSchema, getOrganizationsSlugSalesSaleidHistory200Schema, getOrganizationsSlugSalesSaleidHistoryQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSaleidHistorySchema.ts";
 export { getOrganizationsSlugSalesSaleidPathParamsSchema, getOrganizationsSlugSalesSaleid200Schema, getOrganizationsSlugSalesSaleidQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSaleidSchema.ts";
 export { getOrganizationsSlugSalesPathParamsSchema, getOrganizationsSlugSales200Schema, getOrganizationsSlugSalesQueryResponseSchema } from "./zod/getOrganizationsSlugSalesSchema.ts";
 export { getOrganizationsSlugSellersPathParamsSchema, getOrganizationsSlugSellers200Schema, getOrganizationsSlugSellersQueryResponseSchema } from "./zod/getOrganizationsSlugSellersSchema.ts";

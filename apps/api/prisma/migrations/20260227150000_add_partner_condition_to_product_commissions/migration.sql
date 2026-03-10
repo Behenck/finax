@@ -5,7 +5,7 @@ BEGIN
     SELECT 1
     FROM pg_enum
     WHERE enumlabel = 'PARTNER_EQUALS'
-      AND enumtypid = 'ProductCommissionScenarioConditionType'::regtype
+      AND enumtypid = '"ProductCommissionScenarioConditionType"'::regtype
   ) THEN
     ALTER TYPE "ProductCommissionScenarioConditionType" ADD VALUE 'PARTNER_EQUALS';
   END IF;

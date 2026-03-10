@@ -65,6 +65,7 @@ Aplica-se a tudo dentro de `apps/api`.
 ## Prisma e dados
 - A fonte de verdade do modelo de dados e `prisma/schema.prisma`.
 - O client Prisma gerado fica em `generated/prisma` e nao deve ser editado manualmente.
+- Nao executar comandos destrutivos em banco (ex.: `prisma migrate reset`, `DROP`, `TRUNCATE`) sem permissao explicita do usuario na conversa atual.
 - Mudancas de schema/modelo devem considerar:
 - migracao (`pnpm db:migrate`) quando houver alteracao estrutural no banco
 - geracao do client (`pnpm db:generate`)
