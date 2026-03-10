@@ -98,6 +98,12 @@ export type PostOrganizationsSlugSalesMutationRequest = {
     */
     notes?: string;
     /**
+     * @type object | undefined
+    */
+    dynamicFields?: {
+        [key: string]: any;
+    };
+    /**
      * @type array | undefined
     */
     commissions?: {

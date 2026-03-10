@@ -5,6 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { loadSaleCommissions } from "./sale-commissions";
+import {
+	parseSaleDynamicFieldSchemaJson,
+	parseSaleDynamicFieldValuesJson,
+} from "./sale-dynamic-fields";
 import { loadSaleResponsible } from "./sale-responsible";
 import { SaleDetailSchema } from "./sale-schemas";
 
@@ -63,6 +67,8 @@ export async function getSale(app: FastifyInstance) {
 						totalAmount: true,
 						status: true,
 						notes: true,
+						dynamicFieldSchema: true,
+						dynamicFieldValues: true,
 						createdAt: true,
 						updatedAt: true,
 						responsibleType: true,
@@ -110,6 +116,12 @@ export async function getSale(app: FastifyInstance) {
 					responsibleId: sale.responsibleId,
 				});
 				const commissions = await loadSaleCommissions(sale.id, organization.id);
+				const dynamicFieldSchema = parseSaleDynamicFieldSchemaJson(
+					sale.dynamicFieldSchema,
+				);
+				const dynamicFieldValues = parseSaleDynamicFieldValuesJson(
+					sale.dynamicFieldValues,
+				);
 
 				return {
 					sale: {
@@ -124,6 +136,8 @@ export async function getSale(app: FastifyInstance) {
 						totalAmount: sale.totalAmount,
 						status: sale.status,
 						notes: sale.notes,
+						dynamicFieldSchema,
+						dynamicFieldValues,
 						createdAt: sale.createdAt,
 						updatedAt: sale.updatedAt,
 						responsibleType: sale.responsibleType,

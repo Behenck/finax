@@ -9,6 +9,14 @@ import {
 	type SaleStatus,
 } from "generated/prisma/enums";
 import { fromScaledPercentage } from "./sale-schemas";
+import {
+	buildSaleDynamicFieldHistoryValues,
+	parseSaleDynamicFieldSchemaJson,
+	parseSaleDynamicFieldValuesJson,
+	type SaleDynamicFieldHistoryValue,
+	type SaleDynamicFieldSchemaSnapshot,
+	type SaleDynamicFieldValuesSnapshot,
+} from "./sale-dynamic-fields";
 
 export type SaleHistoryChange = {
 	path: string;
@@ -28,6 +36,8 @@ export type SaleHistorySnapshot = {
 		responsibleType: SaleResponsibleType;
 		responsibleId: string;
 		notes: string | null;
+		dynamicFieldSchema: SaleDynamicFieldSchemaSnapshot;
+		dynamicFieldValues: SaleDynamicFieldValuesSnapshot;
 	};
 	commissions: Array<{
 		id: string;
@@ -80,11 +90,46 @@ function normalizeHistoryValue(value: unknown) {
 	return value;
 }
 
+type ComparableSaleHistorySnapshot = Omit<SaleHistorySnapshot, "sale"> & {
+	sale: Omit<SaleHistorySnapshot["sale"], "dynamicFieldValues"> & {
+		dynamicFieldValues: Record<string, SaleDynamicFieldHistoryValue>;
+	};
+};
+
+function toComparableSaleHistorySnapshot(
+	snapshot: SaleHistorySnapshot,
+): ComparableSaleHistorySnapshot {
+	return {
+		...snapshot,
+		sale: {
+			...snapshot.sale,
+			dynamicFieldValues: buildSaleDynamicFieldHistoryValues(
+				snapshot.sale.dynamicFieldSchema,
+				snapshot.sale.dynamicFieldValues,
+			),
+		},
+	};
+}
+
 function flattenHistorySnapshot(
 	value: unknown,
 	path = "",
 	entries = new Map<string, unknown>(),
 ) {
+	if (
+		path.startsWith("sale.dynamicFieldValues.") &&
+		value &&
+		typeof value === "object" &&
+		!Array.isArray(value) &&
+		"fieldId" in value &&
+		"label" in value &&
+		"type" in value &&
+		"value" in value
+	) {
+		entries.set(path, normalizeHistoryValue(value));
+		return entries;
+	}
+
 	if (Array.isArray(value)) {
 		if (value.length === 0 && path) {
 			entries.set(path, []);
@@ -148,6 +193,8 @@ export async function loadSaleHistorySnapshot(
 			responsibleType: true,
 			responsibleId: true,
 			notes: true,
+			dynamicFieldSchema: true,
+			dynamicFieldValues: true,
 			commissions: {
 				orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
 				select: {
@@ -197,6 +244,12 @@ export async function loadSaleHistorySnapshot(
 			responsibleType: sale.responsibleType,
 			responsibleId: sale.responsibleId,
 			notes: sale.notes,
+			dynamicFieldSchema: parseSaleDynamicFieldSchemaJson(
+				sale.dynamicFieldSchema,
+			),
+			dynamicFieldValues: parseSaleDynamicFieldValuesJson(
+				sale.dynamicFieldValues,
+			),
 		},
 		commissions: sale.commissions.map((commission) => ({
 			id: commission.id,
@@ -226,7 +279,8 @@ export async function loadSaleHistorySnapshot(
 }
 
 export function buildSaleHistoryCreationChanges(snapshot: SaleHistorySnapshot) {
-	const flattened = flattenHistorySnapshot(snapshot);
+	const comparableSnapshot = toComparableSaleHistorySnapshot(snapshot);
+	const flattened = flattenHistorySnapshot(comparableSnapshot);
 
 	return Array.from(flattened.entries())
 		.sort(([leftPath], [rightPath]) => leftPath.localeCompare(rightPath))
@@ -241,8 +295,10 @@ export function buildSaleHistoryDiff(
 	beforeSnapshot: SaleHistorySnapshot,
 	afterSnapshot: SaleHistorySnapshot,
 ): SaleHistoryChange[] {
-	const beforeFlattened = flattenHistorySnapshot(beforeSnapshot);
-	const afterFlattened = flattenHistorySnapshot(afterSnapshot);
+	const beforeComparableSnapshot = toComparableSaleHistorySnapshot(beforeSnapshot);
+	const afterComparableSnapshot = toComparableSaleHistorySnapshot(afterSnapshot);
+	const beforeFlattened = flattenHistorySnapshot(beforeComparableSnapshot);
+	const afterFlattened = flattenHistorySnapshot(afterComparableSnapshot);
 
 	const paths = new Set<string>([
 		...beforeFlattened.keys(),

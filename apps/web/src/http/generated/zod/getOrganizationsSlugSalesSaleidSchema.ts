@@ -56,6 +56,19 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
 "responsibleType": z.enum(["SELLER", "PARTNER"]),
 "responsibleId": z.uuid(),
 "createdById": z.uuid(),
+"dynamicFieldSchema": z.array(z.object({
+    "fieldId": z.uuid(),
+"label": z.string(),
+"type": z.enum(["TEXT", "NUMBER", "CURRENCY", "RICH_TEXT", "PHONE", "SELECT", "MULTI_SELECT", "DATE", "DATE_TIME"]),
+"required": z.boolean(),
+"options": z.array(z.object({
+    "id": z.uuid(),
+"label": z.string()
+    }))
+    })),
+"dynamicFieldValues": z.object({
+    
+    }).catchall(z.any().nullable()),
 "commissions": z.array(z.object({
     "id": z.uuid(),
 "sourceType": z.enum(["PULLED", "MANUAL"]),

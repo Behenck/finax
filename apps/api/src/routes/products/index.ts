@@ -3,8 +3,10 @@ import { createProduct } from "./create-product";
 import { deleteProduct } from "./delete-product";
 import { getProduct } from "./get-product";
 import { getProductCommissionScenarios } from "./get-product-commission-scenarios";
+import { getProductSaleFields } from "./get-product-sale-fields";
 import { getProducts } from "./get-products";
 import { replaceProductCommissionScenarios } from "./replace-product-commission-scenarios";
+import { replaceProductSaleFields } from "./replace-product-sale-fields";
 import { updateProduct } from "./update-product";
 
 export async function productRoutes(app: FastifyInstance) {
@@ -14,5 +16,7 @@ export async function productRoutes(app: FastifyInstance) {
 	await app.register(getProduct);
 	await app.register(getProductCommissionScenarios);
 	await app.register(replaceProductCommissionScenarios);
+	await app.register(getProductSaleFields);
+	await app.register(replaceProductSaleFields);
 	await app.register(deleteProduct);
 }

@@ -121,6 +121,7 @@ export const saleSchema = z.object({
 		.string()
 		.max(500, "A observação deve ter no máximo 500 caracteres")
 		.optional(),
+	dynamicFields: z.record(z.string(), z.unknown()).default({}),
 	commissions: z.array(saleCommissionSchema).optional(),
 });
 

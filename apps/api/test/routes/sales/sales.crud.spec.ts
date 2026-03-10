@@ -231,6 +231,7 @@ function buildCreatePayload(
 		companyId: string;
 		unitId: string | undefined;
 		notes: string | undefined;
+		dynamicFields: Record<string, unknown> | undefined;
 		commissions: SaleCommissionInput[] | undefined;
 	}>,
 ) {
@@ -352,6 +353,103 @@ async function createSaleUsingApi(
 	return response.body.saleId as string;
 }
 
+async function createProductDynamicFields(productId: string) {
+	const groupField = await prisma.productSaleField.create({
+		data: {
+			productId,
+			label: "Grupo",
+			labelNormalized: "grupo",
+			type: "TEXT",
+			required: true,
+			sortOrder: 0,
+		},
+	});
+
+	const amountField = await prisma.productSaleField.create({
+		data: {
+			productId,
+			label: "Valor negociado",
+			labelNormalized: "valor negociado",
+			type: "CURRENCY",
+			required: true,
+			sortOrder: 1,
+		},
+	});
+
+	const stageField = await prisma.productSaleField.create({
+		data: {
+			productId,
+			label: "Etapa",
+			labelNormalized: "etapa",
+			type: "SELECT",
+			required: true,
+			sortOrder: 2,
+			options: {
+				create: [
+					{
+						label: "Inbound",
+						labelNormalized: "inbound",
+						sortOrder: 0,
+					},
+					{
+						label: "Outbound",
+						labelNormalized: "outbound",
+						sortOrder: 1,
+					},
+				],
+			},
+		},
+		include: {
+			options: {
+				orderBy: {
+					sortOrder: "asc",
+				},
+			},
+		},
+	});
+
+	const channelsField = await prisma.productSaleField.create({
+		data: {
+			productId,
+			label: "Canais",
+			labelNormalized: "canais",
+			type: "MULTI_SELECT",
+			required: false,
+			sortOrder: 3,
+			options: {
+				create: [
+					{
+						label: "Instagram",
+						labelNormalized: "instagram",
+						sortOrder: 0,
+					},
+					{
+						label: "Indicação",
+						labelNormalized: "indicação",
+						sortOrder: 1,
+					},
+				],
+			},
+		},
+		include: {
+			options: {
+				orderBy: {
+					sortOrder: "asc",
+				},
+			},
+		},
+	});
+
+	return {
+		groupField,
+		amountField,
+		stageField,
+		channelsField,
+		stageOptions: stageField.options,
+		channelsOptions: channelsField.options,
+	};
+}
+
 async function getSaleHistoryEvents(
 	fixture: Awaited<ReturnType<typeof createFixture>>,
 	saleId: string,
@@ -418,6 +516,93 @@ describe("sales crud", () => {
 			},
 		});
 		expect(commissionsCount).toBe(0);
+	});
+
+	it("should create sale with dynamic fields snapshot", async () => {
+		const fixture = await createFixture();
+		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					dynamicFields: {
+						[productDynamicFields.groupField.id]: "Grupo Norte",
+						[productDynamicFields.amountField.id]: 350_000,
+						[productDynamicFields.stageField.id]:
+							productDynamicFields.stageOptions[0]?.id,
+						[productDynamicFields.channelsField.id]: [
+							productDynamicFields.channelsOptions[0]?.id,
+						],
+					},
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const sale = await prisma.sale.findUnique({
+			where: {
+				id: response.body.saleId,
+			},
+			select: {
+				dynamicFieldSchema: true,
+				dynamicFieldValues: true,
+			},
+		});
+
+		expect(sale).not.toBeNull();
+		expect(Array.isArray(sale?.dynamicFieldSchema)).toBe(true);
+
+		const dynamicFieldSchema = sale?.dynamicFieldSchema as Array<{
+			fieldId: string;
+			label: string;
+			type: string;
+			required: boolean;
+			options: Array<{ id: string; label: string }>;
+		}>;
+		const dynamicFieldValues = sale?.dynamicFieldValues as Record<string, unknown>;
+
+		expect(dynamicFieldSchema).toHaveLength(4);
+		expect(
+			dynamicFieldSchema.some(
+				(field) =>
+					field.fieldId === productDynamicFields.groupField.id &&
+					field.label === "Grupo" &&
+					field.type === "TEXT",
+			),
+		).toBe(true);
+		expect(dynamicFieldValues[productDynamicFields.groupField.id]).toBe(
+			"Grupo Norte",
+		);
+		expect(dynamicFieldValues[productDynamicFields.amountField.id]).toBe(350_000);
+		expect(dynamicFieldValues[productDynamicFields.stageField.id]).toBe(
+			productDynamicFields.stageOptions[0]?.id,
+		);
+		expect(dynamicFieldValues[productDynamicFields.channelsField.id]).toEqual([
+			productDynamicFields.channelsOptions[0]?.id,
+		]);
+	});
+
+	it("should reject create sale when required dynamic field is missing", async () => {
+		const fixture = await createFixture();
+		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					dynamicFields: {
+						[productDynamicFields.groupField.id]: "Grupo Norte",
+						[productDynamicFields.stageField.id]:
+							productDynamicFields.stageOptions[0]?.id,
+					},
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toContain("Valor negociado");
 	});
 
 	it("should create sale with pulled and manual commissions", async () => {
@@ -1090,6 +1275,65 @@ describe("sales crud", () => {
 		expect(totalAmountChange?.after).toBe(130_000);
 	});
 
+	it("should include dynamic field diff in sale history", async () => {
+		const fixture = await createFixture();
+		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				dynamicFields: {
+					[productDynamicFields.groupField.id]: "Grupo Norte",
+					[productDynamicFields.amountField.id]: 200_000,
+					[productDynamicFields.stageField.id]:
+						productDynamicFields.stageOptions[0]?.id,
+					[productDynamicFields.channelsField.id]: [
+						productDynamicFields.channelsOptions[0]?.id,
+					],
+				},
+			}),
+		);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					dynamicFields: {
+						[productDynamicFields.groupField.id]: "Grupo Sul",
+						[productDynamicFields.amountField.id]: 300_000,
+						[productDynamicFields.stageField.id]:
+							productDynamicFields.stageOptions[1]?.id,
+						[productDynamicFields.channelsField.id]: [
+							productDynamicFields.channelsOptions[0]?.id,
+							productDynamicFields.channelsOptions[1]?.id,
+						],
+					},
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const history = await getSaleHistoryEvents(fixture, saleId);
+		const updateEvent = history.find((event) => event.action === "UPDATED");
+
+		expect(updateEvent).toBeDefined();
+
+		const groupFieldChange = updateEvent?.changes.find(
+			(change) =>
+				change.path === `sale.dynamicFieldValues.${productDynamicFields.groupField.id}`,
+		) as
+			| {
+					before: { value: unknown; label: string };
+					after: { value: unknown; label: string };
+			  }
+			| undefined;
+
+		expect(groupFieldChange).toBeDefined();
+		expect(groupFieldChange?.before.label).toBe("Grupo");
+		expect(groupFieldChange?.before.value).toBe("Grupo Norte");
+		expect(groupFieldChange?.after.value).toBe("Grupo Sul");
+	});
+
 	it("should create sale history events for status and commission installment changes", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(
@@ -1243,6 +1487,106 @@ describe("sales crud", () => {
 		expect(sale?.notes).toBe("Venda atualizada");
 		expect(sale?.responsibleType).toBe("PARTNER");
 		expect(sale?.status).toBe(SaleStatus.PENDING);
+	});
+
+	it("should require dynamic fields and replace snapshot when product changes on update", async () => {
+		const fixture = await createFixture();
+		const originalDynamicFields = await createProductDynamicFields(fixture.product.id);
+
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				dynamicFields: {
+					[originalDynamicFields.groupField.id]: "Grupo Norte",
+					[originalDynamicFields.amountField.id]: 220_000,
+					[originalDynamicFields.stageField.id]:
+						originalDynamicFields.stageOptions[0]?.id,
+					[originalDynamicFields.channelsField.id]: [],
+				},
+			}),
+		);
+
+		const replacementProduct = await prisma.product.create({
+			data: {
+				organizationId: fixture.org.id,
+				name: `Produto Novo ${Date.now()}`,
+				description: "Produto para troca",
+				isActive: true,
+			},
+		});
+		const replacementDynamicFields = await createProductDynamicFields(
+			replacementProduct.id,
+		);
+
+		const missingDynamicFieldsResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					productId: replacementProduct.id,
+					dynamicFields: undefined,
+				}),
+			);
+
+		expect(missingDynamicFieldsResponse.statusCode).toBe(400);
+		expect(missingDynamicFieldsResponse.body.message).toBe(
+			"Dynamic fields are required when changing product",
+		);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					productId: replacementProduct.id,
+					dynamicFields: {
+						[replacementDynamicFields.groupField.id]: "Grupo Refeito",
+						[replacementDynamicFields.amountField.id]: 310_000,
+						[replacementDynamicFields.stageField.id]:
+							replacementDynamicFields.stageOptions[1]?.id,
+						[replacementDynamicFields.channelsField.id]: [
+							replacementDynamicFields.channelsOptions[0]?.id,
+						],
+					},
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const updatedSale = await prisma.sale.findUnique({
+			where: {
+				id: saleId,
+			},
+			select: {
+				productId: true,
+				dynamicFieldSchema: true,
+				dynamicFieldValues: true,
+			},
+		});
+
+		expect(updatedSale?.productId).toBe(replacementProduct.id);
+
+		const dynamicFieldSchema = updatedSale?.dynamicFieldSchema as Array<{
+			fieldId: string;
+		}>;
+		const dynamicFieldValues = updatedSale?.dynamicFieldValues as Record<
+			string,
+			unknown
+		>;
+
+		expect(
+			dynamicFieldSchema.some(
+				(field) => field.fieldId === replacementDynamicFields.groupField.id,
+			),
+		).toBe(true);
+		expect(
+			dynamicFieldSchema.some(
+				(field) => field.fieldId === originalDynamicFields.groupField.id,
+			),
+		).toBe(false);
+		expect(dynamicFieldValues[replacementDynamicFields.groupField.id]).toBe(
+			"Grupo Refeito",
+		);
 	});
 
 	it("should replace sale commissions on update when commissions is provided", async () => {

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { format, parse, startOfDay } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -11,6 +11,7 @@ import { FieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -41,8 +42,10 @@ import {
 	type GetOrganizationsSlugCustomersQueryResponse,
 	type GetOrganizationsSlugSalesSaleid200,
 	getOrganizationsSlugCustomersQueryKey,
+	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
 	postOrganizationsSlugCustomers,
 	useGetOrganizationsSlugProductsIdCommissionScenarios,
+	useGetOrganizationsSlugProductsIdSaleFields,
 } from "@/http/generated";
 import {
 	type SaleCommissionFormData,
@@ -50,6 +53,10 @@ import {
 	type SaleFormInput,
 	saleSchema,
 } from "@/schemas/sale-schema";
+import type {
+	SaleDynamicFieldSchemaItem,
+	SaleDynamicFieldValues,
+} from "@/schemas/types/sale-dynamic-fields";
 import {
 	SALE_RESPONSIBLE_TYPE_LABEL,
 	type SaleResponsibleType,
@@ -63,6 +70,10 @@ import { formatDocument } from "@/utils/format-document";
 import { formatPhone } from "@/utils/format-phone";
 import { SaleCommissionCard } from "./sale-commission-card";
 import {
+	toSaleDynamicFieldFormValues,
+	toSaleDynamicFieldPayloadValues,
+} from "./sale-dynamic-fields";
+import {
 	createDefaultManualSaleCommission,
 	distributeSaleCommissionInstallments,
 	mapSaleCommissionToForm,
@@ -73,6 +84,7 @@ import {
 	type SaleCommissionMatchContext,
 } from "./sale-commission-helpers";
 import { SaleInstallmentsPanel } from "./sale-installments-panel";
+import { RichTextEditor } from "./rich-text-editor";
 
 const OPTIONAL_NONE_VALUE = "__NONE__";
 const QUICK_CUSTOMER_DEFAULT_VALUES = {
@@ -155,6 +167,15 @@ function resolveInitialCommissions(initialSale?: SaleDetail) {
 	);
 }
 
+function resolveInitialDynamicFields(initialSale?: SaleDetail) {
+	const dynamicFieldSchema = (initialSale?.dynamicFieldSchema ??
+		[]) as SaleDynamicFieldSchemaItem[];
+	const dynamicFieldValues = (initialSale?.dynamicFieldValues ??
+		{}) as SaleDynamicFieldValues;
+
+	return toSaleDynamicFieldFormValues(dynamicFieldSchema, dynamicFieldValues);
+}
+
 export function SaleForm({
 	mode = "CREATE",
 	initialSale,
@@ -193,6 +214,10 @@ export function SaleForm({
 		useState<string | null>(null);
 	const [quickCreatedCustomer, setQuickCreatedCustomer] =
 		useState<SaleCustomerOption | null>(null);
+	const [dynamicFieldSchemaByProductId, setDynamicFieldSchemaByProductId] =
+		useState<Record<string, SaleDynamicFieldSchemaItem[]>>({});
+	const [hasSwitchedProduct, setHasSwitchedProduct] = useState(false);
+	const previousProductIdRef = useRef(initialSale?.productId ?? "");
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
 		resolver: zodResolver(saleSchema),
@@ -208,6 +233,7 @@ export function SaleForm({
 			responsibleId: initialSale?.responsibleId ?? "",
 			totalAmount: formatCurrencyBRL((initialSale?.totalAmount ?? 0) / 100),
 			notes: initialSale?.notes ?? "",
+			dynamicFields: resolveInitialDynamicFields(initialSale),
 			commissions: resolveInitialCommissions(initialSale),
 		},
 	});
@@ -280,6 +306,61 @@ export function SaleForm({
 	const hasRequestedCommissionForCurrentProduct =
 		Boolean(selectedProductId) &&
 		commissionRequestedProductId === selectedProductId;
+	const shouldUseInitialDynamicFieldSchema =
+		mode === "UPDATE" &&
+		Boolean(initialSale) &&
+		!hasSwitchedProduct &&
+		selectedProductId === initialSale?.productId;
+	const inheritedSaleFieldsQueryKey = useMemo(
+		() =>
+			[
+				...getOrganizationsSlugProductsIdSaleFieldsQueryKey({
+					slug: organization?.slug ?? "",
+					id: selectedProductId || "",
+				}),
+				{ includeInherited: true },
+			] as const,
+		[organization?.slug, selectedProductId],
+	);
+	const productSaleFieldsQuery = useGetOrganizationsSlugProductsIdSaleFields(
+		{
+			slug: organization?.slug ?? "",
+			id: selectedProductId || "",
+		},
+		{
+			client: {
+				params: {
+					includeInherited: true,
+				},
+			},
+			query: {
+				queryKey: inheritedSaleFieldsQueryKey,
+				enabled:
+					Boolean(organization?.slug && selectedProductId) &&
+					!shouldUseInitialDynamicFieldSchema,
+			},
+		},
+	);
+	const dynamicFieldSchema = useMemo<SaleDynamicFieldSchemaItem[]>(() => {
+		if (shouldUseInitialDynamicFieldSchema) {
+			return (initialSale?.dynamicFieldSchema ?? []) as SaleDynamicFieldSchemaItem[];
+		}
+
+		if (!selectedProductId) {
+			return [];
+		}
+
+		return dynamicFieldSchemaByProductId[selectedProductId] ?? [];
+	}, [
+		dynamicFieldSchemaByProductId,
+		initialSale?.dynamicFieldSchema,
+		selectedProductId,
+		shouldUseInitialDynamicFieldSchema,
+	]);
+	const isDynamicFieldsLoading =
+		Boolean(selectedProductId) &&
+		!shouldUseInitialDynamicFieldSchema &&
+		(productSaleFieldsQuery.isLoading || productSaleFieldsQuery.isFetching);
 	const customersForSelect = useMemo(() => {
 		if (!quickCreatedCustomer) {
 			return customers;
@@ -552,6 +633,57 @@ export function SaleForm({
 	});
 
 	useEffect(() => {
+		if (shouldUseInitialDynamicFieldSchema || !selectedProductId) {
+			return;
+		}
+
+		if (!productSaleFieldsQuery.data?.fields) {
+			return;
+		}
+
+		setDynamicFieldSchemaByProductId((currentValue) => ({
+			...currentValue,
+			[selectedProductId]: productSaleFieldsQuery.data.fields.map((field) => ({
+				fieldId: field.id,
+				label: field.label,
+				type: field.type as SaleDynamicFieldSchemaItem["type"],
+				required: field.required,
+				options: field.options,
+			})),
+		}));
+	}, [
+		productSaleFieldsQuery.data?.fields,
+		selectedProductId,
+		shouldUseInitialDynamicFieldSchema,
+	]);
+
+	useEffect(() => {
+		const previousProductId = previousProductIdRef.current;
+		if (selectedProductId === previousProductId) {
+			return;
+		}
+
+		previousProductIdRef.current = selectedProductId;
+		setCommissionRequestedProductId(null);
+		clearPulledCommissions();
+		setValue("dynamicFields", {}, { shouldDirty: true, shouldValidate: true });
+
+		if (
+			mode === "UPDATE" &&
+			initialSale?.productId &&
+			selectedProductId !== initialSale.productId
+		) {
+			setHasSwitchedProduct(true);
+		}
+	}, [
+		clearPulledCommissions,
+		initialSale?.productId,
+		mode,
+		selectedProductId,
+		setValue,
+	]);
+
+	useEffect(() => {
 		const currentUnitId = getValues("unitId");
 		if (!currentUnitId) {
 			return;
@@ -634,8 +766,12 @@ export function SaleForm({
 							percentage: roundSaleCommissionPercentage(installment.percentage),
 						}),
 					),
-				}))
+					}))
 			: undefined;
+		const dynamicFields = toSaleDynamicFieldPayloadValues(
+			dynamicFieldSchema,
+			data.dynamicFields ?? {},
+		);
 
 		const payload = {
 			saleDate: format(data.saleDate, "yyyy-MM-dd"),
@@ -649,6 +785,7 @@ export function SaleForm({
 			companyId: data.companyId,
 			unitId: data.unitId || undefined,
 			notes: data.notes?.trim() ? data.notes.trim() : undefined,
+			dynamicFields,
 			commissions,
 		};
 
@@ -743,10 +880,11 @@ export function SaleForm({
 						/>
 					</Field>
 				</FieldGroup>
-			</Card>
+				</Card>
 
-			<Card className="p-5 rounded-sm gap-4">
-				<h2 className="font-semibold text-md">Dados da Venda</h2>
+
+				<Card className="p-5 rounded-sm gap-4">
+					<h2 className="font-semibold text-md">Dados da Venda</h2>
 
 				<div className="grid gap-4 md:grid-cols-2">
 					<FieldGroup>
@@ -1048,6 +1186,252 @@ export function SaleForm({
 				</div>
 			</Card>
 
+				<Card className="p-5 rounded-sm gap-4">
+					<h2 className="font-semibold text-md">Campos personalizados</h2>
+
+					{!selectedProductId ? (
+						<p className="text-sm text-muted-foreground">
+							Selecione um produto para carregar os campos personalizados.
+						</p>
+					) : isDynamicFieldsLoading ? (
+						<p className="text-sm text-muted-foreground">
+							Carregando campos personalizados...
+						</p>
+					) : dynamicFieldSchema.length === 0 ? (
+						<p className="text-sm text-muted-foreground">
+							Este produto não possui campos personalizados.
+						</p>
+					) : (
+						<div className="space-y-4">
+							{dynamicFieldSchema.map((dynamicField) => (
+								<FieldGroup key={dynamicField.fieldId}>
+									<Field className="gap-2">
+										<FieldLabel>
+											{dynamicField.label}
+											{dynamicField.required ? " *" : ""}
+										</FieldLabel>
+
+										<Controller
+											control={control}
+											name={`dynamicFields.${dynamicField.fieldId}`}
+											render={({ field, fieldState }) => {
+												const rawValue = field.value;
+
+												if (dynamicField.type === "TEXT") {
+													return (
+														<>
+															<Input
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={(event) =>
+																	field.onChange(event.target.value)
+																}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "NUMBER") {
+													return (
+														<>
+															<Input
+																type="number"
+																step="any"
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={(event) =>
+																	field.onChange(event.target.value)
+																}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "CURRENCY") {
+													return (
+														<>
+															<Input
+																placeholder="R$ 0,00"
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={(event) =>
+																	field.onChange(
+																		formatCurrencyBRL(event.target.value),
+																	)
+																}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "RICH_TEXT") {
+													return (
+														<>
+															<RichTextEditor
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={field.onChange}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "PHONE") {
+													return (
+														<>
+															<Input
+																placeholder="(00) 00000-0000"
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={(event) =>
+																	field.onChange(formatPhone(event.target.value))
+																}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "SELECT") {
+													return (
+														<>
+															<Select
+																value={
+																	typeof rawValue === "string" && rawValue
+																		? rawValue
+																		: OPTIONAL_NONE_VALUE
+																}
+																onValueChange={(value) =>
+																	field.onChange(
+																		value === OPTIONAL_NONE_VALUE ? "" : value,
+																	)
+																}
+															>
+																<SelectTrigger>
+																	<SelectValue placeholder="Selecione uma opção" />
+																</SelectTrigger>
+																<SelectContent>
+																	<SelectItem value={OPTIONAL_NONE_VALUE}>
+																		Sem seleção
+																	</SelectItem>
+																	{dynamicField.options.map((option) => (
+																		<SelectItem key={option.id} value={option.id}>
+																			{option.label}
+																		</SelectItem>
+																	))}
+																</SelectContent>
+															</Select>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "MULTI_SELECT") {
+													const selectedValues = Array.isArray(rawValue)
+														? rawValue.filter(
+																(option): option is string =>
+																	typeof option === "string",
+															)
+														: [];
+
+													return (
+														<>
+															<div className="space-y-2">
+																{dynamicField.options.map((option) => {
+																	const checked = selectedValues.includes(option.id);
+
+																	return (
+																		<label
+																			key={option.id}
+																			className="flex items-center gap-2 text-sm"
+																		>
+																			<Checkbox
+																				checked={checked}
+																				onCheckedChange={(isChecked) => {
+																					if (isChecked) {
+																						field.onChange([
+																							...selectedValues,
+																							option.id,
+																						]);
+																						return;
+																					}
+
+																					field.onChange(
+																						selectedValues.filter(
+																							(value) => value !== option.id,
+																						),
+																					);
+																				}}
+																			/>
+																			<span>{option.label}</span>
+																		</label>
+																	);
+																})}
+															</div>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "DATE") {
+													return (
+														<>
+															<CalendarDateInput
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={field.onChange}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												if (dynamicField.type === "DATE_TIME") {
+													return (
+														<>
+															<Input
+																type="datetime-local"
+																value={
+																	typeof rawValue === "string" ? rawValue : ""
+																}
+																onChange={(event) =>
+																	field.onChange(event.target.value)
+																}
+															/>
+															<FieldError error={fieldState.error} />
+														</>
+													);
+												}
+
+												return (
+													<>
+														<Input
+															value={typeof rawValue === "string" ? rawValue : ""}
+															onChange={(event) =>
+																field.onChange(event.target.value)
+															}
+														/>
+														<FieldError error={fieldState.error} />
+													</>
+												);
+											}}
+										/>
+									</Field>
+								</FieldGroup>
+							))}
+						</div>
+					)}
+				</Card>
 			{isCommissionEditable ? (
 				<Card className="p-5 rounded-sm gap-4">
 					<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -1293,7 +1677,10 @@ export function SaleForm({
 				<Button type="button" variant="outline" asChild>
 					<Link to="/sales">Cancelar</Link>
 				</Button>
-				<Button type="submit" disabled={isPending || isLoadingOptions}>
+				<Button
+					type="submit"
+					disabled={isPending || isLoadingOptions || isDynamicFieldsLoading}
+				>
 					{isPending
 						? "Salvando..."
 						: mode === "CREATE"

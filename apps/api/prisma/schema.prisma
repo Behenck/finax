@@ -548,6 +548,7 @@ model Product {
   parent       Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
   children     Product[]    @relation("ProductTree")
   sales        Sale[]
+  saleFields   ProductSaleField[]
 
   commissionScenarios ProductCommissionScenario[]
 
@@ -556,6 +557,56 @@ model Product {
   @@index([parentId])
   @@index([organizationId, isActive])
   @@map("products")
+}
+
+enum SaleDynamicFieldType {
+  TEXT
+  NUMBER
+  CURRENCY
+  RICH_TEXT
+  PHONE
+  SELECT
+  MULTI_SELECT
+  DATE
+  DATE_TIME
+}
+
+model ProductSaleField {
+  id              String               @id @default(uuid())
+  productId       String               @map("product_id")
+  label           String
+  labelNormalized String               @map("label_normalized")
+  type            SaleDynamicFieldType
+  required        Boolean              @default(false)
+  sortOrder       Int                  @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  options ProductSaleFieldOption[]
+
+  @@unique([productId, labelNormalized])
+  @@index([productId])
+  @@index([productId, sortOrder])
+  @@map("product_sale_fields")
+}
+
+model ProductSaleFieldOption {
+  id              String @id @default(uuid())
+  fieldId         String @map("field_id")
+  label           String
+  labelNormalized String @map("label_normalized")
+  sortOrder       Int    @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  field ProductSaleField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([fieldId, labelNormalized])
+  @@index([fieldId])
+  @@index([fieldId, sortOrder])
+  @@map("product_sale_field_options")
 }
 
 enum ProductCommissionScenarioConditionType {
@@ -735,6 +786,8 @@ model Sale {
   responsibleType SaleResponsibleType @map("responsible_type")
   responsibleId   String              @map("responsible_id")
   notes           String?
+  dynamicFieldSchema Json             @default("[]") @map("dynamic_field_schema")
+  dynamicFieldValues Json             @default("{}") @map("dynamic_field_values")
   createdById     String              @map("created_by_id")
 
   createdAt DateTime @default(now()) @map("created_at")

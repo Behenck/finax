@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { Prisma } from "generated/prisma/client";
 import { CustomerStatus, SaleHistoryAction } from "generated/prisma/enums";
 import z from "zod";
 import { db } from "@/lib/db";
@@ -15,6 +16,12 @@ import {
 	createSaleDiffHistoryEvent,
 	loadSaleHistorySnapshot,
 } from "./sale-history";
+import {
+	loadProductSaleFieldSchema,
+	normalizeSaleDynamicFieldValues,
+	parseSaleDynamicFieldSchemaJson,
+	parseSaleDynamicFieldValuesJson,
+} from "./sale-dynamic-fields";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
 
@@ -65,6 +72,9 @@ export async function updateSale(app: FastifyInstance) {
 					select: {
 						id: true,
 						status: true,
+						productId: true,
+						dynamicFieldSchema: true,
+						dynamicFieldValues: true,
 					},
 				});
 
@@ -117,6 +127,32 @@ export async function updateSale(app: FastifyInstance) {
 				if (!product) {
 					throw new BadRequestError("Product not found or inactive");
 				}
+
+				const isProductChanged = sale.productId !== data.productId;
+				const saleDynamicFieldSchema = parseSaleDynamicFieldSchemaJson(
+					sale.dynamicFieldSchema,
+				);
+				const saleDynamicFieldValues = parseSaleDynamicFieldValuesJson(
+					sale.dynamicFieldValues,
+				);
+
+				const dynamicFieldSchema = isProductChanged
+					? await loadProductSaleFieldSchema(prisma, data.productId)
+					: saleDynamicFieldSchema;
+
+				if (isProductChanged && data.dynamicFields === undefined) {
+					throw new BadRequestError(
+						"Dynamic fields are required when changing product",
+					);
+				}
+
+				const dynamicFieldValues =
+					data.dynamicFields === undefined
+						? saleDynamicFieldValues
+						: normalizeSaleDynamicFieldValues({
+								schema: dynamicFieldSchema,
+								input: data.dynamicFields,
+							});
 
 				const company = await prisma.company.findFirst({
 					where: {
@@ -175,6 +211,10 @@ export async function updateSale(app: FastifyInstance) {
 								saleDate: parseSaleDateInput(data.saleDate),
 								totalAmount: data.totalAmount,
 								notes: data.notes ?? null,
+								dynamicFieldSchema:
+									dynamicFieldSchema as unknown as Prisma.InputJsonValue,
+								dynamicFieldValues:
+									dynamicFieldValues as unknown as Prisma.InputJsonValue,
 								...responsibleData,
 							},
 						});

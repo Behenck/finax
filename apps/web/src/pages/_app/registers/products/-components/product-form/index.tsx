@@ -1,31 +1,56 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+	Controller,
+	type FieldErrors,
+	useFieldArray,
+	useForm,
+	useWatch,
+} from "react-hook-form";
 import { toast } from "sonner";
 import { FieldError as FormFieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
 	getOrganizationsSlugProductsIdCommissionScenariosQueryKey,
+	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
 	getOrganizationsSlugProductsQueryKey,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugMembersRole,
 	useGetOrganizationsSlugPartners,
 	useGetOrganizationsSlugProductsIdCommissionScenarios,
+	useGetOrganizationsSlugProductsIdSaleFields,
 	useGetOrganizationsSlugSellers,
 	usePostOrganizationsSlugProducts,
 	usePutOrganizationsSlugProductsId,
 	usePutOrganizationsSlugProductsIdCommissionScenarios,
+	usePutOrganizationsSlugProductsIdSaleFields,
 } from "@/http/generated";
-import { type ProductFormData, productSchema } from "@/schemas/product-schema";
+import {
+	type ProductFormData,
+	productSchema,
+} from "@/schemas/product-schema";
+import {
+	SALE_DYNAMIC_FIELD_TYPE_LABEL,
+	SALE_DYNAMIC_FIELD_TYPE_VALUES,
+	type SaleDynamicFieldType,
+} from "@/schemas/types/sale-dynamic-fields";
 import type { ProductListItem } from "@/schemas/types/product";
-import { CirclePlus } from "lucide-react";
+import { ChevronDown, ChevronUp, CirclePlus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScenarioTabContent } from "./-components/scenario-tab-content";
 import {
@@ -41,6 +66,34 @@ interface ProductFormProps {
 	mode?: "create" | "edit";
 	initialData?: ProductListItem;
 	fixedParentId?: string;
+}
+
+function isDatabaseSchemaOutdatedMessage(message: string) {
+	return message.toLowerCase().includes("estrutura do banco desatualizada");
+}
+
+function resolveFirstFormErrorMessage(value: unknown): string | null {
+	if (!value || typeof value !== "object") {
+		return null;
+	}
+
+	const recordValue = value as Record<string, unknown>;
+
+	if (
+		typeof recordValue.message === "string" &&
+		recordValue.message.trim().length > 0
+	) {
+		return recordValue.message;
+	}
+
+	for (const nestedValue of Object.values(recordValue)) {
+		const nestedMessage = resolveFirstFormErrorMessage(nestedValue);
+		if (nestedMessage) {
+			return nestedMessage;
+		}
+	}
+
+	return null;
 }
 
 export function ProductForm({
@@ -59,6 +112,8 @@ export function ProductForm({
 		usePutOrganizationsSlugProductsId();
 	const { mutateAsync: replaceCommissionScenarios, isPending: isSavingScenarios } =
 		usePutOrganizationsSlugProductsIdCommissionScenarios();
+	const { mutateAsync: replaceProductSaleFields, isPending: isSavingSaleFields } =
+		usePutOrganizationsSlugProductsIdSaleFields();
 
 	const isEditMode = mode === "edit" && !!initialData;
 
@@ -91,21 +146,34 @@ export function ProductForm({
 				},
 			},
 		);
+	const { data: saleFieldsData, isLoading: isLoadingSaleFields } =
+		useGetOrganizationsSlugProductsIdSaleFields(
+			{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
+			{
+				query: {
+					enabled: !!organization?.slug && !!initialData?.id && isEditMode,
+				},
+			},
+		);
 
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
 			name: initialData?.name ?? "",
 			scenarios: [],
+			saleFields: [],
 		},
 	});
 
 	const {
 		handleSubmit,
 		control,
+		register,
 		reset,
 		setValue,
 		getValues,
+		clearErrors,
+		trigger,
 		formState: { errors, isDirty },
 	} = form;
 
@@ -117,11 +185,24 @@ export function ProductForm({
 		control,
 		name: "scenarios",
 	});
+	const {
+		fields: saleFieldFields,
+		append: appendSaleField,
+		remove: removeSaleField,
+		move: moveSaleField,
+	} = useFieldArray({
+		control,
+		name: "saleFields",
+	});
 
 	const scenarioValues = useWatch({ control, name: "scenarios" }) ?? [];
+	const saleFieldValues = useWatch({ control, name: "saleFields" }) ?? [];
 
 	const [activeScenarioTab, setActiveScenarioTab] = useState("");
-	const isPending = isCreating || isUpdating || isSavingScenarios;
+	const [activeProductConfigTab, setActiveProductConfigTab] =
+		useState("commission-scenarios");
+	const isPending =
+		isCreating || isUpdating || isSavingScenarios || isSavingSaleFields;
 	const resolvedActiveScenarioTab = scenarioFields.some(
 		(_, scenarioIndex) => `scenario-${scenarioIndex}` === activeScenarioTab,
 	)
@@ -175,7 +256,7 @@ export function ProductForm({
 	}, [supervisorsData?.members]);
 
 	useEffect(() => {
-		if (!isEditMode || !initialData || !scenariosData) return;
+		if (!isEditMode || !initialData || !scenariosData || !saleFieldsData) return;
 		if (initializedFromApiRef.current && isDirty) return;
 
 		reset({
@@ -184,9 +265,17 @@ export function ProductForm({
 				scenariosData.scenarios.length > 0
 					? scenariosData.scenarios.map(mapApiScenarioToForm)
 					: [],
+			saleFields: saleFieldsData.fields.map((field) => ({
+				label: field.label,
+				type: field.type as SaleDynamicFieldType,
+				required: field.required,
+				options: field.options.map((option) => ({
+					label: option.label,
+				})),
+			})),
 		});
 		initializedFromApiRef.current = true;
-	}, [initialData, isDirty, isEditMode, reset, scenariosData]);
+	}, [initialData, isDirty, isEditMode, reset, saleFieldsData, scenariosData]);
 
 	useEffect(() => {
 		if (mode === "create") {
@@ -211,6 +300,15 @@ export function ProductForm({
 		});
 	};
 
+	const invalidateProductSaleFields = async (productId: string) => {
+		await queryClient.invalidateQueries({
+			queryKey: getOrganizationsSlugProductsIdSaleFieldsQueryKey({
+				slug: organization!.slug,
+				id: productId,
+			}),
+		});
+	};
+
 	const handleAddScenario = () => {
 		const nextIndex = scenarioFields.length;
 		appendScenario(createDefaultScenario(`Cenário ${nextIndex + 1}`));
@@ -227,6 +325,63 @@ export function ProductForm({
 
 		const nextTabIndex = index >= nextLength ? nextLength - 1 : index;
 		setActiveScenarioTab(`scenario-${nextTabIndex}`);
+	};
+
+	const handleAddSaleField = () => {
+		appendSaleField({
+			label: "",
+			type: "TEXT",
+			required: false,
+			options: [],
+		});
+	};
+
+	const handleMoveSaleField = (fromIndex: number, toIndex: number) => {
+		if (
+			fromIndex < 0 ||
+			toIndex < 0 ||
+			fromIndex >= saleFieldFields.length ||
+			toIndex >= saleFieldFields.length ||
+			fromIndex === toIndex
+		) {
+			return;
+		}
+
+		moveSaleField(fromIndex, toIndex);
+		clearErrors("saleFields");
+		void trigger("saleFields");
+	};
+
+	const handleAddSaleFieldOption = (fieldIndex: number) => {
+		const currentOptions = getValues(`saleFields.${fieldIndex}.options`) ?? [];
+		setValue(
+			`saleFields.${fieldIndex}.options`,
+			[
+				...currentOptions,
+				{
+					label: "",
+				},
+			],
+			{
+				shouldDirty: true,
+				shouldValidate: true,
+			},
+		);
+	};
+
+	const handleRemoveSaleFieldOption = (
+		fieldIndex: number,
+		optionIndex: number,
+	) => {
+		const currentOptions = getValues(`saleFields.${fieldIndex}.options`) ?? [];
+		setValue(
+			`saleFields.${fieldIndex}.options`,
+			currentOptions.filter((_option, index) => index !== optionIndex),
+			{
+				shouldDirty: true,
+				shouldValidate: true,
+			},
+		);
 	};
 
 	const handleInstallmentCountChange = (
@@ -260,6 +415,29 @@ export function ProductForm({
 		});
 	};
 
+	const saveProductSaleFields = async (
+		productId: string,
+		saleFields: ProductFormData["saleFields"],
+	) => {
+		await replaceProductSaleFields({
+			slug: organization!.slug,
+			id: productId,
+			data: {
+				fields: saleFields.map((field) => ({
+					label: field.label.trim(),
+					type: field.type,
+					required: field.required,
+					options:
+						field.type === "SELECT" || field.type === "MULTI_SELECT"
+							? field.options.map((option) => ({
+									label: option.label.trim(),
+								}))
+							: [],
+				})),
+			},
+		});
+	};
+
 	const onSubmit = async (data: ProductFormData) => {
 		const name = data.name.trim();
 
@@ -282,19 +460,25 @@ export function ProductForm({
 			}
 
 			try {
-				if (data.scenarios.length > 0) {
-					await saveProductCommissionScenarios(createdProductId, data.scenarios);
-					await invalidateProductCommissionScenarios(createdProductId);
-				}
+				await saveProductCommissionScenarios(createdProductId, data.scenarios);
+				await saveProductSaleFields(createdProductId, data.saleFields);
+				await invalidateProductCommissionScenarios(createdProductId);
+				await invalidateProductSaleFields(createdProductId);
 				await invalidateProducts();
 				toast.success("Produto cadastrado com sucesso");
 				onSuccess?.();
 			} catch (error) {
 				await invalidateProducts();
 				const message = resolveErrorMessage(normalizeApiError(error));
-				toast.error(
-					`Produto cadastrado, mas as comissões não foram salvas. ${message}. Edite o produto para concluir a configuração.`,
-				);
+				if (isDatabaseSchemaOutdatedMessage(message)) {
+					toast.error(
+						`Produto cadastrado, mas as regras de comissão/campos não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
+					);
+				} else {
+					toast.error(
+						`Produto cadastrado, mas as regras de comissão/campos não foram salvas. ${message}. Edite o produto para concluir a configuração.`,
+					);
+				}
 				onSuccess?.();
 			}
 			return;
@@ -322,22 +506,37 @@ export function ProductForm({
 
 		try {
 			await saveProductCommissionScenarios(initialData.id, data.scenarios);
+			await saveProductSaleFields(initialData.id, data.saleFields);
 			await invalidateProductCommissionScenarios(initialData.id);
+			await invalidateProductSaleFields(initialData.id);
 			await invalidateProducts();
 			toast.success("Produto atualizado com sucesso");
 			onSuccess?.();
 		} catch (error) {
 			await invalidateProducts();
 			const message = resolveErrorMessage(normalizeApiError(error));
-			toast.error(
-				`Produto atualizado, mas as comissões não foram salvas. ${message}. Ajuste os dados e tente novamente.`,
-			);
+			if (isDatabaseSchemaOutdatedMessage(message)) {
+				toast.error(
+					`Produto atualizado, mas as regras de comissão/campos não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
+				);
+			} else {
+				toast.error(
+					`Produto atualizado, mas as regras de comissão/campos não foram salvas. ${message}. Ajuste os dados e tente novamente.`,
+				);
+			}
 		}
+	};
+
+	const onInvalidSubmit = (formErrors: FieldErrors<ProductFormData>) => {
+		const message =
+			resolveFirstFormErrorMessage(formErrors) ??
+			"Revise os campos obrigatórios antes de salvar.";
+		toast.error(message);
 	};
 
 	return (
 		<form
-			onSubmit={handleSubmit(onSubmit)}
+			onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
 			className="space-y-6 py-4 [&_[data-slot=label]]:font-normal [&_span]:font-normal"
 		>
 			<div className="grid gap-3">
@@ -363,81 +562,303 @@ export function ProductForm({
 				</FieldGroup>
 			</div>
 
-			<div className="space-y-4">
-				<div className="flex items-center justify-between">
-					<span className="text-sm font-normal">Cenários de comissão</span>
-					<Button
-						type="button"
-						variant="outline"
-						className="font-normal"
-						onClick={handleAddScenario}
+			<Tabs
+				value={activeProductConfigTab}
+				onValueChange={setActiveProductConfigTab}
+				className="space-y-4"
+			>
+				<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-gray-200 p-1">
+					<TabsTrigger
+						value="commission-scenarios"
+						className="rounded-sm font-normal"
 					>
-						<CirclePlus />
-						Adicionar cenário
-					</Button>
-				</div>
+						Cenários de comissão
+					</TabsTrigger>
+					<TabsTrigger value="sale-fields" className="rounded-sm font-normal">
+						Campos da venda
+					</TabsTrigger>
+				</TabsList>
 
-				<div className="max-h-[60vh] overflow-y-auto pr-1">
-					{isEditMode && isLoadingScenarios ? (
-						<Card className="p-4">
-							<span className="text-muted-foreground text-sm">
-								Carregando cenários de comissão...
-							</span>
-						</Card>
-					) : scenarioFields.length === 0 ? (
-						<Card className="p-4">
-							<span className="text-muted-foreground text-sm">
-								Nenhum cenário configurado. Clique em "Adicionar cenário" para criar.
-							</span>
-						</Card>
-					) : (
-						<Tabs
-							value={resolvedActiveScenarioTab}
-							onValueChange={setActiveScenarioTab}
+				<TabsContent value="sale-fields" className="space-y-4">
+					<div className="flex items-center justify-between">
+						<span className="text-sm font-normal">Campos da venda</span>
+						<Button
+							type="button"
+							variant="outline"
+							className="font-normal"
+							onClick={handleAddSaleField}
 						>
-							<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm p-1 bg-gray-200">
-								{scenarioFields.map((scenarioField, scenarioIndex) => {
-									const tabName = scenarioValues[scenarioIndex]?.name?.trim();
-									const label = tabName || `Cenário ${scenarioIndex + 1}`;
+							<CirclePlus />
+							Adicionar campo
+						</Button>
+					</div>
 
-									return (
-										<TabsTrigger
-											key={scenarioField.id}
-											value={`scenario-${scenarioIndex}`}
-											className="grow-0 rounded-sm font-normal"
-										>
-											{label}
-										</TabsTrigger>
-									);
-								})}
-							</TabsList>
+					<div className="max-h-[45vh] space-y-3 overflow-y-auto pr-1">
+						{isEditMode && isLoadingSaleFields ? (
+							<Card className="p-4">
+								<span className="text-muted-foreground text-sm">
+									Carregando campos da venda...
+								</span>
+							</Card>
+						) : saleFieldFields.length === 0 ? (
+							<Card className="p-4">
+								<span className="text-muted-foreground text-sm">
+									Nenhum campo personalizado configurado.
+								</span>
+							</Card>
+						) : (
+							saleFieldFields.map((saleField, fieldIndex) => {
+								const fieldErrors = errors.saleFields?.[fieldIndex];
+								const fieldType = saleFieldValues[fieldIndex]?.type ?? "TEXT";
+								const isSelectionField =
+									fieldType === "SELECT" || fieldType === "MULTI_SELECT";
+								const options = saleFieldValues[fieldIndex]?.options ?? [];
 
-							{scenarioFields.map((scenarioField, scenarioIndex) => (
-								<TabsContent
-									key={scenarioField.id}
-									value={`scenario-${scenarioIndex}`}
-								>
-									<ScenarioTabContent
-										control={control}
-										errors={errors}
-										scenarioIndex={scenarioIndex}
-										companyOptions={companyOptions}
-										partnerOptions={partnerOptions}
-										unitOptions={unitOptions}
-										sellerOptions={sellerOptions}
-										supervisorOptions={supervisorOptions}
-										setValue={setValue}
-										getValues={getValues}
-										canRemove
-										onRemoveScenario={handleRemoveScenario}
-										onInstallmentCountChange={handleInstallmentCountChange}
-									/>
-								</TabsContent>
-							))}
-						</Tabs>
-					)}
-				</div>
-			</div>
+								return (
+									<Card key={saleField.id} className="space-y-3 p-4">
+										<div className="grid gap-3 md:grid-cols-[1fr_220px_120px_auto]">
+											<Field className="gap-1">
+												<FieldLabel>Nome do campo</FieldLabel>
+												<Input
+													placeholder="Ex.: Grupo"
+													{...register(`saleFields.${fieldIndex}.label` as const)}
+												/>
+												<FormFieldError error={fieldErrors?.label} />
+											</Field>
+
+											<Field className="gap-1">
+												<FieldLabel>Tipo</FieldLabel>
+												<Controller
+													control={control}
+													name={`saleFields.${fieldIndex}.type`}
+													render={({ field, fieldState }) => (
+														<>
+															<Select
+																value={field.value ?? "TEXT"}
+																onValueChange={(value) => {
+																	field.onChange(value as SaleDynamicFieldType);
+																	const nextIsSelectionField =
+																		value === "SELECT" || value === "MULTI_SELECT";
+																	if (!nextIsSelectionField) {
+																		setValue(
+																			`saleFields.${fieldIndex}.options`,
+																			[],
+																			{
+																				shouldDirty: true,
+																				shouldValidate: true,
+																			},
+																		);
+																	}
+																}}
+															>
+																<SelectTrigger>
+																	<SelectValue />
+																</SelectTrigger>
+																<SelectContent>
+																	{SALE_DYNAMIC_FIELD_TYPE_VALUES.map((type) => (
+																		<SelectItem key={type} value={type}>
+																			{SALE_DYNAMIC_FIELD_TYPE_LABEL[type]}
+																		</SelectItem>
+																	))}
+																</SelectContent>
+															</Select>
+															<FormFieldError error={fieldState.error} />
+														</>
+													)}
+												/>
+											</Field>
+
+											<Field className="gap-2">
+												<FieldLabel>Obrigatório</FieldLabel>
+												<Controller
+													control={control}
+													name={`saleFields.${fieldIndex}.required`}
+													render={({ field }) => (
+														<div className="w-fit">
+															<Switch
+																checked={Boolean(field.value)}
+																onCheckedChange={field.onChange}
+															/>
+														</div>
+													)}
+												/>
+											</Field>
+
+											<div className="flex items-end gap-1">
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() =>
+														handleMoveSaleField(fieldIndex, fieldIndex - 1)
+													}
+													disabled={fieldIndex === 0}
+													aria-label="Subir campo"
+												>
+													<ChevronUp className="size-4" />
+												</Button>
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() =>
+														handleMoveSaleField(fieldIndex, fieldIndex + 1)
+													}
+													disabled={fieldIndex === saleFieldFields.length - 1}
+													aria-label="Descer campo"
+												>
+													<ChevronDown className="size-4" />
+												</Button>
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() => removeSaleField(fieldIndex)}
+													aria-label="Remover campo"
+												>
+													<Trash2 className="size-4" />
+												</Button>
+											</div>
+										</div>
+
+										{isSelectionField ? (
+											<div className="space-y-2">
+												<div className="flex items-center justify-between">
+													<span className="text-sm font-medium">Opções</span>
+													<Button
+														type="button"
+														variant="outline"
+														className="font-normal"
+														onClick={() => handleAddSaleFieldOption(fieldIndex)}
+													>
+														<CirclePlus />
+														Adicionar opção
+													</Button>
+												</div>
+
+												{options.length === 0 ? (
+													<p className="text-muted-foreground text-sm">
+														Adicione ao menos uma opção.
+													</p>
+												) : (
+													<div className="space-y-2">
+														{options.map((_option, optionIndex) => (
+															<div
+																key={`${saleField.id}-option-${optionIndex}`}
+																className="flex items-center gap-2"
+															>
+																<Input
+																	placeholder={`Opção ${optionIndex + 1}`}
+																	{...register(
+																		`saleFields.${fieldIndex}.options.${optionIndex}.label` as const,
+																	)}
+																/>
+																<Button
+																	type="button"
+																	variant="outline"
+																	size="icon"
+																	onClick={() =>
+																		handleRemoveSaleFieldOption(
+																			fieldIndex,
+																			optionIndex,
+																		)
+																	}
+																	aria-label="Remover opção"
+																>
+																	<Trash2 className="size-4" />
+																</Button>
+															</div>
+														))}
+													</div>
+												)}
+
+												<FormFieldError error={fieldErrors?.options} />
+											</div>
+										) : null}
+									</Card>
+								);
+							})
+						)}
+					</div>
+				</TabsContent>
+
+				<TabsContent value="commission-scenarios" className="space-y-4">
+					<div className="flex items-center justify-between">
+						<span className="text-sm font-normal">Cenários de comissão</span>
+						<Button
+							type="button"
+							variant="outline"
+							className="font-normal"
+							onClick={handleAddScenario}
+						>
+							<CirclePlus />
+							Adicionar cenário
+						</Button>
+					</div>
+
+					<div className="max-h-[60vh] overflow-y-auto pr-1">
+						{isEditMode && isLoadingScenarios ? (
+							<Card className="p-4">
+								<span className="text-muted-foreground text-sm">
+									Carregando cenários de comissão...
+								</span>
+							</Card>
+						) : scenarioFields.length === 0 ? (
+							<Card className="p-4">
+								<span className="text-muted-foreground text-sm">
+									Nenhum cenário configurado. Clique em "Adicionar cenário" para
+									criar.
+								</span>
+							</Card>
+						) : (
+							<Tabs
+								value={resolvedActiveScenarioTab}
+								onValueChange={setActiveScenarioTab}
+							>
+								<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-gray-200 p-1">
+									{scenarioFields.map((scenarioField, scenarioIndex) => {
+										const tabName = scenarioValues[scenarioIndex]?.name?.trim();
+										const label = tabName || `Cenário ${scenarioIndex + 1}`;
+
+										return (
+											<TabsTrigger
+												key={scenarioField.id}
+												value={`scenario-${scenarioIndex}`}
+												className="grow-0 rounded-sm font-normal"
+											>
+												{label}
+											</TabsTrigger>
+										);
+									})}
+								</TabsList>
+
+								{scenarioFields.map((scenarioField, scenarioIndex) => (
+									<TabsContent
+										key={scenarioField.id}
+										value={`scenario-${scenarioIndex}`}
+									>
+										<ScenarioTabContent
+											control={control}
+											errors={errors}
+											scenarioIndex={scenarioIndex}
+											companyOptions={companyOptions}
+											partnerOptions={partnerOptions}
+											unitOptions={unitOptions}
+											sellerOptions={sellerOptions}
+											supervisorOptions={supervisorOptions}
+											setValue={setValue}
+											getValues={getValues}
+											canRemove
+											onRemoveScenario={handleRemoveScenario}
+											onInstallmentCountChange={handleInstallmentCountChange}
+										/>
+									</TabsContent>
+								))}
+							</Tabs>
+						)}
+					</div>
+				</TabsContent>
+			</Tabs>
 
 			<div className="flex justify-end gap-2">
 				<Button type="submit" disabled={isPending}>

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { Prisma } from "generated/prisma/client";
 import { CustomerStatus } from "generated/prisma/enums";
 import z from "zod";
 import { db } from "@/lib/db";
@@ -14,6 +15,10 @@ import {
 	createSaleCreatedHistoryEvent,
 	loadSaleHistorySnapshot,
 } from "./sale-history";
+import {
+	loadProductSaleFieldSchema,
+	normalizeSaleDynamicFieldValues,
+} from "./sale-dynamic-fields";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { CreateSaleBodySchema, parseSaleDateInput } from "./sale-schemas";
 
@@ -87,6 +92,15 @@ export async function createSale(app: FastifyInstance) {
 					throw new BadRequestError("Product not found or inactive");
 				}
 
+				const dynamicFieldSchema = await loadProductSaleFieldSchema(
+					prisma,
+					product.id,
+				);
+				const dynamicFieldValues = normalizeSaleDynamicFieldValues({
+					schema: dynamicFieldSchema,
+					input: data.dynamicFields,
+				});
+
 				const company = await prisma.company.findFirst({
 					where: {
 						id: data.companyId,
@@ -141,6 +155,10 @@ export async function createSale(app: FastifyInstance) {
 								saleDate: parseSaleDateInput(data.saleDate),
 								totalAmount: data.totalAmount,
 								notes: data.notes ?? null,
+								dynamicFieldSchema:
+									dynamicFieldSchema as unknown as Prisma.InputJsonValue,
+								dynamicFieldValues:
+									dynamicFieldValues as unknown as Prisma.InputJsonValue,
 								createdById: userId,
 								...responsibleData,
 							},

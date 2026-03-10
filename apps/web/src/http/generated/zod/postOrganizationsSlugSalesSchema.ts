@@ -28,6 +28,9 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
 "companyId": z.uuid(),
 "unitId": z.optional(z.uuid()),
 "notes": z.optional(z.string()),
+"dynamicFields": z.optional(z.object({
+    
+    }).catchall(z.any())),
 "commissions": z.optional(z.array(z.object({
     "sourceType": z.enum(["PULLED", "MANUAL"]),
 "recipientType": z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),

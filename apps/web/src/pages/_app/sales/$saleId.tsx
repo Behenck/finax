@@ -37,6 +37,9 @@ import {
 	type SaleHistoryEvent,
 	toSaleHistoryTimelineEvent,
 } from "./-components/sale-history-presenter";
+import {
+	formatSaleDynamicFieldValue,
+} from "./-components/sale-dynamic-fields";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
 
 export const Route = createFileRoute("/_app/sales/$saleId")({
@@ -140,6 +143,15 @@ function SaleDetailsPage() {
 	}
 
 	const { sale } = data;
+	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
+		...field,
+		value: Object.prototype.hasOwnProperty.call(
+			sale.dynamicFieldValues,
+			field.fieldId,
+		)
+			? sale.dynamicFieldValues[field.fieldId]
+			: null,
+	}));
 
 	return (
 		<main className="w-full space-y-6">
@@ -223,10 +235,29 @@ function SaleDetailsPage() {
 						</p>
 					</div>
 				</Card>
-			</div>
+				</div>
 
-			<Card className="p-6 space-y-3">
-				<h2 className="font-semibold">Comissões da venda</h2>
+				<Card className="p-6 space-y-3">
+					<h2 className="font-semibold">Campos personalizados</h2>
+
+					{dynamicFields.length === 0 ? (
+						<p className="text-sm text-muted-foreground">
+							Esta venda não possui campos personalizados.
+						</p>
+					) : (
+						<div className="space-y-2 text-sm">
+							{dynamicFields.map((field) => (
+								<p key={field.fieldId}>
+									<strong>{field.label}:</strong>{" "}
+									{formatSaleDynamicFieldValue(field, field.value)}
+								</p>
+							))}
+						</div>
+					)}
+				</Card>
+
+				<Card className="p-6 space-y-3">
+					<h2 className="font-semibold">Comissões da venda</h2>
 
 				{sale.commissions.length === 0 ? (
 					<p className="text-sm text-muted-foreground">
@@ -244,7 +275,7 @@ function SaleDetailsPage() {
 										{SALE_COMMISSION_SOURCE_TYPE_LABEL[commission.sourceType]} •{" "}
 										{
 											SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
-												commission.recipientType
+											commission.recipientType
 											]
 										}{" "}
 										• {SALE_COMMISSION_DIRECTION_LABEL[commission.direction]}

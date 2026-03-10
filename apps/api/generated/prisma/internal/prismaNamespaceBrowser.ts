@@ -70,6 +70,8 @@ export const ModelName = {
   Partner: 'Partner',
   Seller: 'Seller',
   Product: 'Product',
+  ProductSaleField: 'ProductSaleField',
+  ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
   ProductCommissionScenarioCondition: 'ProductCommissionScenarioCondition',
   ProductCommission: 'ProductCommission',
@@ -394,6 +396,33 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+export const ProductSaleFieldScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  label: 'label',
+  labelNormalized: 'labelNormalized',
+  type: 'type',
+  required: 'required',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductSaleFieldScalarFieldEnum = (typeof ProductSaleFieldScalarFieldEnum)[keyof typeof ProductSaleFieldScalarFieldEnum]
+
+
+export const ProductSaleFieldOptionScalarFieldEnum = {
+  id: 'id',
+  fieldId: 'fieldId',
+  label: 'label',
+  labelNormalized: 'labelNormalized',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductSaleFieldOptionScalarFieldEnum = (typeof ProductSaleFieldOptionScalarFieldEnum)[keyof typeof ProductSaleFieldOptionScalarFieldEnum]
+
+
 export const ProductCommissionScenarioScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -467,6 +496,8 @@ export const SaleScalarFieldEnum = {
   responsibleType: 'responsibleType',
   responsibleId: 'responsibleId',
   notes: 'notes',
+  dynamicFieldSchema: 'dynamicFieldSchema',
+  dynamicFieldValues: 'dynamicFieldValues',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

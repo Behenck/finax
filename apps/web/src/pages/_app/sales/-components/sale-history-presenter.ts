@@ -18,11 +18,16 @@ import {
 	type SaleStatus,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
+import {
+	formatSaleDynamicFieldValue,
+	isSaleDynamicFieldHistoryValue,
+} from "./sale-dynamic-fields";
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_DATE_TIME_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
 const SALE_PATH_REGEX = /^sale\.(.+)$/;
+const DYNAMIC_FIELD_PATH_REGEX = /^sale\.dynamicFieldValues\.([^.]+)$/;
 const COMMISSION_PATH_REGEX = /^commissions\[(\d+)\]\.(.+)$/;
 const INSTALLMENT_PATH_REGEX =
 	/^commissions\[(\d+)\]\.installments\[(\d+)\]\.(.+)$/;
@@ -92,6 +97,10 @@ type ParsedHistoryPath =
 	| {
 			type: "sale";
 			field: string;
+	  }
+	| {
+			type: "dynamicField";
+			fieldId: string;
 	  }
 	| {
 			type: "commission";
@@ -201,6 +210,14 @@ function getDirectionLabel(value: unknown) {
 }
 
 function parseHistoryPath(path: string): ParsedHistoryPath {
+	const dynamicFieldMatch = path.match(DYNAMIC_FIELD_PATH_REGEX);
+	if (dynamicFieldMatch) {
+		return {
+			type: "dynamicField",
+			fieldId: dynamicFieldMatch[1] ?? "",
+		};
+	}
+
 	const installmentMatch = path.match(INSTALLMENT_PATH_REGEX);
 	if (installmentMatch) {
 		return {
@@ -342,6 +359,44 @@ function buildFallbackSentence(
 	return `Campo ${fieldName} alterado de ${beforeValue} para ${afterValue}.`;
 }
 
+function toSentenceLabel(value: string) {
+	const normalized = value.trim();
+	if (!normalized) {
+		return "Campo personalizado";
+	}
+
+	return normalized.slice(0, 1).toUpperCase() + normalized.slice(1);
+}
+
+function formatDynamicFieldChange(change: SaleHistoryChange, fieldId: string) {
+	const beforeHistoryValue = isSaleDynamicFieldHistoryValue(change.before)
+		? change.before
+		: null;
+	const afterHistoryValue = isSaleDynamicFieldHistoryValue(change.after)
+		? change.after
+		: null;
+
+	const fieldLabel =
+		afterHistoryValue?.label ??
+		beforeHistoryValue?.label ??
+		`Campo personalizado ${fieldId.slice(0, 8)}`;
+	const dynamicFieldDescriptor = {
+		type: afterHistoryValue?.type ?? beforeHistoryValue?.type ?? "TEXT",
+		options: afterHistoryValue?.options ?? beforeHistoryValue?.options ?? [],
+	};
+
+	const beforeValue = formatSaleDynamicFieldValue(
+		dynamicFieldDescriptor,
+		beforeHistoryValue ? beforeHistoryValue.value : change.before,
+	);
+	const afterValue = formatSaleDynamicFieldValue(
+		dynamicFieldDescriptor,
+		afterHistoryValue ? afterHistoryValue.value : change.after,
+	);
+
+	return `${toSentenceLabel(fieldLabel)} alterado de ${beforeValue} para ${afterValue}.`;
+}
+
 function formatSaleChange(change: SaleHistoryChange, field: string) {
 	const beforeValue = formatChangeValue(change.before, {
 		type: "sale",
@@ -473,6 +528,10 @@ function formatInstallmentChange(
 export function formatSaleHistoryChange(change: SaleHistoryChange) {
 	const parsedPath = parseHistoryPath(change.path);
 
+	if (parsedPath.type === "dynamicField") {
+		return formatDynamicFieldChange(change, parsedPath.fieldId);
+	}
+
 	if (parsedPath.type === "sale") {
 		return formatSaleChange(change, parsedPath.field);
 	}
@@ -527,4 +586,3 @@ export function toSaleHistoryTimelineEvent(
 			messages.length > 0 ? messages : ["Alteração registrada sem diffs detalhados."],
 	};
 }
-

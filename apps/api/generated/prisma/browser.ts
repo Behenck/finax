@@ -113,6 +113,16 @@ export type Seller = Prisma.SellerModel
  */
 export type Product = Prisma.ProductModel
 /**
+ * Model ProductSaleField
+ * 
+ */
+export type ProductSaleField = Prisma.ProductSaleFieldModel
+/**
+ * Model ProductSaleFieldOption
+ * 
+ */
+export type ProductSaleFieldOption = Prisma.ProductSaleFieldOptionModel
+/**
  * Model ProductCommissionScenario
  * 
  */

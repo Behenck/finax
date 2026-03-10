@@ -3,6 +3,7 @@ import {
 	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
 	SaleCommissionSourceType,
+	SaleDynamicFieldType,
 	SaleHistoryAction,
 	SaleStatus,
 } from "generated/prisma/enums";
@@ -57,6 +58,28 @@ export const SaleResponsibleSchema = z
 		id: z.uuid(),
 	})
 	.strict();
+
+export const SaleDynamicFieldTypeSchema = z.enum(SaleDynamicFieldType);
+
+export const SaleDynamicFieldOptionSchema = z.object({
+	id: z.uuid(),
+	label: z.string(),
+});
+
+export const SaleDynamicFieldSchemaItemSchema = z.object({
+	fieldId: z.uuid(),
+	label: z.string(),
+	type: SaleDynamicFieldTypeSchema,
+	required: z.boolean(),
+	options: z.array(SaleDynamicFieldOptionSchema),
+});
+
+export const SaleDynamicFieldValuesSchema = z.record(
+	z.string(),
+	z.unknown().nullable(),
+);
+
+export const SaleDynamicFieldsInputSchema = z.record(z.string(), z.unknown());
 
 export const COMMISSION_PERCENTAGE_SCALE = 10_000;
 
@@ -366,6 +389,7 @@ export const CreateSaleBodySchema = z
 		companyId: z.uuid(),
 		unitId: z.uuid().optional(),
 		notes: z.string().optional(),
+		dynamicFields: SaleDynamicFieldsInputSchema.optional(),
 		commissions: z.array(SaleCommissionInputSchema).optional(),
 	})
 	.strict();
@@ -446,6 +470,8 @@ export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	responsibleType: SaleResponsibleTypeSchema,
 	responsibleId: z.uuid(),
 	createdById: z.uuid(),
+	dynamicFieldSchema: z.array(SaleDynamicFieldSchemaItemSchema),
+	dynamicFieldValues: SaleDynamicFieldValuesSchema,
 	commissions: z.array(SaleCommissionDetailSchema),
 });
 
@@ -488,6 +514,10 @@ export type GetSalesDashboardQuery = z.infer<
 >;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
+export type SaleDynamicFieldSchemaItem = z.infer<
+	typeof SaleDynamicFieldSchemaItemSchema
+>;
+export type SaleDynamicFieldValues = z.infer<typeof SaleDynamicFieldValuesSchema>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
 export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 	typeof PatchSaleCommissionInstallmentStatusBodySchema

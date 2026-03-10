@@ -83,6 +83,8 @@ export type SaleCountAggregateOutputType = {
   responsibleType: number
   responsibleId: number
   notes: number
+  dynamicFieldSchema: number
+  dynamicFieldValues: number
   createdById: number
   createdAt: number
   updatedAt: number
@@ -147,6 +149,8 @@ export type SaleCountAggregateInputType = {
   responsibleType?: true
   responsibleId?: true
   notes?: true
+  dynamicFieldSchema?: true
+  dynamicFieldValues?: true
   createdById?: true
   createdAt?: true
   updatedAt?: true
@@ -252,6 +256,8 @@ export type SaleGroupByOutputType = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes: string | null
+  dynamicFieldSchema: runtime.JsonValue
+  dynamicFieldValues: runtime.JsonValue
   createdById: string
   createdAt: Date
   updatedAt: Date
@@ -293,6 +299,8 @@ export type SaleWhereInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFilter<"Sale"> | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFilter<"Sale"> | string
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
+  dynamicFieldSchema?: Prisma.JsonFilter<"Sale">
+  dynamicFieldValues?: Prisma.JsonFilter<"Sale">
   createdById?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -319,6 +327,8 @@ export type SaleOrderByWithRelationInput = {
   responsibleType?: Prisma.SortOrder
   responsibleId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  dynamicFieldSchema?: Prisma.SortOrder
+  dynamicFieldValues?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -348,6 +358,8 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   responsibleType?: Prisma.EnumSaleResponsibleTypeFilter<"Sale"> | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFilter<"Sale"> | string
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
+  dynamicFieldSchema?: Prisma.JsonFilter<"Sale">
+  dynamicFieldValues?: Prisma.JsonFilter<"Sale">
   createdById?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -374,6 +386,8 @@ export type SaleOrderByWithAggregationInput = {
   responsibleType?: Prisma.SortOrder
   responsibleId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  dynamicFieldSchema?: Prisma.SortOrder
+  dynamicFieldValues?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -400,6 +414,8 @@ export type SaleScalarWhereWithAggregatesInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeWithAggregatesFilter<"Sale"> | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringWithAggregatesFilter<"Sale"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
+  dynamicFieldSchema?: Prisma.JsonWithAggregatesFilter<"Sale">
+  dynamicFieldValues?: Prisma.JsonWithAggregatesFilter<"Sale">
   createdById?: Prisma.StringWithAggregatesFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
@@ -413,6 +429,8 @@ export type SaleCreateInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -438,6 +456,8 @@ export type SaleUncheckedCreateInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -453,6 +473,8 @@ export type SaleUpdateInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -478,6 +500,8 @@ export type SaleUncheckedUpdateInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -498,6 +522,8 @@ export type SaleCreateManyInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -511,6 +537,8 @@ export type SaleUpdateManyMutationInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -528,6 +556,8 @@ export type SaleUncheckedUpdateManyInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -556,6 +586,8 @@ export type SaleCountOrderByAggregateInput = {
   responsibleType?: Prisma.SortOrder
   responsibleId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  dynamicFieldSchema?: Prisma.SortOrder
+  dynamicFieldValues?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -906,6 +938,8 @@ export type SaleCreateWithoutCreatedByInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -930,6 +964,8 @@ export type SaleUncheckedCreateWithoutCreatedByInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   commissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutSaleInput
@@ -978,6 +1014,8 @@ export type SaleScalarWhereInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFilter<"Sale"> | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFilter<"Sale"> | string
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
+  dynamicFieldSchema?: Prisma.JsonFilter<"Sale">
+  dynamicFieldValues?: Prisma.JsonFilter<"Sale">
   createdById?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -991,6 +1029,8 @@ export type SaleCreateWithoutOrganizationInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutSalesInput
@@ -1014,6 +1054,8 @@ export type SaleUncheckedCreateWithoutOrganizationInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1055,6 +1097,8 @@ export type SaleCreateWithoutCompanyInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1078,6 +1122,8 @@ export type SaleUncheckedCreateWithoutCompanyInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1119,6 +1165,8 @@ export type SaleCreateWithoutUnitInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1142,6 +1190,8 @@ export type SaleUncheckedCreateWithoutUnitInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1183,6 +1233,8 @@ export type SaleCreateWithoutCustomerInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1206,6 +1258,8 @@ export type SaleUncheckedCreateWithoutCustomerInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1247,6 +1301,8 @@ export type SaleCreateWithoutProductInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1270,6 +1326,8 @@ export type SaleUncheckedCreateWithoutProductInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1311,6 +1369,8 @@ export type SaleCreateWithoutHistoryEventsInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1335,6 +1395,8 @@ export type SaleUncheckedCreateWithoutHistoryEventsInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1365,6 +1427,8 @@ export type SaleUpdateWithoutHistoryEventsInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1389,6 +1453,8 @@ export type SaleUncheckedUpdateWithoutHistoryEventsInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1403,6 +1469,8 @@ export type SaleCreateWithoutCommissionsInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutSalesInput
@@ -1427,6 +1495,8 @@ export type SaleUncheckedCreateWithoutCommissionsInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1457,6 +1527,8 @@ export type SaleUpdateWithoutCommissionsInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1481,6 +1553,8 @@ export type SaleUncheckedUpdateWithoutCommissionsInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1500,6 +1574,8 @@ export type SaleCreateManyCreatedByInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1512,6 +1588,8 @@ export type SaleUpdateWithoutCreatedByInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1536,6 +1614,8 @@ export type SaleUncheckedUpdateWithoutCreatedByInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutSaleNestedInput
@@ -1555,6 +1635,8 @@ export type SaleUncheckedUpdateManyWithoutCreatedByInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1571,6 +1653,8 @@ export type SaleCreateManyOrganizationInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1584,6 +1668,8 @@ export type SaleUpdateWithoutOrganizationInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutSalesNestedInput
@@ -1607,6 +1693,8 @@ export type SaleUncheckedUpdateWithoutOrganizationInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1626,6 +1714,8 @@ export type SaleUncheckedUpdateManyWithoutOrganizationInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1643,6 +1733,8 @@ export type SaleCreateManyCompanyInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1656,6 +1748,8 @@ export type SaleUpdateWithoutCompanyInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1679,6 +1773,8 @@ export type SaleUncheckedUpdateWithoutCompanyInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1698,6 +1794,8 @@ export type SaleUncheckedUpdateManyWithoutCompanyInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1715,6 +1813,8 @@ export type SaleCreateManyUnitInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1728,6 +1828,8 @@ export type SaleUpdateWithoutUnitInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1751,6 +1853,8 @@ export type SaleUncheckedUpdateWithoutUnitInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1770,6 +1874,8 @@ export type SaleUncheckedUpdateManyWithoutUnitInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1787,6 +1893,8 @@ export type SaleCreateManyCustomerInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1800,6 +1908,8 @@ export type SaleUpdateWithoutCustomerInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1823,6 +1933,8 @@ export type SaleUncheckedUpdateWithoutCustomerInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1842,6 +1954,8 @@ export type SaleUncheckedUpdateManyWithoutCustomerInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1859,6 +1973,8 @@ export type SaleCreateManyProductInput = {
   responsibleType: $Enums.SaleResponsibleType
   responsibleId: string
   notes?: string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1872,6 +1988,8 @@ export type SaleUpdateWithoutProductInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSalesNestedInput
@@ -1895,6 +2013,8 @@ export type SaleUncheckedUpdateWithoutProductInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1914,6 +2034,8 @@ export type SaleUncheckedUpdateManyWithoutProductInput = {
   responsibleType?: Prisma.EnumSaleResponsibleTypeFieldUpdateOperationsInput | $Enums.SaleResponsibleType
   responsibleId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dynamicFieldSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  dynamicFieldValues?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1972,6 +2094,8 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   responsibleType?: boolean
   responsibleId?: boolean
   notes?: boolean
+  dynamicFieldSchema?: boolean
+  dynamicFieldValues?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1999,6 +2123,8 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   responsibleType?: boolean
   responsibleId?: boolean
   notes?: boolean
+  dynamicFieldSchema?: boolean
+  dynamicFieldValues?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2023,6 +2149,8 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   responsibleType?: boolean
   responsibleId?: boolean
   notes?: boolean
+  dynamicFieldSchema?: boolean
+  dynamicFieldValues?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2047,12 +2175,14 @@ export type SaleSelectScalar = {
   responsibleType?: boolean
   responsibleId?: boolean
   notes?: boolean
+  dynamicFieldSchema?: boolean
+  dynamicFieldValues?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "companyId" | "unitId" | "customerId" | "productId" | "saleDate" | "totalAmount" | "status" | "responsibleType" | "responsibleId" | "notes" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["sale"]>
+export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "companyId" | "unitId" | "customerId" | "productId" | "saleDate" | "totalAmount" | "status" | "responsibleType" | "responsibleId" | "notes" | "dynamicFieldSchema" | "dynamicFieldValues" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2106,6 +2236,8 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     responsibleType: $Enums.SaleResponsibleType
     responsibleId: string
     notes: string | null
+    dynamicFieldSchema: runtime.JsonValue
+    dynamicFieldValues: runtime.JsonValue
     createdById: string
     createdAt: Date
     updatedAt: Date
@@ -2552,6 +2684,8 @@ export interface SaleFieldRefs {
   readonly responsibleType: Prisma.FieldRef<"Sale", 'SaleResponsibleType'>
   readonly responsibleId: Prisma.FieldRef<"Sale", 'String'>
   readonly notes: Prisma.FieldRef<"Sale", 'String'>
+  readonly dynamicFieldSchema: Prisma.FieldRef<"Sale", 'Json'>
+  readonly dynamicFieldValues: Prisma.FieldRef<"Sale", 'Json'>
   readonly createdById: Prisma.FieldRef<"Sale", 'String'>
   readonly createdAt: Prisma.FieldRef<"Sale", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Sale", 'DateTime'>

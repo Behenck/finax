@@ -403,6 +403,8 @@ export const ModelName = {
   Partner: 'Partner',
   Seller: 'Seller',
   Product: 'Product',
+  ProductSaleField: 'ProductSaleField',
+  ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
   ProductCommissionScenarioCondition: 'ProductCommissionScenarioCondition',
   ProductCommission: 'ProductCommission',
@@ -429,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1839,6 +1841,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductSaleField: {
+      payload: Prisma.$ProductSaleFieldPayload<ExtArgs>
+      fields: Prisma.ProductSaleFieldFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductSaleFieldFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductSaleFieldFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductSaleFieldFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductSaleFieldFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        findMany: {
+          args: Prisma.ProductSaleFieldFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>[]
+        }
+        create: {
+          args: Prisma.ProductSaleFieldCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        createMany: {
+          args: Prisma.ProductSaleFieldCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductSaleFieldCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductSaleFieldDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        update: {
+          args: Prisma.ProductSaleFieldUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductSaleFieldDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductSaleFieldUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductSaleFieldUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductSaleFieldUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductSaleFieldAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductSaleField>
+        }
+        groupBy: {
+          args: Prisma.ProductSaleFieldGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductSaleFieldGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductSaleFieldCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductSaleFieldCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductSaleFieldOption: {
+      payload: Prisma.$ProductSaleFieldOptionPayload<ExtArgs>
+      fields: Prisma.ProductSaleFieldOptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductSaleFieldOptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductSaleFieldOptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductSaleFieldOptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductSaleFieldOptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        findMany: {
+          args: Prisma.ProductSaleFieldOptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>[]
+        }
+        create: {
+          args: Prisma.ProductSaleFieldOptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        createMany: {
+          args: Prisma.ProductSaleFieldOptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductSaleFieldOptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductSaleFieldOptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        update: {
+          args: Prisma.ProductSaleFieldOptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductSaleFieldOptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductSaleFieldOptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductSaleFieldOptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductSaleFieldOptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductSaleFieldOptionPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductSaleFieldOptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductSaleFieldOption>
+        }
+        groupBy: {
+          args: Prisma.ProductSaleFieldOptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductSaleFieldOptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductSaleFieldOptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductSaleFieldOptionCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductCommissionScenario: {
       payload: Prisma.$ProductCommissionScenarioPayload<ExtArgs>
       fields: Prisma.ProductCommissionScenarioFieldRefs
@@ -2987,6 +3137,33 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+export const ProductSaleFieldScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  label: 'label',
+  labelNormalized: 'labelNormalized',
+  type: 'type',
+  required: 'required',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductSaleFieldScalarFieldEnum = (typeof ProductSaleFieldScalarFieldEnum)[keyof typeof ProductSaleFieldScalarFieldEnum]
+
+
+export const ProductSaleFieldOptionScalarFieldEnum = {
+  id: 'id',
+  fieldId: 'fieldId',
+  label: 'label',
+  labelNormalized: 'labelNormalized',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductSaleFieldOptionScalarFieldEnum = (typeof ProductSaleFieldOptionScalarFieldEnum)[keyof typeof ProductSaleFieldOptionScalarFieldEnum]
+
+
 export const ProductCommissionScenarioScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -3060,6 +3237,8 @@ export const SaleScalarFieldEnum = {
   responsibleType: 'responsibleType',
   responsibleId: 'responsibleId',
   notes: 'notes',
+  dynamicFieldSchema: 'dynamicFieldSchema',
+  dynamicFieldValues: 'dynamicFieldValues',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -3477,6 +3656,20 @@ export type ListEnumSellerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'SaleDynamicFieldType'
+ */
+export type EnumSaleDynamicFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleDynamicFieldType'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleDynamicFieldType[]'
+ */
+export type ListEnumSaleDynamicFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleDynamicFieldType[]'>
+    
+
+
+/**
  * Reference to a field of type 'ProductCommissionScenarioConditionType'
  */
 export type EnumProductCommissionScenarioConditionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductCommissionScenarioConditionType'>
@@ -3533,20 +3726,6 @@ export type ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
- * Reference to a field of type 'SaleHistoryAction'
- */
-export type EnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction'>
-    
-
-
-/**
- * Reference to a field of type 'SaleHistoryAction[]'
- */
-export type ListEnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction[]'>
-    
-
-
-/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -3557,6 +3736,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleHistoryAction'
+ */
+export type EnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleHistoryAction[]'
+ */
+export type ListEnumSaleHistoryActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleHistoryAction[]'>
     
 
 
@@ -3813,6 +4006,8 @@ export type GlobalOmitConfig = {
   partner?: Prisma.PartnerOmit
   seller?: Prisma.SellerOmit
   product?: Prisma.ProductOmit
+  productSaleField?: Prisma.ProductSaleFieldOmit
+  productSaleFieldOption?: Prisma.ProductSaleFieldOptionOmit
   productCommissionScenario?: Prisma.ProductCommissionScenarioOmit
   productCommissionScenarioCondition?: Prisma.ProductCommissionScenarioConditionOmit
   productCommission?: Prisma.ProductCommissionOmit

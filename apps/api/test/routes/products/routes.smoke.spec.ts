@@ -89,4 +89,22 @@ describe("products routes smoke", () => {
 		expect(response.statusCode).not.toBe(404);
 		expect(response.statusCode).not.toBe(405);
 	});
+
+	it("GET /organizations/:slug/products/:id/sale-fields should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/products/:id/sale-fields");
+		const agent = request(app.server);
+		const response = await agent.get(url);
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("PUT /organizations/:slug/products/:id/sale-fields should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/products/:id/sale-fields");
+		const agent = request(app.server);
+		const response = await agent.put(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
 });

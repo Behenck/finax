@@ -38,6 +38,20 @@ export const saleResponsibleTypeEnum = {
 
 export type SaleResponsibleTypeEnumKey = (typeof saleResponsibleTypeEnum)[keyof typeof saleResponsibleTypeEnum];
 
+export const dynamicFieldSchemaTypeEnum = {
+    "TEXT": "TEXT",
+    "NUMBER": "NUMBER",
+    "CURRENCY": "CURRENCY",
+    "RICH_TEXT": "RICH_TEXT",
+    "PHONE": "PHONE",
+    "SELECT": "SELECT",
+    "MULTI_SELECT": "MULTI_SELECT",
+    "DATE": "DATE",
+    "DATE_TIME": "DATE_TIME"
+} as const;
+
+export type DynamicFieldSchemaTypeEnumKey = (typeof dynamicFieldSchemaTypeEnum)[keyof typeof dynamicFieldSchemaTypeEnum];
+
 export const commissionsSourceTypeEnum3 = {
     "PULLED": "PULLED",
     "MANUAL": "MANUAL"
@@ -227,6 +241,46 @@ export type GetOrganizationsSlugSalesSaleid200 = {
          * @type string, uuid
         */
         createdById: string;
+        /**
+         * @type array
+        */
+        dynamicFieldSchema: {
+            /**
+             * @type string, uuid
+            */
+            fieldId: string;
+            /**
+             * @type string
+            */
+            label: string;
+            /**
+             * @type string
+            */
+            type: DynamicFieldSchemaTypeEnumKey;
+            /**
+             * @type boolean
+            */
+            required: boolean;
+            /**
+             * @type array
+            */
+            options: {
+                /**
+                 * @type string, uuid
+                */
+                id: string;
+                /**
+                 * @type string
+                */
+                label: string;
+            }[];
+        }[];
+        /**
+         * @type object
+        */
+        dynamicFieldValues: {
+            [key: string]: any | null;
+        };
         /**
          * @type array
         */

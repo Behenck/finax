@@ -101,6 +101,12 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
     */
     notes?: string;
     /**
+     * @type object | undefined
+    */
+    dynamicFields?: {
+        [key: string]: any;
+    };
+    /**
      * @type array | undefined
     */
     commissions?: {

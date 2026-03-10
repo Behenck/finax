@@ -59,6 +59,34 @@ describe("sale-history-presenter", () => {
 		expect(statusSentence).toBe("Status alterado de Pendente para Aprovada.");
 	});
 
+	it("should format dynamic field changes with human label", () => {
+		const sentence = formatSaleHistoryChange({
+			path: "sale.dynamicFieldValues.field-grupo",
+			before: {
+				fieldId: "field-grupo",
+				label: "Grupo",
+				type: "SELECT",
+				options: [
+					{ id: "opcao-a", label: "Alpha" },
+					{ id: "opcao-b", label: "Beta" },
+				],
+				value: "opcao-a",
+			},
+			after: {
+				fieldId: "field-grupo",
+				label: "Grupo",
+				type: "SELECT",
+				options: [
+					{ id: "opcao-a", label: "Alpha" },
+					{ id: "opcao-b", label: "Beta" },
+				],
+				value: "opcao-b",
+			},
+		});
+
+		expect(sentence).toBe("Grupo alterado de Alpha para Beta.");
+	});
+
 	it("should format commission and installment changes with context", () => {
 		const percentageSentence = formatSaleHistoryChange({
 			path: "commissions[0].totalPercentage",
@@ -119,4 +147,3 @@ describe("sale-history-presenter", () => {
 		);
 	});
 });
-

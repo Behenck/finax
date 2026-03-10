@@ -131,6 +131,21 @@ export const SellerDocumentType = {
 export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof SellerDocumentType]
 
 
+export const SaleDynamicFieldType = {
+  TEXT: 'TEXT',
+  NUMBER: 'NUMBER',
+  CURRENCY: 'CURRENCY',
+  RICH_TEXT: 'RICH_TEXT',
+  PHONE: 'PHONE',
+  SELECT: 'SELECT',
+  MULTI_SELECT: 'MULTI_SELECT',
+  DATE: 'DATE',
+  DATE_TIME: 'DATE_TIME'
+} as const
+
+export type SaleDynamicFieldType = (typeof SaleDynamicFieldType)[keyof typeof SaleDynamicFieldType]
+
+
 export const ProductCommissionScenarioConditionType = {
   COMPANY_EQUALS: 'COMPANY_EQUALS',
   PARTNER_EQUALS: 'PARTNER_EQUALS',

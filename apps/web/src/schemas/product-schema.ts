@@ -1,4 +1,5 @@
 import z from "zod";
+import { SaleDynamicFieldTypeSchema } from "./types/sale-dynamic-fields";
 
 const PERCENTAGE_SCALE = 10_000;
 
@@ -115,11 +116,51 @@ const productCommissionScenarioSchema = z.object({
 		.min(1, "Adicione ao menos uma comissão"),
 });
 
+const productSaleFieldOptionSchema = z.object({
+	label: z.string().trim().min(1, "Informe o nome da opção"),
+});
+
+const productSaleFieldSchema = z
+	.object({
+		label: z.string().trim().min(1, "Informe o nome do campo"),
+		type: SaleDynamicFieldTypeSchema,
+		required: z.boolean(),
+		options: z.array(productSaleFieldOptionSchema),
+	})
+	.superRefine((field, ctx) => {
+		const isSelectionField =
+			field.type === "SELECT" || field.type === "MULTI_SELECT";
+
+		if (isSelectionField && field.options.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Campos de seleção precisam ter ao menos uma opção",
+				path: ["options"],
+			});
+		}
+
+		if (isSelectionField) {
+			const normalizedOptionLabels = new Set<string>();
+			for (const [optionIndex, option] of field.options.entries()) {
+				const normalizedOptionLabel = option.label.trim().toLocaleLowerCase();
+				if (normalizedOptionLabels.has(normalizedOptionLabel)) {
+					ctx.addIssue({
+						code: "custom",
+						message: "Opções duplicadas não são permitidas",
+						path: ["options", optionIndex, "label"],
+					});
+				}
+				normalizedOptionLabels.add(normalizedOptionLabel);
+			}
+		}
+	});
+
 export const productSchema = z.object({
 	name: z
 		.string({ error: "Defina o nome do Produto" })
 		.min(1, "Defina o nome do Produto"),
 	scenarios: z.array(productCommissionScenarioSchema),
+	saleFields: z.array(productSaleFieldSchema),
 }).superRefine((data, ctx) => {
 	const scenarioNames = new Set<string>();
 	for (const [scenarioIndex, scenario] of data.scenarios.entries()) {
@@ -141,9 +182,23 @@ export const productSchema = z.object({
 		}
 		scenarioNames.add(normalizedName);
 	}
+
+	const saleFieldLabels = new Set<string>();
+	for (const [fieldIndex, field] of data.saleFields.entries()) {
+		const normalizedFieldLabel = field.label.trim().toLocaleLowerCase();
+		if (saleFieldLabels.has(normalizedFieldLabel)) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Nome de campo duplicado",
+				path: ["saleFields", fieldIndex, "label"],
+			});
+		}
+		saleFieldLabels.add(normalizedFieldLabel);
+	}
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormInput = z.input<typeof productSchema>;
 export type ProductCommissionScenarioFormData = ProductFormData["scenarios"][number];
 export type ProductCommissionFormData =
 	ProductCommissionScenarioFormData["commissions"][number];
