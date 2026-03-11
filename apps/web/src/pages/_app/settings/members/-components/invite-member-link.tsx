@@ -1,21 +1,33 @@
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/axios";
+import { useApp } from "@/context/app-context";
+import { api, isAxiosError } from "@/lib/axios";
 import { LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export function InviteMemberLink() {
+  const { organization } = useApp()
+
   async function handleCreateInviteLink() {
+    if (!organization?.slug) {
+      toast.error("Organização não encontrada.")
+      return
+    }
+
     try {
-      const organizationSlug = "behenck"
-      const { data } = await api.post(`/organizations/${organizationSlug}/invites/link`)
+      const { data } = await api.post(`/organizations/${organization.slug}/invites/link`)
 
       if (data.url) {
         await navigator.clipboard.writeText(data.url);
 
         toast.success("Link copiado para a área de transferência!")
       }
-    } catch (error) {
-      toast.error((error as any).response.data.message)
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data?.message ?? "Erro ao gerar link de convite.")
+        return
+      }
+
+      toast.error("Erro ao gerar link de convite.")
     }
   }
 

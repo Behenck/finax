@@ -3,6 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
+import Cookies from "js-cookie";
 import { AppSidebar } from "./-components/sidebar";
 export const Route = createFileRoute("/_app")({
 	component: AppLayout,
@@ -10,6 +11,11 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
 	const { data, isPending } = auth.useSession();
+	const token = Cookies.get("token");
+
+	if (!token) {
+		return <Navigate to="/sign-in" replace />;
+	}
 
 	if (isPending) {
 		return <Skeleton />;

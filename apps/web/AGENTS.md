@@ -17,6 +17,7 @@ Aplica-se a tudo dentro de `apps/web`.
 - Axios (client em `src/lib/axios.ts`)
 - Kubb (geracao de client HTTP/React Query a partir do OpenAPI)
 - Sonner (toasts)
+- Playwright (testes E2E)
 - Biome + ESLint (qualidade/lint)
 
 ## Entrypoints e arquivos-chave
@@ -44,6 +45,7 @@ Aplica-se a tudo dentro de `apps/web`.
 - `src/utils`: funcoes utilitarias
 - `src/context`: providers/contextos locais
 - `src/assets`: assets estaticos
+- `e2e`: testes end-to-end com Playwright
 
 ## Convencoes de implementacao
 
@@ -136,6 +138,15 @@ Aplica-se a tudo dentro de `apps/web`.
 - Validar impacto em todas as telas que usam o componente.
 - Preservar API publica do componente quando possivel.
 - Se a mudanca for especifica de uma tela, nao alterar componente compartilhado sem necessidade.
+
+### 5) Novos testes E2E (Playwright)
+- Criar testes em `e2e/*.spec.ts`.
+- Executar via scripts:
+- `pnpm e2e`
+- `pnpm e2e:headed`
+- `pnpm e2e:install`
+- Para fluxos de UI criticos que nao dependem de backend real, preferir mocks de rede com `page.route`.
+- Quando o objetivo for validacao ponta a ponta com API real, explicitar pre-condicoes de ambiente (API, banco e dados necessarios).
 
 ## Estilo e qualidade
 - Seguir padrao de formatacao do Biome (tabs e aspas duplas).
