@@ -101,6 +101,13 @@ const SALE_STATUS_FILTER_VALUES = [
 
 type SaleStatusFilter = (typeof SALE_STATUS_FILTER_VALUES)[number];
 
+const SALE_STATUS_SORT_PRIORITY: Record<SaleStatus, number> = {
+	PENDING: 0,
+	APPROVED: 1,
+	COMPLETED: 2,
+	CANCELED: 3,
+};
+
 const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
@@ -304,10 +311,24 @@ export function SalesDataTable({
 	);
 	const tableData = useMemo<SaleTableRow[]>(
 		() =>
-			sales.map((sale) => ({
-				...sale,
-				productLabel: productPathById.get(sale.product.id) ?? sale.product.name,
-			})),
+			sales
+				.map((sale) => ({
+					...sale,
+					productLabel: productPathById.get(sale.product.id) ?? sale.product.name,
+				}))
+				.sort((saleA, saleB) => {
+					const statusDiff =
+						(SALE_STATUS_SORT_PRIORITY[saleA.status as SaleStatus] ??
+							Number.MAX_SAFE_INTEGER) -
+						(SALE_STATUS_SORT_PRIORITY[saleB.status as SaleStatus] ??
+							Number.MAX_SAFE_INTEGER);
+
+					if (statusDiff !== 0) {
+						return statusDiff;
+					}
+
+					return saleB.createdAt.localeCompare(saleA.createdAt);
+				}),
 		[sales, productPathById],
 	);
 

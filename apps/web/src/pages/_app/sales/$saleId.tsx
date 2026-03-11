@@ -10,7 +10,7 @@ import {
 	WalletCards,
 	type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -24,7 +24,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useApp } from "@/context/app-context";
 import { useDeleteSale, useSale, useSaleHistory } from "@/hooks/sales";
+import { useGetOrganizationsSlugProducts } from "@/http/generated";
 import {
 	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
@@ -41,6 +43,12 @@ import {
 	formatSaleDynamicFieldValue,
 } from "./-components/sale-dynamic-fields";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
+
+type ProductTreeNode = {
+	id: string;
+	name: string;
+	children?: ProductTreeNode[];
+};
 
 export const Route = createFileRoute("/_app/sales/$saleId")({
 	component: SaleDetailsPage,
@@ -60,6 +68,22 @@ function formatCommissionPercentage(value: number) {
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 4,
 	}).format(value)}%`;
+}
+
+function buildProductPathMap(
+	nodes: ProductTreeNode[],
+	parentPath: string[] = [],
+	map = new Map<string, string>(),
+) {
+	for (const node of nodes) {
+		const currentPath = [...parentPath, node.name];
+		map.set(node.id, currentPath.join(" -> "));
+
+		const children = Array.isArray(node.children) ? node.children : [];
+		buildProductPathMap(children, currentPath, map);
+	}
+
+	return map;
 }
 
 const SALE_HISTORY_ACTION_ICON: Record<SaleHistoryEvent["action"], LucideIcon> = {
@@ -97,8 +121,18 @@ function getActorInitials(name: string | null) {
 function SaleDetailsPage() {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { saleId } = Route.useParams();
+	const { organization } = useApp();
+	const slug = organization?.slug ?? "";
 	const navigate = useNavigate();
 	const { data, isLoading, isError } = useSale(saleId);
+	const productsQuery = useGetOrganizationsSlugProducts(
+		{ slug },
+		{
+			query: {
+				enabled: Boolean(organization?.slug),
+			},
+		},
+	);
 	const {
 		data: historyData,
 		isLoading: isHistoryLoading,
@@ -109,6 +143,13 @@ function SaleDetailsPage() {
 	const historyEvents = historyData?.history ?? [];
 	const timelineEvents = historyEvents.map((event) =>
 		toSaleHistoryTimelineEvent(event),
+	);
+	const productPathById = useMemo(
+		() =>
+			buildProductPathMap(
+				(productsQuery.data?.products ?? []) as ProductTreeNode[],
+			),
+		[productsQuery.data?.products],
 	);
 
 	async function handleDeleteSale() {
@@ -143,6 +184,7 @@ function SaleDetailsPage() {
 	}
 
 	const { sale } = data;
+	const saleProductPath = productPathById.get(sale.product.id) ?? sale.product.name;
 	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
 		...field,
 		value: Object.prototype.hasOwnProperty.call(
@@ -187,20 +229,31 @@ function SaleDetailsPage() {
 				</div>
 			</header>
 
-			<Card className="p-6 grid gap-4 md:grid-cols-3">
-				<div className="space-y-1">
-					<p className="text-muted-foreground text-sm">Data da venda</p>
-					<p className="font-semibold">{formatSaleDate(sale.saleDate)}</p>
-				</div>
-				<div className="space-y-1">
-					<p className="text-muted-foreground text-sm">Valor total</p>
-					<p className="font-semibold">
-						{formatCurrencyBRL(sale.totalAmount / 100)}
+			<Card className="p-6 space-y-4">
+				<div className="">
+					<p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+						Produto
+					</p>
+					<p className="mt-1 text-lg font-semibold leading-snug md:text-xl">
+						{saleProductPath}
 					</p>
 				</div>
-				<div className="space-y-1">
-					<p className="text-muted-foreground text-sm">Status</p>
-					<SaleStatusBadge status={sale.status} />
+
+				<div className="grid gap-4 md:grid-cols-3">
+					<div className="space-y-1">
+						<p className="text-muted-foreground text-sm">Data da venda</p>
+						<p className="font-semibold">{formatSaleDate(sale.saleDate)}</p>
+					</div>
+					<div className="space-y-1">
+						<p className="text-muted-foreground text-sm">Valor total</p>
+						<p className="font-semibold">
+							{formatCurrencyBRL(sale.totalAmount / 100)}
+						</p>
+					</div>
+					<div className="space-y-1">
+						<p className="text-muted-foreground text-sm">Status</p>
+						<SaleStatusBadge status={sale.status} />
+					</div>
 				</div>
 			</Card>
 
@@ -210,9 +263,6 @@ function SaleDetailsPage() {
 					<div className="space-y-2 text-sm">
 						<p>
 							<strong>Cliente:</strong> {sale.customer.name}
-						</p>
-						<p>
-							<strong>Produto:</strong> {sale.product.name}
 						</p>
 						<p>
 							<strong>Empresa:</strong> {sale.company.name}
@@ -235,29 +285,29 @@ function SaleDetailsPage() {
 						</p>
 					</div>
 				</Card>
-				</div>
+			</div>
 
-				<Card className="p-6 space-y-3">
-					<h2 className="font-semibold">Campos personalizados</h2>
+			<Card className="p-6 space-y-3">
+				<h2 className="font-semibold">Campos personalizados</h2>
 
-					{dynamicFields.length === 0 ? (
-						<p className="text-sm text-muted-foreground">
-							Esta venda não possui campos personalizados.
-						</p>
-					) : (
-						<div className="space-y-2 text-sm">
-							{dynamicFields.map((field) => (
-								<p key={field.fieldId}>
-									<strong>{field.label}:</strong>{" "}
-									{formatSaleDynamicFieldValue(field, field.value)}
-								</p>
-							))}
-						</div>
-					)}
-				</Card>
+				{dynamicFields.length === 0 ? (
+					<p className="text-sm text-muted-foreground">
+						Esta venda não possui campos personalizados.
+					</p>
+				) : (
+					<div className="space-y-2 text-sm">
+						{dynamicFields.map((field) => (
+							<p key={field.fieldId}>
+								<strong>{field.label}:</strong>{" "}
+								{formatSaleDynamicFieldValue(field, field.value)}
+							</p>
+						))}
+					</div>
+				)}
+			</Card>
 
-				<Card className="p-6 space-y-3">
-					<h2 className="font-semibold">Comissões da venda</h2>
+			<Card className="p-6 space-y-3">
+				<h2 className="font-semibold">Comissões da venda</h2>
 
 				{sale.commissions.length === 0 ? (
 					<p className="text-sm text-muted-foreground">

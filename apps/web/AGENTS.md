@@ -67,6 +67,9 @@ Aplica-se a tudo dentro de `apps/web`.
 - Preferir `react-hook-form` + `zod` para formularios.
 - Manter schemas proximos ao uso quando forem especificos da tela, ou em `src/schemas` quando compartilhados.
 - Reaproveitar componentes de formulario em `src/components/ui` e padroes visuais existentes.
+- Quando um formulario crescer demais, transformar o arquivo em pasta com o mesmo nome do formulario (ex.: `sale-form/` com `index.tsx`).
+- Em formularios extensos, separar por funcionalidade de dominio (secoes, dialogs e hooks locais), mantendo a logica vinculada colocalizada com a feature.
+- Evitar manter formularios gigantes em arquivo unico; `index.tsx` deve atuar como orquestrador (wiring do form, hooks e submit).
 
 ### Datas em formularios
 - Para selecao de datas na UI, usar sempre `Calendar` (ou componente compartilhado baseado em `Calendar`).
