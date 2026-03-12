@@ -597,6 +597,7 @@ model ProductSaleFieldOption {
   fieldId         String @map("field_id")
   label           String
   labelNormalized String @map("label_normalized")
+  isDefault       Boolean @default(false) @map("is_default")
   sortOrder       Int    @default(0) @map("sort_order")
 
   createdAt DateTime @default(now()) @map("created_at")

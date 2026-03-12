@@ -21,7 +21,8 @@ export const putOrganizationsSlugProductsIdSaleFieldsMutationRequestSchema = z.o
 "type": z.enum(["TEXT", "NUMBER", "CURRENCY", "RICH_TEXT", "PHONE", "SELECT", "MULTI_SELECT", "DATE", "DATE_TIME"]),
 "required": z.optional(z.boolean().default(false)),
 "options": z.optional(z.array(z.object({
-    "label": z.string().min(1)
+    "label": z.string().min(1),
+"isDefault": z.optional(z.boolean().default(false))
     })))
     }))
     })

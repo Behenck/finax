@@ -66,6 +66,11 @@ export type PutOrganizationsSlugProductsIdSaleFieldsMutationRequest = {
              * @type string
             */
             label: string;
+            /**
+             * @default false
+             * @type boolean | undefined
+            */
+            isDefault?: boolean;
         }[];
     }[];
 };

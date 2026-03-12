@@ -10,6 +10,10 @@ export const getOrganizationsSlugProductsIdSaleFieldsPathParamsSchema = z.object
 "id": z.uuid()
     })
 
+export const getOrganizationsSlugProductsIdSaleFieldsQueryParamsSchema = z.object({
+    "includeInherited": z.boolean().default(false)
+    })
+
 /**
  * @description Default Response
  */
@@ -21,7 +25,8 @@ export const getOrganizationsSlugProductsIdSaleFields200Schema = z.object({
 "required": z.boolean(),
 "options": z.array(z.object({
     "id": z.uuid(),
-"label": z.string()
+"label": z.string(),
+"isDefault": z.boolean()
     }))
     }))
     })

@@ -19,6 +19,7 @@ export function normalizeCaseInsensitiveLabel(value: string) {
 export const ProductSaleFieldOptionInputSchema = z
 	.object({
 		label: z.string().trim().min(1),
+		isDefault: z.boolean().default(false),
 	})
 	.strict();
 
@@ -50,6 +51,7 @@ export const ProductSaleFieldInputSchema = z
 		}
 
 		const normalizedOptionLabels = new Set<string>();
+		let defaultOptionCount = 0;
 		for (const [optionIndex, option] of field.options.entries()) {
 			const normalizedLabel = normalizeCaseInsensitiveLabel(option.label);
 			if (normalizedOptionLabels.has(normalizedLabel)) {
@@ -60,6 +62,21 @@ export const ProductSaleFieldInputSchema = z
 				});
 			}
 			normalizedOptionLabels.add(normalizedLabel);
+
+			if (option.isDefault) {
+				defaultOptionCount += 1;
+			}
+		}
+
+		if (
+			field.type === SaleDynamicFieldType.SELECT &&
+			defaultOptionCount > 1
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Single selection fields can have at most one default option",
+				path: ["options"],
+			});
 		}
 	});
 
@@ -87,6 +104,7 @@ export const ReplaceProductSaleFieldsBodySchema = z
 export const ProductSaleFieldOptionSchema = z.object({
 	id: z.uuid(),
 	label: z.string(),
+	isDefault: z.boolean(),
 });
 
 export const ProductSaleFieldSchema = z.object({

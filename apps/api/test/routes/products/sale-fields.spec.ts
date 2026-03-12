@@ -69,13 +69,19 @@ describe("product sale fields", () => {
 						label: "Etapa",
 						type: "SELECT",
 						required: true,
-						options: [{ label: "Inbound" }, { label: "Outbound" }],
+						options: [
+							{ label: "Inbound", isDefault: true },
+							{ label: "Outbound", isDefault: false },
+						],
 					},
 					{
 						label: "Canais",
 						type: "MULTI_SELECT",
 						required: false,
-						options: [{ label: "Instagram" }, { label: "Indicação" }],
+						options: [
+							{ label: "Instagram", isDefault: true },
+							{ label: "Indicação", isDefault: true },
+						],
 					},
 				],
 			});
@@ -102,7 +108,20 @@ describe("product sale fields", () => {
 			required: true,
 		});
 		expect(getResponse.body.fields[2].options).toHaveLength(2);
-		expect(getResponse.body.fields[2].options[0].label).toBe("Inbound");
+		expect(getResponse.body.fields[2].options[0]).toMatchObject({
+			label: "Inbound",
+			isDefault: true,
+		});
+		expect(getResponse.body.fields[3].options).toEqual([
+			expect.objectContaining({
+				label: "Instagram",
+				isDefault: true,
+			}),
+			expect.objectContaining({
+				label: "Indicação",
+				isDefault: true,
+			}),
+		]);
 	});
 
 	it("should reject duplicate field labels ignoring case", async () => {
@@ -148,6 +167,31 @@ describe("product sale fields", () => {
 						type: "SELECT",
 						required: true,
 						options: [],
+					},
+				],
+			});
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject more than one default option for single select fields", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/sale-fields`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				fields: [
+					{
+						label: "Etapa",
+						type: "SELECT",
+						required: true,
+						options: [
+							{ label: "Inbound", isDefault: true },
+							{ label: "Outbound", isDefault: true },
+						],
 					},
 				],
 			});

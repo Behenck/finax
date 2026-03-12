@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
@@ -97,28 +98,31 @@ export async function getProductSaleFields(app: FastifyInstance) {
 					}
 				}
 
-				const fieldCollections = await Promise.all(
-					productIdsToLoad.map((productId) =>
-						prisma.productSaleField.findMany({
-							where: {
-								productId,
-							},
-							orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
-							select: {
-								id: true,
-								label: true,
-								labelNormalized: true,
-								type: true,
-								required: true,
-								options: {
-									orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
-									select: {
-										id: true,
-										label: true,
+				const fieldCollections = await db(() =>
+					Promise.all(
+						productIdsToLoad.map((productId) =>
+							prisma.productSaleField.findMany({
+								where: {
+									productId,
+								},
+								orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+								select: {
+									id: true,
+									label: true,
+									labelNormalized: true,
+									type: true,
+									required: true,
+									options: {
+										orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+										select: {
+											id: true,
+											label: true,
+											isDefault: true,
+										},
 									},
 								},
-							},
-						}),
+							}),
+						),
 					),
 				);
 
@@ -129,7 +133,7 @@ export async function getProductSaleFields(app: FastifyInstance) {
 						label: string;
 						type: (typeof fieldCollections)[number][number]["type"];
 						required: boolean;
-						options: Array<{ id: string; label: string }>;
+						options: Array<{ id: string; label: string; isDefault: boolean }>;
 					}
 				>();
 				for (const fields of fieldCollections) {

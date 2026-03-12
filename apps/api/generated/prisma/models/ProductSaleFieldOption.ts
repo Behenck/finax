@@ -39,6 +39,7 @@ export type ProductSaleFieldOptionMinAggregateOutputType = {
   fieldId: string | null
   label: string | null
   labelNormalized: string | null
+  isDefault: boolean | null
   sortOrder: number | null
   createdAt: Date | null
 }
@@ -48,6 +49,7 @@ export type ProductSaleFieldOptionMaxAggregateOutputType = {
   fieldId: string | null
   label: string | null
   labelNormalized: string | null
+  isDefault: boolean | null
   sortOrder: number | null
   createdAt: Date | null
 }
@@ -57,6 +59,7 @@ export type ProductSaleFieldOptionCountAggregateOutputType = {
   fieldId: number
   label: number
   labelNormalized: number
+  isDefault: number
   sortOrder: number
   createdAt: number
   _all: number
@@ -76,6 +79,7 @@ export type ProductSaleFieldOptionMinAggregateInputType = {
   fieldId?: true
   label?: true
   labelNormalized?: true
+  isDefault?: true
   sortOrder?: true
   createdAt?: true
 }
@@ -85,6 +89,7 @@ export type ProductSaleFieldOptionMaxAggregateInputType = {
   fieldId?: true
   label?: true
   labelNormalized?: true
+  isDefault?: true
   sortOrder?: true
   createdAt?: true
 }
@@ -94,6 +99,7 @@ export type ProductSaleFieldOptionCountAggregateInputType = {
   fieldId?: true
   label?: true
   labelNormalized?: true
+  isDefault?: true
   sortOrder?: true
   createdAt?: true
   _all?: true
@@ -190,6 +196,7 @@ export type ProductSaleFieldOptionGroupByOutputType = {
   fieldId: string
   label: string
   labelNormalized: string
+  isDefault: boolean
   sortOrder: number
   createdAt: Date
   _count: ProductSaleFieldOptionCountAggregateOutputType | null
@@ -222,6 +229,7 @@ export type ProductSaleFieldOptionWhereInput = {
   fieldId?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   label?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   labelNormalized?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
+  isDefault?: Prisma.BoolFilter<"ProductSaleFieldOption"> | boolean
   sortOrder?: Prisma.IntFilter<"ProductSaleFieldOption"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductSaleFieldOption"> | Date | string
   field?: Prisma.XOR<Prisma.ProductSaleFieldScalarRelationFilter, Prisma.ProductSaleFieldWhereInput>
@@ -232,6 +240,7 @@ export type ProductSaleFieldOptionOrderByWithRelationInput = {
   fieldId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   labelNormalized?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   field?: Prisma.ProductSaleFieldOrderByWithRelationInput
@@ -246,6 +255,7 @@ export type ProductSaleFieldOptionWhereUniqueInput = Prisma.AtLeast<{
   fieldId?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   label?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   labelNormalized?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
+  isDefault?: Prisma.BoolFilter<"ProductSaleFieldOption"> | boolean
   sortOrder?: Prisma.IntFilter<"ProductSaleFieldOption"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductSaleFieldOption"> | Date | string
   field?: Prisma.XOR<Prisma.ProductSaleFieldScalarRelationFilter, Prisma.ProductSaleFieldWhereInput>
@@ -256,6 +266,7 @@ export type ProductSaleFieldOptionOrderByWithAggregationInput = {
   fieldId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   labelNormalized?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProductSaleFieldOptionCountOrderByAggregateInput
@@ -273,6 +284,7 @@ export type ProductSaleFieldOptionScalarWhereWithAggregatesInput = {
   fieldId?: Prisma.StringWithAggregatesFilter<"ProductSaleFieldOption"> | string
   label?: Prisma.StringWithAggregatesFilter<"ProductSaleFieldOption"> | string
   labelNormalized?: Prisma.StringWithAggregatesFilter<"ProductSaleFieldOption"> | string
+  isDefault?: Prisma.BoolWithAggregatesFilter<"ProductSaleFieldOption"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"ProductSaleFieldOption"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductSaleFieldOption"> | Date | string
 }
@@ -281,6 +293,7 @@ export type ProductSaleFieldOptionCreateInput = {
   id?: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
   field: Prisma.ProductSaleFieldCreateNestedOneWithoutOptionsInput
@@ -291,6 +304,7 @@ export type ProductSaleFieldOptionUncheckedCreateInput = {
   fieldId: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
 }
@@ -299,6 +313,7 @@ export type ProductSaleFieldOptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   field?: Prisma.ProductSaleFieldUpdateOneRequiredWithoutOptionsNestedInput
@@ -309,6 +324,7 @@ export type ProductSaleFieldOptionUncheckedUpdateInput = {
   fieldId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -318,6 +334,7 @@ export type ProductSaleFieldOptionCreateManyInput = {
   fieldId: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
 }
@@ -326,6 +343,7 @@ export type ProductSaleFieldOptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -335,6 +353,7 @@ export type ProductSaleFieldOptionUncheckedUpdateManyInput = {
   fieldId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -359,6 +378,7 @@ export type ProductSaleFieldOptionCountOrderByAggregateInput = {
   fieldId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   labelNormalized?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -372,6 +392,7 @@ export type ProductSaleFieldOptionMaxOrderByAggregateInput = {
   fieldId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   labelNormalized?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -381,6 +402,7 @@ export type ProductSaleFieldOptionMinOrderByAggregateInput = {
   fieldId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   labelNormalized?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -435,6 +457,7 @@ export type ProductSaleFieldOptionCreateWithoutFieldInput = {
   id?: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
 }
@@ -443,6 +466,7 @@ export type ProductSaleFieldOptionUncheckedCreateWithoutFieldInput = {
   id?: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
 }
@@ -481,6 +505,7 @@ export type ProductSaleFieldOptionScalarWhereInput = {
   fieldId?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   label?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
   labelNormalized?: Prisma.StringFilter<"ProductSaleFieldOption"> | string
+  isDefault?: Prisma.BoolFilter<"ProductSaleFieldOption"> | boolean
   sortOrder?: Prisma.IntFilter<"ProductSaleFieldOption"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductSaleFieldOption"> | Date | string
 }
@@ -489,6 +514,7 @@ export type ProductSaleFieldOptionCreateManyFieldInput = {
   id?: string
   label: string
   labelNormalized: string
+  isDefault?: boolean
   sortOrder?: number
   createdAt?: Date | string
 }
@@ -497,6 +523,7 @@ export type ProductSaleFieldOptionUpdateWithoutFieldInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -505,6 +532,7 @@ export type ProductSaleFieldOptionUncheckedUpdateWithoutFieldInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -513,6 +541,7 @@ export type ProductSaleFieldOptionUncheckedUpdateManyWithoutFieldInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   labelNormalized?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -524,6 +553,7 @@ export type ProductSaleFieldOptionSelect<ExtArgs extends runtime.Types.Extension
   fieldId?: boolean
   label?: boolean
   labelNormalized?: boolean
+  isDefault?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   field?: boolean | Prisma.ProductSaleFieldDefaultArgs<ExtArgs>
@@ -534,6 +564,7 @@ export type ProductSaleFieldOptionSelectCreateManyAndReturn<ExtArgs extends runt
   fieldId?: boolean
   label?: boolean
   labelNormalized?: boolean
+  isDefault?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   field?: boolean | Prisma.ProductSaleFieldDefaultArgs<ExtArgs>
@@ -544,6 +575,7 @@ export type ProductSaleFieldOptionSelectUpdateManyAndReturn<ExtArgs extends runt
   fieldId?: boolean
   label?: boolean
   labelNormalized?: boolean
+  isDefault?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   field?: boolean | Prisma.ProductSaleFieldDefaultArgs<ExtArgs>
@@ -554,11 +586,12 @@ export type ProductSaleFieldOptionSelectScalar = {
   fieldId?: boolean
   label?: boolean
   labelNormalized?: boolean
+  isDefault?: boolean
   sortOrder?: boolean
   createdAt?: boolean
 }
 
-export type ProductSaleFieldOptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fieldId" | "label" | "labelNormalized" | "sortOrder" | "createdAt", ExtArgs["result"]["productSaleFieldOption"]>
+export type ProductSaleFieldOptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fieldId" | "label" | "labelNormalized" | "isDefault" | "sortOrder" | "createdAt", ExtArgs["result"]["productSaleFieldOption"]>
 export type ProductSaleFieldOptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   field?: boolean | Prisma.ProductSaleFieldDefaultArgs<ExtArgs>
 }
@@ -579,6 +612,7 @@ export type $ProductSaleFieldOptionPayload<ExtArgs extends runtime.Types.Extensi
     fieldId: string
     label: string
     labelNormalized: string
+    isDefault: boolean
     sortOrder: number
     createdAt: Date
   }, ExtArgs["result"]["productSaleFieldOption"]>
@@ -1009,6 +1043,7 @@ export interface ProductSaleFieldOptionFieldRefs {
   readonly fieldId: Prisma.FieldRef<"ProductSaleFieldOption", 'String'>
   readonly label: Prisma.FieldRef<"ProductSaleFieldOption", 'String'>
   readonly labelNormalized: Prisma.FieldRef<"ProductSaleFieldOption", 'String'>
+  readonly isDefault: Prisma.FieldRef<"ProductSaleFieldOption", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"ProductSaleFieldOption", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProductSaleFieldOption", 'DateTime'>
 }

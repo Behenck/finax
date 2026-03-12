@@ -118,6 +118,7 @@ const productCommissionScenarioSchema = z.object({
 
 const productSaleFieldOptionSchema = z.object({
 	label: z.string().trim().min(1, "Informe o nome da opção"),
+	isDefault: z.boolean(),
 });
 
 const productSaleFieldSchema = z
@@ -141,6 +142,7 @@ const productSaleFieldSchema = z
 
 		if (isSelectionField) {
 			const normalizedOptionLabels = new Set<string>();
+			let defaultOptionsCount = 0;
 			for (const [optionIndex, option] of field.options.entries()) {
 				const normalizedOptionLabel = option.label.trim().toLocaleLowerCase();
 				if (normalizedOptionLabels.has(normalizedOptionLabel)) {
@@ -151,6 +153,18 @@ const productSaleFieldSchema = z
 					});
 				}
 				normalizedOptionLabels.add(normalizedOptionLabel);
+
+				if (option.isDefault) {
+					defaultOptionsCount += 1;
+				}
+			}
+
+			if (field.type === "SELECT" && defaultOptionsCount > 1) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Seleção simples aceita apenas uma opção padrão",
+					path: ["options"],
+				});
 			}
 		}
 	});

@@ -68,6 +68,7 @@ export function DynamicFieldsSection({
 											return (
 												<>
 													<Input
+														placeholder="Digite o texto"
 														value={typeof rawValue === "string" ? rawValue : ""}
 														onChange={(event) =>
 															field.onChange(event.target.value)

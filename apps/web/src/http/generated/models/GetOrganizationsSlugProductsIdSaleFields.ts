@@ -15,6 +15,14 @@ export type GetOrganizationsSlugProductsIdSaleFieldsPathParams = {
     id: string;
 };
 
+export type GetOrganizationsSlugProductsIdSaleFieldsQueryParams = {
+    /**
+     * @default false
+     * @type boolean | undefined
+    */
+    includeInherited?: boolean;
+};
+
 export const fieldsTypeEnum = {
     "TEXT": "TEXT",
     "NUMBER": "NUMBER",
@@ -65,6 +73,10 @@ export type GetOrganizationsSlugProductsIdSaleFields200 = {
              * @type string
             */
             label: string;
+            /**
+             * @type boolean
+            */
+            isDefault: boolean;
         }[];
     }[];
 };
@@ -74,5 +86,6 @@ export type GetOrganizationsSlugProductsIdSaleFieldsQueryResponse = GetOrganizat
 export type GetOrganizationsSlugProductsIdSaleFieldsQuery = {
     Response: GetOrganizationsSlugProductsIdSaleFields200;
     PathParams: GetOrganizationsSlugProductsIdSaleFieldsPathParams;
+    QueryParams: GetOrganizationsSlugProductsIdSaleFieldsQueryParams;
     Errors: any;
 };

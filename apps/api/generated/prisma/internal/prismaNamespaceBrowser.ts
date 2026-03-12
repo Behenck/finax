@@ -416,6 +416,7 @@ export const ProductSaleFieldOptionScalarFieldEnum = {
   fieldId: 'fieldId',
   label: 'label',
   labelNormalized: 'labelNormalized',
+  isDefault: 'isDefault',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt'
 } as const

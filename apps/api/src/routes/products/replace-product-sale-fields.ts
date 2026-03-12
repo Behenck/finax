@@ -81,6 +81,7 @@ export async function replaceProductSaleFields(app: FastifyInstance) {
 										create: field.options.map((option, optionIndex) => ({
 											label: option.label,
 											labelNormalized: normalizeCaseInsensitiveLabel(option.label),
+											isDefault: option.isDefault,
 											sortOrder: optionIndex,
 										})),
 									},

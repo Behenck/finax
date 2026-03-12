@@ -4,24 +4,24 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, GetOrganizationsSlugProductsIdSaleFieldsPathParams } from "../models/GetOrganizationsSlugProductsIdSaleFields.ts";
+import type { GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, GetOrganizationsSlugProductsIdSaleFieldsPathParams, GetOrganizationsSlugProductsIdSaleFieldsQueryParams } from "../models/GetOrganizationsSlugProductsIdSaleFields.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryResult } from "@tanstack/react-query";
 import { getOrganizationsSlugProductsIdSaleFields } from "../getOrganizationsSlugProductsIdSaleFields.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getOrganizationsSlugProductsIdSaleFieldsQueryKey = ({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }) => [{ url: '/organizations/:slug/products/:id/sale-fields', params: {slug:slug,id:id} }] as const
+export const getOrganizationsSlugProductsIdSaleFieldsQueryKey = ({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }, params: GetOrganizationsSlugProductsIdSaleFieldsQueryParams = {}) => [{ url: '/organizations/:slug/products/:id/sale-fields', params: {slug:slug,id:id} }, ...(params ? [params] : [])] as const
 
 export type GetOrganizationsSlugProductsIdSaleFieldsQueryKey = ReturnType<typeof getOrganizationsSlugProductsIdSaleFieldsQueryKey>
 
-export function getOrganizationsSlugProductsIdSaleFieldsQueryOptions({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getOrganizationsSlugProductsIdSaleFieldsQueryKey({ slug, id })
+export function getOrganizationsSlugProductsIdSaleFieldsQueryOptions({ slug, id, params }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"]; params?: GetOrganizationsSlugProductsIdSaleFieldsQueryParams }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+  const queryKey = getOrganizationsSlugProductsIdSaleFieldsQueryKey({ slug, id }, params)
   return queryOptions<GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, ResponseErrorConfig<Error>, GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, typeof queryKey>({
    enabled: !!(slug&& id),
    queryKey,
    queryFn: async ({ signal }) => {
       config.signal = signal
-      return getOrganizationsSlugProductsIdSaleFields({ slug, id }, config)
+      return getOrganizationsSlugProductsIdSaleFields({ slug, id, params }, config)
    },
   })
 }
@@ -30,7 +30,7 @@ export function getOrganizationsSlugProductsIdSaleFieldsQueryOptions({ slug, id 
  * @summary Get product sale fields
  * {@link /organizations/:slug/products/:id/sale-fields}
  */
-export function useGetOrganizationsSlugProductsIdSaleFields<TData = GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, TQueryData = GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugProductsIdSaleFieldsQueryKey>({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }, options: 
+export function useGetOrganizationsSlugProductsIdSaleFields<TData = GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, TQueryData = GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugProductsIdSaleFieldsQueryKey>({ slug, id, params }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"]; params?: GetOrganizationsSlugProductsIdSaleFieldsQueryParams }, options: 
 {
   query?: Partial<QueryObserverOptions<GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
@@ -38,11 +38,11 @@ export function useGetOrganizationsSlugProductsIdSaleFields<TData = GetOrganizat
  = {}) {
   const { query: queryConfig = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugProductsIdSaleFieldsQueryKey({ slug, id })
+  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugProductsIdSaleFieldsQueryKey({ slug, id }, params)
 
 
   const query = useQuery({
-   ...getOrganizationsSlugProductsIdSaleFieldsQueryOptions({ slug, id }, config),
+   ...getOrganizationsSlugProductsIdSaleFieldsQueryOptions({ slug, id, params }, config),
    queryKey,
    ...queryOptions
   } as unknown as QueryObserverOptions, queryClient) as UseQueryResult<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }

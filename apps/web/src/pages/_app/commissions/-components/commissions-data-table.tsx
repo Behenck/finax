@@ -1,5 +1,12 @@
 import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
-import { Eye, MoreHorizontal, Pencil, RefreshCcw, Trash2 } from "lucide-react";
+import {
+	CheckCircle2,
+	Eye,
+	MoreHorizontal,
+	Pencil,
+	RefreshCcw,
+	Trash2,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
 import { Link } from "@tanstack/react-router";
@@ -1001,6 +1008,7 @@ export function CommissionsDataTable() {
 																		requestInstallmentPayment(installment);
 																	}}
 																>
+																	<CheckCircle2 className="size-4" />
 																	Pagar parcela
 																</DropdownMenuItem>
 																<DropdownMenuItem

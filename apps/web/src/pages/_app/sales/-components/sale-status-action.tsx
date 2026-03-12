@@ -21,6 +21,7 @@ import {
 	SALE_STATUS_TRANSITIONS,
 	type SaleStatus,
 } from "@/schemas/types/sales";
+import { RefreshCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface SaleStatusActionProps {
@@ -71,6 +72,7 @@ export function SaleStatusAction({
 						setIsModalOpen(true);
 					}}
 				>
+					<RefreshCcw className="size-4" />
 					{availableTransitions.length === 0
 						? "Sem transição de status"
 						: "Alterar status"}
@@ -85,9 +87,8 @@ export function SaleStatusAction({
 						setIsModalOpen(true);
 					}}
 				>
-					{availableTransitions.length === 0
-						? "Sem transição"
-						: "Alterar status"}
+					<RefreshCcw className="size-4" />
+					{availableTransitions.length === 0 ? "Sem transição" : "Alterar status"}
 				</Button>
 			)}
 

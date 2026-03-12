@@ -137,16 +137,25 @@ export function ProductForm({
 		{ query: { enabled: !!organization?.slug } },
 	);
 
-	const { data: scenariosData, isLoading: isLoadingScenarios } =
-		useGetOrganizationsSlugProductsIdCommissionScenarios(
-			{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
-			{
-				query: {
-					enabled: !!organization?.slug && !!initialData?.id && isEditMode,
-				},
+	const {
+		data: scenariosData,
+		isLoading: isLoadingScenarios,
+		isError: isScenariosError,
+		error: scenariosError,
+	} = useGetOrganizationsSlugProductsIdCommissionScenarios(
+		{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && !!initialData?.id && isEditMode,
 			},
-		);
-	const { data: saleFieldsData, isLoading: isLoadingSaleFields } =
+		},
+	);
+	const {
+		data: saleFieldsData,
+		isLoading: isLoadingSaleFields,
+		isError: isSaleFieldsError,
+		error: saleFieldsError,
+	} =
 		useGetOrganizationsSlugProductsIdSaleFields(
 			{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
 			{
@@ -255,27 +264,54 @@ export function ProductForm({
 		}));
 	}, [supervisorsData?.members]);
 
+	const scenariosLoadErrorMessage = useMemo(() => {
+		if (!isScenariosError) {
+			return null;
+		}
+
+		return resolveErrorMessage(normalizeApiError(scenariosError));
+	}, [isScenariosError, scenariosError]);
+
+	const saleFieldsLoadErrorMessage = useMemo(() => {
+		if (!isSaleFieldsError) {
+			return null;
+		}
+
+		return resolveErrorMessage(normalizeApiError(saleFieldsError));
+	}, [isSaleFieldsError, saleFieldsError]);
+
 	useEffect(() => {
-		if (!isEditMode || !initialData || !scenariosData || !saleFieldsData) return;
+		if (!isEditMode || !initialData) return;
+		if (isLoadingScenarios || isLoadingSaleFields) return;
 		if (initializedFromApiRef.current && isDirty) return;
 
 		reset({
 			name: initialData.name,
 			scenarios:
-				scenariosData.scenarios.length > 0
-					? scenariosData.scenarios.map(mapApiScenarioToForm)
+				(scenariosData?.scenarios ?? []).length > 0
+					? (scenariosData?.scenarios ?? []).map(mapApiScenarioToForm)
 					: [],
-			saleFields: saleFieldsData.fields.map((field) => ({
+			saleFields: (saleFieldsData?.fields ?? []).map((field) => ({
 				label: field.label,
 				type: field.type as SaleDynamicFieldType,
 				required: field.required,
 				options: field.options.map((option) => ({
 					label: option.label,
+					isDefault: option.isDefault,
 				})),
 			})),
 		});
 		initializedFromApiRef.current = true;
-	}, [initialData, isDirty, isEditMode, reset, saleFieldsData, scenariosData]);
+	}, [
+		initialData,
+		isDirty,
+		isEditMode,
+		isLoadingSaleFields,
+		isLoadingScenarios,
+		reset,
+		saleFieldsData,
+		scenariosData,
+	]);
 
 	useEffect(() => {
 		if (mode === "create") {
@@ -360,6 +396,7 @@ export function ProductForm({
 				...currentOptions,
 				{
 					label: "",
+					isDefault: false,
 				},
 			],
 			{
@@ -382,6 +419,37 @@ export function ProductForm({
 				shouldValidate: true,
 			},
 		);
+	};
+
+	const handleToggleSaleFieldOptionDefault = (
+		fieldIndex: number,
+		optionIndex: number,
+		checked: boolean,
+	) => {
+		const currentOptions = getValues(`saleFields.${fieldIndex}.options`) ?? [];
+		const fieldType = getValues(`saleFields.${fieldIndex}.type`);
+		const nextOptions = currentOptions.map((option, index) => {
+			if (fieldType === "SELECT" && checked) {
+				return {
+					...option,
+					isDefault: index === optionIndex,
+				};
+			}
+
+			if (index !== optionIndex) {
+				return option;
+			}
+
+			return {
+				...option,
+				isDefault: checked,
+			};
+		});
+
+		setValue(`saleFields.${fieldIndex}.options`, nextOptions, {
+			shouldDirty: true,
+			shouldValidate: true,
+		});
 	};
 
 	const handleInstallmentCountChange = (
@@ -431,6 +499,7 @@ export function ProductForm({
 						field.type === "SELECT" || field.type === "MULTI_SELECT"
 							? field.options.map((option) => ({
 									label: option.label.trim(),
+									isDefault: Boolean(option.isDefault),
 								}))
 							: [],
 				})),
@@ -600,6 +669,18 @@ export function ProductForm({
 									Carregando campos da venda...
 								</span>
 							</Card>
+						) : isEditMode && isSaleFieldsError ? (
+							<Card className="space-y-2 p-4">
+								<span className="text-destructive text-sm">
+									{saleFieldsLoadErrorMessage ??
+										"Não foi possível carregar os campos da venda."}
+								</span>
+								{isDatabaseSchemaOutdatedMessage(saleFieldsLoadErrorMessage ?? "") ? (
+									<p className="text-muted-foreground text-xs">
+										Execute as migrações no backend e tente novamente.
+									</p>
+								) : null}
+							</Card>
 						) : saleFieldFields.length === 0 ? (
 							<Card className="p-4">
 								<span className="text-muted-foreground text-sm">
@@ -643,6 +724,31 @@ export function ProductForm({
 																		setValue(
 																			`saleFields.${fieldIndex}.options`,
 																			[],
+																			{
+																				shouldDirty: true,
+																				shouldValidate: true,
+																			},
+																		);
+																		return;
+																	}
+
+																	if (value === "SELECT") {
+																		const currentOptions =
+																			getValues(`saleFields.${fieldIndex}.options`) ?? [];
+																		const firstDefaultIndex = currentOptions.findIndex(
+																			(option) => Boolean(option.isDefault),
+																		);
+
+																		if (firstDefaultIndex === -1) {
+																			return;
+																		}
+
+																		setValue(
+																			`saleFields.${fieldIndex}.options`,
+																			currentOptions.map((option, optionIndex) => ({
+																				...option,
+																				isDefault: optionIndex === firstDefaultIndex,
+																			})),
 																			{
 																				shouldDirty: true,
 																				shouldValidate: true,
@@ -753,6 +859,19 @@ export function ProductForm({
 																		`saleFields.${fieldIndex}.options.${optionIndex}.label` as const,
 																	)}
 																/>
+																<div className="flex items-center gap-2 rounded-sm border px-2 py-1">
+																	<span className="text-sm">Padrão</span>
+																	<Switch
+																		checked={Boolean(options[optionIndex]?.isDefault)}
+																		onCheckedChange={(checked) =>
+																			handleToggleSaleFieldOptionDefault(
+																				fieldIndex,
+																				optionIndex,
+																				Boolean(checked),
+																			)
+																		}
+																	/>
+																</div>
 																<Button
 																	type="button"
 																	variant="outline"
@@ -802,6 +921,18 @@ export function ProductForm({
 								<span className="text-muted-foreground text-sm">
 									Carregando cenários de comissão...
 								</span>
+							</Card>
+						) : isEditMode && isScenariosError ? (
+							<Card className="space-y-2 p-4">
+								<span className="text-destructive text-sm">
+									{scenariosLoadErrorMessage ??
+										"Não foi possível carregar os cenários de comissão."}
+								</span>
+								{isDatabaseSchemaOutdatedMessage(scenariosLoadErrorMessage ?? "") ? (
+									<p className="text-muted-foreground text-xs">
+										Execute as migrações no backend e tente novamente.
+									</p>
+								) : null}
 							</Card>
 						) : scenarioFields.length === 0 ? (
 							<Card className="p-4">

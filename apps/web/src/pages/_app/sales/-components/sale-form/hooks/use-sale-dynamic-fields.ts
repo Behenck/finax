@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type UseFormSetValue } from "react-hook-form";
 import {
-	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
 	useGetOrganizationsSlugProductsIdSaleFields,
 } from "@/http/generated";
 import { type SaleFormInput } from "@/schemas/sale-schema";
@@ -17,6 +16,31 @@ interface UseSaleDynamicFieldsParams {
 	onProductChanged?: () => void;
 }
 
+function resolveDynamicFieldDefaultValues(schema: SaleDynamicFieldSchemaItem[]) {
+	const defaultValues: Record<string, unknown> = {};
+
+	for (const field of schema) {
+		if (field.type === "SELECT") {
+			const defaultOptionId = field.options.find((option) => option.isDefault)?.id;
+			if (defaultOptionId) {
+				defaultValues[field.fieldId] = defaultOptionId;
+			}
+			continue;
+		}
+
+		if (field.type === "MULTI_SELECT") {
+			const defaultOptionIds = field.options
+				.filter((option) => option.isDefault)
+				.map((option) => option.id);
+			if (defaultOptionIds.length > 0) {
+				defaultValues[field.fieldId] = defaultOptionIds;
+			}
+		}
+	}
+
+	return defaultValues;
+}
+
 export function useSaleDynamicFields({
 	mode,
 	initialSale,
@@ -28,6 +52,7 @@ export function useSaleDynamicFields({
 	const [dynamicFieldSchemaByProductId, setDynamicFieldSchemaByProductId] =
 		useState<Record<string, SaleDynamicFieldSchemaItem[]>>({});
 	const [hasSwitchedProduct, setHasSwitchedProduct] = useState(false);
+	const [shouldApplyDefaults, setShouldApplyDefaults] = useState(false);
 	const previousProductIdRef = useRef(initialSale?.productId ?? "");
 
 	const shouldUseInitialDynamicFieldSchema =
@@ -36,31 +61,16 @@ export function useSaleDynamicFields({
 		!hasSwitchedProduct &&
 		selectedProductId === initialSale?.productId;
 
-	const inheritedSaleFieldsQueryKey = useMemo(
-		() =>
-			[
-				...getOrganizationsSlugProductsIdSaleFieldsQueryKey({
-					slug: organizationSlug ?? "",
-					id: selectedProductId || "",
-				}),
-				{ includeInherited: true },
-			] as const,
-		[organizationSlug, selectedProductId],
-	);
-
 	const productSaleFieldsQuery = useGetOrganizationsSlugProductsIdSaleFields(
 		{
 			slug: organizationSlug ?? "",
 			id: selectedProductId || "",
+			params: {
+				includeInherited: true,
+			},
 		},
 		{
-			client: {
-				params: {
-					includeInherited: true,
-				},
-			},
 			query: {
-				queryKey: inheritedSaleFieldsQueryKey,
 				enabled:
 					Boolean(organizationSlug && selectedProductId) &&
 					!shouldUseInitialDynamicFieldSchema,
@@ -99,19 +109,36 @@ export function useSaleDynamicFields({
 			return;
 		}
 
-		setDynamicFieldSchemaByProductId((currentValue) => ({
-			...currentValue,
-			[selectedProductId]: productSaleFieldsQuery.data.fields.map((field) => ({
-				fieldId: field.id,
-				label: field.label,
-				type: field.type as SaleDynamicFieldSchemaItem["type"],
-				required: field.required,
-				options: field.options,
+		const mappedFields = productSaleFieldsQuery.data.fields.map((field) => ({
+			fieldId: field.id,
+			label: field.label,
+			type: field.type as SaleDynamicFieldSchemaItem["type"],
+			required: field.required,
+			options: field.options.map((option) => ({
+				id: option.id,
+				label: option.label,
+				isDefault: option.isDefault,
 			})),
 		}));
+
+		setDynamicFieldSchemaByProductId((currentValue) => ({
+			...currentValue,
+			[selectedProductId]: mappedFields,
+		}));
+
+		if (shouldApplyDefaults) {
+			const defaultValues = resolveDynamicFieldDefaultValues(mappedFields);
+			setValue("dynamicFields", defaultValues, {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+			setShouldApplyDefaults(false);
+		}
 	}, [
 		productSaleFieldsQuery.data?.fields,
 		selectedProductId,
+		setValue,
+		shouldApplyDefaults,
 		shouldUseInitialDynamicFieldSchema,
 	]);
 
@@ -123,6 +150,7 @@ export function useSaleDynamicFields({
 
 		previousProductIdRef.current = selectedProductId;
 		onProductChanged?.();
+		setShouldApplyDefaults(Boolean(selectedProductId));
 		setValue("dynamicFields", {}, { shouldDirty: true, shouldValidate: true });
 
 		if (

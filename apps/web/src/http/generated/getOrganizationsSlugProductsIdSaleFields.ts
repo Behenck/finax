@@ -4,7 +4,7 @@
 */
 
 import fetch from "@/lib/axios";
-import type { GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, GetOrganizationsSlugProductsIdSaleFieldsPathParams } from "./models/GetOrganizationsSlugProductsIdSaleFields.ts";
+import type { GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, GetOrganizationsSlugProductsIdSaleFieldsPathParams, GetOrganizationsSlugProductsIdSaleFieldsQueryParams } from "./models/GetOrganizationsSlugProductsIdSaleFields.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugProductsIdSaleFieldsUrl({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }) {
@@ -16,9 +16,9 @@ function getGetOrganizationsSlugProductsIdSaleFieldsUrl({ slug, id }: { slug: Ge
  * @summary Get product sale fields
  * {@link /organizations/:slug/products/:id/sale-fields}
  */
-export async function getOrganizationsSlugProductsIdSaleFields({ slug, id }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getOrganizationsSlugProductsIdSaleFields({ slug, id, params }: { slug: GetOrganizationsSlugProductsIdSaleFieldsPathParams["slug"]; id: GetOrganizationsSlugProductsIdSaleFieldsPathParams["id"]; params?: GetOrganizationsSlugProductsIdSaleFieldsQueryParams }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugProductsIdSaleFieldsUrl({ slug, id }).url.toString(), ... requestConfig })  
+  const res = await request<GetOrganizationsSlugProductsIdSaleFieldsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugProductsIdSaleFieldsUrl({ slug, id }).url.toString(), params, ... requestConfig })  
   return res.data
 }

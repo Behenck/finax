@@ -18,6 +18,16 @@ export function handlePrismaError(error: unknown): never {
           `Estrutura do banco desatualizada (${tableName}). Execute as migrações pendentes e tente novamente.`,
         )
       }
+      case 'P2022': {
+        const columnName =
+          typeof error.meta?.column === 'string'
+            ? error.meta.column
+            : 'uma coluna necessária'
+
+        throw new BadRequestError(
+          `Estrutura do banco desatualizada (${columnName}). Execute as migrações pendentes e tente novamente.`,
+        )
+      }
     }
   }
 

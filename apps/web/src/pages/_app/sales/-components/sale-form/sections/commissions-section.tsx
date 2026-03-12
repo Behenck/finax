@@ -94,15 +94,13 @@ export function CommissionsSection({
 	return (
 		<Card className="rounded-sm gap-4 p-5">
 			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+				<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
+
 				<div className="flex items-center gap-2">
-					<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
 					<Button type="button" variant="outline" onClick={onAddManualCommission}>
 						<Plus className="size-4" />
 						Adicionar comissão
 					</Button>
-				</div>
-
-				<div className="flex items-center gap-2">
 					<Button
 						type="button"
 						variant="outline"

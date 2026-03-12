@@ -19,6 +19,7 @@ export type SaleDynamicFieldType = z.infer<typeof SaleDynamicFieldTypeSchema>;
 export interface SaleDynamicFieldOption {
 	id: string;
 	label: string;
+	isDefault?: boolean;
 }
 
 export interface SaleDynamicFieldSchemaItem {
