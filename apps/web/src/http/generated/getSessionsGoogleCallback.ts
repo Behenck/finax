@@ -8,7 +8,7 @@ import type { GetSessionsGoogleCallbackQueryResponse, GetSessionsGoogleCallbackQ
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetSessionsGoogleCallbackUrl() {
-  const res = { method: 'GET', url: `http://localhost:3333/sessions/google/callback` as const }  
+  const res = { method: 'GET', url: `/sessions/google/callback` as const }  
   return res
 }
 

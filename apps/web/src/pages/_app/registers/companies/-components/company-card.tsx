@@ -53,8 +53,8 @@ export function CompanyCard({ company }: CompanyCardProps) {
 	return (
 		<Card className="px-6 py-4 rounded-lg flex-1">
 			<Collapsible open={isOpen} onOpenChange={setIsOpen}>
-				<div className="flex items-center justify-between">
-					<CollapsibleTrigger className="flex items-center gap-4 cursor-pointer">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<CollapsibleTrigger className="flex min-w-0 items-center gap-4 cursor-pointer text-left">
 						{hasUnits ? (
 							isOpen ? (
 								<ChevronUp className="size-5 text-gray-500" />
@@ -65,16 +65,16 @@ export function CompanyCard({ company }: CompanyCardProps) {
 							<div className="size-5" />
 						)}
 
-						<div className="flex items-center gap-3">
+						<div className="flex min-w-0 items-center gap-3">
 							<div className="p-2 rounded-md bg-green-100 text-green-500">
 								<Building2 className="size-5" />
 							</div>
 
-							<span className="font-medium ">{company.name}</span>
+							<span className="truncate font-medium">{company.name}</span>
 						</div>
 					</CollapsibleTrigger>
 
-					<div className="flex items-center gap-1">
+					<div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto">
 						{totalUnits > 0 && (
 							<div className="px-2 py-1 rounded-sm bg-gray-100 text-gray-500 text-xs">
 								<span>

@@ -8,7 +8,7 @@ import type { DeleteOrganizationSlugMutationResponse, DeleteOrganizationSlugPath
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getDeleteOrganizationSlugUrl({ slug }: { slug: DeleteOrganizationSlugPathParams["slug"] }) {
-  const res = { method: 'DELETE', url: `http://localhost:3333/organization/${slug}` as const }  
+  const res = { method: 'DELETE', url: `/organization/${slug}` as const }  
   return res
 }
 

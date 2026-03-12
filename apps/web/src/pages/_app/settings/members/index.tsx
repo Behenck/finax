@@ -20,8 +20,8 @@ function Members() {
 
   const totalMembers = members?.length ?? 0
   return (
-    <main className='flex flex-col gap-8'>
-      <div className='flex items-center justify-between'>
+    <main className='flex flex-col gap-6'>
+      <div className='grid grid-cols-1 gap-4 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-start'>
         <InviteMemberLink />
         <InviteMemberWithEmailAndRole />
       </div>
@@ -30,14 +30,17 @@ function Members() {
 
       <div>
         <Tabs defaultValue="members" className="space-y-2">
-          <TabsList variant="underline" className="justify-start p-0 border-b border-gray-200 rounded-none h-auto w-full">
+          <TabsList
+            variant="underline"
+            className="h-auto w-full justify-start overflow-x-auto rounded-none border-b border-gray-200 p-0 whitespace-nowrap"
+          >
             <TabsTab
               value="members"
               className="
                 group relative rounded-none p-3 border-none
                 text-sm font-medium text-muted-foreground
                 hover:bg-transparent!
-                flex-0
+                shrink-0
               "
             >Membros da organização ({totalMembers})</TabsTab>
             <TabsTab
@@ -46,7 +49,7 @@ function Members() {
                 group relative rounded-none p-3 border-none
                 text-sm font-medium text-muted-foreground
                 hover:bg-transparent!
-                flex-0
+                shrink-0
               "
             >Convites pendentes</TabsTab>
           </TabsList>

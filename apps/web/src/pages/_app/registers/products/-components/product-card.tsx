@@ -112,7 +112,7 @@ export function ProductCard({ product }: ProductCardProps) {
 					!product.isActive && "opacity-60",
 				)}
 			>
-				<div className="flex items-center justify-between gap-4">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<CollapsibleTrigger className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 text-left">
 						{hasChildren ? (
 							isOpen ? (
@@ -158,7 +158,7 @@ export function ProductCard({ product }: ProductCardProps) {
 						</div>
 					</CollapsibleTrigger>
 
-					<div className="flex shrink-0 items-center gap-1">
+					<div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto">
 						<CreateProduct
 							fixedParentId={product.id}
 							trigger={

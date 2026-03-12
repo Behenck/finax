@@ -8,7 +8,7 @@ import type { PostUsersMutationRequest, PostUsersMutationResponse, PostUsers400 
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostUsersUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/users` as const }  
+  const res = { method: 'POST', url: `/users` as const }  
   return res
 }
 

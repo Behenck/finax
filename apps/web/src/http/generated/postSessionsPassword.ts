@@ -8,7 +8,7 @@ import type { PostSessionsPasswordMutationRequest, PostSessionsPasswordMutationR
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostSessionsPasswordUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/sessions/password` as const }  
+  const res = { method: 'POST', url: `/sessions/password` as const }  
   return res
 }
 

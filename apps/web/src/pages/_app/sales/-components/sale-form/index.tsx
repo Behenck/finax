@@ -25,13 +25,10 @@ import { roundSaleCommissionPercentage } from "../sale-commission-helpers";
 import { toSaleDynamicFieldPayloadValues } from "../sale-dynamic-fields";
 import {
 	QUICK_CUSTOMER_DEFAULT_VALUES,
-	QUICK_PRODUCT_DEFAULT_VALUES,
 } from "./constants";
 import { parseSaleDateFromApi } from "./date-utils";
 import { QuickCustomerDialog } from "./dialogs/quick-customer-dialog";
-import { QuickProductDialog } from "./dialogs/quick-product-dialog";
 import { useQuickCustomer } from "./hooks/use-quick-customer";
-import { useQuickProduct } from "./hooks/use-quick-product";
 import { useSaleCommissions } from "./hooks/use-sale-commissions";
 import { useSaleDynamicFields } from "./hooks/use-sale-dynamic-fields";
 import { resolveInitialCommissions, resolveInitialDynamicFields } from "./initial-values";
@@ -40,11 +37,6 @@ import {
 	type QuickCustomerInput,
 	quickCustomerSchema,
 } from "./quick-customer-schema";
-import {
-	type QuickProductData,
-	type QuickProductInput,
-	quickProductSchema,
-} from "./quick-product-schema";
 import { ClassificationSection } from "./sections/classification-section";
 import { CommissionsSection } from "./sections/commissions-section";
 import { CustomerSection } from "./sections/customer-section";
@@ -90,8 +82,6 @@ export function SaleForm({
 	);
 	const [isCreateCustomerDialogOpen, setIsCreateCustomerDialogOpen] =
 		useState(false);
-	const [isCreateProductDialogOpen, setIsCreateProductDialogOpen] =
-		useState(false);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
 		resolver: zodResolver(saleSchema),
@@ -119,12 +109,6 @@ export function SaleForm({
 		resolver: zodResolver(quickCustomerSchema),
 		defaultValues: QUICK_CUSTOMER_DEFAULT_VALUES,
 	});
-	const quickProductForm = useForm<QuickProductInput, unknown, QuickProductData>(
-		{
-			resolver: zodResolver(quickProductSchema),
-			defaultValues: QUICK_PRODUCT_DEFAULT_VALUES,
-		},
-	);
 
 	const {
 		control,
@@ -241,25 +225,6 @@ export function SaleForm({
 			setIsCreateCustomerDialogOpen(false);
 		},
 	});
-	const {
-		quickCreatedProduct,
-		createQuickProduct,
-		isCreatingQuickProduct,
-	} = useQuickProduct({
-		organizationSlug: organization?.slug,
-		queryClient,
-		setSaleProductId: (productId) => {
-			setValue("productId", productId, {
-				shouldDirty: true,
-				shouldTouch: true,
-				shouldValidate: true,
-			});
-		},
-		onQuickProductCreated: () => {
-			quickProductForm.reset(QUICK_PRODUCT_DEFAULT_VALUES);
-			setIsCreateProductDialogOpen(false);
-		},
-	});
 
 	const customersForSelect = useMemo(() => {
 		if (!quickCreatedCustomer) {
@@ -275,20 +240,6 @@ export function SaleForm({
 
 		return [quickCreatedCustomer, ...customers];
 	}, [customers, quickCreatedCustomer]);
-	const productsForSelect = useMemo(() => {
-		if (!quickCreatedProduct) {
-			return products;
-		}
-
-		const hasQuickProductInQuery = products.some(
-			(product) => product.id === quickCreatedProduct.id,
-		);
-		if (hasQuickProductInQuery) {
-			return products;
-		}
-
-		return [quickCreatedProduct, ...products];
-	}, [products, quickCreatedProduct]);
 
 	const selectedCustomer = useMemo(
 		() =>
@@ -465,14 +416,6 @@ export function SaleForm({
 		}
 	}
 
-	async function handleQuickProductCreate(data: QuickProductData) {
-		try {
-			await createQuickProduct(data);
-		} catch {
-			// erro tratado no hook
-		}
-	}
-
 	if (isOptionsError) {
 		return (
 			<Card className="flex flex-col gap-4 p-6">
@@ -490,10 +433,8 @@ export function SaleForm({
 		<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 			<ProductSection
 				control={control}
-				products={productsForSelect}
+				products={products}
 				isLoadingOptions={isLoadingOptions}
-				isCreatingQuickProduct={isCreatingQuickProduct}
-				onOpenQuickProductDialog={() => setIsCreateProductDialogOpen(true)}
 			/>
 			<SaleDataSection control={control} />
 			<CustomerSection
@@ -569,18 +510,6 @@ export function SaleForm({
 				form={quickCustomerForm}
 				isPending={isCreatingQuickCustomer}
 				onSubmit={handleQuickCustomerCreate}
-			/>
-			<QuickProductDialog
-				open={isCreateProductDialogOpen}
-				onOpenChange={(open) => {
-					setIsCreateProductDialogOpen(open);
-					if (!open) {
-						quickProductForm.reset(QUICK_PRODUCT_DEFAULT_VALUES);
-					}
-				}}
-				form={quickProductForm}
-				isPending={isCreatingQuickProduct}
-				onSubmit={handleQuickProductCreate}
 			/>
 			<SubmitActions
 				mode={mode}

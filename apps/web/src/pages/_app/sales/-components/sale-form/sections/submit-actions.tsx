@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import type { SaleFormProps } from "../types";
 
 interface SubmitActionsProps {
@@ -15,21 +16,35 @@ export function SubmitActions({
 	isLoadingOptions,
 	isDynamicFieldsLoading,
 }: SubmitActionsProps) {
+	const isDisabled = isPending || isLoadingOptions || isDynamicFieldsLoading;
+	const submitLabel = isPending
+		? "Salvando..."
+		: mode === "CREATE"
+			? "Salvar venda"
+			: "Atualizar venda";
+
 	return (
-		<div className="flex items-center justify-end gap-3">
-			<Button type="button" variant="outline" asChild>
-				<Link to="/sales">Cancelar</Link>
-			</Button>
-			<Button
-				type="submit"
-				disabled={isPending || isLoadingOptions || isDynamicFieldsLoading}
-			>
-				{isPending
-					? "Salvando..."
-					: mode === "CREATE"
-						? "Salvar venda"
-						: "Atualizar venda"}
-			</Button>
-		</div>
+		<>
+			<div className="hidden items-center justify-end gap-3 md:flex">
+				<Button type="button" variant="outline" asChild>
+					<Link to="/sales">Cancelar</Link>
+				</Button>
+				<Button type="submit" disabled={isDisabled}>
+					{submitLabel}
+				</Button>
+			</div>
+
+			<MobileBottomActionBar>
+				<div className="grid grid-cols-2 gap-2">
+					<Button type="button" variant="outline" asChild>
+						<Link to="/sales">Cancelar</Link>
+					</Button>
+					<Button type="submit" disabled={isDisabled}>
+						{submitLabel}
+					</Button>
+				</div>
+			</MobileBottomActionBar>
+			<div className="h-20 md:hidden" />
+		</>
 	);
 }

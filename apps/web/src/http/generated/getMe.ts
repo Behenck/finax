@@ -8,7 +8,7 @@ import type { GetMeQueryResponse } from "./models/GetMe.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetMeUrl() {
-  const res = { method: 'GET', url: `http://localhost:3333/me` as const }  
+  const res = { method: 'GET', url: `/me` as const }  
   return res
 }
 

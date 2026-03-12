@@ -1,4 +1,5 @@
 import { FieldError } from "@/components/field-error"
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -118,7 +119,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
   return (
     <FormProvider {...form}>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FieldGroup>
             <Field className="gap-1">
               <FieldLabel>Nome do representante *</FieldLabel>
@@ -134,7 +135,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
             </Field>
           </FieldGroup>
         </div>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FieldGroup>
             <Field className="gap-1">
               <FieldLabel>email *</FieldLabel>
@@ -168,7 +169,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
             </Field>
           </FieldGroup>
         </div>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FieldGroup className="w-40">
             <Field className="gap-1">
               <FieldLabel>Tipo de documento *</FieldLabel>
@@ -227,7 +228,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
         <Separator />
         <div className="space-y-4">
           <h3 className='text-muted-foreground text-sm'>Endereço</h3>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FieldGroup>
               <Field className="gap-1">
                 <FieldLabel>CEP</FieldLabel>
@@ -297,7 +298,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
               </Field>
             </FieldGroup>
           </div>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FieldGroup>
               <Field className="gap-1">
                 <FieldLabel>Bairro</FieldLabel>
@@ -328,7 +329,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
             </FieldGroup>
           </div>
         </div>
-        <div className="flex gap-2 justify-end">
+        <div className="hidden justify-end gap-2 md:flex">
           <Button type='button' variant="outline" asChild>
             <Link to="/registers/sellers">
               Cancelar
@@ -342,6 +343,23 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
             )}
           </Button>
         </div>
+        <MobileBottomActionBar>
+          <div className="grid grid-cols-2 gap-2">
+            <Button type='button' variant="outline" asChild>
+              <Link to="/registers/sellers">
+                Cancelar
+              </Link>
+            </Button>
+            <Button type='submit'>
+              {type === "CREATE" ? (
+                "Cadastrar Vendedor"
+              ) : (
+                "Atualizar Vendedor"
+              )}
+            </Button>
+          </div>
+        </MobileBottomActionBar>
+        <div className="h-20 md:hidden" />
       </form>
     </FormProvider>
   )

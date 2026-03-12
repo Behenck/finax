@@ -8,7 +8,7 @@ import type { PutOrganizationsSlugMembersMemberidMutationRequest, PutOrganizatio
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPutOrganizationsSlugMembersMemberidUrl({ slug, memberId }: { slug: PutOrganizationsSlugMembersMemberidPathParams["slug"]; memberId: PutOrganizationsSlugMembersMemberidPathParams["memberId"] }) {
-  const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/members/${memberId}` as const }  
+  const res = { method: 'PUT', url: `/organizations/${slug}/members/${memberId}` as const }  
   return res
 }
 

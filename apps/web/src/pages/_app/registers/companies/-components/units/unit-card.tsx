@@ -38,16 +38,16 @@ export function UnitCard({ companyId, unit }: UnitCardProps) {
 		});
 	}
 	return (
-		<Card className="flex flex-row items-center justify-between gap-2 p-2 shadow-none border-none bg-gray-50">
-			<div className="flex items-center gap-2">
+		<Card className="flex flex-col gap-2 p-2 shadow-none border-none bg-gray-50 sm:flex-row sm:items-center sm:justify-between">
+			<div className="flex min-w-0 items-center gap-2">
 				<div className="p-2 rounded-xl">
 					<MapPin className="size-4" />
 				</div>
 
-				<span className="font-medium text-sm">{unit.name}</span>
+				<span className="truncate font-medium text-sm">{unit.name}</span>
 			</div>
 
-			<div className="flex items-center gap-1">
+			<div className="flex w-full items-center justify-end gap-1 sm:w-auto">
 				<UpdateUnit companyId={companyId} unit={unit} />
 
 				<Button

@@ -8,7 +8,7 @@ import type { PostMeGoogleSyncMutationResponse, PostMeGoogleSync500 } from "./mo
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostMeGoogleSyncUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/me/google/sync` as const }  
+  const res = { method: 'POST', url: `/me/google/sync` as const }  
   return res
 }
 

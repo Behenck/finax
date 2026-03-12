@@ -2,7 +2,10 @@ import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FilterPanel } from "@/components/filter-panel";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/page-header";
+import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
 	Select,
 	SelectContent,
@@ -471,24 +474,20 @@ function TransactionsPage() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-2xl font-semibold">Gerenciar Transações</h1>
-					<span className="text-muted-foreground text-sm">
-						Acompanhe e opere receitas e despesas com filtros, paginação e ações em
-						lote.
-					</span>
-				</div>
+			<PageHeader
+				title="Gerenciar Transações"
+				description="Acompanhe e opere receitas e despesas com filtros, paginação e ações em lote."
+				actions={
+					<Button asChild className="w-full sm:w-auto">
+						<Link to="/transactions/create">
+							<Plus className="size-4" />
+							Nova Transação
+						</Link>
+					</Button>
+				}
+			/>
 
-				<Button asChild className="w-full sm:w-auto">
-					<Link to="/transactions/create">
-						<Plus className="size-4" />
-						Nova Transação
-					</Link>
-				</Button>
-			</header>
-
-			<div className="grid gap-3 rounded-md border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+			<FilterPanel className="xl:grid-cols-8">
 				<div className="space-y-1 sm:col-span-2 lg:col-span-2">
 					<p className="text-xs text-muted-foreground">Busca</p>
 					<Input
@@ -630,9 +629,9 @@ function TransactionsPage() {
 					<RefreshCcw className="size-4" />
 					Limpar
 				</Button>
-			</div>
+			</FilterPanel>
 
-			<div className="grid gap-3 rounded-md border bg-card p-4 sm:grid-cols-2 lg:grid-cols-3">
+			<FilterPanel className="lg:grid-cols-3">
 				<div className="space-y-1">
 					<p className="text-xs text-muted-foreground">Ordenar por</p>
 					<Select
@@ -702,7 +701,7 @@ function TransactionsPage() {
 						</SelectContent>
 					</Select>
 				</div>
-			</div>
+			</FilterPanel>
 
 			{selectedTransactions.length > 0 ? (
 				<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
@@ -721,7 +720,8 @@ function TransactionsPage() {
 				</div>
 			) : null}
 
-			<div className="space-y-3 md:hidden">
+			<ResponsiveDataView
+				mobile={<div className="space-y-3">
 				{transactions.length === 0 ? (
 					<Card className="p-6 text-center">
 						<p className="text-sm text-muted-foreground">
@@ -862,9 +862,8 @@ function TransactionsPage() {
 						})}
 					</>
 				)}
-			</div>
-
-			<div className="hidden rounded-md border bg-card overflow-hidden md:block">
+				</div>}
+				desktop={<div className="overflow-hidden rounded-md border bg-card">
 				<div className="overflow-x-auto">
 					<Table>
 						<TableHeader>
@@ -1016,7 +1015,8 @@ function TransactionsPage() {
 						</TableBody>
 					</Table>
 				</div>
-			</div>
+			</div>}
+			/>
 
 			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 				<span className="text-sm text-muted-foreground">

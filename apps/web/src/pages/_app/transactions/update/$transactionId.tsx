@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { TransactionForm } from "../-components/transaction-form";
@@ -14,16 +15,18 @@ function UpdateTransaction() {
 
   return (
     <main className="space-y-6">
-      <header className="flex gap-6 items-center">
-        <Button variant="ghost" size="icon-sm" asChild>
-          <Link to="/transactions">
-            <ArrowLeft className="size-4" />
-          </Link>
-        </Button>
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold">Editar Transação</h1>
-        </div>
-      </header>
+      <PageHeader
+        title="Editar Transação"
+        description="Atualize os dados da transação selecionada."
+        actions={
+          <Button variant="outline" asChild className="w-full sm:w-auto">
+            <Link to="/transactions">
+              <ArrowLeft className="size-4" />
+              Voltar
+            </Link>
+          </Button>
+        }
+      />
 
       <TransactionForm initialData={transaction} />
     </main>

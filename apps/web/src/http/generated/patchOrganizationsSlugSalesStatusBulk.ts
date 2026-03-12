@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugSalesStatusBulkMutationRequest, PatchOrganiz
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugSalesStatusBulkUrl({ slug }: { slug: PatchOrganizationsSlugSalesStatusBulkPathParams["slug"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/sales/status/bulk` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/sales/status/bulk` as const }  
   return res
 }
 

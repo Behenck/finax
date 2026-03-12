@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlu
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugTransactionsUrl({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/transactions` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/transactions` as const }  
   return res
 }
 

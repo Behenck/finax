@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { useSale } from "@/hooks/sales";
 import { createFileRoute } from "@tanstack/react-router";
 import { SaleForm } from "../-components/sale-form";
@@ -29,17 +30,12 @@ function UpdateSalePage() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<div>
-					<h1 className="text-2xl font-semibold">Editar Venda</h1>
-					<span className="text-muted-foreground text-sm">
-						Atualize os dados da venda sem alterar o status.
-					</span>
-				</div>
-			</header>
+			<PageHeader
+				title="Editar Venda"
+				description="Atualize os dados da venda sem alterar o status."
+			/>
 
 			<SaleForm mode="UPDATE" initialSale={data.sale} />
 		</main>
 	);
 }
-

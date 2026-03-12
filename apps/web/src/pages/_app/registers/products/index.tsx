@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/page-header";
 import { useApp } from "@/context/app-context";
 import { textFilterParser } from "@/hooks/filters/parsers";
 import { useGetOrganizationsSlugProducts } from "@/http/generated";
@@ -67,17 +68,16 @@ function Products() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">Gerenciar Produtos</h1>
-
-				<CreateProduct />
-			</header>
+			<PageHeader
+				title="Gerenciar Produtos"
+				actions={<CreateProduct />}
+			/>
 
 			<div className="relative">
 				<Search className="absolute left-5 top-1/2 size-4 -translate-1/2 text-gray-500" />
 				<Input
 					placeholder="Buscar por nome ou descrição..."
-					className="h-10 max-w-[40%] pl-10"
+					className="h-10 w-full pl-10 sm:max-w-md"
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
 				/>

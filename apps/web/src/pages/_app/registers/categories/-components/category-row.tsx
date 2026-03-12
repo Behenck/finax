@@ -19,8 +19,8 @@ export function CategoryRow({
 	const Icon = getLucideIcon(category.icon);
 
 	return (
-		<Card className="flex flex-row items-center justify-between gap-2 p-2 shadow-none border-none bg-gray-50">
-			<div className="flex items-center gap-2">
+		<Card className="flex flex-col gap-2 p-2 shadow-none border-none bg-gray-50 sm:flex-row sm:items-center sm:justify-between">
+			<div className="flex min-w-0 items-center gap-2">
 				<div
 					className="p-2 rounded-xl"
 					style={{
@@ -31,13 +31,13 @@ export function CategoryRow({
 					<Icon className="size-4" />
 				</div>
 
-				<div className="flex flex-col text-left">
-					<span className="font-medium text-sm">{category.name}</span>
+				<div className="min-w-0 flex flex-col text-left">
+					<span className="truncate font-medium text-sm">{category.name}</span>
 					<span className="text-gray-500 text-xs">{category.code}</span>
 				</div>
 			</div>
 
-			<div className="flex items-center gap-1">
+			<div className="flex w-full items-center justify-end gap-1 sm:w-auto">
 				<UpdateCategory category={category} />
 
 				<Button

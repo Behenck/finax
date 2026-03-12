@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugTransactionsPaymentBulkMutationRequest, Patc
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugTransactionsPaymentBulkUrl({ slug }: { slug: PatchOrganizationsSlugTransactionsPaymentBulkPathParams["slug"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/transactions/payment/bulk` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/transactions/payment/bulk` as const }  
   return res
 }
 

@@ -169,12 +169,26 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html, body, #root {
+    min-height: 100%;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Poppins', sans-serif;
+    overflow-x: clip;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+  }
+}
+
+@media (max-width: 767px) {
+  button:not([data-slot="checkbox"]):not([data-slot="switch"]),
+  [role="button"],
+  input,
+  textarea,
+  [data-slot="select-trigger"] {
+    min-height: 44px;
   }
 }
 
@@ -266,4 +280,3 @@
     transform: scale(1);
   }
 }
-

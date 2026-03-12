@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -44,23 +45,22 @@ function CreateTransaction() {
 
 	return (
 		<main className="space-y-6">
-			<header className="flex gap-6 items-center">
-				<Button variant="ghost" size="icon-sm" asChild>
-					<Link to="/transactions">
-						<ArrowLeft className="size-4" />
-					</Link>
-				</Button>
-				<div className="flex flex-col gap-1">
-					<h1 className="text-2xl font-bold">
-						{duplicateTransactionId ? "Duplicar Transação" : "Nova Transação"}
-					</h1>
-					<span className="text-gray-500 text-sm">
-						{duplicateTransactionId
-							? "Revise os dados e salve uma nova transação baseada na selecionada."
-							: "Adicione uma nova receita ou despesa"}
-					</span>
-				</div>
-			</header>
+			<PageHeader
+				title={duplicateTransactionId ? "Duplicar Transação" : "Nova Transação"}
+				description={
+					duplicateTransactionId
+						? "Revise os dados e salve uma nova transação baseada na selecionada."
+						: "Adicione uma nova receita ou despesa"
+				}
+				actions={
+					<Button variant="outline" asChild className="w-full sm:w-auto">
+						<Link to="/transactions">
+							<ArrowLeft className="size-4" />
+							Voltar
+						</Link>
+					</Button>
+				}
+			/>
 
 			<TransactionForm initialData={duplicateTransactionQuery.data} />
 		</main>

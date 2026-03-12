@@ -61,8 +61,8 @@ export function MembersList() {
   if (!organization) return null
 
   return (
-    <div className='space-y-2'>
-      <div className='flex gap-2'>
+    <div className='space-y-3'>
+      <div className='grid gap-2 sm:grid-cols-[minmax(0,1fr)_180px]'>
         <Input
           placeholder="Buscar por nome ou email"
           value={search}
@@ -72,7 +72,7 @@ export function MembersList() {
           value={roleFilter}
           onValueChange={(value) => setRoleFilter(value as RoleFilter)}
         >
-          <SelectTrigger>
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder="Permissão" />
           </SelectTrigger>
           <SelectContent>
@@ -90,28 +90,26 @@ export function MembersList() {
       )}
 
       <div className='space-y-3'>
-        <div className='flex items-center gap-2 rounded-lg border bg-muted/20 px-4 py-3'>
+        <div className='flex flex-wrap items-center gap-2 rounded-lg border bg-muted/20 px-4 py-3'>
           <Checkbox />
           <Label className='text-xs text-muted-foreground'>
             Selecionar todos ({filteredMembers.length} de {totalMembers})
           </Label>
         </div>
 
-        <div className='px-1 py-1 md:hidden'>
-          <div className='space-y-2 md:hidden'>
-            {filteredMembers.map((member) => (
-              <MemberRow
-                key={member.id}
-                member={member}
-                ownerId={organization.ownerId}
-                authUserId={auth?.id}
-                organizationSlug={organizationSlug}
-                companies={companies}
-                isLoadingCompanies={isLoadingCompanies}
-                isHighlighted={member.userId === targetMemberUserId}
-              />
-            ))}
-          </div>
+        <div className='space-y-2 px-1 py-1 md:hidden'>
+          {filteredMembers.map((member) => (
+            <MemberRow
+              key={member.id}
+              member={member}
+              ownerId={organization.ownerId}
+              authUserId={auth?.id}
+              organizationSlug={organizationSlug}
+              companies={companies}
+              isLoadingCompanies={isLoadingCompanies}
+              isHighlighted={member.userId === targetMemberUserId}
+            />
+          ))}
         </div>
 
         <div className='hidden overflow-hidden rounded-xl border bg-background md:block'>

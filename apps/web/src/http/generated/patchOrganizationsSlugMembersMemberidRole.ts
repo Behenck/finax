@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugMembersMemberidRoleMutationRequest, PatchOrg
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugMembersMemberidRoleUrl({ slug, memberId }: { slug: PatchOrganizationsSlugMembersMemberidRolePathParams["slug"]; memberId: PatchOrganizationsSlugMembersMemberidRolePathParams["memberId"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/members/${memberId}/role` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/members/${memberId}/role` as const }  
   return res
 }
 

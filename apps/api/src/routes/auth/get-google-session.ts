@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { resolveAppWebUrlFromRequest } from "./app-web-url";
 import { buildGoogleAuthUrl } from "./google-oauth";
 import { GOOGLE_OAUTH_STATE_PURPOSE, issueGoogleOAuthState } from "./google-oauth-state";
 import { createGoogleStateCookie } from "./google-state-cookie";
@@ -19,8 +20,10 @@ export async function getGoogleSession(app: FastifyInstance) {
 		},
 	}, async (request, reply) => {
 		try {
+			const appWebUrl = resolveAppWebUrlFromRequest(request) ?? undefined;
 			const state = await issueGoogleOAuthState(reply, {
 				purpose: GOOGLE_OAUTH_STATE_PURPOSE.SIGN_IN,
+				appWebUrl,
 			});
 			const redirectUrl = buildGoogleAuthUrl({ state });
 

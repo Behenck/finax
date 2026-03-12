@@ -4,14 +4,17 @@ import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import {
 	ArrowLeftRight,
-Building2,
+	Building2,
 	Package,
 	ShoppingCart,
 	UserRound,
 	Users,
 	Wallet,
+	Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+
+const QUICK_ACTIONS_COMMAND_OPEN_EVENT = "finax:quick-actions:open";
 
 const QUICK_ACTIONS = [
 	{
@@ -65,6 +68,14 @@ const QUICK_ACTIONS = [
 	},
 ] as const;
 
+export function openQuickActionsCommand() {
+	if (typeof window === "undefined") {
+		return;
+	}
+
+	window.dispatchEvent(new Event(QUICK_ACTIONS_COMMAND_OPEN_EVENT));
+}
+
 export function QuickActionsCommand() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [query, setQuery] = useState("");
@@ -80,6 +91,17 @@ export function QuickActionsCommand() {
 		window.addEventListener("keydown", onKeyDown);
 		return () => {
 			window.removeEventListener("keydown", onKeyDown);
+		};
+	}, []);
+
+	useEffect(() => {
+		function onOpen() {
+			setIsOpen(true);
+		}
+
+		window.addEventListener(QUICK_ACTIONS_COMMAND_OPEN_EVENT, onOpen);
+		return () => {
+			window.removeEventListener(QUICK_ACTIONS_COMMAND_OPEN_EVENT, onOpen);
 		};
 	}, []);
 
@@ -116,6 +138,10 @@ export function QuickActionsCommand() {
 						onChange={(event) => setQuery(event.target.value)}
 						placeholder="Buscar ação..."
 					/>
+					<div className="flex items-center gap-2 rounded-md border bg-muted/40 px-2.5 py-2 text-xs text-muted-foreground">
+						<Zap className="size-3.5" />
+						Dica: use Ctrl + K para abrir rapidamente
+					</div>
 					<div className="max-h-[340px] space-y-1 overflow-y-auto">
 						{filteredActions.length === 0 ? (
 							<p className="rounded-md px-3 py-2 text-sm text-muted-foreground">

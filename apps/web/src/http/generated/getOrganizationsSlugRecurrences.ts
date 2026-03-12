@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugRecurrencesQueryResponse, GetOrganizationsSlug
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugRecurrencesUrl({ slug }: { slug: GetOrganizationsSlugRecurrencesPathParams["slug"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/recurrences` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/recurrences` as const }  
   return res
 }
 

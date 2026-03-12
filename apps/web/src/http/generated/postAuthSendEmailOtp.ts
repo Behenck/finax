@@ -8,7 +8,7 @@ import type { PostAuthSendEmailOtpMutationRequest, PostAuthSendEmailOtpMutationR
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostAuthSendEmailOtpUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/auth/send-email-otp` as const }  
+  const res = { method: 'POST', url: `/auth/send-email-otp` as const }  
   return res
 }
 

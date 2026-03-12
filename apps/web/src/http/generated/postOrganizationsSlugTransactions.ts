@@ -8,7 +8,7 @@ import type { PostOrganizationsSlugTransactionsMutationRequest, PostOrganization
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostOrganizationsSlugTransactionsUrl({ slug }: { slug: PostOrganizationsSlugTransactionsPathParams["slug"] }) {
-  const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/transactions` as const }  
+  const res = { method: 'POST', url: `/organizations/${slug}/transactions` as const }  
   return res
 }
 

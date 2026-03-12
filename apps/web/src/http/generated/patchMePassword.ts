@@ -8,7 +8,7 @@ import type { PatchMePasswordMutationRequest, PatchMePasswordMutationResponse, P
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchMePasswordUrl() {
-  const res = { method: 'PATCH', url: `http://localhost:3333/me/password` as const }  
+  const res = { method: 'PATCH', url: `/me/password` as const }  
   return res
 }
 

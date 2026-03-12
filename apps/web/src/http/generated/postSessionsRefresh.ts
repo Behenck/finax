@@ -8,7 +8,7 @@ import type { PostSessionsRefreshMutationRequest, PostSessionsRefreshMutationRes
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostSessionsRefreshUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/sessions/refresh` as const }  
+  const res = { method: 'POST', url: `/sessions/refresh` as const }  
   return res
 }
 

@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugTransactionsTransactionidMutationRequest, Pa
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugTransactionsTransactionidUrl({ slug, transactionId }: { slug: PatchOrganizationsSlugTransactionsTransactionidPathParams["slug"]; transactionId: PatchOrganizationsSlugTransactionsTransactionidPathParams["transactionId"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/transactions/${transactionId}` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/transactions/${transactionId}` as const }  
   return res
 }
 

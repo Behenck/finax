@@ -3,6 +3,7 @@ import { AccountProvider } from "generated/prisma/enums";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { getDefaultAppWebUrl, resolveAppWebUrlFromRequest } from "./app-web-url";
 import {
 	exchangeCodeForGoogleTokens,
 	fetchGoogleUserInfo,
@@ -21,10 +22,6 @@ const GoogleSessionCallbackQuerySchema = z.object({
 	state: z.string().optional(),
 });
 
-function getAppWebUrl() {
-	return process.env.APP_WEB_URL ?? "http://localhost:5173";
-}
-
 function getGoogleCallbackUrl() {
 	const callbackUrl = process.env.GOOGLE_CALLBACK_URL;
 	if (!callbackUrl) {
@@ -39,20 +36,23 @@ function extractEmailDomain(email: string) {
 	return domain;
 }
 
-function buildSignInErrorRedirectUrl(message: string) {
-	const redirectUrl = new URL("/sign-in", getAppWebUrl());
+function buildSignInErrorRedirectUrl(message: string, appWebUrl: string) {
+	const redirectUrl = new URL("/sign-in", appWebUrl);
 	redirectUrl.searchParams.set("oauthError", message);
 	return redirectUrl.toString();
 }
 
-function buildProfileErrorRedirectUrl(message: string) {
-	const redirectUrl = new URL("/profile", getAppWebUrl());
+function buildProfileErrorRedirectUrl(message: string, appWebUrl: string) {
+	const redirectUrl = new URL("/profile", appWebUrl);
 	redirectUrl.searchParams.set("googleError", message);
 	return redirectUrl.toString();
 }
 
-function buildProfileSuccessRedirectUrl(type: "linked" | "synced") {
-	const redirectUrl = new URL("/profile", getAppWebUrl());
+function buildProfileSuccessRedirectUrl(
+	type: "linked" | "synced",
+	appWebUrl: string,
+) {
+	const redirectUrl = new URL("/profile", appWebUrl);
 	if (type === "linked") {
 		redirectUrl.searchParams.set("googleLinked", "true");
 	} else {
@@ -62,8 +62,8 @@ function buildProfileSuccessRedirectUrl(type: "linked" | "synced") {
 	return redirectUrl.toString();
 }
 
-function buildGoogleCallbackSuccessUrl(code: string) {
-	const redirectUrl = new URL("/google/callback", getAppWebUrl());
+function buildGoogleCallbackSuccessUrl(code: string, appWebUrl: string) {
+	const redirectUrl = new URL("/google/callback", appWebUrl);
 	redirectUrl.searchParams.set("code", code);
 	return redirectUrl.toString();
 }
@@ -84,9 +84,14 @@ export async function getGoogleSessionCallback(app: FastifyInstance) {
 				},
 			},
 			async (request, reply) => {
+				const fallbackAppWebUrl =
+					resolveAppWebUrlFromRequest(request) ?? getDefaultAppWebUrl();
+
 				const redirectToSignInWithError = (message: string) => {
 					reply.header("Set-Cookie", clearGoogleStateCookie());
-					return reply.redirect(buildSignInErrorRedirectUrl(message));
+					return reply.redirect(
+						buildSignInErrorRedirectUrl(message, fallbackAppWebUrl),
+					);
 				};
 
 				const { code, state } = request.query;
@@ -110,15 +115,16 @@ export async function getGoogleSessionCallback(app: FastifyInstance) {
 				const isProfileFlow =
 					oauthStatePayload.purpose === GOOGLE_OAUTH_STATE_PURPOSE.LINK ||
 					oauthStatePayload.purpose === GOOGLE_OAUTH_STATE_PURPOSE.SYNC;
+				const appWebUrl = oauthStatePayload.appWebUrl ?? fallbackAppWebUrl;
 
 				const redirectToError = (message: string) => {
 					reply.header("Set-Cookie", clearGoogleStateCookie());
 
 					if (isProfileFlow) {
-						return reply.redirect(buildProfileErrorRedirectUrl(message));
+						return reply.redirect(buildProfileErrorRedirectUrl(message, appWebUrl));
 					}
 
-					return reply.redirect(buildSignInErrorRedirectUrl(message));
+					return reply.redirect(buildSignInErrorRedirectUrl(message, appWebUrl));
 				};
 
 				try {
@@ -263,7 +269,9 @@ export async function getGoogleSessionCallback(app: FastifyInstance) {
 						);
 
 						reply.header("Set-Cookie", clearGoogleStateCookie());
-						return reply.redirect(buildGoogleCallbackSuccessUrl(oauthCode));
+						return reply.redirect(
+							buildGoogleCallbackSuccessUrl(oauthCode, appWebUrl),
+						);
 					}
 
 					const userId = oauthStatePayload.sub;
@@ -356,6 +364,7 @@ export async function getGoogleSessionCallback(app: FastifyInstance) {
 							oauthStatePayload.purpose === GOOGLE_OAUTH_STATE_PURPOSE.LINK
 								? "linked"
 								: "synced",
+							appWebUrl,
 						),
 					);
 				} catch (error) {

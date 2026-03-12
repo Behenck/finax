@@ -8,7 +8,7 @@ import type { GetMeGoogleStatusQueryResponse } from "./models/GetMeGoogleStatus.
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetMeGoogleStatusUrl() {
-  const res = { method: 'GET', url: `http://localhost:3333/me/google/status` as const }  
+  const res = { method: 'GET', url: `/me/google/status` as const }  
   return res
 }
 

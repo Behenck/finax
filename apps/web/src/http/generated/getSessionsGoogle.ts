@@ -8,7 +8,7 @@ import type { GetSessionsGoogleQueryResponse, GetSessionsGoogle500 } from "./mod
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetSessionsGoogleUrl() {
-  const res = { method: 'GET', url: `http://localhost:3333/sessions/google` as const }  
+  const res = { method: 'GET', url: `/sessions/google` as const }  
   return res
 }
 

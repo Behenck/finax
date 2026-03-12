@@ -8,7 +8,7 @@ import type { AssignPartnerSupervisorMutationRequest, AssignPartnerSupervisorMut
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getAssignPartnerSupervisorUrl({ slug, partnerId }: { slug: AssignPartnerSupervisorPathParams["slug"]; partnerId: AssignPartnerSupervisorPathParams["partnerId"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/partners/${partnerId}/assign-supervisor` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/partners/${partnerId}/assign-supervisor` as const }  
   return res
 }
 

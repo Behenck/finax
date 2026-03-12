@@ -11,9 +11,9 @@ export const Route = createFileRoute('/_app/settings/')({
 
 function RouteComponent() {
   return (
-    <Card className='p-6 gap-6'>
+    <Card className='mx-auto w-full max-w-3xl gap-6 p-4 sm:p-6'>
       <div>
-        <h2 className='text-2xl font-bold'>Preferências Gerais</h2>
+        <h2 className='text-xl font-bold sm:text-2xl'>Preferências Gerais</h2>
         <span className='text-muted-foreground text-xs'>Configure as preferências gerais do sistema</span>
       </div>
 
@@ -26,32 +26,28 @@ function RouteComponent() {
         </FieldGroup>
         <FieldGroup>
           <Field className='gap-1'>
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
               <div>
                 <FieldLabel className='text-md'>Notificações por e-mail</FieldLabel>
                 <span className='text-sm text-muted-foreground'>Receber notificações de atividades importantes</span>
               </div>
-              <div>
-                <Switch />
-              </div>
+              <Switch />
             </div>
           </Field>
         </FieldGroup>
         <FieldGroup>
           <Field className='gap-1'>
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
               <div>
                 <FieldLabel className='text-md'>Modo escuro</FieldLabel>
                 <span className='text-sm text-muted-foreground'>Alternar entre tema claro e escuro</span>
               </div>
-              <div>
-                <Switch />
-              </div>
+              <Switch />
             </div>
           </Field>
         </FieldGroup>
 
-        <Button>Salvar Preferências</Button>
+        <Button className='w-full sm:w-auto'>Salvar Preferências</Button>
       </form>
     </Card>
   )

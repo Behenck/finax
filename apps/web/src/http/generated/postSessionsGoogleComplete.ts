@@ -8,7 +8,7 @@ import type { PostSessionsGoogleCompleteMutationRequest, PostSessionsGoogleCompl
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostSessionsGoogleCompleteUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/sessions/google/complete` as const }  
+  const res = { method: 'POST', url: `/sessions/google/complete` as const }  
   return res
 }
 

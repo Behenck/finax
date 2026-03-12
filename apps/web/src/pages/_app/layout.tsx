@@ -34,7 +34,7 @@ function AppLayout() {
 
 				<main className="flex-1 bg-gray-50">
 					<AppTopHeader />
-					<div className="p-4 sm:p-6 lg:p-10">
+					<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-10 lg:py-10">
 						<Outlet />
 					</div>
 				</main>

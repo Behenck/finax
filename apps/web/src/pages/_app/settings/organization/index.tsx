@@ -14,9 +14,9 @@ function OrganizationPage() {
   const { organization } = useApp()
 
   return (
-    <div className='space-y-8'>
-      <div className='flex gap-4'>
-        <Card className='flex flex-row gap-4 p-6 flex-1'>
+    <div className='mx-auto w-full max-w-4xl space-y-6'>
+      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3'>
+        <Card className='flex flex-row gap-4 p-4 sm:p-6'>
           <div className='p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center'>
             <Building />
           </div>
@@ -25,7 +25,7 @@ function OrganizationPage() {
             <span className='text-xs'>Empresas</span>
           </div>
         </Card>
-        <Card className='flex flex-row gap-4 p-6 flex-1'>
+        <Card className='flex flex-row gap-4 p-4 sm:p-6'>
           <div className='p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center'>
             <MapPin />
           </div>
@@ -34,7 +34,7 @@ function OrganizationPage() {
             <span className='text-xs'>Unidades</span>
           </div>
         </Card>
-        <Card className='flex flex-row gap-4 p-6 flex-1'>
+        <Card className='flex flex-row gap-4 p-4 sm:p-6 sm:col-span-2 xl:col-span-1'>
           <div className='p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center'>
             <Users />
           </div>
@@ -44,18 +44,18 @@ function OrganizationPage() {
           </div>
         </Card>
       </div >
-      <Card className='p-6'>
+      <Card className='space-y-4 p-4 sm:p-6'>
         <div>
-          <h2 className='text-2xl font-semibold'>Dados da Organização</h2>
+          <h2 className='text-xl font-semibold sm:text-2xl'>Dados da Organização</h2>
           <span className='text-xs text-muted-foreground'>Informações da organização em que você está logado</span>
         </div>
 
         <form className='space-y-4'>
-          <div className='flex gap-4'>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <FieldGroup>
               <Field className='gap-1'>
                 <FieldLabel>Nome</FieldLabel>
-                <Input placeholder='' value={organization?.name} />
+                <Input placeholder='' defaultValue={organization?.name ?? ""} />
               </Field>
             </FieldGroup>
             <FieldGroup>
@@ -65,7 +65,7 @@ function OrganizationPage() {
               </Field>
             </FieldGroup>
           </div>
-          <div className='flex gap-4'>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <FieldGroup>
               <Field className='gap-1'>
                 <FieldLabel>Email</FieldLabel>
@@ -82,11 +82,12 @@ function OrganizationPage() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Site</FieldLabel>
-              <div className='flex gap-2 items-center'>
+              <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
                 <Input placeholder='https://www.arkogrupo.com.br' />
-                <Button variant="outline" className='flex-1'>
-                  <Link to='/'>
+                <Button variant="outline" className='w-full sm:w-auto' asChild>
+                  <Link to='/' className='inline-flex items-center justify-center gap-2'>
                     <ExternalLinkIcon />
+                    Abrir
                   </Link>
                 </Button>
               </div>
@@ -98,7 +99,7 @@ function OrganizationPage() {
               <Input placeholder='Duque de caxias, 2234 -  Uruguaiana/RS' />
             </Field>
           </FieldGroup>
-          <Button>Salvar alterações</Button>
+          <Button className='w-full sm:w-auto'>Salvar alterações</Button>
         </form>
       </Card>
     </div >

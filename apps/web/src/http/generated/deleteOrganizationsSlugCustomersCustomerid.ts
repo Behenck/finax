@@ -8,7 +8,7 @@ import type { DeleteOrganizationsSlugCustomersCustomeridMutationResponse, Delete
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getDeleteOrganizationsSlugCustomersCustomeridUrl({ slug, customerId }: { slug: DeleteOrganizationsSlugCustomersCustomeridPathParams["slug"]; customerId: DeleteOrganizationsSlugCustomersCustomeridPathParams["customerId"] }) {
-  const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/customers/${customerId}` as const }  
+  const res = { method: 'DELETE', url: `/organizations/${slug}/customers/${customerId}` as const }  
   return res
 }
 

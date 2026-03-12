@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -12,6 +13,8 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/page-header";
+import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
 	Table,
 	TableBody,
@@ -136,25 +139,110 @@ function Employees() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">Gerenciar Funcionários</h1>
-
-				<CreateEmployee />
-			</header>
+			<PageHeader title="Gerenciar Funcionários" actions={<CreateEmployee />} />
 
 			<div className="relative">
 				<Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
 				<Input
 					placeholder="Buscar por nome, e-mail, cargo ou telefone..."
-					className="h-10 max-w-xl pl-10"
+					className="h-10 w-full pl-10 sm:max-w-xl"
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
 				/>
 			</div>
 
-			<section className="overflow-hidden rounded-md border bg-card">
-				<div className="overflow-x-auto">
-					<Table>
+			<ResponsiveDataView
+				mobile={
+					<section className="space-y-3">
+						{filteredEmployees.length === 0 ? (
+							<Card className="p-6 text-center text-sm text-muted-foreground">
+								Nenhum funcionário encontrado.
+							</Card>
+						) : (
+							filteredEmployees.map((employee) => (
+								<Card key={employee.id} className="space-y-3 p-4">
+									<div className="flex items-start gap-3">
+										<Avatar className="size-10">
+											<AvatarImage
+												src={employee.linkedUser?.avatarUrl ?? undefined}
+												alt={employee.name}
+											/>
+											<AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
+										</Avatar>
+										<div className="min-w-0">
+											<p className="truncate text-sm font-medium">{employee.name}</p>
+											<p className="text-xs text-muted-foreground">
+												{employee.role || "Sem cargo"}
+												{employee.department ? ` · ${employee.department}` : ""}
+											</p>
+										</div>
+									</div>
+
+									<div className="grid grid-cols-2 gap-2 text-xs">
+										<div className="space-y-0.5">
+											<p className="text-muted-foreground">E-mail</p>
+											<p className="truncate">{employee.email}</p>
+										</div>
+										<div className="space-y-0.5">
+											<p className="text-muted-foreground">Telefone</p>
+											<p>{employee.phone ? formatPhone(employee.phone) : "Sem telefone"}</p>
+										</div>
+										<div className="space-y-0.5">
+											<p className="text-muted-foreground">Empresa</p>
+											<p>{employee.company.name}</p>
+										</div>
+										<div className="space-y-0.5">
+											<p className="text-muted-foreground">Unidade</p>
+											<p>{employee.unit?.name ?? "Sem unidade"}</p>
+										</div>
+									</div>
+
+									<div className="space-y-1.5">
+										{employee.linkedUser ? (
+											<EmployeeLinkedUserBadge linkedUser={employee.linkedUser} />
+										) : (
+											<p className="text-xs text-muted-foreground">Sem acesso</p>
+										)}
+									</div>
+
+									<div className="grid grid-cols-3 gap-2">
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											disabled={!employee.phone}
+											onClick={() => handleOpenWhatsapp(employee.phone)}
+											title={
+												employee.phone
+													? "Abrir WhatsApp"
+													: "Sem telefone cadastrado"
+											}
+										>
+											<MessageCircle className="size-4 text-emerald-600" />
+											WhatsApp
+										</Button>
+										<UpdateEmployee employee={employee} />
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											disabled={isDeletingEmployee}
+											onClick={() => handleDeleteEmployee(employee)}
+											title="Excluir funcionário"
+										>
+											<Trash2 className="size-4 text-red-600" />
+											Excluir
+										</Button>
+									</div>
+								</Card>
+							))
+						)}
+					</section>
+				}
+				desktop={
+					<section className="overflow-hidden rounded-md border bg-card">
+						<div className="overflow-x-auto">
+							<Table>
 						<TableHeader>
 							<TableRow>
 								<TableHead>Funcionário</TableHead>
@@ -168,7 +256,7 @@ function Employees() {
 							{filteredEmployees.length === 0 ? (
 								<TableRow>
 									<TableCell
-										colSpan={6}
+										colSpan={5}
 										className="py-10 text-center text-muted-foreground"
 									>
 										Nenhum funcionário encontrado.
@@ -263,9 +351,11 @@ function Employees() {
 								))
 							)}
 						</TableBody>
-					</Table>
-				</div>
-			</section>
+							</Table>
+						</div>
+					</section>
+				}
+			/>
 
 			<Dialog
 				open={Boolean(pixQrDialog)}

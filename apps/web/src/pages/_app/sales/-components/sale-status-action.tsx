@@ -116,7 +116,7 @@ export function SaleStatusAction({
 							onValueChange={(value) => setNextStatus(value as SaleStatus)}
 							disabled={isPending || availableTransitions.length === 0}
 						>
-							<SelectTrigger>
+							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Selecione o novo status" />
 							</SelectTrigger>
 							<SelectContent>

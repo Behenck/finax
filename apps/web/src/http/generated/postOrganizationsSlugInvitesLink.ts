@@ -8,7 +8,7 @@ import type { PostOrganizationsSlugInvitesLinkMutationResponse, PostOrganization
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostOrganizationsSlugInvitesLinkUrl({ slug }: { slug: PostOrganizationsSlugInvitesLinkPathParams["slug"] }) {
-  const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/invites/link` as const }  
+  const res = { method: 'POST', url: `/organizations/${slug}/invites/link` as const }  
   return res
 }
 

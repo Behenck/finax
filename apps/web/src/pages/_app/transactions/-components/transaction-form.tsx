@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import {
   transactionSchema,
   type TransactionFormData,
@@ -89,12 +90,22 @@ export function TransactionForm({ initialData }: TransactionFormProps) {
         <NotesField control={control} />
       </FormProvider>
 
-      <div className="flex gap-3 items-center justify-end">
+      <div className="hidden items-center justify-end gap-3 md:flex">
         <Button variant="outline" asChild>
           <Link to="/transactions">Cancelar</Link>
         </Button>
         <Button type="submit">Salvar Transação</Button>
       </div>
+
+      <MobileBottomActionBar>
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="outline" asChild>
+            <Link to="/transactions">Cancelar</Link>
+          </Button>
+          <Button type="submit">Salvar Transação</Button>
+        </div>
+      </MobileBottomActionBar>
+      <div className="h-20 md:hidden" />
     </form>
   );
 }

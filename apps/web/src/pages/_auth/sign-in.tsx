@@ -24,6 +24,7 @@ import { router } from "@/router";
 import { usePostAuthSendEmailOtp } from "@/http/generated";
 import { useEffect } from "react";
 import GoogleLogo from "@/assets/google-logo.png";
+import { resolveApiBaseUrl } from "@/lib/axios";
 
 const SignInSchema = z.object({
 	email: z.email("Email inválido").min(1, "Email é obrigatório"),
@@ -76,7 +77,7 @@ function SignIn() {
 	}, [oauthError]);
 
 	function handleGoogleSignIn() {
-		const apiUrl = import.meta.env.VITE_API_URL;
+		const apiUrl = resolveApiBaseUrl();
 		if (!apiUrl) {
 			toast.error("VITE_API_URL não configurada.");
 			return;

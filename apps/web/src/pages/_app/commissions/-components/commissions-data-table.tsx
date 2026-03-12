@@ -27,6 +27,8 @@ import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FilterPanel } from "@/components/filter-panel";
+import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
 	Dialog,
 	DialogContent,
@@ -948,8 +950,8 @@ export function CommissionsDataTable() {
 					</Card>
 				</div>
 
-				<div className="flex flex-col gap-3 rounded-md border bg-card p-4 md:flex-row md:items-end">
-					<div className="space-y-1 md:w-[280px]">
+				<FilterPanel className="xl:grid-cols-7">
+					<div className="space-y-1 xl:col-span-2">
 						<p className="text-xs text-muted-foreground">Busca</p>
 						<Input
 							placeholder="Cliente, produto, empresa, beneficiário..."
@@ -958,7 +960,7 @@ export function CommissionsDataTable() {
 						/>
 					</div>
 
-					<div className="space-y-1 md:w-[240px]">
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Produto</p>
 						<Select
 							value={productIdFilter || "ALL"}
@@ -977,10 +979,10 @@ export function CommissionsDataTable() {
 									</SelectItem>
 								))}
 							</SelectContent>
-						</Select>
-					</div>
+							</Select>
+						</div>
 
-					<div className="space-y-1 md:w-[190px]">
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Status</p>
 						<Select
 							value={statusFilter}
@@ -999,10 +1001,10 @@ export function CommissionsDataTable() {
 								<SelectItem value="PAID">Paga</SelectItem>
 								<SelectItem value="CANCELED">Cancelada</SelectItem>
 							</SelectContent>
-						</Select>
-					</div>
+							</Select>
+						</div>
 
-					<div className="space-y-1 md:w-[180px]">
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Previsão de</p>
 						<CalendarDateInput
 							value={effectiveExpectedFrom}
@@ -1010,7 +1012,7 @@ export function CommissionsDataTable() {
 						/>
 					</div>
 
-					<div className="space-y-1 md:w-[180px]">
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Previsão até</p>
 						<CalendarDateInput
 							value={effectiveExpectedTo}
@@ -1018,7 +1020,7 @@ export function CommissionsDataTable() {
 						/>
 					</div>
 
-					<div className="space-y-1 md:w-[150px]">
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Por página</p>
 						<Select
 							value={String(currentPageSize)}
@@ -1038,13 +1040,13 @@ export function CommissionsDataTable() {
 					<Button
 						type="button"
 						variant="outline"
-						className="md:ml-auto"
+						className="w-full xl:w-auto xl:justify-self-end"
 						onClick={clearFilters}
 					>
 						<RefreshCcw className="size-4" />
 						Limpar
 					</Button>
-				</div>
+				</FilterPanel>
 
 					{selectedInstallments.length > 0 ? (
 						<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
@@ -1089,44 +1091,38 @@ export function CommissionsDataTable() {
 					</div>
 				) : (
 					<>
-						<div className="rounded-md border bg-card overflow-hidden">
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead className="w-[42px]">
-											<Checkbox
-												checked={
-													allPageSelected
-														? true
-														: somePageSelected
-															? "indeterminate"
-															: false
-												}
-												onCheckedChange={(checked) =>
-													togglePageSelection(Boolean(checked))
-												}
-												disabled={eligibleInstallmentsOnPage.length === 0}
-												aria-label="Selecionar página atual"
-											/>
-										</TableHead>
-										<TableHead>Previsão</TableHead>
-										<TableHead>Pagamento</TableHead>
-										<TableHead>Status</TableHead>
-										<TableHead>Beneficiário</TableHead>
-										<TableHead>Venda</TableHead>
-										<TableHead>Valor</TableHead>
-										<TableHead>%</TableHead>
-										<TableHead>Origem</TableHead>
-										<TableHead className="w-[92px] text-right">Ações</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
+						<ResponsiveDataView
+							mobile={
+								<div className="space-y-3">
+									<Card className="p-3">
+										<div className="flex items-center justify-between gap-3">
+											<label className="flex items-center gap-2 text-sm">
+												<Checkbox
+													checked={
+														allPageSelected
+															? true
+															: somePageSelected
+																? "indeterminate"
+																: false
+													}
+													onCheckedChange={(checked) =>
+														togglePageSelection(Boolean(checked))
+													}
+													disabled={eligibleInstallmentsOnPage.length === 0}
+													aria-label="Selecionar página atual"
+												/>
+												<span>Selecionar parcelas da página</span>
+											</label>
+											<span className="text-xs text-muted-foreground">
+												{eligibleInstallmentsOnPage.length} elegível(is)
+											</span>
+										</div>
+									</Card>
+
 									{installments.length === 0 ? (
-										<TableRow>
-											<TableCell colSpan={10} className="h-20 text-center">
-												Nenhuma parcela encontrada para os filtros atuais.
-											</TableCell>
-										</TableRow>
+										<Card className="p-6 text-center text-sm text-muted-foreground">
+											Nenhuma parcela encontrada para os filtros atuais.
+										</Card>
 									) : (
 										installments.map((installment) => {
 											const canEditRow = canUpdateInstallments(
@@ -1141,8 +1137,16 @@ export function CommissionsDataTable() {
 												installment.product.name;
 
 											return (
-												<TableRow key={installment.id}>
-													<TableCell>
+												<Card key={installment.id} className="space-y-3 p-4">
+													<div className="flex items-start justify-between gap-3">
+														<div className="min-w-0">
+															<p className="truncate text-sm font-medium">
+																{installment.customer.name}
+															</p>
+															<p className="truncate text-xs text-muted-foreground">
+																{productLabel}
+															</p>
+														</div>
 														<Checkbox
 															checked={isSelected}
 															onCheckedChange={(checked) =>
@@ -1154,16 +1158,9 @@ export function CommissionsDataTable() {
 															disabled={!canPayRow}
 															aria-label={`Selecionar parcela ${installment.installmentNumber}`}
 														/>
-													</TableCell>
-													<TableCell>
-														{formatDate(installment.expectedPaymentDate)}
-													</TableCell>
-													<TableCell>
-														{installment.paymentDate
-															? formatDate(installment.paymentDate)
-															: "—"}
-													</TableCell>
-													<TableCell>
+													</div>
+
+													<div className="flex items-center justify-between gap-3">
 														<Badge
 															variant="outline"
 															className={
@@ -1178,127 +1175,347 @@ export function CommissionsDataTable() {
 																]
 															}
 														</Badge>
-													</TableCell>
-													<TableCell>
-														<p className="font-medium">
-															{installment.beneficiaryLabel ??
-																SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
-																	installment.recipientType
-																]}
+														<p className="text-sm font-semibold">
+															{formatCurrencyBRL(installment.amount / 100)}
 														</p>
-														<p className="text-xs text-muted-foreground">
-															{SALE_COMMISSION_DIRECTION_LABEL[installment.direction]}
-														</p>
-													</TableCell>
-													<TableCell>
-														<p className="font-medium">{installment.customer.name}</p>
-														<p className="text-xs text-muted-foreground">
-															{productLabel}
-														</p>
-														<p className="text-xs text-muted-foreground">
-															{installment.company.name}
-															{installment.unit ? ` -> ${installment.unit.name}` : ""}
-														</p>
-													</TableCell>
-													<TableCell>
-														{formatCurrencyBRL(installment.amount / 100)}
-													</TableCell>
-													<TableCell>{installment.percentage}%</TableCell>
-													<TableCell>
-														{
-															SALE_COMMISSION_SOURCE_TYPE_LABEL[
-																installment.sourceType
-															]
-														}
-													</TableCell>
-													<TableCell className="text-right">
-														<DropdownMenu>
-															<DropdownMenuTrigger asChild>
-																<Button
-																	type="button"
-																	variant="ghost"
-																	size="icon"
-																	disabled={
-																		isPatchingStatus ||
-																		isUpdatingInstallment ||
-																		isDeletingInstallment ||
-																		isPaymentActionPending
+													</div>
+
+													<div className="grid grid-cols-2 gap-2 text-xs">
+														<div className="space-y-0.5">
+															<p className="text-muted-foreground">Previsão</p>
+															<p>{formatDate(installment.expectedPaymentDate)}</p>
+														</div>
+														<div className="space-y-0.5">
+															<p className="text-muted-foreground">Pagamento</p>
+															<p>
+																{installment.paymentDate
+																	? formatDate(installment.paymentDate)
+																	: "—"}
+															</p>
+														</div>
+														<div className="space-y-0.5">
+															<p className="text-muted-foreground">Beneficiário</p>
+															<p>
+																{installment.beneficiaryLabel ??
+																	SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
+																		installment.recipientType
+																	]}
+															</p>
+														</div>
+														<div className="space-y-0.5">
+															<p className="text-muted-foreground">Origem</p>
+															<p>
+																{
+																	SALE_COMMISSION_SOURCE_TYPE_LABEL[
+																		installment.sourceType
+																	]
+																}
+															</p>
+														</div>
+													</div>
+
+													<div className="grid grid-cols-2 gap-2">
+														<Button variant="outline" size="sm" asChild>
+															<Link to="/sales/$saleId" params={{ saleId: installment.saleId }}>
+																<Eye className="size-4" />
+																Ver venda
+															</Link>
+														</Button>
+														<Button
+															type="button"
+															variant="outline"
+															size="sm"
+															className="!min-h-8"
+															disabled={!canPayRow}
+															onClick={() =>
+																void handlePayInstallmentToday(installment)
+															}
+														>
+															<CheckCheck className="size-4" />
+															Pagar hoje
+														</Button>
+													</div>
+
+													<DropdownMenu>
+														<DropdownMenuTrigger asChild>
+															<Button
+																type="button"
+																variant="outline"
+																size="sm"
+																className="w-full"
+																disabled={
+																	isPatchingStatus ||
+																	isUpdatingInstallment ||
+																	isDeletingInstallment ||
+																	isPaymentActionPending
+																}
+															>
+																<MoreHorizontal className="size-4" />
+																Mais ações
+															</Button>
+														</DropdownMenuTrigger>
+														<DropdownMenuContent align="end">
+															<DropdownMenuItem
+																disabled={!canEditRow}
+																onSelect={(event) => {
+																	event.preventDefault();
+																	if (!canEditRow) {
+																		return;
 																	}
-																>
-																	<MoreHorizontal className="size-4" />
-																</Button>
-															</DropdownMenuTrigger>
-															<DropdownMenuContent align="end">
-																<DropdownMenuItem asChild>
-																	<Link to="/sales/$saleId" params={{ saleId: installment.saleId }}>
-																		<Eye className="size-4" />
-																		Ver venda
-																	</Link>
-																</DropdownMenuItem>
-																<DropdownMenuSeparator />
-																<DropdownMenuItem
-																	disabled={!canEditRow}
-																	onSelect={(event) => {
-																		event.preventDefault();
-																		if (!canEditRow) {
-																			return;
-																		}
-																		requestInstallmentEdition(installment);
-																	}}
-																>
-																	<Pencil className="size-4" />
-																	Editar parcela
-																</DropdownMenuItem>
-																<DropdownMenuItem
-																	disabled={!canPayRow}
-																	onSelect={(event) => {
-																		event.preventDefault();
-																		if (!canPayRow) {
-																			return;
-																		}
-																		requestInstallmentPayment(installment);
-																	}}
-																>
-																	<CheckCircle2 className="size-4" />
-																	Pagar parcela
-																</DropdownMenuItem>
-																<DropdownMenuItem
-																	disabled={!canPayRow}
-																	onSelect={(event) => {
-																		event.preventDefault();
-																		if (!canPayRow) {
-																			return;
-																		}
-																		void handlePayInstallmentToday(installment);
-																	}}
-																>
-																	<CheckCheck className="size-4" />
-																	Pagar hoje
-																</DropdownMenuItem>
-																<DropdownMenuItem
-																	variant="destructive"
-																	disabled={!canEditRow}
-																	onSelect={(event) => {
-																		event.preventDefault();
-																		if (!canEditRow) {
-																			return;
-																		}
-																		setInstallmentToDelete(installment);
-																	}}
-																>
-																	<Trash2 className="size-4" />
-																	Excluir parcela
-																</DropdownMenuItem>
-															</DropdownMenuContent>
-														</DropdownMenu>
-													</TableCell>
-												</TableRow>
+																	requestInstallmentEdition(installment);
+																}}
+															>
+																<Pencil className="size-4" />
+																Editar parcela
+															</DropdownMenuItem>
+															<DropdownMenuItem
+																disabled={!canPayRow}
+																onSelect={(event) => {
+																	event.preventDefault();
+																	if (!canPayRow) {
+																		return;
+																	}
+																	requestInstallmentPayment(installment);
+																}}
+															>
+																<CheckCircle2 className="size-4" />
+																Pagar parcela
+															</DropdownMenuItem>
+															<DropdownMenuItem
+																variant="destructive"
+																disabled={!canEditRow}
+																onSelect={(event) => {
+																	event.preventDefault();
+																	if (!canEditRow) {
+																		return;
+																	}
+																	setInstallmentToDelete(installment);
+																}}
+															>
+																<Trash2 className="size-4" />
+																Excluir parcela
+															</DropdownMenuItem>
+														</DropdownMenuContent>
+													</DropdownMenu>
+												</Card>
 											);
 										})
 									)}
-								</TableBody>
-							</Table>
-						</div>
+								</div>
+							}
+							desktop={
+								<div className="hidden overflow-hidden rounded-md border bg-card md:block">
+									<Table>
+										<TableHeader>
+											<TableRow>
+												<TableHead className="w-[42px]">
+													<Checkbox
+														checked={
+															allPageSelected
+																? true
+																: somePageSelected
+																	? "indeterminate"
+																	: false
+														}
+														onCheckedChange={(checked) =>
+															togglePageSelection(Boolean(checked))
+														}
+														disabled={eligibleInstallmentsOnPage.length === 0}
+														aria-label="Selecionar página atual"
+													/>
+												</TableHead>
+												<TableHead>Previsão</TableHead>
+												<TableHead>Pagamento</TableHead>
+												<TableHead>Status</TableHead>
+												<TableHead>Beneficiário</TableHead>
+												<TableHead>Venda</TableHead>
+												<TableHead>Valor</TableHead>
+												<TableHead>%</TableHead>
+												<TableHead>Origem</TableHead>
+												<TableHead className="w-[92px] text-right">Ações</TableHead>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
+											{installments.length === 0 ? (
+												<TableRow>
+													<TableCell colSpan={10} className="h-20 text-center">
+														Nenhuma parcela encontrada para os filtros atuais.
+													</TableCell>
+												</TableRow>
+											) : (
+												installments.map((installment) => {
+													const canEditRow = canUpdateInstallments(
+														installment.saleStatus as SaleStatus,
+													);
+													const canPayRow = canPayInstallment(installment);
+													const isSelected = selectedInstallmentsById.has(
+														installment.id,
+													);
+													const productLabel =
+														productPathById.get(installment.product.id) ??
+														installment.product.name;
+
+													return (
+														<TableRow key={installment.id}>
+															<TableCell>
+																<Checkbox
+																	checked={isSelected}
+																	onCheckedChange={(checked) =>
+																		toggleInstallmentSelection(
+																			installment,
+																			Boolean(checked),
+																		)
+																	}
+																	disabled={!canPayRow}
+																	aria-label={`Selecionar parcela ${installment.installmentNumber}`}
+																/>
+															</TableCell>
+															<TableCell>
+																{formatDate(installment.expectedPaymentDate)}
+															</TableCell>
+															<TableCell>
+																{installment.paymentDate
+																	? formatDate(installment.paymentDate)
+																	: "—"}
+															</TableCell>
+															<TableCell>
+																<Badge
+																	variant="outline"
+																	className={
+																		INSTALLMENT_STATUS_BADGE_CLASSNAME[
+																			installment.status
+																		]
+																	}
+																>
+																	{
+																		SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
+																			installment.status
+																		]
+																	}
+																</Badge>
+															</TableCell>
+															<TableCell>
+																<p className="font-medium">
+																	{installment.beneficiaryLabel ??
+																		SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
+																			installment.recipientType
+																		]}
+																</p>
+																<p className="text-xs text-muted-foreground">
+																	{SALE_COMMISSION_DIRECTION_LABEL[installment.direction]}
+																</p>
+															</TableCell>
+															<TableCell>
+																<p className="font-medium">{installment.customer.name}</p>
+																<p className="text-xs text-muted-foreground">
+																	{productLabel}
+																</p>
+																<p className="text-xs text-muted-foreground">
+																	{installment.company.name}
+																	{installment.unit ? ` -> ${installment.unit.name}` : ""}
+																</p>
+															</TableCell>
+															<TableCell>
+																{formatCurrencyBRL(installment.amount / 100)}
+															</TableCell>
+															<TableCell>{installment.percentage}%</TableCell>
+															<TableCell>
+																{
+																	SALE_COMMISSION_SOURCE_TYPE_LABEL[
+																		installment.sourceType
+																	]
+																}
+															</TableCell>
+															<TableCell className="text-right">
+																<DropdownMenu>
+																	<DropdownMenuTrigger asChild>
+																		<Button
+																			type="button"
+																			variant="ghost"
+																			size="icon"
+																			disabled={
+																				isPatchingStatus ||
+																				isUpdatingInstallment ||
+																				isDeletingInstallment ||
+																				isPaymentActionPending
+																			}
+																		>
+																			<MoreHorizontal className="size-4" />
+																		</Button>
+																	</DropdownMenuTrigger>
+																	<DropdownMenuContent align="end">
+																		<DropdownMenuItem asChild>
+																			<Link to="/sales/$saleId" params={{ saleId: installment.saleId }}>
+																				<Eye className="size-4" />
+																				Ver venda
+																			</Link>
+																		</DropdownMenuItem>
+																		<DropdownMenuSeparator />
+																		<DropdownMenuItem
+																			disabled={!canEditRow}
+																			onSelect={(event) => {
+																				event.preventDefault();
+																				if (!canEditRow) {
+																					return;
+																				}
+																				requestInstallmentEdition(installment);
+																			}}
+																		>
+																			<Pencil className="size-4" />
+																			Editar parcela
+																		</DropdownMenuItem>
+																		<DropdownMenuItem
+																			disabled={!canPayRow}
+																			onSelect={(event) => {
+																				event.preventDefault();
+																				if (!canPayRow) {
+																					return;
+																				}
+																				requestInstallmentPayment(installment);
+																			}}
+																		>
+																			<CheckCircle2 className="size-4" />
+																			Pagar parcela
+																		</DropdownMenuItem>
+																		<DropdownMenuItem
+																			disabled={!canPayRow}
+																			onSelect={(event) => {
+																				event.preventDefault();
+																				if (!canPayRow) {
+																					return;
+																				}
+																				void handlePayInstallmentToday(installment);
+																			}}
+																		>
+																			<CheckCheck className="size-4" />
+																			Pagar hoje
+																		</DropdownMenuItem>
+																		<DropdownMenuItem
+																			variant="destructive"
+																			disabled={!canEditRow}
+																			onSelect={(event) => {
+																				event.preventDefault();
+																				if (!canEditRow) {
+																					return;
+																				}
+																				setInstallmentToDelete(installment);
+																			}}
+																		>
+																			<Trash2 className="size-4" />
+																			Excluir parcela
+																		</DropdownMenuItem>
+																	</DropdownMenuContent>
+																</DropdownMenu>
+															</TableCell>
+														</TableRow>
+													);
+												})
+											)}
+										</TableBody>
+									</Table>
+								</div>
+							}
+						/>
 
 						<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 							<p className="text-sm text-muted-foreground">

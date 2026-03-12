@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { PageHeader } from '@/components/page-header'
 import { textFilterParser } from '@/hooks/filters/parsers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Plus, Search, ShieldUser, User, UserCheck, Users } from 'lucide-react'
@@ -17,12 +18,11 @@ export const Route = createFileRoute('/_app/registers/customers/')({
 function CustomersPage() {
   const { organization } = useApp()
   const [search, setSearch] = useQueryState("q", textFilterParser)
-
-  if (!organization) return null
-
-  const { data, isLoading, isError } = useGetOrganizationsSlugCustomers({
-    slug: organization.slug
-  })
+  const slug = organization?.slug ?? ""
+  const { data, isLoading, isError } = useGetOrganizationsSlugCustomers(
+    { slug },
+    { query: { enabled: Boolean(slug) } },
+  )
 
   const customers = data?.customers ?? []
 
@@ -52,22 +52,24 @@ function CustomersPage() {
 
 
   if (isLoading) return <span>Carregando...</span>
+  if (!organization) return null
   if (isError) return <span className="text-destructive">Erro ao carregar clientes</span>
 
   return (
     <main className="w-full space-y-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Gerenciar Clientes</h1>
+      <PageHeader
+        title="Gerenciar Clientes"
+        actions={
+          <Link to="/registers/customers/create">
+            <Button className="w-full sm:w-auto">
+              <Plus />
+              Novo Cliente
+            </Button>
+          </Link>
+        }
+      />
 
-        <Link to="/registers/customers/create">
-          <Button>
-            <Plus />
-            Novo Cliente
-          </Button>
-        </Link>
-      </header>
-
-      <div className='flex items-center w-full gap-4'>
+      <div className='hidden grid-cols-1 gap-3 md:grid md:grid-cols-2 xl:grid-cols-4'>
         <Card className='p-6 gap-2 w-full'>
           <div className='flex items-center justify-between'>
             <span className='font-medium'>Total de Clientes</span>
@@ -102,7 +104,7 @@ function CustomersPage() {
         <Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
         <Input
           placeholder="Buscar por nome..."
-          className="max-w-[40%] h-10 pl-10"
+          className="h-10 w-full pl-10 sm:max-w-md"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

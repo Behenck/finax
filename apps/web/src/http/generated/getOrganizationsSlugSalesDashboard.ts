@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugSalesDashboardQueryResponse, GetOrganizationsS
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugSalesDashboardUrl({ slug }: { slug: GetOrganizationsSlugSalesDashboardPathParams["slug"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/sales/dashboard` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/sales/dashboard` as const }  
   return res
 }
 

@@ -32,12 +32,12 @@ export function InviteMemberLink() {
   }
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex w-full flex-col gap-2'>
       <div>
-        <h2>Convidar membro</h2>
-        <p className='text-sm text-muted-foreground'>convidar membro via link</p>
+        <h2 className='text-sm font-semibold sm:text-base'>Convidar membro</h2>
+        <p className='text-xs text-muted-foreground sm:text-sm'>Convite rápido via link de acesso</p>
       </div>
-      <Button variant="outline" size="sm" onClick={handleCreateInviteLink}>
+      <Button variant="outline" size="sm" className='w-full sm:w-auto' onClick={handleCreateInviteLink}>
         <LinkIcon />
         Convidar via link
       </Button>

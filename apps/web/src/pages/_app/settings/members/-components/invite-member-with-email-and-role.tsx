@@ -54,8 +54,8 @@ export function InviteMemberWithEmailAndRole() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className='space-y-2 w-md'>
-      <div className='flex items-center gap-2'>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className='w-full space-y-2'>
+      <div className='grid gap-2 sm:grid-cols-[minmax(0,1fr)_180px]'>
         <FieldGroup>
           <Controller
             name="email"
@@ -85,7 +85,7 @@ export function InviteMemberWithEmailAndRole() {
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Permissão</FieldLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>

@@ -8,7 +8,7 @@ import type { PostOrganizationsMutationRequest, PostOrganizationsMutationRespons
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostOrganizationsUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/organizations` as const }  
+  const res = { method: 'POST', url: `/organizations` as const }  
   return res
 }
 

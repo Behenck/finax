@@ -8,7 +8,7 @@ import type { GetInvitesInviteidQueryResponse, GetInvitesInviteidPathParams } fr
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetInvitesInviteidUrl({ inviteId }: { inviteId: GetInvitesInviteidPathParams["inviteId"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/invites/${inviteId}` as const }  
+  const res = { method: 'GET', url: `/invites/${inviteId}` as const }  
   return res
 }
 

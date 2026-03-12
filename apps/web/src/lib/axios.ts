@@ -5,8 +5,34 @@ import axios, {
 } from "axios";
 import Cookies from "js-cookie";
 
+export function resolveApiBaseUrl() {
+	const configuredUrl = import.meta.env.VITE_API_URL;
+
+	if (typeof window === "undefined") {
+		return configuredUrl;
+	}
+
+	const fallbackUrl = `${window.location.protocol}//${window.location.hostname}:3333`;
+
+	if (!configuredUrl) {
+		return fallbackUrl;
+	}
+
+	try {
+		const parsedUrl = new URL(configuredUrl);
+		if (parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1") {
+			parsedUrl.hostname = window.location.hostname;
+			return parsedUrl.toString().replace(/\/$/, "");
+		}
+
+		return parsedUrl.toString().replace(/\/$/, "");
+	} catch {
+		return configuredUrl;
+	}
+}
+
 export const api = axios.create({
-	baseURL: import.meta.env.VITE_API_URL,
+	baseURL: resolveApiBaseUrl(),
 	withCredentials: true,
 });
 

@@ -8,7 +8,7 @@ import type { PatchMeMutationRequest, PatchMeMutationResponse, PatchMe400 } from
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchMeUrl() {
-  const res = { method: 'PATCH', url: `http://localhost:3333/me` as const }  
+  const res = { method: 'PATCH', url: `/me` as const }  
   return res
 }
 

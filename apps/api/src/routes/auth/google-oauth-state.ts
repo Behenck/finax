@@ -14,6 +14,7 @@ export type GoogleOAuthStatePayload = {
 	purpose: GoogleOAuthStatePurpose;
 	nonce: string;
 	sub?: string;
+	appWebUrl?: string;
 };
 
 export async function issueGoogleOAuthState(
@@ -21,6 +22,7 @@ export async function issueGoogleOAuthState(
 	payload: {
 		purpose: GoogleOAuthStatePurpose;
 		sub?: string;
+		appWebUrl?: string;
 	},
 ) {
 	return reply.jwtSign(
@@ -28,6 +30,7 @@ export async function issueGoogleOAuthState(
 			purpose: payload.purpose,
 			nonce: randomUUID(),
 			sub: payload.sub,
+			appWebUrl: payload.appWebUrl,
 		},
 		{ expiresIn: "10m" },
 	);

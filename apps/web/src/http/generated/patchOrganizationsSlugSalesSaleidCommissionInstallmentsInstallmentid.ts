@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallment
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidUrl({ slug, saleId, installmentId }: { slug: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["slug"]; saleId: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["saleId"]; installmentId: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["installmentId"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/sales/${saleId}/commission-installments/${installmentId}` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/sales/${saleId}/commission-installments/${installmentId}` as const }  
   return res
 }
 

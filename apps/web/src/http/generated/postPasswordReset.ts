@@ -8,7 +8,7 @@ import type { PostPasswordResetMutationRequest, PostPasswordResetMutationRespons
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostPasswordResetUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/password/reset` as const }  
+  const res = { method: 'POST', url: `/password/reset` as const }  
   return res
 }
 

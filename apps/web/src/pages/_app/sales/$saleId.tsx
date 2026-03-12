@@ -197,22 +197,22 @@ function SaleDetailsPage() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<div className="space-y-1">
+			<header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+				<div className="min-w-0 space-y-1">
 					<h1 className="text-2xl font-semibold">Detalhes da Venda</h1>
-					<span className="text-muted-foreground text-sm">
+					<span className="block text-muted-foreground text-sm break-all sm:break-normal">
 						Código da venda: {sale.id}
 					</span>
 				</div>
 
-				<div className="flex items-center gap-2">
-					<Button variant="outline" asChild>
+				<div className="grid w-full gap-2 sm:grid-cols-3 md:flex md:w-auto md:items-center">
+					<Button variant="outline" className="w-full md:w-auto" asChild>
 						<Link to="/sales">
 							<ArrowLeft className="size-4" />
 							Voltar
 						</Link>
 					</Button>
-					<Button variant="outline" asChild>
+					<Button variant="outline" className="w-full md:w-auto" asChild>
 						<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
 							<Pencil className="size-4" />
 							Editar
@@ -220,6 +220,7 @@ function SaleDetailsPage() {
 					</Button>
 					<Button
 						variant="destructive"
+						className="w-full md:w-auto"
 						onClick={() => setDeleteDialogOpen(true)}
 						disabled={isDeletingSale}
 					>

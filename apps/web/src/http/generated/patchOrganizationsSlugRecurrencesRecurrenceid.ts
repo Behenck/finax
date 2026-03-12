@@ -8,7 +8,7 @@ import type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationResponse, Pat
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPatchOrganizationsSlugRecurrencesRecurrenceidUrl({ slug, recurrenceId }: { slug: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"]; recurrenceId: PatchOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"] }) {
-  const res = { method: 'PATCH', url: `http://localhost:3333/organizations/${slug}/recurrences/${recurrenceId}` as const }  
+  const res = { method: 'PATCH', url: `/organizations/${slug}/recurrences/${recurrenceId}` as const }  
   return res
 }
 

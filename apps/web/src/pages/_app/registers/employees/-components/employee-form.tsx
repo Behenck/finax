@@ -6,6 +6,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import {
 	Select,
 	SelectContent,
@@ -720,9 +721,15 @@ export function EmployeeForm({
 				</FieldGroup>
 			</section>
 
-			<div className="flex justify-end gap-2">
+			<div className="hidden justify-end gap-2 md:flex">
 				<Button type="submit">Salvar</Button>
 			</div>
+			<MobileBottomActionBar>
+				<Button type="submit" className="w-full">
+					Salvar
+				</Button>
+			</MobileBottomActionBar>
+			<div className="h-20 md:hidden" />
 		</form>
 	);
 }

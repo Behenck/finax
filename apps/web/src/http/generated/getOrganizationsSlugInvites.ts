@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugInvitesQueryResponse, GetOrganizationsSlugInvi
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugInvitesUrl({ slug }: { slug: GetOrganizationsSlugInvitesPathParams["slug"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/invites` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/invites` as const }  
   return res
 }
 

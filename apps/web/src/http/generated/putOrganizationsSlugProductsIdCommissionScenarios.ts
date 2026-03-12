@@ -8,7 +8,7 @@ import type { PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest, 
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPutOrganizationsSlugProductsIdCommissionScenariosUrl({ slug, id }: { slug: PutOrganizationsSlugProductsIdCommissionScenariosPathParams["slug"]; id: PutOrganizationsSlugProductsIdCommissionScenariosPathParams["id"] }) {
-  const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/products/${id}/commission-scenarios` as const }  
+  const res = { method: 'PUT', url: `/organizations/${slug}/products/${id}/commission-scenarios` as const }  
   return res
 }
 

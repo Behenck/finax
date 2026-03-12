@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button'
+import { MobileBottomActionBar } from '@/components/mobile-bottom-action-bar'
 import { TabCustomerPF } from './tab-customer-pf'
 import { TabCustomerPJ } from './tab-customer-pj'
 import { FormProvider } from 'react-hook-form'
@@ -70,7 +71,7 @@ export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="rounded-lg border p-4 space-y-4">
           <h3 className="text-sm font-medium">Responsável do cliente</h3>
-          <div className="flex items-center gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FieldGroup>
               <Field className="gap-1">
                 <FieldLabel>Tipo</FieldLabel>
@@ -182,7 +183,7 @@ export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
           </TabsContent>
         </Tabs>
 
-        <div className='flex items-center gap-2 justify-end'>
+        <div className='hidden items-center justify-end gap-2 md:flex'>
           <Button type='button' variant="outline" asChild>
             <Link to="/registers/customers">
               Cancelar
@@ -196,6 +197,23 @@ export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
             )}
           </Button>
         </div>
+        <MobileBottomActionBar>
+          <div className="grid grid-cols-2 gap-2">
+            <Button type='button' variant="outline" asChild>
+              <Link to="/registers/customers">
+                Cancelar
+              </Link>
+            </Button>
+            <Button type='submit'>
+              {type === "CREATE" ? (
+                "Cadastrar Cliente"
+              ) : (
+                "Atualizar Cliente"
+              )}
+            </Button>
+          </div>
+        </MobileBottomActionBar>
+        <div className="h-20 md:hidden" />
       </form>
     </FormProvider>
   )

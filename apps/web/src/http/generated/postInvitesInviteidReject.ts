@@ -8,7 +8,7 @@ import type { PostInvitesInviteidRejectMutationResponse, PostInvitesInviteidReje
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostInvitesInviteidRejectUrl({ inviteId }: { inviteId: PostInvitesInviteidRejectPathParams["inviteId"] }) {
-  const res = { method: 'POST', url: `http://localhost:3333/invites/${inviteId}/reject` as const }  
+  const res = { method: 'POST', url: `/invites/${inviteId}/reject` as const }  
   return res
 }
 

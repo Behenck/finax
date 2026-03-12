@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugProductsQueryResponse, GetOrganizationsSlugPro
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugProductsUrl({ slug }: { slug: GetOrganizationsSlugProductsPathParams["slug"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/products` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/products` as const }  
   return res
 }
 

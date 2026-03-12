@@ -8,7 +8,7 @@ import type { GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse, Ge
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugProductsIdCommissionScenariosUrl({ slug, id }: { slug: GetOrganizationsSlugProductsIdCommissionScenariosPathParams["slug"]; id: GetOrganizationsSlugProductsIdCommissionScenariosPathParams["id"] }) {
-  const res = { method: 'GET', url: `http://localhost:3333/organizations/${slug}/products/${id}/commission-scenarios` as const }  
+  const res = { method: 'GET', url: `/organizations/${slug}/products/${id}/commission-scenarios` as const }  
   return res
 }
 

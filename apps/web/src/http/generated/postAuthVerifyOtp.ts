@@ -8,7 +8,7 @@ import type { PostAuthVerifyOtpMutationRequest, PostAuthVerifyOtpMutationRespons
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostAuthVerifyOtpUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/auth/verify-otp` as const }  
+  const res = { method: 'POST', url: `/auth/verify-otp` as const }  
   return res
 }
 

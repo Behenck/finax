@@ -39,16 +39,16 @@ export function CostCenterCard({ costCenter }: CostCenterCardProps) {
 
 	return (
 		<Card className="px-6 py-4 rounded-lg flex-1">
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-3">
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<div className="flex min-w-0 items-center gap-3">
 					<div className="p-2 rounded-md bg-green-100 text-green-500">
 						<Building2 className="size-5" />
 					</div>
 
-					<span className="font-medium ">{costCenter.name}</span>
+					<span className="truncate font-medium">{costCenter.name}</span>
 				</div>
 
-				<div className="flex items-center gap-1">
+				<div className="flex w-full items-center justify-end gap-1 sm:w-auto">
 					<UpdateCostCenter costCenter={costCenter} />
 
 					<Button

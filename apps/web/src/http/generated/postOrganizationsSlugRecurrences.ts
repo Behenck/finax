@@ -8,7 +8,7 @@ import type { PostOrganizationsSlugRecurrencesMutationRequest, PostOrganizations
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostOrganizationsSlugRecurrencesUrl({ slug }: { slug: PostOrganizationsSlugRecurrencesPathParams["slug"] }) {
-  const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/recurrences` as const }  
+  const res = { method: 'POST', url: `/organizations/${slug}/recurrences` as const }  
   return res
 }
 

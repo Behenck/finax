@@ -8,7 +8,7 @@ import type { PutOrganizationsSlugRecurrencesRecurrenceidMutationRequest, PutOrg
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPutOrganizationsSlugRecurrencesRecurrenceidUrl({ slug, recurrenceId }: { slug: PutOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"]; recurrenceId: PutOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"] }) {
-  const res = { method: 'PUT', url: `http://localhost:3333/organizations/${slug}/recurrences/${recurrenceId}` as const }  
+  const res = { method: 'PUT', url: `/organizations/${slug}/recurrences/${recurrenceId}` as const }  
   return res
 }
 

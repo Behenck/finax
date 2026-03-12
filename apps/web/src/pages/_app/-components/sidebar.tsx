@@ -67,10 +67,11 @@ type SidebarItem = SidebarLeafItem | SidebarGroupItem;
 
 export function AppSidebar() {
 	const { organization } = useApp();
-	const { state } = useSidebar();
+	const { state, isMobile, setOpenMobile } = useSidebar();
 	const location = useLocation();
 	const pathname = location.pathname;
 	const isCollapsed = state === "collapsed";
+	const previousPathnameRef = React.useRef(pathname);
 
 	const items: SidebarItem[] = [
 		{
@@ -186,6 +187,19 @@ export function AppSidebar() {
 		}
 	}, [isCollapsed, isRegistersActive]);
 
+	React.useEffect(() => {
+		if (!isMobile) {
+			previousPathnameRef.current = pathname;
+			return;
+		}
+
+		if (previousPathnameRef.current !== pathname) {
+			setOpenMobile(false);
+		}
+
+		previousPathnameRef.current = pathname;
+	}, [isMobile, pathname, setOpenMobile]);
+
 	return (
 		<Sidebar variant="inset" collapsible="icon">
 			<SidebarHeader className="px-3 py-3">
@@ -207,7 +221,7 @@ export function AppSidebar() {
 						</div>
 					</Link>
 					<SidebarTrigger
-						className="size-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+						className="hidden size-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:inline-flex"
 						title={isCollapsed ? "Expandir menu" : "Recolher menu"}
 					/>
 				</div>

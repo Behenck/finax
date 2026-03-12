@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import {
 	Select,
 	SelectContent,
@@ -1014,11 +1015,17 @@ export function ProductForm({
 				</TabsContent>
 			</Tabs>
 
-			<div className="flex justify-end gap-2">
+			<div className="hidden justify-end gap-2 md:flex">
 				<Button type="submit" disabled={isPending}>
 					{isPending ? "Salvando..." : "Salvar"}
 				</Button>
 			</div>
+			<MobileBottomActionBar>
+				<Button type="submit" className="w-full" disabled={isPending}>
+					{isPending ? "Salvando..." : "Salvar"}
+				</Button>
+			</MobileBottomActionBar>
+			<div className="h-20 md:hidden" />
 		</form>
 	);
 }

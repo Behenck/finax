@@ -61,8 +61,8 @@ export function CategoryCard({ category }: CategoryCardProps) {
 	return (
 		<Card className="px-6 py-4 rounded-lg">
 			<Collapsible open={isOpen} onOpenChange={setIsOpen}>
-				<div className="flex items-center justify-between">
-					<CollapsibleTrigger className="flex items-center gap-4 cursor-pointer">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<CollapsibleTrigger className="flex min-w-0 items-center gap-4 cursor-pointer text-left">
 						{hasChildren ? (
 							isOpen ? (
 								<ChevronUp className="size-5" />
@@ -73,7 +73,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
 							<div className="size-5" />
 						)}
 
-						<div className="flex items-center gap-3">
+						<div className="flex min-w-0 items-center gap-3">
 							<div
 								className="p-2 rounded-xl"
 								style={{
@@ -84,14 +84,14 @@ export function CategoryCard({ category }: CategoryCardProps) {
 								<Icon className="size-4" />
 							</div>
 
-							<div className="flex flex-col text-left">
-								<span className="font-medium ">{category.name}</span>
+							<div className="min-w-0 flex flex-col text-left">
+								<span className="truncate font-medium">{category.name}</span>
 								<span className="text-gray-500 text-xs">{category.code}</span>
 							</div>
 						</div>
 					</CollapsibleTrigger>
 
-					<div className="flex items-center gap-1">
+					<div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto">
 						<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
 							<DialogTrigger asChild>
 								<Button variant="ghost" size="icon">

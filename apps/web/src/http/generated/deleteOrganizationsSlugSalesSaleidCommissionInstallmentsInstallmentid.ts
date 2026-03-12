@@ -8,7 +8,7 @@ import type { DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmen
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getDeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidUrl({ slug, saleId, installmentId }: { slug: DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["slug"]; saleId: DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["saleId"]; installmentId: DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParams["installmentId"] }) {
-  const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/sales/${saleId}/commission-installments/${installmentId}` as const }  
+  const res = { method: 'DELETE', url: `/organizations/${slug}/sales/${saleId}/commission-installments/${installmentId}` as const }  
   return res
 }
 

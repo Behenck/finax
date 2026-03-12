@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FilterPanel } from "@/components/filter-panel";
+import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -699,36 +701,44 @@ export function SalesDataTable({
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center gap-2">
-				<Input
-					placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
-					value={globalFilter}
-					onChange={(event) => setGlobalFilter(event.target.value)}
-					className="h-10 max-w-md"
-				/>
+			<FilterPanel className="lg:grid-cols-3">
+				<div className="space-y-1 lg:col-span-2">
+					<p className="text-xs text-muted-foreground">Busca</p>
+					<Input
+						placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
+						value={globalFilter}
+						onChange={(event) => setGlobalFilter(event.target.value)}
+						className="w-full"
+					/>
+				</div>
 
-				<Select
-					value={statusFilter}
-					onValueChange={(value) => {
-						setStatusFilter(value as SaleStatusFilter);
-					}}
-				>
-					<SelectTrigger className="w-52 h-10">
-						<SelectValue placeholder="Status" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="ALL">Todos os status</SelectItem>
-						{SaleStatusSchema.options.map((status) => (
-							<SelectItem key={status} value={status}>
-								{SALE_STATUS_LABEL[status]}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className="space-y-1">
+					<p className="text-xs text-muted-foreground">Status</p>
+					<Select
+						value={statusFilter}
+						onValueChange={(value) => {
+							setStatusFilter(value as SaleStatusFilter);
+						}}
+					>
+						<SelectTrigger className="w-full">
+							<SelectValue placeholder="Status" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="ALL">Todos os status</SelectItem>
+							{SaleStatusSchema.options.map((status) => (
+								<SelectItem key={status} value={status}>
+									{SALE_STATUS_LABEL[status]}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			</FilterPanel>
 
+			<div className="flex justify-end">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
+						<Button variant="outline" className="w-full sm:w-auto">
 							<ListFilter className="size-4" />
 							Colunas
 						</Button>
@@ -758,9 +768,9 @@ export function SalesDataTable({
 															? "valor"
 															: column.id === "commissionInstallments"
 																? "parcelas"
-															: column.id === "status"
-																? "status"
-																: "atualização"}
+																: column.id === "status"
+																	? "status"
+																	: "atualização"}
 								</DropdownMenuCheckboxItem>
 							))}
 					</DropdownMenuContent>
@@ -806,58 +816,194 @@ export function SalesDataTable({
 				</div>
 			) : null}
 
-			<div className="rounded-md border bg-card">
-				<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows.length > 0 ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									Nenhum resultado encontrado para os filtros aplicados.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</div>
+			<ResponsiveDataView
+				mobile={
+					<div className="space-y-3">
+						<Card className="p-3">
+							<div className="flex items-center justify-between gap-3">
+								<label className="flex items-center gap-2 text-sm">
+									<Checkbox
+										checked={
+											table.getIsAllPageRowsSelected()
+												? true
+												: table.getIsSomePageRowsSelected()
+													? "indeterminate"
+													: false
+										}
+										onCheckedChange={(value) =>
+											table.toggleAllPageRowsSelected(Boolean(value))
+										}
+										aria-label="Selecionar página atual"
+									/>
+									<span>Selecionar vendas da página</span>
+								</label>
+								<span className="text-xs text-muted-foreground">
+									{table.getRowModel().rows.length} registro(s)
+								</span>
+							</div>
+						</Card>
 
-				<div className="flex items-center justify-between">
+						{table.getRowModel().rows.length === 0 ? (
+							<Card className="p-6 text-center text-sm text-muted-foreground">
+								Nenhum resultado encontrado para os filtros aplicados.
+							</Card>
+						) : (
+							table.getRowModel().rows.map((row) => {
+								const sale = row.original;
+								const summary = sale.commissionInstallmentsSummary;
+
+								return (
+									<Card key={row.id} className="space-y-3 p-4">
+										<div className="flex items-start justify-between gap-3">
+											<div className="min-w-0">
+												<p className="truncate text-sm font-semibold">
+													{sale.customer.name}
+												</p>
+												<p className="truncate text-xs text-muted-foreground">
+													{sale.productLabel}
+												</p>
+											</div>
+											<Checkbox
+												checked={row.getIsSelected()}
+												onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+												aria-label={`Selecionar venda ${sale.id}`}
+											/>
+										</div>
+
+										<div className="grid grid-cols-2 gap-2 text-xs">
+											<div className="space-y-0.5">
+												<p className="text-muted-foreground">Data</p>
+												<p>{formatSaleDate(sale.saleDate)}</p>
+											</div>
+											<div className="space-y-0.5">
+												<p className="text-muted-foreground">Atualização</p>
+												<p>{formatDateTime(sale.updatedAt)}</p>
+											</div>
+											<div className="space-y-0.5">
+												<p className="text-muted-foreground">Empresa</p>
+												<p>{sale.company.name}</p>
+											</div>
+											<div className="space-y-0.5">
+												<p className="text-muted-foreground">Unidade</p>
+												<p>{sale.unit?.name ?? "Sem unidade"}</p>
+											</div>
+										</div>
+
+										<div className="flex items-center justify-between gap-3">
+											<SaleStatusBadge status={sale.status as SaleStatus} />
+											<p className="text-sm font-semibold">
+												{formatCurrencyBRL(sale.totalAmount / 100)}
+											</p>
+										</div>
+
+										<div className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
+											Parcelas:{" "}
+											{summary.total === 0
+												? "Sem parcelas"
+												: `${summary.paid}/${summary.total} pagas`}
+										</div>
+
+										<div className="grid grid-cols-2 gap-2">
+											<Button variant="outline" size="sm" asChild>
+												<Link to="/sales/$saleId" params={{ saleId: sale.id }}>
+													<Eye className="size-4" />
+													Detalhes
+												</Link>
+											</Button>
+											<Button variant="outline" size="sm" asChild>
+												<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+													<Pencil className="size-4" />
+													Editar
+												</Link>
+											</Button>
+											<Button variant="outline" size="sm" asChild>
+												<Link
+													to="/sales/create"
+													search={{ duplicateSaleId: sale.id }}
+												>
+													<Copy className="size-4" />
+													Duplicar
+												</Link>
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												className="!min-h-8"
+												disabled={summary.total === 0}
+												onClick={() => setInstallmentsDrawerSale(sale)}
+											>
+												<ListTree className="size-4" />
+												Parcelas
+											</Button>
+										</div>
+
+										<SaleStatusAction
+											saleId={sale.id}
+											currentStatus={sale.status as SaleStatus}
+										/>
+									</Card>
+								);
+							})
+						)}
+					</div>
+				}
+				desktop={
+					<div className="overflow-x-auto rounded-md border bg-card">
+						<Table>
+							<TableHeader>
+								{table.getHeaderGroups().map((headerGroup) => (
+									<TableRow key={headerGroup.id}>
+										{headerGroup.headers.map((header) => (
+											<TableHead key={header.id}>
+												{header.isPlaceholder
+													? null
+													: flexRender(
+															header.column.columnDef.header,
+															header.getContext(),
+														)}
+											</TableHead>
+										))}
+									</TableRow>
+								))}
+							</TableHeader>
+							<TableBody>
+								{table.getRowModel().rows.length > 0 ? (
+									table.getRowModel().rows.map((row) => (
+										<TableRow key={row.id}>
+											{row.getVisibleCells().map((cell) => (
+												<TableCell key={cell.id}>
+													{flexRender(
+														cell.column.columnDef.cell,
+														cell.getContext(),
+													)}
+												</TableCell>
+											))}
+										</TableRow>
+									))
+								) : (
+									<TableRow>
+										<TableCell colSpan={columns.length} className="h-24 text-center">
+											Nenhum resultado encontrado para os filtros aplicados.
+										</TableCell>
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</div>
+				}
+			/>
+
+			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 				<span className="text-sm text-muted-foreground">
 					Página {table.getState().pagination.pageIndex + 1} de{" "}
 					{table.getPageCount()}
 				</span>
-				<div className="flex items-center gap-2">
+				<div className="flex w-full items-center gap-2 md:w-auto">
 					<Button
 						variant="outline"
 						size="sm"
+						className="flex-1 md:flex-none"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 					>
@@ -866,26 +1012,27 @@ export function SalesDataTable({
 					<Button
 						variant="outline"
 						size="sm"
+						className="flex-1 md:flex-none"
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
 					>
 						Próxima
 					</Button>
 				</div>
-				</div>
-
-				{installmentsDrawerSale ? (
-					<SaleInstallmentsDrawer
-						open={Boolean(installmentsDrawerSale)}
-						onOpenChange={(open) => {
-							if (!open) {
-								setInstallmentsDrawerSale(null);
-							}
-						}}
-						saleId={installmentsDrawerSale.id}
-						saleStatus={installmentsDrawerSale.status as SaleStatus}
-					/>
-				) : null}
 			</div>
-		);
-	}
+
+			{installmentsDrawerSale ? (
+				<SaleInstallmentsDrawer
+					open={Boolean(installmentsDrawerSale)}
+					onOpenChange={(open) => {
+						if (!open) {
+							setInstallmentsDrawerSale(null);
+						}
+					}}
+					saleId={installmentsDrawerSale.id}
+					saleStatus={installmentsDrawerSale.status as SaleStatus}
+				/>
+			) : null}
+		</div>
+	);
+}

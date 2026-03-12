@@ -8,7 +8,7 @@ import type { PostMeGoogleLinkMutationResponse, PostMeGoogleLink500 } from "./mo
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostMeGoogleLinkUrl() {
-  const res = { method: 'POST', url: `http://localhost:3333/me/google/link` as const }  
+  const res = { method: 'POST', url: `/me/google/link` as const }  
   return res
 }
 

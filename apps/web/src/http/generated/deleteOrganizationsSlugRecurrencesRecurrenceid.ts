@@ -8,7 +8,7 @@ import type { DeleteOrganizationsSlugRecurrencesRecurrenceidMutationResponse, De
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getDeleteOrganizationsSlugRecurrencesRecurrenceidUrl({ slug, recurrenceId }: { slug: DeleteOrganizationsSlugRecurrencesRecurrenceidPathParams["slug"]; recurrenceId: DeleteOrganizationsSlugRecurrencesRecurrenceidPathParams["recurrenceId"] }) {
-  const res = { method: 'DELETE', url: `http://localhost:3333/organizations/${slug}/recurrences/${recurrenceId}` as const }  
+  const res = { method: 'DELETE', url: `/organizations/${slug}/recurrences/${recurrenceId}` as const }  
   return res
 }
 

@@ -8,7 +8,7 @@ import type { PostOrganizationsSlugEmployeesMutationRequest, PostOrganizationsSl
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getPostOrganizationsSlugEmployeesUrl({ slug }: { slug: PostOrganizationsSlugEmployeesPathParams["slug"] }) {
-  const res = { method: 'POST', url: `http://localhost:3333/organizations/${slug}/employees` as const }  
+  const res = { method: 'POST', url: `/organizations/${slug}/employees` as const }  
   return res
 }
 

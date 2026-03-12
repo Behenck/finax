@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { useSale } from "@/hooks/sales";
+import { PageHeader } from "@/components/page-header";
 import { SaleForm } from "./-components/sale-form";
 
 const createSaleSearchSchema = z.object({
@@ -35,18 +36,14 @@ function CreateSalePage() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<div>
-					<h1 className="text-2xl font-semibold">
-						{duplicateSaleId ? "Duplicar Venda" : "Cadastrar Venda"}
-					</h1>
-					<span className="text-muted-foreground text-sm">
-						{duplicateSaleId
-							? "Revise os dados e confirme o novo cadastro baseado na venda selecionada."
-							: "Preencha os dados para registrar uma nova venda."}
-					</span>
-				</div>
-			</header>
+			<PageHeader
+				title={duplicateSaleId ? "Duplicar Venda" : "Cadastrar Venda"}
+				description={
+					duplicateSaleId
+						? "Revise os dados e confirme o novo cadastro baseado na venda selecionada."
+						: "Preencha os dados para registrar uma nova venda."
+				}
+			/>
 
 			<SaleForm
 				mode="CREATE"
