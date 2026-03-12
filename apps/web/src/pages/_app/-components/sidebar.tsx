@@ -6,7 +6,6 @@ import {
 import {
 	Sidebar,
 	SidebarContent,
-	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
 	SidebarMenu,
@@ -26,7 +25,6 @@ import {
 	Building,
 	ChevronRight,
 	Home,
-	LogOut,
 	Package,
 	Settings2,
 	ShoppingCart,
@@ -42,7 +40,6 @@ import * as React from "react";
 import LogoBranco from "@/assets/logo-finax-branco.png";
 import { Separator } from "@/components/ui/separator";
 import { Link, useLocation } from "@tanstack/react-router";
-import { auth } from "@/hooks/auth";
 import { useApp } from "@/context/app-context";
 
 interface SidebarChildItem {
@@ -69,10 +66,9 @@ interface SidebarGroupItem {
 type SidebarItem = SidebarLeafItem | SidebarGroupItem;
 
 export function AppSidebar() {
-	const { organization, auth: currentUser } = useApp();
+	const { organization } = useApp();
 	const { state } = useSidebar();
 	const location = useLocation();
-	const signOut = auth.useSignOut();
 	const pathname = location.pathname;
 	const isCollapsed = state === "collapsed";
 
@@ -158,13 +154,6 @@ export function AppSidebar() {
 	];
 
 	const companyName = organization?.name ?? "Sem organização";
-	const userName = currentUser?.name?.trim() || "Usuário";
-	const userEmail = currentUser?.email ?? "Sem email";
-	const userInitials = React.useMemo(() => {
-		const parts = userName.split(" ").filter(Boolean).slice(0, 2);
-		const initials = parts.map((part) => part.at(0)?.toUpperCase() ?? "").join("");
-		return initials || "U";
-	}, [userName]);
 
 	const isPathActive = React.useCallback(
 		(url: string, match: "exact" | "prefix" = "prefix") => {
@@ -305,49 +294,6 @@ export function AppSidebar() {
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter className="px-2 pb-2">
-				<Separator className="bg-sidebar-border/70" />
-
-				<div className="mt-2 flex items-center gap-2 rounded-lg px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-					<Link
-						to="/profile"
-						className="focus-visible:ring-ring/50 flex size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-xs font-semibold text-sidebar-foreground outline-none transition-colors hover:bg-sidebar-accent/80 focus-visible:ring-2"
-						title="Meu perfil"
-					>
-						{userInitials}
-					</Link>
-					<div className="min-w-0 group-data-[collapsible=icon]:hidden">
-						<Link
-							to="/profile"
-							className="focus-visible:ring-ring/50 block truncate rounded-sm text-sm font-medium text-sidebar-foreground outline-none transition-colors hover:text-sidebar-primary focus-visible:ring-2"
-						>
-							{userName}
-						</Link>
-						<p className="truncate text-xs text-sidebar-foreground/60">{companyName}</p>
-					</div>
-				</div>
-
-				<div className="mt-1 px-3 py-1 group-data-[collapsible=icon]:hidden">
-					<p className="truncate text-xs text-sidebar-foreground/70">{userEmail}</p>
-				</div>
-
-				<SidebarMenu className="mt-2">
-					<SidebarMenuItem>
-						<SidebarMenuButton
-							type="button"
-							onClick={() => signOut.mutate()}
-							disabled={signOut.isPending}
-							tooltip="Sair"
-							className="h-9 cursor-pointer rounded-lg px-3 text-sidebar-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
-						>
-							<LogOut className="size-4" />
-							<span className="group-data-[collapsible=icon]:hidden">
-								{signOut.isPending ? "Saindo..." : "Sair"}
-							</span>
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				</SidebarMenu>
-			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
 	);

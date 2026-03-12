@@ -4,7 +4,9 @@ import { AppContext } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import Cookies from "js-cookie";
+import { AppTopHeader } from "./-components/app-top-header";
 import { AppSidebar } from "./-components/sidebar";
+import { QuickActionsCommand } from "./-components/quick-actions-command";
 export const Route = createFileRoute("/_app")({
 	component: AppLayout,
 });
@@ -28,9 +30,13 @@ function AppLayout() {
 		<AppContext.Provider value={{ auth: data.user, membership: data.organization.role, organization: data.organization }}>
 			<SidebarProvider>
 				<AppSidebar />
+				<QuickActionsCommand />
 
-				<main className="flex-1 p-10 bg-gray-50">
-					<Outlet />
+				<main className="flex-1 bg-gray-50">
+					<AppTopHeader />
+					<div className="p-4 sm:p-6 lg:p-10">
+						<Outlet />
+					</div>
 				</main>
 			</SidebarProvider>
 		</AppContext.Provider>

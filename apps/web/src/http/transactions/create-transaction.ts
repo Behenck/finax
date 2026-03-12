@@ -4,11 +4,13 @@ import {
 } from "../generated";
 
 export async function createTransaction(
-	data: PostOrganizationsSlugTransactionsMutationRequest,
+	params: {
+		slug: string;
+		data: PostOrganizationsSlugTransactionsMutationRequest;
+	},
 ) {
-	const slug = "behenck";
 	await postOrganizationsSlugTransactions({
-		slug,
-		data,
+		slug: params.slug,
+		data: params.data,
 	});
 }

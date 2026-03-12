@@ -4,6 +4,7 @@ import { updateTransaction } from "./update-transaction";
 import { deleteTransaction } from "./delete-transaction";
 import { getTransactions } from "./get-transactions";
 import { paymentTransaction } from "./payment-transaction";
+import { patchTransactionsPaymentBulk } from "./patch-transactions-payment-bulk";
 import { getTransaction } from "./get-transaction";
 
 export async function transactionRoutes(app: FastifyInstance) {
@@ -13,4 +14,5 @@ export async function transactionRoutes(app: FastifyInstance) {
   await app.register(getTransactions);
   await app.register(getTransaction);
   await app.register(paymentTransaction);
+  await app.register(patchTransactionsPaymentBulk);
 }

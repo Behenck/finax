@@ -15,6 +15,7 @@ interface UpdateSaleCommissionInstallmentInput {
 	saleId: string;
 	installmentId: string;
 	data: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationRequest;
+	silent?: boolean;
 }
 
 export function useUpdateSaleCommissionInstallment() {
@@ -76,9 +77,15 @@ export function useUpdateSaleCommissionInstallment() {
 				}),
 			]);
 
-			toast.success("Parcela atualizada.");
+			if (!variables.silent) {
+				toast.success("Parcela atualizada.");
+			}
 		},
-		onError: (error) => {
+		onError: (error, variables) => {
+			if (variables?.silent) {
+				return;
+			}
+
 			const message = resolveErrorMessage(normalizeApiError(error));
 			toast.error(message);
 		},

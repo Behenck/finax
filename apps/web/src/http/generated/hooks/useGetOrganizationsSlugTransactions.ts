@@ -4,24 +4,24 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams } from "../models/GetOrganizationsSlugTransactions.ts";
+import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams, GetOrganizationsSlugTransactionsQueryParams } from "../models/GetOrganizationsSlugTransactions.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryResult } from "@tanstack/react-query";
 import { getOrganizationsSlugTransactions } from "../getOrganizationsSlugTransactions.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getOrganizationsSlugTransactionsQueryKey = ({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }) => [{ url: '/organizations/:slug/transactions', params: {slug:slug} }] as const
+export const getOrganizationsSlugTransactionsQueryKey = ({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, params: GetOrganizationsSlugTransactionsQueryParams = {}) => [{ url: '/organizations/:slug/transactions', params: {slug:slug} }, ...(params ? [params] : [])] as const
 
 export type GetOrganizationsSlugTransactionsQueryKey = ReturnType<typeof getOrganizationsSlugTransactionsQueryKey>
 
-export function getOrganizationsSlugTransactionsQueryOptions({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getOrganizationsSlugTransactionsQueryKey({ slug })
+export function getOrganizationsSlugTransactionsQueryOptions({ slug, params }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"]; params?: GetOrganizationsSlugTransactionsQueryParams }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+  const queryKey = getOrganizationsSlugTransactionsQueryKey({ slug }, params)
   return queryOptions<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, GetOrganizationsSlugTransactionsQueryResponse, typeof queryKey>({
    enabled: !!(slug),
    queryKey,
    queryFn: async ({ signal }) => {
       config.signal = signal
-      return getOrganizationsSlugTransactions({ slug }, config)
+      return getOrganizationsSlugTransactions({ slug, params }, config)
    },
   })
 }
@@ -30,7 +30,7 @@ export function getOrganizationsSlugTransactionsQueryOptions({ slug }: { slug: G
  * @summary Get transactions
  * {@link /organizations/:slug/transactions}
  */
-export function useGetOrganizationsSlugTransactions<TData = GetOrganizationsSlugTransactionsQueryResponse, TQueryData = GetOrganizationsSlugTransactionsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugTransactionsQueryKey>({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, options: 
+export function useGetOrganizationsSlugTransactions<TData = GetOrganizationsSlugTransactionsQueryResponse, TQueryData = GetOrganizationsSlugTransactionsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugTransactionsQueryKey>({ slug, params }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"]; params?: GetOrganizationsSlugTransactionsQueryParams }, options: 
 {
   query?: Partial<QueryObserverOptions<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
@@ -38,11 +38,11 @@ export function useGetOrganizationsSlugTransactions<TData = GetOrganizationsSlug
  = {}) {
   const { query: queryConfig = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugTransactionsQueryKey({ slug })
+  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugTransactionsQueryKey({ slug }, params)
 
 
   const query = useQuery({
-   ...getOrganizationsSlugTransactionsQueryOptions({ slug }, config),
+   ...getOrganizationsSlugTransactionsQueryOptions({ slug, params }, config),
    queryKey,
    ...queryOptions
   } as unknown as QueryObserverOptions, queryClient) as UseQueryResult<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }

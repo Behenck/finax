@@ -11,6 +11,97 @@ export type GetOrganizationsSlugTransactionsPathParams = {
     slug: string;
 };
 
+export const getOrganizationsSlugTransactionsQueryParamsStatusEnum = {
+    "PENDING": "PENDING",
+    "PAID": "PAID",
+    "CANCELED": "CANCELED"
+} as const;
+
+export type GetOrganizationsSlugTransactionsQueryParamsStatusEnumKey = (typeof getOrganizationsSlugTransactionsQueryParamsStatusEnum)[keyof typeof getOrganizationsSlugTransactionsQueryParamsStatusEnum];
+
+export const getOrganizationsSlugTransactionsQueryParamsTypeEnum = {
+    "INCOME": "INCOME",
+    "OUTCOME": "OUTCOME"
+} as const;
+
+export type GetOrganizationsSlugTransactionsQueryParamsTypeEnumKey = (typeof getOrganizationsSlugTransactionsQueryParamsTypeEnum)[keyof typeof getOrganizationsSlugTransactionsQueryParamsTypeEnum];
+
+export const getOrganizationsSlugTransactionsQueryParamsSortByEnum = {
+    "dueDate": "dueDate",
+    "expectedPaymentDate": "expectedPaymentDate",
+    "description": "description",
+    "totalAmount": "totalAmount",
+    "status": "status",
+    "createdAt": "createdAt"
+} as const;
+
+export type GetOrganizationsSlugTransactionsQueryParamsSortByEnumKey = (typeof getOrganizationsSlugTransactionsQueryParamsSortByEnum)[keyof typeof getOrganizationsSlugTransactionsQueryParamsSortByEnum];
+
+export const getOrganizationsSlugTransactionsQueryParamsSortDirEnum = {
+    "asc": "asc",
+    "desc": "desc"
+} as const;
+
+export type GetOrganizationsSlugTransactionsQueryParamsSortDirEnumKey = (typeof getOrganizationsSlugTransactionsQueryParamsSortDirEnum)[keyof typeof getOrganizationsSlugTransactionsQueryParamsSortDirEnum];
+
+export type GetOrganizationsSlugTransactionsQueryParams = {
+    /**
+     * @default ""
+     * @type string | undefined
+    */
+    q?: string;
+    /**
+     * @type string | undefined
+    */
+    status?: GetOrganizationsSlugTransactionsQueryParamsStatusEnumKey;
+    /**
+     * @type string | undefined
+    */
+    type?: GetOrganizationsSlugTransactionsQueryParamsTypeEnumKey;
+    /**
+     * @type string | undefined, uuid
+    */
+    companyId?: string;
+    /**
+     * @type string | undefined, uuid
+    */
+    unitId?: string;
+    /**
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     * @type string | undefined
+    */
+    dueFrom?: string;
+    /**
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     * @type string | undefined
+    */
+    dueTo?: string;
+    /**
+     * @minLength 1
+     * @maxLength 9007199254740991
+     * @default 1
+     * @type integer | undefined
+    */
+    page?: number;
+    /**
+     * @minLength 1
+     * @maxLength 100
+     * @default 20
+     * @type integer | undefined
+    */
+    pageSize?: number;
+    /**
+     * @default "dueDate"
+     * @type string | undefined
+    */
+    sortBy?: GetOrganizationsSlugTransactionsQueryParamsSortByEnumKey;
+    /**
+     * @default "desc"
+     * @type string | undefined
+    */
+    sortDir?: GetOrganizationsSlugTransactionsQueryParamsSortDirEnumKey;
+};
+
 export const transactionsTypeEnum = {
     "INCOME": "INCOME",
     "OUTCOME": "OUTCOME"
@@ -252,6 +343,35 @@ export type GetOrganizationsSlugTransactions200 = {
             };
         }[];
     }[];
+    /**
+     * @type object
+    */
+    pagination: {
+        /**
+         * @minLength 1
+         * @maxLength 9007199254740991
+         * @type integer
+        */
+        page: number;
+        /**
+         * @minLength 1
+         * @maxLength 100
+         * @type integer
+        */
+        pageSize: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+        */
+        total: number;
+        /**
+         * @minLength 1
+         * @maxLength 9007199254740991
+         * @type integer
+        */
+        totalPages: number;
+    };
 };
 
 export type GetOrganizationsSlugTransactionsQueryResponse = GetOrganizationsSlugTransactions200;
@@ -259,5 +379,6 @@ export type GetOrganizationsSlugTransactionsQueryResponse = GetOrganizationsSlug
 export type GetOrganizationsSlugTransactionsQuery = {
     Response: GetOrganizationsSlugTransactions200;
     PathParams: GetOrganizationsSlugTransactionsPathParams;
+    QueryParams: GetOrganizationsSlugTransactionsQueryParams;
     Errors: any;
 };

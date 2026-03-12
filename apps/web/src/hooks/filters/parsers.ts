@@ -13,6 +13,22 @@ const COMMISSION_INSTALLMENT_STATUS_FILTER_VALUES = [
 	"PAID",
 	"CANCELED",
 ] as const;
+const TRANSACTION_STATUS_FILTER_VALUES = [
+	"ALL",
+	"PENDING",
+	"PAID",
+	"CANCELED",
+] as const;
+const TRANSACTION_TYPE_FILTER_VALUES = ["ALL", "INCOME", "OUTCOME"] as const;
+const TRANSACTION_SORT_BY_VALUES = [
+	"dueDate",
+	"expectedPaymentDate",
+	"description",
+	"totalAmount",
+	"status",
+	"createdAt",
+] as const;
+const SORT_DIRECTION_VALUES = ["asc", "desc"] as const;
 const MEMBER_VIEW_VALUES = ["access", "role"] as const;
 const DASHBOARD_VIEW_VALUES = ["commercial", "operational"] as const;
 
@@ -52,6 +68,28 @@ export const commissionInstallmentStatusParser = parseAsStringLiteral(
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
 
+export const transactionStatusFilterParser = parseAsStringLiteral(
+	TRANSACTION_STATUS_FILTER_VALUES,
+)
+	.withDefault("ALL")
+	.withOptions({ history: "replace" });
+
+export const transactionTypeFilterParser = parseAsStringLiteral(
+	TRANSACTION_TYPE_FILTER_VALUES,
+)
+	.withDefault("ALL")
+	.withOptions({ history: "replace" });
+
+export const transactionSortByParser = parseAsStringLiteral(
+	TRANSACTION_SORT_BY_VALUES,
+)
+	.withDefault("dueDate")
+	.withOptions({ history: "replace" });
+
+export const sortDirectionParser = parseAsStringLiteral(SORT_DIRECTION_VALUES)
+	.withDefault("desc")
+	.withOptions({ history: "replace" });
+
 export const dateFilterParser = parseAsString
 	.withDefault("")
 	.withOptions({ history: "replace" });
@@ -69,5 +107,9 @@ export const pageSizeParser = parseAsInteger
 	.withOptions({ history: "replace" });
 
 export const productFilterParser = parseAsString
+	.withDefault("")
+	.withOptions({ history: "replace" });
+
+export const entityFilterParser = parseAsString
 	.withDefault("")
 	.withOptions({ history: "replace" });

@@ -1,9 +1,11 @@
 import { deleteOrganizationsSlugTransactionsTransactionid } from "../generated";
 
-export async function deleteTransaction(transactionId: string) {
-	const slug = "behenck";
+export async function deleteTransaction(params: {
+	slug: string;
+	transactionId: string;
+}) {
 	await deleteOrganizationsSlugTransactionsTransactionid({
-		slug,
-		transactionId,
+		slug: params.slug,
+		transactionId: params.transactionId,
 	});
 }

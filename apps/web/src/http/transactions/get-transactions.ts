@@ -1,15 +1,17 @@
 import {
 	getOrganizationsSlugTransactions,
 	type GetOrganizationsSlugTransactions200,
+	type GetOrganizationsSlugTransactionsQueryParams,
 } from "../generated";
 
-export async function getTransactions(): Promise<
-	GetOrganizationsSlugTransactions200["transactions"]
-> {
-	const slug = "behenck";
+export async function getTransactions(params: {
+	slug: string;
+	filters?: GetOrganizationsSlugTransactionsQueryParams;
+}): Promise<GetOrganizationsSlugTransactions200> {
 	const data = await getOrganizationsSlugTransactions({
-		slug,
+		slug: params.slug,
+		params: params.filters,
 	});
 
-	return data.transactions;
+	return data;
 }

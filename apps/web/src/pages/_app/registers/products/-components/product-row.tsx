@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ProductChild, ProductListItem } from "@/schemas/types/product";
 import { CreateProduct } from "./create-product";
+import { DuplicateProduct } from "./duplicate-product";
 import { ProductScenarioBadges } from "./product-scenario-badges";
 import { UpdateProduct } from "./update-product";
 
@@ -110,6 +111,7 @@ export function ProductRow({
 						/>
 
 						<UpdateProduct product={product} />
+						<DuplicateProduct product={product} />
 
 						<Button
 							variant="ghost"

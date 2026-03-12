@@ -4,7 +4,7 @@
 */
 
 import fetch from "@/lib/axios";
-import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams } from "./models/GetOrganizationsSlugTransactions.ts";
+import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams, GetOrganizationsSlugTransactionsQueryParams } from "./models/GetOrganizationsSlugTransactions.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
 function getGetOrganizationsSlugTransactionsUrl({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }) {
@@ -16,9 +16,9 @@ function getGetOrganizationsSlugTransactionsUrl({ slug }: { slug: GetOrganizatio
  * @summary Get transactions
  * {@link /organizations/:slug/transactions}
  */
-export async function getOrganizationsSlugTransactions({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getOrganizationsSlugTransactions({ slug, params }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"]; params?: GetOrganizationsSlugTransactionsQueryParams }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugTransactionsUrl({ slug }).url.toString(), ... requestConfig })  
+  const res = await request<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetOrganizationsSlugTransactionsUrl({ slug }).url.toString(), params, ... requestConfig })  
   return res.data
 }

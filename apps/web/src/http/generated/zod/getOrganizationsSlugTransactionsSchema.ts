@@ -9,6 +9,20 @@ export const getOrganizationsSlugTransactionsPathParamsSchema = z.object({
     "slug": z.string()
     })
 
+export const getOrganizationsSlugTransactionsQueryParamsSchema = z.object({
+    "q": z.string().default(""),
+"status": z.optional(z.enum(["PENDING", "PAID", "CANCELED"])),
+"type": z.optional(z.enum(["INCOME", "OUTCOME"])),
+"companyId": z.optional(z.uuid()),
+"unitId": z.optional(z.uuid()),
+"dueFrom": z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+"dueTo": z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+"page": z.coerce.number().int().min(1).max(9007199254740991).default(1),
+"pageSize": z.coerce.number().int().min(1).max(100).default(20),
+"sortBy": z.enum(["dueDate", "expectedPaymentDate", "description", "totalAmount", "status", "createdAt"]).default("dueDate"),
+"sortDir": z.enum(["asc", "desc"]).default("desc")
+    })
+
 /**
  * @description Default Response
  */
@@ -74,7 +88,13 @@ export const getOrganizationsSlugTransactions200Schema = z.object({
     }))
     })
     }))
-    }))
+    })),
+"pagination": z.object({
+    "page": z.int().min(1).max(9007199254740991),
+"pageSize": z.int().min(1).max(100),
+"total": z.int().min(0).max(9007199254740991),
+"totalPages": z.int().min(1).max(9007199254740991)
+    })
     })
 
 export const getOrganizationsSlugTransactionsQueryResponseSchema = z.lazy(() => getOrganizationsSlugTransactions200Schema)

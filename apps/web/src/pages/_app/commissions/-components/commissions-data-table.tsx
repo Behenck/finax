@@ -1,6 +1,7 @@
 import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
 import {
 	CheckCircle2,
+	CheckCheck,
 	Eye,
 	MoreHorizontal,
 	Pencil,
@@ -92,6 +93,8 @@ import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
 } from "@/utils/format-amount";
+
+const COMMISSIONS_FILTERS_STORAGE_KEY = "finax:commissions:list:filters";
 
 type CommissionInstallmentRow =
 	GetOrganizationsSlugCommissionsInstallments200["items"][number];
@@ -186,6 +189,23 @@ function getCurrentMonthDateRange() {
 		from: format(startOfMonth(now), "yyyy-MM-dd"),
 		to: format(endOfMonth(now), "yyyy-MM-dd"),
 	};
+}
+
+function readStorageJson<T>(key: string, fallback: T): T {
+	if (typeof window === "undefined") {
+		return fallback;
+	}
+
+	try {
+		const rawValue = window.localStorage.getItem(key);
+		if (!rawValue) {
+			return fallback;
+		}
+
+		return JSON.parse(rawValue) as T;
+	} catch {
+		return fallback;
+	}
 }
 
 function canUpdateInstallments(saleStatus: SaleStatus) {
@@ -283,11 +303,110 @@ export function CommissionsDataTable() {
 	const [bulkPaymentDate, setBulkPaymentDate] =
 		useState(getTodayDateInputValue());
 	const [isBulkPaying, setIsBulkPaying] = useState(false);
+	const [isUndoingPayments, setIsUndoingPayments] = useState(false);
+	const [hasRestoredFilters, setHasRestoredFilters] = useState(false);
 
 	const currentPage = page >= 1 ? page : 1;
 	const currentPageSize = Math.min(100, Math.max(1, pageSize));
 	const effectiveExpectedFrom = expectedFromFilter || monthDateRange.from;
 	const effectiveExpectedTo = expectedToFilter || monthDateRange.to;
+
+	useEffect(() => {
+		if (hasRestoredFilters) {
+			return;
+		}
+
+		setHasRestoredFilters(true);
+		const storedFilters = readStorageJson<{
+			direction?: GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey;
+			status?: GetOrganizationsSlugCommissionsInstallmentsQueryParamsStatusEnumKey;
+			q?: string;
+			productId?: string;
+			expectedFrom?: string;
+			expectedTo?: string;
+			page?: number;
+			pageSize?: number;
+		}>(COMMISSIONS_FILTERS_STORAGE_KEY, {});
+
+		if (directionFilter === "OUTCOME" && storedFilters.direction) {
+			void setDirectionFilter(storedFilters.direction);
+		}
+
+		if (statusFilter === "ALL" && storedFilters.status && storedFilters.status !== "ALL") {
+			void setStatusFilter(storedFilters.status);
+		}
+
+		if (!searchFilter && storedFilters.q) {
+			void setSearchFilter(storedFilters.q);
+		}
+
+		if (!productIdFilter && storedFilters.productId) {
+			void setProductIdFilter(storedFilters.productId);
+		}
+
+		if (!expectedFromFilter && storedFilters.expectedFrom) {
+			void setExpectedFromFilter(storedFilters.expectedFrom);
+		}
+
+		if (!expectedToFilter && storedFilters.expectedTo) {
+			void setExpectedToFilter(storedFilters.expectedTo);
+		}
+
+		if (page === 1 && storedFilters.page && storedFilters.page > 1) {
+			void setPage(storedFilters.page);
+		}
+
+		if (pageSize === 20 && storedFilters.pageSize && storedFilters.pageSize !== 20) {
+			void setPageSize(storedFilters.pageSize);
+		}
+	}, [
+		directionFilter,
+		expectedFromFilter,
+		expectedToFilter,
+		hasRestoredFilters,
+		page,
+		pageSize,
+		productIdFilter,
+		searchFilter,
+		setDirectionFilter,
+		setExpectedFromFilter,
+		setExpectedToFilter,
+		setPage,
+		setPageSize,
+		setProductIdFilter,
+		setSearchFilter,
+		setStatusFilter,
+		statusFilter,
+	]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			COMMISSIONS_FILTERS_STORAGE_KEY,
+			JSON.stringify({
+				direction: directionFilter,
+				status: statusFilter,
+				q: searchFilter,
+				productId: productIdFilter,
+				expectedFrom: effectiveExpectedFrom,
+				expectedTo: effectiveExpectedTo,
+				page: currentPage,
+				pageSize: currentPageSize,
+			}),
+		);
+	}, [
+		currentPage,
+		currentPageSize,
+		directionFilter,
+		effectiveExpectedFrom,
+		effectiveExpectedTo,
+		productIdFilter,
+		searchFilter,
+		statusFilter,
+	]);
 
 	const { data, isLoading, isError, refetch } = useCommissionInstallments({
 		page: currentPage,
@@ -315,6 +434,7 @@ export function CommissionsDataTable() {
 		useUpdateSaleCommissionInstallment();
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
+	const isPaymentActionPending = isBulkPaying || isUndoingPayments;
 
 	useEffect(() => {
 		if (expectedFromFilter || expectedToFilter) {
@@ -512,6 +632,48 @@ export function CommissionsDataTable() {
 		});
 	}
 
+	async function undoInstallmentsPayment(installments: SelectedInstallment[]) {
+		if (installments.length === 0) {
+			return;
+		}
+
+		setIsUndoingPayments(true);
+
+		const results = await Promise.allSettled(
+			installments.map((installment) =>
+				updateInstallment({
+					saleId: installment.saleId,
+					installmentId: installment.id,
+					data: {
+						status: "PENDING",
+						paymentDate: null,
+						amount: installment.amount,
+					},
+					silent: true,
+				}),
+			),
+		);
+
+		let restoredCount = 0;
+		let failedCount = 0;
+		for (const result of results) {
+			if (result.status === "fulfilled") {
+				restoredCount += 1;
+			} else {
+				failedCount += 1;
+			}
+		}
+
+		if (restoredCount > 0) {
+			toast.success(`${restoredCount} parcela(s) retornaram para pendente.`);
+		}
+		if (failedCount > 0) {
+			toast.error(`Não foi possível desfazer ${failedCount} parcela(s).`);
+		}
+
+		setIsUndoingPayments(false);
+	}
+
 	async function handleConfirmInstallmentPayment() {
 		if (!payAction) {
 			return;
@@ -524,6 +686,7 @@ export function CommissionsDataTable() {
 				status: "PAID",
 				amount: parseBRLCurrencyToCents(payAction.amount),
 				paymentDate: payAction.paymentDate || undefined,
+				silent: true,
 			});
 
 			setSelectedInstallmentsById((current) => {
@@ -536,19 +699,77 @@ export function CommissionsDataTable() {
 				return next;
 			});
 			setPayAction(null);
+			toast.success("Parcela marcada como paga.", {
+				action: {
+					label: "Desfazer",
+					onClick: () => {
+						void undoInstallmentsPayment([
+							{
+								id: payAction.installment.id,
+								saleId: payAction.installment.saleId,
+								amount: parseBRLCurrencyToCents(payAction.amount),
+							},
+						]);
+					},
+				},
+			});
 		} catch {
 			// erro tratado no hook
 		}
 	}
 
-	async function handleConfirmBulkPayment() {
-		if (!bulkPaymentDate) {
+	async function handlePayInstallmentToday(installment: CommissionInstallmentRow) {
+		try {
+			await patchInstallmentStatus({
+				saleId: installment.saleId,
+				installmentId: installment.id,
+				status: "PAID",
+				paymentDate: getTodayDateInputValue(),
+				amount: installment.amount,
+				silent: true,
+			});
+
+			setSelectedInstallmentsById((current) => {
+				if (!current.has(installment.id)) {
+					return current;
+				}
+
+				const next = new Map(current);
+				next.delete(installment.id);
+				return next;
+			});
+			toast.success("Parcela marcada como paga.", {
+				action: {
+					label: "Desfazer",
+					onClick: () => {
+						void undoInstallmentsPayment([
+							{
+								id: installment.id,
+								saleId: installment.saleId,
+								amount: installment.amount,
+							},
+						]);
+					},
+				},
+			});
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
+	async function processBulkPayment(
+		paymentDate: string,
+		closeDialogOnSuccess: boolean,
+	) {
+		if (!paymentDate) {
 			toast.error("Informe a data de pagamento.");
 			return;
 		}
 
 		if (selectedInstallments.length === 0) {
-			setIsBulkPaymentDialogOpen(false);
+			if (closeDialogOnSuccess) {
+				setIsBulkPaymentDialogOpen(false);
+			}
 			return;
 		}
 
@@ -560,28 +781,31 @@ export function CommissionsDataTable() {
 					saleId: installment.saleId,
 					installmentId: installment.id,
 					status: "PAID",
-					paymentDate: bulkPaymentDate,
+					paymentDate,
 					amount: installment.amount,
 					silent: true,
 				}),
 			),
 		);
 
-		const successfulIds: string[] = [];
+		const successfulInstallments: SelectedInstallment[] = [];
 		let failedCount = 0;
 
 		for (const [index, result] of results.entries()) {
 			if (result.status === "fulfilled") {
-				const installmentId = selectedInstallments[index]?.id;
-				if (installmentId) {
-					successfulIds.push(installmentId);
+				const installment = selectedInstallments[index];
+				if (installment) {
+					successfulInstallments.push(installment);
 				}
 			} else {
 				failedCount += 1;
 			}
 		}
 
-		if (successfulIds.length > 0) {
+		if (successfulInstallments.length > 0) {
+			const successfulIds = successfulInstallments.map(
+				(installment) => installment.id,
+			);
 			setSelectedInstallmentsById((current) => {
 				const next = new Map(current);
 				for (const id of successfulIds) {
@@ -589,18 +813,33 @@ export function CommissionsDataTable() {
 				}
 				return next;
 			});
-			toast.success(`${successfulIds.length} parcela(s) marcadas como pagas.`);
+			toast.success(`${successfulIds.length} parcela(s) marcadas como pagas.`, {
+				action: {
+					label: "Desfazer",
+					onClick: () => {
+						void undoInstallmentsPayment(successfulInstallments);
+					},
+				},
+			});
 		}
 
 		if (failedCount > 0) {
 			toast.error(`Não foi possível pagar ${failedCount} parcela(s).`);
 		}
 
-		if (failedCount === 0) {
+		if (failedCount === 0 && closeDialogOnSuccess) {
 			setIsBulkPaymentDialogOpen(false);
 		}
 
 		setIsBulkPaying(false);
+	}
+
+	async function handleConfirmBulkPayment() {
+		await processBulkPayment(bulkPaymentDate, true);
+	}
+
+	async function handlePaySelectedToday() {
+		await processBulkPayment(getTodayDateInputValue(), false);
 	}
 
 	async function handleConfirmInstallmentEdition() {
@@ -807,23 +1046,35 @@ export function CommissionsDataTable() {
 					</Button>
 				</div>
 
-				{selectedInstallments.length > 0 ? (
-					<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
-						<p className="text-sm text-emerald-900">
-							{selectedInstallments.length} parcela(s) selecionada(s) · total{" "}
-							{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
-						</p>
-						<Button
-							type="button"
-							onClick={() => {
-								setBulkPaymentDate(getTodayDateInputValue());
-								setIsBulkPaymentDialogOpen(true);
-							}}
-						>
-							Pagar selecionadas
-						</Button>
-					</div>
-				) : null}
+					{selectedInstallments.length > 0 ? (
+						<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
+							<p className="text-sm text-emerald-900">
+								{selectedInstallments.length} parcela(s) selecionada(s) · total{" "}
+								{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
+							</p>
+							<div className="flex flex-col gap-2 md:flex-row">
+								<Button
+									type="button"
+									variant="outline"
+									disabled={isPaymentActionPending}
+									onClick={() => void handlePaySelectedToday()}
+								>
+									<CheckCheck className="size-4" />
+									{isPaymentActionPending ? "Processando..." : "Pagar hoje"}
+								</Button>
+								<Button
+									type="button"
+									disabled={isPaymentActionPending}
+									onClick={() => {
+										setBulkPaymentDate(getTodayDateInputValue());
+										setIsBulkPaymentDialogOpen(true);
+									}}
+								>
+									Pagar selecionadas
+								</Button>
+							</div>
+						</div>
+					) : null}
 
 				{isLoading ? (
 					<p className="text-sm text-muted-foreground">Carregando comissões...</p>
@@ -971,7 +1222,7 @@ export function CommissionsDataTable() {
 																		isPatchingStatus ||
 																		isUpdatingInstallment ||
 																		isDeletingInstallment ||
-																		isBulkPaying
+																		isPaymentActionPending
 																	}
 																>
 																	<MoreHorizontal className="size-4" />
@@ -1010,6 +1261,19 @@ export function CommissionsDataTable() {
 																>
 																	<CheckCircle2 className="size-4" />
 																	Pagar parcela
+																</DropdownMenuItem>
+																<DropdownMenuItem
+																	disabled={!canPayRow}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canPayRow) {
+																			return;
+																		}
+																		void handlePayInstallmentToday(installment);
+																	}}
+																>
+																	<CheckCheck className="size-4" />
+																	Pagar hoje
 																</DropdownMenuItem>
 																<DropdownMenuItem
 																	variant="destructive"
@@ -1101,16 +1365,19 @@ export function CommissionsDataTable() {
 							type="button"
 							variant="outline"
 							onClick={() => setIsBulkPaymentDialogOpen(false)}
-							disabled={isBulkPaying}
+							disabled={isPaymentActionPending}
 						>
 							Cancelar
 						</Button>
 						<Button
 							type="button"
 							onClick={handleConfirmBulkPayment}
-							disabled={isBulkPaying || selectedInstallments.length === 0}
+							disabled={
+								isPaymentActionPending ||
+								selectedInstallments.length === 0
+							}
 						>
-							{isBulkPaying ? "Pagando..." : "Confirmar pagamento"}
+							{isPaymentActionPending ? "Pagando..." : "Confirmar pagamento"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
@@ -1170,12 +1437,14 @@ export function CommissionsDataTable() {
 					</div>
 
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isPatchingStatus}>
+						<AlertDialogCancel
+							disabled={isPatchingStatus || isPaymentActionPending}
+						>
 							Cancelar
 						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmInstallmentPayment}
-							disabled={isPatchingStatus}
+							disabled={isPatchingStatus || isPaymentActionPending}
 						>
 							{isPatchingStatus ? "Salvando..." : "Confirmar"}
 						</AlertDialogAction>

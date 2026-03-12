@@ -1,4 +1,5 @@
 import { Controller, type Control } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
@@ -15,16 +16,35 @@ interface ProductSectionProps {
 	control: Control<SaleFormInput, unknown, SaleFormData>;
 	products: Array<{ id: string; label: string }>;
 	isLoadingOptions: boolean;
+	isCreatingQuickProduct: boolean;
+	onOpenQuickProductDialog(): void;
 }
 
 export function ProductSection({
 	control,
 	products,
 	isLoadingOptions,
+	isCreatingQuickProduct,
+	onOpenQuickProductDialog,
 }: ProductSectionProps) {
 	return (
 		<Card className="rounded-sm gap-4 p-5">
-			<h2 className="font-semibold text-md">Produto</h2>
+			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+				<div className="space-y-1">
+					<h2 className="font-semibold text-md">Produto</h2>
+					<p className="text-muted-foreground text-sm">
+						Selecione um produto existente ou faça um cadastro rápido.
+					</p>
+				</div>
+				<Button
+					type="button"
+					variant="outline"
+					onClick={onOpenQuickProductDialog}
+					disabled={isCreatingQuickProduct}
+				>
+					Cadastrar produto rápido
+				</Button>
+			</div>
 
 			<FieldGroup>
 				<Field className="gap-1">

@@ -50,6 +50,15 @@ describe("transactions routes smoke", () => {
     expect(response.statusCode).not.toBe(405)
   })
 
+  it("PATCH /organizations/:slug/transactions/payment/bulk should be registered", async () => {
+    const url = fillPathParams("/organizations/:slug/transactions/payment/bulk")
+    const agent = request(app.server)
+    const response = await agent.patch(url).send({})
+
+    expect(response.statusCode).not.toBe(404)
+    expect(response.statusCode).not.toBe(405)
+  })
+
   it("PUT /organizations/:slug/transactions/:transactionId should be registered", async () => {
     const url = fillPathParams("/organizations/:slug/transactions/:transactionId")
     const agent = request(app.server)

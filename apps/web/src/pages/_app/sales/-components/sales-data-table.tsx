@@ -19,6 +19,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -36,13 +37,14 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
-import { useDeleteSale } from "@/hooks/sales";
+import { useDeleteSale, usePatchSalesStatusBulk } from "@/hooks/sales";
 import {
 	useGetOrganizationsSlugProducts,
 	type GetOrganizationsSlugSales200,
 } from "@/http/generated";
 import {
 	SALE_STATUS_LABEL,
+	SALE_STATUS_TRANSITIONS,
 	SaleStatusSchema,
 	type SaleStatus,
 } from "@/schemas/types/sales";
@@ -59,12 +61,14 @@ import {
 	type ColumnDef,
 	type ColumnFiltersState,
 	type FilterFn,
+	type RowSelectionState,
 	type SortingState,
 	type VisibilityState,
 } from "@tanstack/react-table";
 import { format, parse, parseISO } from "date-fns";
 import {
 	ArrowUpDown,
+	Copy,
 	EllipsisVertical,
 	Eye,
 	ListFilter,
@@ -75,7 +79,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
@@ -111,6 +115,26 @@ const SALE_STATUS_SORT_PRIORITY: Record<SaleStatus, number> = {
 const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
+
+const SALES_FILTERS_STORAGE_KEY = "finax:sales:list:filters";
+const SALES_COLUMNS_STORAGE_KEY = "finax:sales:list:columns";
+
+function readStorageJson<T>(key: string, fallback: T): T {
+	if (typeof window === "undefined") {
+		return fallback;
+	}
+
+	try {
+		const rawValue = window.localStorage.getItem(key);
+		if (!rawValue) {
+			return fallback;
+		}
+
+		return JSON.parse(rawValue) as T;
+	} catch {
+		return fallback;
+	}
+}
 
 function formatSaleDate(value: string) {
 	const dateOnly = value.slice(0, 10);
@@ -214,6 +238,17 @@ function SaleTableRowActions({ sale, onOpenInstallments }: SaleTableRowActionsPr
 								Editar
 							</Link>
 						</DropdownMenuItem>
+						<DropdownMenuItem asChild>
+							<Link
+								to="/sales/create"
+								search={{
+									duplicateSaleId: sale.id,
+								}}
+							>
+								<Copy className="size-4" />
+								Duplicar
+							</Link>
+						</DropdownMenuItem>
 						<DropdownMenuItem
 							onSelect={(event) => {
 								event.preventDefault();
@@ -279,12 +314,19 @@ export function SalesDataTable({
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() =>
+		readStorageJson<VisibilityState>(SALES_COLUMNS_STORAGE_KEY, {}),
+	);
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+	const [bulkStatus, setBulkStatus] = useState<SaleStatus | "">("");
+	const restoredFiltersRef = useRef(false);
 	const [globalFilter, setGlobalFilter] = useQueryState("q", textFilterParser);
 	const [statusFilter, setStatusFilter] = useQueryState(
 		"status",
 		saleStatusFilterParser,
 	);
+	const { mutateAsync: patchSalesStatusBulk, isPending: isBulkStatusPending } =
+		usePatchSalesStatusBulk();
 	const columnFilters = useMemo<ColumnFiltersState>(
 		() =>
 			statusFilter === "ALL"
@@ -294,6 +336,51 @@ export function SalesDataTable({
 	);
 	const [installmentsDrawerSale, setInstallmentsDrawerSale] =
 		useState<SaleTableRow | null>(null);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			SALES_COLUMNS_STORAGE_KEY,
+			JSON.stringify(columnVisibility),
+		);
+	}, [columnVisibility]);
+
+	useEffect(() => {
+		if (restoredFiltersRef.current) {
+			return;
+		}
+
+		restoredFiltersRef.current = true;
+		const storedFilters = readStorageJson<{
+			q?: string;
+			status?: SaleStatusFilter;
+		}>(SALES_FILTERS_STORAGE_KEY, {});
+
+		if (!globalFilter && storedFilters.q) {
+			void setGlobalFilter(storedFilters.q);
+		}
+
+		if (statusFilter === "ALL" && storedFilters.status && storedFilters.status !== "ALL") {
+			void setStatusFilter(storedFilters.status);
+		}
+	}, [globalFilter, setGlobalFilter, setStatusFilter, statusFilter]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			SALES_FILTERS_STORAGE_KEY,
+			JSON.stringify({
+				q: globalFilter,
+				status: statusFilter,
+			}),
+		);
+	}, [globalFilter, statusFilter]);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
@@ -334,6 +421,30 @@ export function SalesDataTable({
 
 	const columns = useMemo<ColumnDef<SaleTableRow>[]>(
 		() => [
+			{
+				id: "select",
+				enableHiding: false,
+				header: ({ table }) => (
+					<Checkbox
+						checked={
+							table.getIsAllPageRowsSelected()
+								? true
+								: table.getIsSomePageRowsSelected()
+									? "indeterminate"
+									: false
+						}
+						onCheckedChange={(value) => table.toggleAllPageRowsSelected(Boolean(value))}
+						aria-label="Selecionar página atual"
+					/>
+				),
+				cell: ({ row }) => (
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+						aria-label={`Selecionar venda ${row.original.id}`}
+					/>
+				),
+			},
 			{
 				accessorKey: "saleDate",
 				header: ({ column }) => (
@@ -439,21 +550,21 @@ export function SalesDataTable({
 				},
 				{
 					accessorKey: "updatedAt",
-				header: ({ column }) => (
-					<Button
-						variant="ghost"
-						className="h-8 px-2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Atualização
-						<ArrowUpDown className="ml-2 size-4" />
-					</Button>
-				),
-				cell: ({ row }) => formatDateTime(row.original.updatedAt),
-			},
-			{
-				id: "actions",
-				enableHiding: false,
+					header: ({ column }) => (
+						<Button
+							variant="ghost"
+							className="h-8 px-2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Atualização
+							<ArrowUpDown className="ml-2 size-4" />
+						</Button>
+					),
+					cell: ({ row }) => formatDateTime(row.original.updatedAt),
+				},
+				{
+					id: "actions",
+					enableHiding: false,
 					header: "",
 					cell: ({ row }) => (
 						<div className="flex justify-end">
@@ -476,15 +587,76 @@ export function SalesDataTable({
 			columnFilters,
 			columnVisibility,
 			globalFilter,
+			rowSelection,
 		},
+		getRowId: (row) => row.id,
 		onSortingChange: setSorting,
 		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		enableRowSelection: true,
 		globalFilterFn: salesGlobalFilterFn,
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
+
+	const selectedSales = table.getSelectedRowModel().rows.map((row) => row.original);
+	const selectedSaleIds = selectedSales.map((sale) => sale.id);
+
+	const availableBulkStatuses = useMemo<SaleStatus[]>(() => {
+		if (selectedSales.length === 0) {
+			return [];
+		}
+
+		const allowedStatuses = selectedSales.reduce<Set<SaleStatus>>(
+			(accumulator, sale, index) => {
+				const saleAllowedStatuses = new Set(
+					SALE_STATUS_TRANSITIONS[sale.status as SaleStatus],
+				);
+
+				if (index === 0) {
+					return saleAllowedStatuses;
+				}
+
+				return new Set(
+					Array.from(accumulator).filter((status) =>
+						saleAllowedStatuses.has(status),
+					),
+				);
+			},
+			new Set<SaleStatus>(),
+		);
+
+		return SaleStatusSchema.options.filter((status) => allowedStatuses.has(status));
+	}, [selectedSales]);
+
+	useEffect(() => {
+		if (!bulkStatus) {
+			return;
+		}
+
+		if (!availableBulkStatuses.includes(bulkStatus)) {
+			setBulkStatus("");
+		}
+	}, [availableBulkStatuses, bulkStatus]);
+
+	async function handleApplyBulkStatus() {
+		if (!bulkStatus || selectedSaleIds.length === 0) {
+			return;
+		}
+
+		try {
+			await patchSalesStatusBulk({
+				saleIds: selectedSaleIds,
+				status: bulkStatus,
+			});
+			setRowSelection({});
+			setBulkStatus("");
+		} catch {
+			// erro tratado no hook
+		}
+	}
 
 	if (isLoading) {
 		return (
@@ -594,6 +766,45 @@ export function SalesDataTable({
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
+
+			{selectedSaleIds.length > 0 ? (
+				<div className="flex flex-col gap-3 rounded-md border border-blue-300 bg-blue-50 p-4 md:flex-row md:items-center md:justify-between">
+					<p className="text-sm text-blue-900">
+						{selectedSaleIds.length} venda(s) selecionada(s)
+					</p>
+					<div className="flex flex-col gap-2 md:flex-row md:items-center">
+						<Select
+							value={bulkStatus || undefined}
+							onValueChange={(value) => setBulkStatus(value as SaleStatus)}
+							disabled={availableBulkStatuses.length === 0}
+						>
+							<SelectTrigger className="w-full md:w-52">
+								<SelectValue
+									placeholder={
+										availableBulkStatuses.length === 0
+											? "Sem transição disponível"
+											: "Novo status"
+									}
+								/>
+							</SelectTrigger>
+							<SelectContent>
+								{availableBulkStatuses.map((status) => (
+									<SelectItem key={status} value={status}>
+										{SALE_STATUS_LABEL[status]}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						<Button
+							type="button"
+							onClick={() => void handleApplyBulkStatus()}
+							disabled={!bulkStatus || isBulkStatusPending}
+						>
+							{isBulkStatusPending ? "Aplicando..." : "Alterar status em lote"}
+						</Button>
+					</div>
+				</div>
+			) : null}
 
 			<div className="rounded-md border bg-card">
 				<Table>

@@ -94,6 +94,8 @@ export type { PatchOrganizationsSlugRecurrencesRecurrenceidMutationKey } from ".
 export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
 export type { PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatus.ts";
 export type { PatchOrganizationsSlugSalesSaleidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidStatus.ts";
+export type { PatchOrganizationsSlugSalesStatusBulkMutationKey } from "./usePatchOrganizationsSlugSalesStatusBulk.ts";
+export type { PatchOrganizationsSlugTransactionsPaymentBulkMutationKey } from "./usePatchOrganizationsSlugTransactionsPaymentBulk.ts";
 export type { PatchOrganizationsSlugTransactionsTransactionidMutationKey } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";
 export type { PostAuthSendEmailOtpMutationKey } from "./usePostAuthSendEmailOtp.ts";
 export type { PostAuthVerifyOtpMutationKey } from "./usePostAuthVerifyOtp.ts";
@@ -426,6 +428,12 @@ export { usePatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid
 export { patchOrganizationsSlugSalesSaleidStatusMutationKey } from "./usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export { patchOrganizationsSlugSalesSaleidStatusMutationOptions } from "./usePatchOrganizationsSlugSalesSaleidStatus.ts";
 export { usePatchOrganizationsSlugSalesSaleidStatus } from "./usePatchOrganizationsSlugSalesSaleidStatus.ts";
+export { patchOrganizationsSlugSalesStatusBulkMutationKey } from "./usePatchOrganizationsSlugSalesStatusBulk.ts";
+export { patchOrganizationsSlugSalesStatusBulkMutationOptions } from "./usePatchOrganizationsSlugSalesStatusBulk.ts";
+export { usePatchOrganizationsSlugSalesStatusBulk } from "./usePatchOrganizationsSlugSalesStatusBulk.ts";
+export { patchOrganizationsSlugTransactionsPaymentBulkMutationKey } from "./usePatchOrganizationsSlugTransactionsPaymentBulk.ts";
+export { patchOrganizationsSlugTransactionsPaymentBulkMutationOptions } from "./usePatchOrganizationsSlugTransactionsPaymentBulk.ts";
+export { usePatchOrganizationsSlugTransactionsPaymentBulk } from "./usePatchOrganizationsSlugTransactionsPaymentBulk.ts";
 export { patchOrganizationsSlugTransactionsTransactionidMutationKey } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";
 export { patchOrganizationsSlugTransactionsTransactionidMutationOptions } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";
 export { usePatchOrganizationsSlugTransactionsTransactionid } from "./usePatchOrganizationsSlugTransactionsTransactionid.ts";

@@ -5,3 +5,7 @@ export const QUICK_CUSTOMER_DEFAULT_VALUES = {
 	documentNumber: "",
 	phone: "",
 };
+
+export const QUICK_PRODUCT_DEFAULT_VALUES = {
+	name: "",
+};

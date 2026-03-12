@@ -2664,6 +2664,44 @@ describe("sales crud", () => {
 		expect(sale?.status).toBe(SaleStatus.COMPLETED);
 	});
 
+	it("should patch status in bulk for valid transitions", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(fixture);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+				totalAmount: 130_000,
+			}),
+		);
+
+		const response = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds: [firstSaleId, secondSaleId],
+				status: "APPROVED",
+			});
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.updated).toBe(2);
+
+		const sales = await prisma.sale.findMany({
+			where: {
+				id: {
+					in: [firstSaleId, secondSaleId],
+				},
+			},
+			select: {
+				id: true,
+				status: true,
+			},
+		});
+
+		expect(sales).toHaveLength(2);
+		expect(sales.every((sale) => sale.status === SaleStatus.APPROVED)).toBe(true);
+	});
+
 	it("should reject invalid status transition", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(fixture);

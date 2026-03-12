@@ -402,6 +402,17 @@ export const PatchSaleStatusBodySchema = z
 	})
 	.strict();
 
+export const PatchSalesStatusBulkBodySchema = z
+	.object({
+		saleIds: z.array(z.uuid()).min(1).max(100),
+		status: z.enum(SaleStatus),
+	})
+	.strict();
+
+export const PatchSalesStatusBulkResponseSchema = z.object({
+	updated: z.number().int().nonnegative(),
+});
+
 export const PatchSaleCommissionInstallmentStatusBodySchema = z
 	.object({
 		status: z.enum([
@@ -519,6 +530,9 @@ export type SaleDynamicFieldSchemaItem = z.infer<
 >;
 export type SaleDynamicFieldValues = z.infer<typeof SaleDynamicFieldValuesSchema>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
+export type PatchSalesStatusBulkBody = z.infer<
+	typeof PatchSalesStatusBulkBodySchema
+>;
 export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 	typeof PatchSaleCommissionInstallmentStatusBodySchema
 >;

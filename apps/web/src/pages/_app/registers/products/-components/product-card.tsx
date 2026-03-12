@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { Product, ProductListItem } from "@/schemas/types/product";
 import { CreateProduct } from "./create-product";
+import { DuplicateProduct } from "./duplicate-product";
 import { ProductScenarioBadges } from "./product-scenario-badges";
 import { ProductRow } from "./product-row";
 import { UpdateProduct } from "./update-product";
@@ -168,6 +169,7 @@ export function ProductCard({ product }: ProductCardProps) {
 						/>
 
 						<UpdateProduct product={product} />
+						<DuplicateProduct product={product} />
 
 						<Button
 							variant="ghost"

@@ -4,24 +4,24 @@
 */
 
 import fetch from "@kubb/plugin-client/clients/axios";
-import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams } from "../models/GetOrganizationsSlugTransactions.ts";
+import type { GetOrganizationsSlugTransactionsQueryResponse, GetOrganizationsSlugTransactionsPathParams, GetOrganizationsSlugTransactionsQueryParams } from "../models/GetOrganizationsSlugTransactions.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { QueryKey, QueryClient, UseSuspenseQueryOptions, UseSuspenseQueryResult } from "@tanstack/react-query";
 import { getOrganizationsSlugTransactions } from "../getOrganizationsSlugTransactions.ts";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 
-export const getOrganizationsSlugTransactionsSuspenseQueryKey = ({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }) => [{ url: '/organizations/:slug/transactions', params: {slug:slug} }] as const
+export const getOrganizationsSlugTransactionsSuspenseQueryKey = ({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, params: GetOrganizationsSlugTransactionsQueryParams = {}) => [{ url: '/organizations/:slug/transactions', params: {slug:slug} }, ...(params ? [params] : [])] as const
 
 export type GetOrganizationsSlugTransactionsSuspenseQueryKey = ReturnType<typeof getOrganizationsSlugTransactionsSuspenseQueryKey>
 
-export function getOrganizationsSlugTransactionsSuspenseQueryOptions({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getOrganizationsSlugTransactionsSuspenseQueryKey({ slug })
+export function getOrganizationsSlugTransactionsSuspenseQueryOptions({ slug, params }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"]; params?: GetOrganizationsSlugTransactionsQueryParams }, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+  const queryKey = getOrganizationsSlugTransactionsSuspenseQueryKey({ slug }, params)
   return queryOptions<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, GetOrganizationsSlugTransactionsQueryResponse, typeof queryKey>({
    enabled: !!(slug),
    queryKey,
    queryFn: async ({ signal }) => {
       config.signal = signal
-      return getOrganizationsSlugTransactions({ slug }, config)
+      return getOrganizationsSlugTransactions({ slug, params }, config)
    },
   })
 }
@@ -30,7 +30,7 @@ export function getOrganizationsSlugTransactionsSuspenseQueryOptions({ slug }: {
  * @summary Get transactions
  * {@link /organizations/:slug/transactions}
  */
-export function useGetOrganizationsSlugTransactionsSuspense<TData = GetOrganizationsSlugTransactionsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugTransactionsSuspenseQueryKey>({ slug }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"] }, options: 
+export function useGetOrganizationsSlugTransactionsSuspense<TData = GetOrganizationsSlugTransactionsQueryResponse, TQueryKey extends QueryKey = GetOrganizationsSlugTransactionsSuspenseQueryKey>({ slug, params }: { slug: GetOrganizationsSlugTransactionsPathParams["slug"]; params?: GetOrganizationsSlugTransactionsQueryParams }, options: 
 {
   query?: Partial<UseSuspenseQueryOptions<GetOrganizationsSlugTransactionsQueryResponse, ResponseErrorConfig<Error>, TData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
@@ -38,11 +38,11 @@ export function useGetOrganizationsSlugTransactionsSuspense<TData = GetOrganizat
  = {}) {
   const { query: queryConfig = {}, client: config = {} } = options ?? {}
   const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugTransactionsSuspenseQueryKey({ slug })
+  const queryKey = queryOptions?.queryKey ?? getOrganizationsSlugTransactionsSuspenseQueryKey({ slug }, params)
 
 
   const query = useSuspenseQuery({
-   ...getOrganizationsSlugTransactionsSuspenseQueryOptions({ slug }, config),
+   ...getOrganizationsSlugTransactionsSuspenseQueryOptions({ slug, params }, config),
    queryKey,
    ...queryOptions
   } as unknown as UseSuspenseQueryOptions, queryClient) as UseSuspenseQueryResult<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }

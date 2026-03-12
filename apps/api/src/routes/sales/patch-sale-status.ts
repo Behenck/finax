@@ -15,18 +15,7 @@ import {
 	loadSaleHistorySnapshot,
 } from "./sale-history";
 import { PatchSaleStatusBodySchema } from "./sale-schemas";
-
-function isValidSaleStatusTransition(from: SaleStatus, to: SaleStatus) {
-	if (from === SaleStatus.PENDING) {
-		return to === SaleStatus.APPROVED || to === SaleStatus.CANCELED;
-	}
-
-	if (from === SaleStatus.APPROVED) {
-		return to === SaleStatus.COMPLETED || to === SaleStatus.CANCELED;
-	}
-
-	return false;
-}
+import { isValidSaleStatusTransition } from "./sale-status-transition";
 
 export async function patchSaleStatus(app: FastifyInstance) {
 	app

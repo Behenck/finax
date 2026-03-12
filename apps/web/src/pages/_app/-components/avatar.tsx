@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -11,13 +10,13 @@ import {
 import { useApp } from "@/context/app-context";
 import { getInitials } from "@/utils/get-initials";
 import { Link } from "@tanstack/react-router";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, UserRound } from "lucide-react";
 
 export function AvatarDropDown() {
 	const { auth } = useApp();
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger>
+			<DropdownMenuTrigger className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
 				<Avatar>
 					<AvatarImage src={auth?.avatarUrl ?? undefined} alt="@behenck" />
 					<AvatarFallback>
@@ -25,22 +24,23 @@ export function AvatarDropDown() {
 					</AvatarFallback>
 				</Avatar>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="mr-6">
+			<DropdownMenuContent className="mr-6 min-w-52" align="end">
 				<DropdownMenuLabel className="flex flex-col">
 					<span>{auth?.name}</span>
 					<span className="text-xs text-muted-foreground">{auth?.email}</span>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>
-					<Button variant="ghost" className="w-full" asChild>
-						<Link
-							to="/sign-out"
-							className="flex w-full items-center justify-between!"
-						>
-							<span>Sair</span>
-							<LogOut />
-						</Link>
-					</Button>
+				<DropdownMenuItem asChild>
+					<Link to="/profile">
+						<UserRound className="size-4" />
+						Meu perfil
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link to="/sign-out">
+						<LogOut className="size-4" />
+						Sair
+					</Link>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

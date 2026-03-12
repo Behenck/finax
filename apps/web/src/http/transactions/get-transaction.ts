@@ -4,13 +4,14 @@ import {
 } from "../generated";
 
 export async function getTransaction(
-	transactionId: string
+	params: {
+		slug: string;
+		transactionId: string;
+	},
 ): Promise<GetOrganizationsSlugTransactionsTransactionid200["transaction"]> {
-	const slug = "behenck";
-
 	const data = await getOrganizationsSlugTransactionsTransactionid({
-		slug,
-		transactionId,
+		slug: params.slug,
+		transactionId: params.transactionId,
 	});
 
 	return data.transaction;

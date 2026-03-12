@@ -11,6 +11,7 @@ import { getSalesDashboard } from "./get-sales-dashboard";
 import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
 import { patchSaleStatus } from "./patch-sale-status";
+import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
 import { updateSale } from "./update-sale";
 
 export async function saleRoutes(app: FastifyInstance) {
@@ -23,6 +24,7 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(getSale);
 	await app.register(getSaleHistory);
 	await app.register(patchSaleStatus);
+	await app.register(patchSalesStatusBulk);
 	await app.register(getSaleCommissionInstallments);
 	await app.register(patchSaleCommissionInstallmentStatus);
 	await app.register(patchSaleCommissionInstallment);

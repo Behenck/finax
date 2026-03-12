@@ -66,6 +66,9 @@ interface ProductFormProps {
 	mode?: "create" | "edit";
 	initialData?: ProductListItem;
 	fixedParentId?: string;
+	duplicateFromProductId?: string;
+	duplicateFromProductName?: string;
+	duplicateParentId?: string | null;
 }
 
 function isDatabaseSchemaOutdatedMessage(message: string) {
@@ -101,6 +104,9 @@ export function ProductForm({
 	mode = "create",
 	initialData,
 	fixedParentId,
+	duplicateFromProductId,
+	duplicateFromProductName,
+	duplicateParentId,
 }: ProductFormProps) {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
@@ -116,6 +122,12 @@ export function ProductForm({
 		usePutOrganizationsSlugProductsIdSaleFields();
 
 	const isEditMode = mode === "edit" && !!initialData;
+	const sourceProductId = isEditMode
+		? initialData?.id ?? ""
+		: duplicateFromProductId ?? "";
+	const shouldLoadSourceProductData = Boolean(sourceProductId);
+	const duplicateProductName =
+		duplicateFromProductName?.trim() ?? "";
 
 	const { data: companiesData } = useGetOrganizationsSlugCompanies(
 		{ slug: organization?.slug ?? "" },
@@ -143,10 +155,10 @@ export function ProductForm({
 		isError: isScenariosError,
 		error: scenariosError,
 	} = useGetOrganizationsSlugProductsIdCommissionScenarios(
-		{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
+		{ slug: organization?.slug ?? "", id: sourceProductId },
 		{
 			query: {
-				enabled: !!organization?.slug && !!initialData?.id && isEditMode,
+				enabled: !!organization?.slug && shouldLoadSourceProductData,
 			},
 		},
 	);
@@ -157,10 +169,10 @@ export function ProductForm({
 		error: saleFieldsError,
 	} =
 		useGetOrganizationsSlugProductsIdSaleFields(
-			{ slug: organization?.slug ?? "", id: initialData?.id ?? "" },
+			{ slug: organization?.slug ?? "", id: sourceProductId },
 			{
 				query: {
-					enabled: !!organization?.slug && !!initialData?.id && isEditMode,
+					enabled: !!organization?.slug && shouldLoadSourceProductData,
 				},
 			},
 		);
@@ -168,7 +180,11 @@ export function ProductForm({
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
-			name: initialData?.name ?? "",
+			name: isEditMode
+				? initialData?.name ?? ""
+				: duplicateProductName
+					? `Cópia de ${duplicateProductName}`
+					: "",
 			scenarios: [],
 			saleFields: [],
 		},
@@ -281,12 +297,18 @@ export function ProductForm({
 	}, [isSaleFieldsError, saleFieldsError]);
 
 	useEffect(() => {
-		if (!isEditMode || !initialData) return;
+		if (!shouldLoadSourceProductData) return;
 		if (isLoadingScenarios || isLoadingSaleFields) return;
 		if (initializedFromApiRef.current && isDirty) return;
 
+		const currentName = getValues("name").trim();
+		const resolvedName = isEditMode
+			? initialData?.name ?? ""
+			: currentName ||
+				(duplicateProductName ? `Cópia de ${duplicateProductName}` : "");
+
 		reset({
-			name: initialData.name,
+			name: resolvedName,
 			scenarios:
 				(scenariosData?.scenarios ?? []).length > 0
 					? (scenariosData?.scenarios ?? []).map(mapApiScenarioToForm)
@@ -303,6 +325,8 @@ export function ProductForm({
 		});
 		initializedFromApiRef.current = true;
 	}, [
+		duplicateProductName,
+		getValues,
 		initialData,
 		isDirty,
 		isEditMode,
@@ -311,13 +335,12 @@ export function ProductForm({
 		reset,
 		saleFieldsData,
 		scenariosData,
+		shouldLoadSourceProductData,
 	]);
 
 	useEffect(() => {
-		if (mode === "create") {
-			initializedFromApiRef.current = false;
-		}
-	}, [mode]);
+		initializedFromApiRef.current = false;
+	}, [mode, sourceProductId]);
 
 	const invalidateProducts = async () => {
 		await queryClient.invalidateQueries({
@@ -518,7 +541,7 @@ export function ProductForm({
 					data: {
 						name,
 						description: null,
-						parentId: fixedParentId ?? null,
+						parentId: fixedParentId ?? duplicateParentId ?? null,
 					},
 				});
 				createdProductId = createdProduct.productId;
@@ -663,13 +686,13 @@ export function ProductForm({
 					</div>
 
 					<div className="max-h-[45vh] space-y-3 overflow-y-auto pr-1">
-						{isEditMode && isLoadingSaleFields ? (
+						{shouldLoadSourceProductData && isLoadingSaleFields ? (
 							<Card className="p-4">
 								<span className="text-muted-foreground text-sm">
 									Carregando campos da venda...
 								</span>
 							</Card>
-						) : isEditMode && isSaleFieldsError ? (
+						) : shouldLoadSourceProductData && isSaleFieldsError ? (
 							<Card className="space-y-2 p-4">
 								<span className="text-destructive text-sm">
 									{saleFieldsLoadErrorMessage ??
@@ -916,13 +939,13 @@ export function ProductForm({
 					</div>
 
 					<div className="max-h-[60vh] overflow-y-auto pr-1">
-						{isEditMode && isLoadingScenarios ? (
+						{shouldLoadSourceProductData && isLoadingScenarios ? (
 							<Card className="p-4">
 								<span className="text-muted-foreground text-sm">
 									Carregando cenários de comissão...
 								</span>
 							</Card>
-						) : isEditMode && isScenariosError ? (
+						) : shouldLoadSourceProductData && isScenariosError ? (
 							<Card className="space-y-2 p-4">
 								<span className="text-destructive text-sm">
 									{scenariosLoadErrorMessage ??
