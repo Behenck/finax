@@ -7,20 +7,23 @@ Use este arquivo como guia global e, antes de implementar qualquer mudanca, cons
 
 - Frontend: `apps/web/AGENTS.md`
 - Backend: `apps/api/AGENTS.md`
+- Mobile: `apps/mobile/AGENTS.md`
 
 ## Escopo de aplicacao
-Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/AGENTS.md` e `apps/api/AGENTS.md`) prevalecem dentro desses diretorios.
+Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/AGENTS.md`, `apps/api/AGENTS.md` e `apps/mobile/AGENTS.md`) prevalecem dentro desses diretorios.
 
 ## Visao geral do projeto
 - Monorepo com `pnpm` + `turbo`
 - Apps principais:
 - `apps/web` (frontend)
 - `apps/api` (backend)
+- `apps/mobile` (React Native + Expo Router)
 - Node.js `>=22` (definido em `package.json`)
 
 ## Estrutura macro do repositorio
 - `apps/web`: aplicacao frontend React/Vite
 - `apps/api`: API Fastify + Prisma
+- `apps/mobile`: app mobile React Native/Expo
 - `package.json`: scripts da raiz (`dev`, `build`, `lint`)
 - `turbo.json`: orquestracao de tarefas do monorepo
 - `pnpm-workspace.yaml`: definicao do workspace
@@ -28,6 +31,7 @@ Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/
 ## Como navegar por tipo de mudanca
 - Mudanca somente no frontend: ler `apps/web/AGENTS.md` antes de implementar.
 - Mudanca somente no backend: ler `apps/api/AGENTS.md` antes de implementar.
+- Mudanca somente no mobile: ler `apps/mobile/AGENTS.md` antes de implementar.
 - Mudanca full-stack (contrato + UI): ler ambos (`apps/web/AGENTS.md` e `apps/api/AGENTS.md`) e planejar impacto cruzado.
 
 ## Regras globais para o Codex
@@ -81,6 +85,12 @@ Executar a partir da raiz:
 - Validar documentacao OpenAPI (`/docs/json`)
 - Regenerar/adaptar integracao no frontend (Kubb + hooks + UI)
 - Atualizar testes/documentacao conforme necessario
+
+### 4) Mudanca somente mobile
+- Ler `apps/mobile/AGENTS.md`
+- Identificar rota/tela/componente/provider/hook afetado no Expo Router
+- Manter padrao de pastas e convencoes do app mobile
+- Validar integracao com contrato backend existente
 
 ## O que nao fazer
 - Nao criar estrutura paralela para o mesmo dominio sem motivo.
