@@ -520,7 +520,9 @@ describe("sales crud", () => {
 
 	it("should create sale with dynamic fields snapshot", async () => {
 		const fixture = await createFixture();
-		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+		const productDynamicFields = await createProductDynamicFields(
+			fixture.product.id,
+		);
 
 		const response = await request(app.server)
 			.post(`/organizations/${fixture.org.slug}/sales`)
@@ -561,7 +563,10 @@ describe("sales crud", () => {
 			required: boolean;
 			options: Array<{ id: string; label: string }>;
 		}>;
-		const dynamicFieldValues = sale?.dynamicFieldValues as Record<string, unknown>;
+		const dynamicFieldValues = sale?.dynamicFieldValues as Record<
+			string,
+			unknown
+		>;
 
 		expect(dynamicFieldSchema).toHaveLength(4);
 		expect(
@@ -575,7 +580,9 @@ describe("sales crud", () => {
 		expect(dynamicFieldValues[productDynamicFields.groupField.id]).toBe(
 			"Grupo Norte",
 		);
-		expect(dynamicFieldValues[productDynamicFields.amountField.id]).toBe(350_000);
+		expect(dynamicFieldValues[productDynamicFields.amountField.id]).toBe(
+			350_000,
+		);
 		expect(dynamicFieldValues[productDynamicFields.stageField.id]).toBe(
 			productDynamicFields.stageOptions[0]?.id,
 		);
@@ -586,7 +593,9 @@ describe("sales crud", () => {
 
 	it("should reject create sale when required dynamic field is missing", async () => {
 		const fixture = await createFixture();
-		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+		const productDynamicFields = await createProductDynamicFields(
+			fixture.product.id,
+		);
 
 		const response = await request(app.server)
 			.post(`/organizations/${fixture.org.slug}/sales`)
@@ -1245,7 +1254,9 @@ describe("sales crud", () => {
 		expect(createdHistory[0]?.actor.id).toBe(fixture.user.id);
 		expect(createdHistory[0]?.changes.length).toBeGreaterThan(0);
 		expect(
-			createdHistory[0]?.changes.some((change) => change.path === "sale.totalAmount"),
+			createdHistory[0]?.changes.some(
+				(change) => change.path === "sale.totalAmount",
+			),
 		).toBe(true);
 
 		const updateResponse = await request(app.server)
@@ -1265,7 +1276,9 @@ describe("sales crud", () => {
 		expect(updatedHistory[1]?.action).toBe("CREATED");
 		expect(
 			new Date(updatedHistory[0]?.createdAt ?? "").getTime(),
-		).toBeGreaterThanOrEqual(new Date(updatedHistory[1]?.createdAt ?? "").getTime());
+		).toBeGreaterThanOrEqual(
+			new Date(updatedHistory[1]?.createdAt ?? "").getTime(),
+		);
 
 		const totalAmountChange = updatedHistory[0]?.changes.find(
 			(change) => change.path === "sale.totalAmount",
@@ -1277,7 +1290,9 @@ describe("sales crud", () => {
 
 	it("should include dynamic field diff in sale history", async () => {
 		const fixture = await createFixture();
-		const productDynamicFields = await createProductDynamicFields(fixture.product.id);
+		const productDynamicFields = await createProductDynamicFields(
+			fixture.product.id,
+		);
 		const saleId = await createSaleUsingApi(
 			fixture,
 			buildCreatePayload(fixture, {
@@ -1320,7 +1335,8 @@ describe("sales crud", () => {
 
 		const groupFieldChange = updateEvent?.changes.find(
 			(change) =>
-				change.path === `sale.dynamicFieldValues.${productDynamicFields.groupField.id}`,
+				change.path ===
+				`sale.dynamicFieldValues.${productDynamicFields.groupField.id}`,
 		) as
 			| {
 					before: { value: unknown; label: string };
@@ -1417,7 +1433,9 @@ describe("sales crud", () => {
 		expect(actions).toContain("COMMISSION_INSTALLMENT_STATUS_UPDATED");
 		expect(actions).toContain("COMMISSION_INSTALLMENT_DELETED");
 
-		const statusEvent = history.find((event) => event.action === "STATUS_CHANGED");
+		const statusEvent = history.find(
+			(event) => event.action === "STATUS_CHANGED",
+		);
 		expect(statusEvent).toBeDefined();
 		expect(
 			statusEvent?.changes.some(
@@ -1491,7 +1509,9 @@ describe("sales crud", () => {
 
 	it("should require dynamic fields and replace snapshot when product changes on update", async () => {
 		const fixture = await createFixture();
-		const originalDynamicFields = await createProductDynamicFields(fixture.product.id);
+		const originalDynamicFields = await createProductDynamicFields(
+			fixture.product.id,
+		);
 
 		const saleId = await createSaleUsingApi(
 			fixture,
@@ -1797,7 +1817,9 @@ describe("sales crud", () => {
 		).toBe(true);
 
 		const history = await getSaleHistoryEvents(fixture, saleId);
-		const statusEvent = history.find((event) => event.action === "STATUS_CHANGED");
+		const statusEvent = history.find(
+			(event) => event.action === "STATUS_CHANGED",
+		);
 
 		expect(statusEvent).toBeDefined();
 		expect(
@@ -1941,6 +1963,80 @@ describe("sales crud", () => {
 				amount: 0,
 			},
 		});
+	});
+
+	it("should list organization commission installments ordered by status and expected date", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(204);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "COMPLETED",
+			});
+		expect(completeResponse.statusCode).toBe(204);
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		expect(installmentsResponse.statusCode).toBe(200);
+
+		const sellerInstallmentId = installmentsResponse.body.installments.find(
+			(installment: { recipientType: string; installmentNumber: number }) =>
+				installment.recipientType === "SELLER" &&
+				installment.installmentNumber === 1,
+		)?.id as string | undefined;
+
+		expect(sellerInstallmentId).toBeTruthy();
+
+		const paidResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-03-18",
+			});
+		expect(paidResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?direction=OUTCOME&page=1&pageSize=20`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.items).toHaveLength(3);
+		expect(
+			response.body.items.map((item: { status: string }) => item.status),
+		).toEqual(["PENDING", "PENDING", "PAID"]);
+
+		const pendingExpectedDates = response.body.items
+			.filter((item: { status: string }) => item.status === "PENDING")
+			.map((item: { expectedPaymentDate: string }) =>
+				new Date(item.expectedPaymentDate).getTime(),
+			);
+
+		expect(pendingExpectedDates[0]).toBeLessThanOrEqual(
+			pendingExpectedDates[1],
+		);
 	});
 
 	it("should not list organization commission installments for approved sales", async () => {
@@ -2699,7 +2795,129 @@ describe("sales crud", () => {
 		});
 
 		expect(sales).toHaveLength(2);
-		expect(sales.every((sale) => sale.status === SaleStatus.APPROVED)).toBe(true);
+		expect(sales.every((sale) => sale.status === SaleStatus.APPROVED)).toBe(
+			true,
+		);
+	});
+
+	it("should delete sales in bulk with commissions cascade", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-06",
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const saleIds = [firstSaleId, secondSaleId];
+
+		const commissionsBeforeDelete = await prisma.saleCommission.count({
+			where: {
+				saleId: {
+					in: saleIds,
+				},
+			},
+		});
+		expect(commissionsBeforeDelete).toBeGreaterThan(0);
+
+		const installmentsBeforeDelete =
+			await prisma.saleCommissionInstallment.count({
+				where: {
+					saleCommission: {
+						saleId: {
+							in: saleIds,
+						},
+					},
+				},
+			});
+		expect(installmentsBeforeDelete).toBeGreaterThan(0);
+
+		const response = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/delete/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+			});
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.deleted).toBe(2);
+
+		const remainingSales = await prisma.sale.count({
+			where: {
+				id: {
+					in: saleIds,
+				},
+			},
+		});
+		expect(remainingSales).toBe(0);
+
+		const commissionsAfterDelete = await prisma.saleCommission.count({
+			where: {
+				saleId: {
+					in: saleIds,
+				},
+			},
+		});
+		expect(commissionsAfterDelete).toBe(0);
+
+		const installmentsAfterDelete =
+			await prisma.saleCommissionInstallment.count({
+				where: {
+					saleCommission: {
+						saleId: {
+							in: saleIds,
+						},
+					},
+				},
+			});
+		expect(installmentsAfterDelete).toBe(0);
+	});
+
+	it("should keep all sales when bulk delete contains an invalid id", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+			}),
+		);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-06",
+			}),
+		);
+
+		const response = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/delete/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds: [
+					firstSaleId,
+					secondSaleId,
+					"99999999-9999-4999-8999-999999999999",
+				],
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe("One or more sales were not found");
+
+		const remainingSales = await prisma.sale.count({
+			where: {
+				id: {
+					in: [firstSaleId, secondSaleId],
+				},
+			},
+		});
+		expect(remainingSales).toBe(2);
 	});
 
 	it("should reject invalid status transition", async () => {

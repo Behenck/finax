@@ -285,7 +285,15 @@ async function loadTopProducts(organizationId: string, range: PeriodRange) {
 async function loadTopResponsibles(organizationId: string, range: PeriodRange) {
 	const groups = await prisma.sale.groupBy({
 		by: ["responsibleType", "responsibleId"],
-		where: buildHeadlineSalesWhere(organizationId, range),
+		where: {
+			...buildHeadlineSalesWhere(organizationId, range),
+			responsibleType: {
+				not: null,
+			},
+			responsibleId: {
+				not: null,
+			},
+		},
 		_count: {
 			_all: true,
 		},
@@ -294,16 +302,25 @@ async function loadTopResponsibles(organizationId: string, range: PeriodRange) {
 		},
 	});
 
+	const validGroups = groups.filter(
+		(
+			group,
+		): group is (typeof groups)[number] & {
+			responsibleType: SaleResponsibleType;
+			responsibleId: string;
+		} => group.responsibleType !== null && group.responsibleId !== null,
+	);
+
 	const sellerIds = Array.from(
 		new Set(
-			groups
+			validGroups
 				.filter((group) => group.responsibleType === SaleResponsibleType.SELLER)
 				.map((group) => group.responsibleId),
 		),
 	);
 	const partnerIds = Array.from(
 		new Set(
-			groups
+			validGroups
 				.filter(
 					(group) => group.responsibleType === SaleResponsibleType.PARTNER,
 				)
@@ -359,7 +376,7 @@ async function loadTopResponsibles(organizationId: string, range: PeriodRange) {
 	}
 
 	return sortRankedItems(
-		groups.map((group) => ({
+		validGroups.map((group) => ({
 			id: group.responsibleId,
 			type: group.responsibleType,
 			name:

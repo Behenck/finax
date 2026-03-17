@@ -413,6 +413,16 @@ export const PatchSalesStatusBulkResponseSchema = z.object({
 	updated: z.number().int().nonnegative(),
 });
 
+export const PatchSalesDeleteBulkBodySchema = z
+	.object({
+		saleIds: z.array(z.uuid()).min(1).max(100),
+	})
+	.strict();
+
+export const PatchSalesDeleteBulkResponseSchema = z.object({
+	deleted: z.number().int().nonnegative(),
+});
+
 export const PatchSaleCommissionInstallmentStatusBodySchema = z
 	.object({
 		status: z.enum([
@@ -478,8 +488,8 @@ export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	unitId: z.uuid().nullable(),
 	customerId: z.uuid(),
 	productId: z.uuid(),
-	responsibleType: SaleResponsibleTypeSchema,
-	responsibleId: z.uuid(),
+	responsibleType: SaleResponsibleTypeSchema.nullable(),
+	responsibleId: z.uuid().nullable(),
 	createdById: z.uuid(),
 	dynamicFieldSchema: z.array(SaleDynamicFieldSchemaItemSchema),
 	dynamicFieldValues: SaleDynamicFieldValuesSchema,
@@ -528,7 +538,9 @@ export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
 export type SaleDynamicFieldSchemaItem = z.infer<
 	typeof SaleDynamicFieldSchemaItemSchema
 >;
-export type SaleDynamicFieldValues = z.infer<typeof SaleDynamicFieldValuesSchema>;
+export type SaleDynamicFieldValues = z.infer<
+	typeof SaleDynamicFieldValuesSchema
+>;
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
 export type PatchSalesStatusBulkBody = z.infer<
 	typeof PatchSalesStatusBulkBodySchema

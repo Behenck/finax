@@ -299,7 +299,7 @@ function CommercialKpiGrid({
 				helpText={`${currentMonthLabel} vs ${previousMonthLabel}`}
 			/>
 			<KpiCard
-				title="Faturamento bruto"
+				title="Total de vendas"
 				value={data.sales.current.grossAmount}
 				previousValue={data.sales.previous.grossAmount}
 				icon={CircleDollarSign}

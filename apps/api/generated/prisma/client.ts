@@ -175,6 +175,16 @@ export type Sale = Prisma.SaleModel
  */
 export type SaleHistoryEvent = Prisma.SaleHistoryEventModel
 /**
+ * Model SaleImportTemplate
+ * 
+ */
+export type SaleImportTemplate = Prisma.SaleImportTemplateModel
+/**
+ * Model SaleImportAudit
+ * 
+ */
+export type SaleImportAudit = Prisma.SaleImportAuditModel
+/**
  * Model SaleCommission
  * 
  */

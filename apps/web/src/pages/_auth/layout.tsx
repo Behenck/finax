@@ -17,7 +17,7 @@ function AuthLayout() {
 							<img src={LogoBranco} alt="Logo Finax" />
 						</div>
 						<span className="text-2xl font-bold text-white">
-							Finax - Fluxo de Caixa
+							Finax
 						</span>
 					</div>
 					<div className="space-y-8">

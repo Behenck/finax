@@ -8,6 +8,10 @@ export function handlePrismaError(error: unknown): never {
     switch (error.code) {
       case 'P2002':
         throw new BadRequestError('Registro já existe.')
+      case 'P2011':
+        throw new BadRequestError(
+          'Estrutura do banco desatualizada (restrição de coluna). Execute as migrações pendentes e tente novamente.',
+        )
       case 'P2021': {
         const tableName =
           typeof error.meta?.table === 'string'

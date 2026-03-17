@@ -33,8 +33,8 @@ export type SaleHistorySnapshot = {
 		saleDate: string;
 		totalAmount: number;
 		status: SaleStatus;
-		responsibleType: SaleResponsibleType;
-		responsibleId: string;
+		responsibleType: SaleResponsibleType | null;
+		responsibleId: string | null;
 		notes: string | null;
 		dynamicFieldSchema: SaleDynamicFieldSchemaSnapshot;
 		dynamicFieldValues: SaleDynamicFieldValuesSnapshot;

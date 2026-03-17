@@ -411,6 +411,8 @@ export const ModelName = {
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
   SaleHistoryEvent: 'SaleHistoryEvent',
+  SaleImportTemplate: 'SaleImportTemplate',
+  SaleImportAudit: 'SaleImportAudit',
   SaleCommission: 'SaleCommission',
   SaleCommissionInstallment: 'SaleCommissionInstallment',
   Transaction: 'Transaction',
@@ -431,7 +433,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2433,6 +2435,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SaleImportTemplate: {
+      payload: Prisma.$SaleImportTemplatePayload<ExtArgs>
+      fields: Prisma.SaleImportTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleImportTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleImportTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.SaleImportTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleImportTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.SaleImportTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.SaleImportTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.SaleImportTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleImportTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.SaleImportTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        update: {
+          args: Prisma.SaleImportTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleImportTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleImportTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleImportTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleImportTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.SaleImportTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleImportTemplate>
+        }
+        groupBy: {
+          args: Prisma.SaleImportTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleImportTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleImportTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleImportTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
+    SaleImportAudit: {
+      payload: Prisma.$SaleImportAuditPayload<ExtArgs>
+      fields: Prisma.SaleImportAuditFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleImportAuditFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleImportAuditFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        findFirst: {
+          args: Prisma.SaleImportAuditFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleImportAuditFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        findMany: {
+          args: Prisma.SaleImportAuditFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>[]
+        }
+        create: {
+          args: Prisma.SaleImportAuditCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        createMany: {
+          args: Prisma.SaleImportAuditCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleImportAuditCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>[]
+        }
+        delete: {
+          args: Prisma.SaleImportAuditDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        update: {
+          args: Prisma.SaleImportAuditUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleImportAuditDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleImportAuditUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleImportAuditUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleImportAuditUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleImportAuditPayload>
+        }
+        aggregate: {
+          args: Prisma.SaleImportAuditAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleImportAudit>
+        }
+        groupBy: {
+          args: Prisma.SaleImportAuditGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleImportAuditGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleImportAuditCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleImportAuditCountAggregateOutputType> | number
+        }
+      }
+    }
     SaleCommission: {
       payload: Prisma.$SaleCommissionPayload<ExtArgs>
       fields: Prisma.SaleCommissionFieldRefs
@@ -3261,6 +3411,37 @@ export const SaleHistoryEventScalarFieldEnum = {
 export type SaleHistoryEventScalarFieldEnum = (typeof SaleHistoryEventScalarFieldEnum)[keyof typeof SaleHistoryEventScalarFieldEnum]
 
 
+export const SaleImportTemplateScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  headerSignature: 'headerSignature',
+  mappingJson: 'mappingJson',
+  fixedValuesJson: 'fixedValuesJson',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleImportTemplateScalarFieldEnum = (typeof SaleImportTemplateScalarFieldEnum)[keyof typeof SaleImportTemplateScalarFieldEnum]
+
+
+export const SaleImportAuditScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  actorId: 'actorId',
+  templateId: 'templateId',
+  fileType: 'fileType',
+  headerSignature: 'headerSignature',
+  totalRows: 'totalRows',
+  importedRows: 'importedRows',
+  failedRows: 'failedRows',
+  createdAt: 'createdAt'
+} as const
+
+export type SaleImportAuditScalarFieldEnum = (typeof SaleImportAuditScalarFieldEnum)[keyof typeof SaleImportAuditScalarFieldEnum]
+
+
 export const SaleCommissionScalarFieldEnum = {
   id: 'id',
   saleId: 'saleId',
@@ -4015,6 +4196,8 @@ export type GlobalOmitConfig = {
   productCommissionInstallment?: Prisma.ProductCommissionInstallmentOmit
   sale?: Prisma.SaleOmit
   saleHistoryEvent?: Prisma.SaleHistoryEventOmit
+  saleImportTemplate?: Prisma.SaleImportTemplateOmit
+  saleImportAudit?: Prisma.SaleImportAuditOmit
   saleCommission?: Prisma.SaleCommissionOmit
   saleCommissionInstallment?: Prisma.SaleCommissionInstallmentOmit
   transaction?: Prisma.TransactionOmit

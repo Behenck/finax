@@ -1,18 +1,24 @@
 import type { FastifyInstance } from "fastify";
 import { createSale } from "./create-sale";
+import { createSaleImportTemplate } from "./create-sale-import-template";
 import { deleteSale } from "./delete-sale";
 import { deleteSaleCommissionInstallment } from "./delete-sale-commission-installment";
+import { deleteSaleImportTemplate } from "./delete-sale-import-template";
 import { getOrganizationCommissionInstallments } from "./get-organization-commission-installments";
 import { getSale } from "./get-sale";
-import { getSaleHistory } from "./get-sale-history";
 import { getSaleCommissionInstallments } from "./get-sale-commission-installments";
+import { getSaleHistory } from "./get-sale-history";
+import { getSaleImportTemplates } from "./get-sale-import-templates";
 import { getSales } from "./get-sales";
 import { getSalesDashboard } from "./get-sales-dashboard";
 import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
 import { patchSaleStatus } from "./patch-sale-status";
+import { patchSalesDeleteBulk } from "./patch-sales-delete-bulk";
 import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
+import { postSalesImport } from "./post-sales-import";
 import { updateSale } from "./update-sale";
+import { updateSaleImportTemplate } from "./update-sale-import-template";
 
 export async function saleRoutes(app: FastifyInstance) {
 	await app.register(createSale);
@@ -25,8 +31,14 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(getSaleHistory);
 	await app.register(patchSaleStatus);
 	await app.register(patchSalesStatusBulk);
+	await app.register(patchSalesDeleteBulk);
 	await app.register(getSaleCommissionInstallments);
 	await app.register(patchSaleCommissionInstallmentStatus);
 	await app.register(patchSaleCommissionInstallment);
 	await app.register(deleteSaleCommissionInstallment);
+	await app.register(getSaleImportTemplates);
+	await app.register(createSaleImportTemplate);
+	await app.register(updateSaleImportTemplate);
+	await app.register(deleteSaleImportTemplate);
+	await app.register(postSalesImport);
 }

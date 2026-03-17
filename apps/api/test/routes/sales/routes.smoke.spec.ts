@@ -77,6 +77,15 @@ describe("sales routes smoke", () => {
 		expect(response.statusCode).not.toBe(405);
 	});
 
+	it("PATCH /organizations/:slug/sales/delete/bulk should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/sales/delete/bulk");
+		const agent = request(app.server);
+		const response = await agent.patch(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
 	it("GET /organizations/:slug/sales/:saleId/commission-installments should be registered", async () => {
 		const url = fillPathParams(
 			"/organizations/:slug/sales/:saleId/commission-installments",
@@ -141,6 +150,55 @@ describe("sales routes smoke", () => {
 
 	it("POST /organizations/:slug/sales should be registered", async () => {
 		const url = fillPathParams("/organizations/:slug/sales");
+		const agent = request(app.server);
+		const response = await agent.post(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("GET /organizations/:slug/sales/import-templates should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/sales/import-templates");
+		const agent = request(app.server);
+		const response = await agent.get(url);
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("POST /organizations/:slug/sales/import-templates should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/sales/import-templates");
+		const agent = request(app.server);
+		const response = await agent.post(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("PUT /organizations/:slug/sales/import-templates/:templateId should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/import-templates/:templateId",
+		);
+		const agent = request(app.server);
+		const response = await agent.put(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("DELETE /organizations/:slug/sales/import-templates/:templateId should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/import-templates/:templateId",
+		);
+		const agent = request(app.server);
+		const response = await agent.delete(url);
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("POST /organizations/:slug/sales/imports should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/sales/imports");
 		const agent = request(app.server);
 		const response = await agent.post(url).send({});
 

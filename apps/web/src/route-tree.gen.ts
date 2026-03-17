@@ -27,6 +27,7 @@ import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/re
 import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
 import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/forgot'
 import { Route as AuthGoogleCallbackRouteImport } from './pages/_auth/google/callback'
+import { Route as AppSalesImportRouteImport } from './pages/_app/sales/import'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
@@ -138,6 +139,11 @@ const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
   id: '/google/callback',
   path: '/google/callback',
   getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AppSalesImportRoute = AppSalesImportRouteImport.update({
+  id: '/sales/import',
+  path: '/sales/import',
+  getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppSalesCreateRoute = AppSalesCreateRouteImport.update({
   id: '/sales/create',
@@ -281,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/sales/import': typeof AppSalesImportRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/sales/import': typeof AppSalesImportRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
@@ -364,6 +372,7 @@ export interface FileRoutesById {
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
+  '/_app/sales/import': typeof AppSalesImportRoute
   '/_auth/google/callback': typeof AuthGoogleCallbackRoute
   '/_auth/password/forgot': typeof AuthPasswordForgotRoute
   '/_auth/password/recover': typeof AuthPasswordRecoverRoute
@@ -407,6 +416,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/sales/import'
     | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
@@ -446,6 +456,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/sales/import'
     | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
@@ -489,6 +500,7 @@ export interface FileRouteTypes {
     | '/_auth/verify-otp'
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
+    | '/_app/sales/import'
     | '/_auth/google/callback'
     | '/_auth/password/forgot'
     | '/_auth/password/recover'
@@ -655,6 +667,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/google/callback'
       preLoaderRoute: typeof AuthGoogleCallbackRouteImport
       parentRoute: typeof AuthLayoutRoute
+    }
+    '/_app/sales/import': {
+      id: '/_app/sales/import'
+      path: '/sales/import'
+      fullPath: '/sales/import'
+      preLoaderRoute: typeof AppSalesImportRouteImport
+      parentRoute: typeof AppLayoutRoute
     }
     '/_app/sales/create': {
       id: '/_app/sales/create'
@@ -839,6 +858,7 @@ interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
+  AppSalesImportRoute: typeof AppSalesImportRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppCommissionsIndexRoute: typeof AppCommissionsIndexRoute
   AppProfileIndexRoute: typeof AppProfileIndexRoute
@@ -867,6 +887,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
+  AppSalesImportRoute: AppSalesImportRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppCommissionsIndexRoute: AppCommissionsIndexRoute,
   AppProfileIndexRoute: AppProfileIndexRoute,

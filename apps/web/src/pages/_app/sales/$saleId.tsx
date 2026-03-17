@@ -279,7 +279,9 @@ function SaleDetailsPage() {
 					<div className="space-y-2 text-sm">
 						<p>
 							<strong>Tipo:</strong>{" "}
-							{SALE_RESPONSIBLE_TYPE_LABEL[sale.responsibleType]}
+							{sale.responsibleType
+								? SALE_RESPONSIBLE_TYPE_LABEL[sale.responsibleType]
+								: "Não informado"}
 						</p>
 						<p>
 							<strong>Nome:</strong> {sale.responsible?.name ?? "Não informado"}

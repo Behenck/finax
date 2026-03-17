@@ -78,6 +78,8 @@ export const ModelName = {
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
   SaleHistoryEvent: 'SaleHistoryEvent',
+  SaleImportTemplate: 'SaleImportTemplate',
+  SaleImportAudit: 'SaleImportAudit',
   SaleCommission: 'SaleCommission',
   SaleCommissionInstallment: 'SaleCommissionInstallment',
   Transaction: 'Transaction',
@@ -518,6 +520,37 @@ export const SaleHistoryEventScalarFieldEnum = {
 } as const
 
 export type SaleHistoryEventScalarFieldEnum = (typeof SaleHistoryEventScalarFieldEnum)[keyof typeof SaleHistoryEventScalarFieldEnum]
+
+
+export const SaleImportTemplateScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  headerSignature: 'headerSignature',
+  mappingJson: 'mappingJson',
+  fixedValuesJson: 'fixedValuesJson',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleImportTemplateScalarFieldEnum = (typeof SaleImportTemplateScalarFieldEnum)[keyof typeof SaleImportTemplateScalarFieldEnum]
+
+
+export const SaleImportAuditScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  actorId: 'actorId',
+  templateId: 'templateId',
+  fileType: 'fileType',
+  headerSignature: 'headerSignature',
+  totalRows: 'totalRows',
+  importedRows: 'importedRows',
+  failedRows: 'failedRows',
+  createdAt: 'createdAt'
+} as const
+
+export type SaleImportAuditScalarFieldEnum = (typeof SaleImportAuditScalarFieldEnum)[keyof typeof SaleImportAuditScalarFieldEnum]
 
 
 export const SaleCommissionScalarFieldEnum = {

@@ -1,70 +1,16 @@
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { FilterPanel } from "@/components/filter-panel";
-import { ResponsiveDataView } from "@/components/responsive-data-view";
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { useApp } from "@/context/app-context";
-import { useDeleteSale, usePatchSalesStatusBulk } from "@/hooks/sales";
-import {
-	useGetOrganizationsSlugProducts,
-	type GetOrganizationsSlugSales200,
-} from "@/http/generated";
-import {
-	SALE_STATUS_LABEL,
-	SALE_STATUS_TRANSITIONS,
-	SaleStatusSchema,
-	type SaleStatus,
-} from "@/schemas/types/sales";
-import { textFilterParser } from "@/hooks/filters/parsers";
-import { formatCurrencyBRL } from "@/utils/format-amount";
 import { Link } from "@tanstack/react-router";
 import {
+	type ColumnDef,
+	type ColumnFiltersState,
+	type FilterFn,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
-	useReactTable,
-	type ColumnDef,
-	type ColumnFiltersState,
-	type FilterFn,
 	type RowSelectionState,
 	type SortingState,
+	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
 import { format, parse, parseISO } from "date-fns";
@@ -82,6 +28,64 @@ import {
 } from "lucide-react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FilterPanel } from "@/components/filter-panel";
+import { ResponsiveDataView } from "@/components/responsive-data-view";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { useApp } from "@/context/app-context";
+import { textFilterParser } from "@/hooks/filters/parsers";
+import {
+	useDeleteSale,
+	useDeleteSalesBulk,
+	usePatchSalesStatusBulk,
+} from "@/hooks/sales";
+import {
+	type GetOrganizationsSlugSales200,
+	useGetOrganizationsSlugProducts,
+} from "@/http/generated";
+import {
+	SALE_STATUS_LABEL,
+	SALE_STATUS_TRANSITIONS,
+	type SaleStatus,
+	SaleStatusSchema,
+} from "@/schemas/types/sales";
+import { formatCurrencyBRL } from "@/utils/format-amount";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
@@ -169,7 +173,9 @@ const salesGlobalFilterFn: FilterFn<SaleTableRow> = (
 	_columnId,
 	filterValue,
 ) => {
-	const term = String(filterValue ?? "").trim().toLowerCase();
+	const term = String(filterValue ?? "")
+		.trim()
+		.toLowerCase();
 	if (!term) {
 		return true;
 	}
@@ -202,7 +208,10 @@ interface SaleTableRowActionsProps {
 	onOpenInstallments(sale: SaleTableRow): void;
 }
 
-function SaleTableRowActions({ sale, onOpenInstallments }: SaleTableRowActionsProps) {
+function SaleTableRowActions({
+	sale,
+	onOpenInstallments,
+}: SaleTableRowActionsProps) {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { mutateAsync: deleteSale, isPending } = useDeleteSale();
 
@@ -234,34 +243,34 @@ function SaleTableRowActions({ sale, onOpenInstallments }: SaleTableRowActionsPr
 							Ver detalhes
 						</Link>
 					</DropdownMenuItem>
-						<DropdownMenuItem asChild>
-							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
-								<Pencil className="size-4" />
-								Editar
-							</Link>
-						</DropdownMenuItem>
-						<DropdownMenuItem asChild>
-							<Link
-								to="/sales/create"
-								search={{
-									duplicateSaleId: sale.id,
-								}}
-							>
-								<Copy className="size-4" />
-								Duplicar
-							</Link>
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onSelect={(event) => {
-								event.preventDefault();
-								onOpenInstallments(sale);
+					<DropdownMenuItem asChild>
+						<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+							<Pencil className="size-4" />
+							Editar
+						</Link>
+					</DropdownMenuItem>
+					<DropdownMenuItem asChild>
+						<Link
+							to="/sales/create"
+							search={{
+								duplicateSaleId: sale.id,
 							}}
 						>
-							<ListTree className="size-4" />
-							Ver parcelas
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<SaleStatusAction
+							<Copy className="size-4" />
+							Duplicar
+						</Link>
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						onSelect={(event) => {
+							event.preventDefault();
+							onOpenInstallments(sale);
+						}}
+					>
+						<ListTree className="size-4" />
+						Ver parcelas
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<SaleStatusAction
 						saleId={sale.id}
 						currentStatus={sale.status as SaleStatus}
 						trigger="dropdown-item"
@@ -316,11 +325,12 @@ export function SalesDataTable({
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() =>
-		readStorageJson<VisibilityState>(SALES_COLUMNS_STORAGE_KEY, {}),
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+		() => readStorageJson<VisibilityState>(SALES_COLUMNS_STORAGE_KEY, {}),
 	);
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 	const [bulkStatus, setBulkStatus] = useState<SaleStatus | "">("");
+	const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 	const restoredFiltersRef = useRef(false);
 	const [globalFilter, setGlobalFilter] = useQueryState("q", textFilterParser);
 	const [statusFilter, setStatusFilter] = useQueryState(
@@ -329,11 +339,11 @@ export function SalesDataTable({
 	);
 	const { mutateAsync: patchSalesStatusBulk, isPending: isBulkStatusPending } =
 		usePatchSalesStatusBulk();
+	const { mutateAsync: deleteSalesBulk, isPending: isBulkDeletePending } =
+		useDeleteSalesBulk();
 	const columnFilters = useMemo<ColumnFiltersState>(
 		() =>
-			statusFilter === "ALL"
-				? []
-				: [{ id: "status", value: statusFilter }],
+			statusFilter === "ALL" ? [] : [{ id: "status", value: statusFilter }],
 		[statusFilter],
 	);
 	const [installmentsDrawerSale, setInstallmentsDrawerSale] =
@@ -365,7 +375,11 @@ export function SalesDataTable({
 			void setGlobalFilter(storedFilters.q);
 		}
 
-		if (statusFilter === "ALL" && storedFilters.status && storedFilters.status !== "ALL") {
+		if (
+			statusFilter === "ALL" &&
+			storedFilters.status &&
+			storedFilters.status !== "ALL"
+		) {
 			void setStatusFilter(storedFilters.status);
 		}
 	}, [globalFilter, setGlobalFilter, setStatusFilter, statusFilter]);
@@ -403,7 +417,8 @@ export function SalesDataTable({
 			sales
 				.map((sale) => ({
 					...sale,
-					productLabel: productPathById.get(sale.product.id) ?? sale.product.name,
+					productLabel:
+						productPathById.get(sale.product.id) ?? sale.product.name,
 				}))
 				.sort((saleA, saleB) => {
 					const statusDiff =
@@ -435,7 +450,9 @@ export function SalesDataTable({
 									? "indeterminate"
 									: false
 						}
-						onCheckedChange={(value) => table.toggleAllPageRowsSelected(Boolean(value))}
+						onCheckedChange={(value) =>
+							table.toggleAllPageRowsSelected(Boolean(value))
+						}
 						aria-label="Selecionar página atual"
 					/>
 				),
@@ -499,8 +516,8 @@ export function SalesDataTable({
 					</div>
 				),
 			},
-				{
-					accessorKey: "totalAmount",
+			{
+				accessorKey: "totalAmount",
 				header: ({ column }) => (
 					<Button
 						variant="ghost"
@@ -511,75 +528,75 @@ export function SalesDataTable({
 						<ArrowUpDown className="ml-2 size-4" />
 					</Button>
 				),
-					cell: ({ row }) => (
-						<span className="font-semibold">
-							{formatCurrencyBRL(row.original.totalAmount / 100)}
-						</span>
-					),
-				},
-				{
-					id: "commissionInstallments",
-					header: "Parcelas",
-					cell: ({ row }) => {
-						const summary = row.original.commissionInstallmentsSummary;
-						return (
-							<Button
-								type="button"
-								variant="ghost"
-								className="h-auto px-2 py-1 justify-start"
-								onClick={() => setInstallmentsDrawerSale(row.original)}
-							>
-								{summary.total === 0
-									? "Sem parcelas"
-									: `${summary.paid}/${summary.total} pagas`}
-							</Button>
-						);
-					},
-				},
-				{
-					accessorKey: "status",
-					header: "Status",
-					filterFn: (row, columnId, value) => {
-						if (!value) {
-							return true;
-						}
-
-						return row.getValue(columnId) === value;
-					},
-					cell: ({ row }) => (
-						<SaleStatusBadge status={row.original.status as SaleStatus} />
-					),
-				},
-				{
-					accessorKey: "updatedAt",
-					header: ({ column }) => (
+				cell: ({ row }) => (
+					<span className="font-semibold">
+						{formatCurrencyBRL(row.original.totalAmount / 100)}
+					</span>
+				),
+			},
+			{
+				id: "commissionInstallments",
+				header: "Parcelas",
+				cell: ({ row }) => {
+					const summary = row.original.commissionInstallmentsSummary;
+					return (
 						<Button
+							type="button"
 							variant="ghost"
-							className="h-8 px-2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+							className="h-auto px-2 py-1 justify-start"
+							onClick={() => setInstallmentsDrawerSale(row.original)}
 						>
-							Atualização
-							<ArrowUpDown className="ml-2 size-4" />
+							{summary.total === 0
+								? "Sem parcelas"
+								: `${summary.paid}/${summary.total} pagas`}
 						</Button>
-					),
-					cell: ({ row }) => formatDateTime(row.original.updatedAt),
+					);
 				},
-				{
-					id: "actions",
-					enableHiding: false,
-					header: "",
-					cell: ({ row }) => (
-						<div className="flex justify-end">
-							<SaleTableRowActions
-								sale={row.original}
-								onOpenInstallments={(sale) => setInstallmentsDrawerSale(sale)}
-							/>
-						</div>
-					),
+			},
+			{
+				accessorKey: "status",
+				header: "Status",
+				filterFn: (row, columnId, value) => {
+					if (!value) {
+						return true;
+					}
+
+					return row.getValue(columnId) === value;
 				},
-			],
-			[],
-		);
+				cell: ({ row }) => (
+					<SaleStatusBadge status={row.original.status as SaleStatus} />
+				),
+			},
+			{
+				accessorKey: "updatedAt",
+				header: ({ column }) => (
+					<Button
+						variant="ghost"
+						className="h-8 px-2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Atualização
+						<ArrowUpDown className="ml-2 size-4" />
+					</Button>
+				),
+				cell: ({ row }) => formatDateTime(row.original.updatedAt),
+			},
+			{
+				id: "actions",
+				enableHiding: false,
+				header: "",
+				cell: ({ row }) => (
+					<div className="flex justify-end">
+						<SaleTableRowActions
+							sale={row.original}
+							onOpenInstallments={(sale) => setInstallmentsDrawerSale(sale)}
+						/>
+					</div>
+				),
+			},
+		],
+		[],
+	);
 
 	const table = useReactTable({
 		data: tableData,
@@ -603,7 +620,9 @@ export function SalesDataTable({
 		getPaginationRowModel: getPaginationRowModel(),
 	});
 
-	const selectedSales = table.getSelectedRowModel().rows.map((row) => row.original);
+	const selectedSales = table
+		.getSelectedRowModel()
+		.rows.map((row) => row.original);
 	const selectedSaleIds = selectedSales.map((sale) => sale.id);
 
 	const availableBulkStatuses = useMemo<SaleStatus[]>(() => {
@@ -630,7 +649,9 @@ export function SalesDataTable({
 			new Set<SaleStatus>(),
 		);
 
-		return SaleStatusSchema.options.filter((status) => allowedStatuses.has(status));
+		return SaleStatusSchema.options.filter((status) =>
+			allowedStatuses.has(status),
+		);
 	}, [selectedSales]);
 
 	useEffect(() => {
@@ -655,6 +676,23 @@ export function SalesDataTable({
 			});
 			setRowSelection({});
 			setBulkStatus("");
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
+	async function handleConfirmBulkDelete() {
+		if (selectedSaleIds.length === 0) {
+			return;
+		}
+
+		try {
+			await deleteSalesBulk({
+				saleIds: selectedSaleIds,
+			});
+			setRowSelection({});
+			setBulkStatus("");
+			setBulkDeleteDialogOpen(false);
 		} catch {
 			// erro tratado no hook
 		}
@@ -752,7 +790,9 @@ export function SalesDataTable({
 									key={column.id}
 									className="capitalize"
 									checked={column.getIsVisible()}
-									onCheckedChange={(value) => column.toggleVisibility(Boolean(value))}
+									onCheckedChange={(value) =>
+										column.toggleVisibility(Boolean(value))
+									}
 								>
 									{column.id === "saleDate"
 										? "data"
@@ -812,16 +852,52 @@ export function SalesDataTable({
 						>
 							{isBulkStatusPending ? "Aplicando..." : "Alterar status em lote"}
 						</Button>
+						<Button
+							type="button"
+							variant="destructive"
+							onClick={() => setBulkDeleteDialogOpen(true)}
+							disabled={isBulkDeletePending}
+						>
+							{isBulkDeletePending ? "Excluindo..." : "Excluir em lote"}
+						</Button>
 					</div>
 				</div>
 			) : null}
+
+			<AlertDialog
+				open={bulkDeleteDialogOpen}
+				onOpenChange={setBulkDeleteDialogOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Excluir vendas em lote</AlertDialogTitle>
+						<AlertDialogDescription>
+							Tem certeza que deseja excluir{" "}
+							<strong>{selectedSaleIds.length}</strong> venda(s) selecionada(s)?
+							Esta ação não pode ser desfeita.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isBulkDeletePending}>
+							Cancelar
+						</AlertDialogCancel>
+						<AlertDialogAction
+							variant="destructive"
+							onClick={() => void handleConfirmBulkDelete()}
+							disabled={isBulkDeletePending}
+						>
+							{isBulkDeletePending ? "Excluindo..." : "Confirmar exclusão"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
 			<ResponsiveDataView
 				mobile={
 					<div className="space-y-3">
 						<Card className="p-3">
 							<div className="flex items-center justify-between gap-3">
-								<label className="flex items-center gap-2 text-sm">
+								<div className="flex items-center gap-2 text-sm">
 									<Checkbox
 										checked={
 											table.getIsAllPageRowsSelected()
@@ -836,7 +912,7 @@ export function SalesDataTable({
 										aria-label="Selecionar página atual"
 									/>
 									<span>Selecionar vendas da página</span>
-								</label>
+								</div>
 								<span className="text-xs text-muted-foreground">
 									{table.getRowModel().rows.length} registro(s)
 								</span>
@@ -865,7 +941,9 @@ export function SalesDataTable({
 											</div>
 											<Checkbox
 												checked={row.getIsSelected()}
-												onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+												onCheckedChange={(value) =>
+													row.toggleSelected(Boolean(value))
+												}
 												aria-label={`Selecionar venda ${sale.id}`}
 											/>
 										</div>
@@ -911,7 +989,10 @@ export function SalesDataTable({
 												</Link>
 											</Button>
 											<Button variant="outline" size="sm" asChild>
-												<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+												<Link
+													to="/sales/update/$saleId"
+													params={{ saleId: sale.id }}
+												>
 													<Pencil className="size-4" />
 													Editar
 												</Link>
@@ -983,7 +1064,10 @@ export function SalesDataTable({
 									))
 								) : (
 									<TableRow>
-										<TableCell colSpan={columns.length} className="h-24 text-center">
+										<TableCell
+											colSpan={columns.length}
+											className="h-24 text-center"
+										>
 											Nenhum resultado encontrado para os filtros aplicados.
 										</TableCell>
 									</TableRow>

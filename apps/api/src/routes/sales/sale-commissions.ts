@@ -1209,7 +1209,11 @@ export async function loadOrganizationCommissionInstallments({
 		}),
 		prisma.saleCommissionInstallment.findMany({
 			where,
-			orderBy: [{ expectedPaymentDate: "asc" }, { createdAt: "desc" }],
+			orderBy: [
+				{ status: "asc" },
+				{ expectedPaymentDate: "asc" },
+				{ createdAt: "desc" },
+			],
 			skip,
 			take: pageSize,
 			select: {

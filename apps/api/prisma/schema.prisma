@@ -30,6 +30,8 @@ model User {
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
   createdSales        Sale[]         @relation("SaleCreatedBy")
   saleHistoryEvents   SaleHistoryEvent[] @relation("SaleHistoryActor")
+  saleImportTemplates SaleImportTemplate[] @relation("SaleImportTemplateCreatedBy")
+  saleImportAudits    SaleImportAudit[]    @relation("SaleImportAuditActor")
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
   linkedPartners      Partner[]      @relation("PartnerUser")
   linkedSellers       Seller[]       @relation("SellerUser")
@@ -183,6 +185,8 @@ model Organization {
   products              Product[]
   sales                 Sale[]
   saleHistoryEvents     SaleHistoryEvent[]
+  saleImportTemplates   SaleImportTemplate[]
+  saleImportAudits      SaleImportAudit[]
   memberCompanyAccesses MemberCompanyAccess[]
 
   @@index([slug])
@@ -784,8 +788,8 @@ model Sale {
   saleDate        DateTime            @map("sale_date") @db.Date
   totalAmount     Int                 @map("total_amount")
   status          SaleStatus          @default(PENDING)
-  responsibleType SaleResponsibleType @map("responsible_type")
-  responsibleId   String              @map("responsible_id")
+  responsibleType SaleResponsibleType? @map("responsible_type")
+  responsibleId   String?              @map("responsible_id")
   notes           String?
   dynamicFieldSchema Json             @default("[]") @map("dynamic_field_schema")
   dynamicFieldValues Json             @default("{}") @map("dynamic_field_values")
@@ -832,6 +836,53 @@ model SaleHistoryEvent {
   @@index([organizationId, saleId, createdAt])
   @@index([actorId])
   @@map("sale_history_events")
+}
+
+model SaleImportTemplate {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+  name           String
+  headerSignature String @map("header_signature")
+  mappingJson    Json   @map("mapping_json")
+  fixedValuesJson Json  @map("fixed_values_json")
+  createdById    String @map("created_by_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation("SaleImportTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  audits       SaleImportAudit[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([organizationId, headerSignature])
+  @@index([createdById])
+  @@map("sale_import_templates")
+}
+
+model SaleImportAudit {
+  id             String  @id @default(uuid())
+  organizationId String  @map("organization_id")
+  actorId        String  @map("actor_id")
+  templateId     String? @map("template_id")
+  fileType       String  @map("file_type")
+  headerSignature String @map("header_signature")
+  totalRows      Int     @map("total_rows")
+  importedRows   Int     @map("imported_rows")
+  failedRows     Int     @map("failed_rows")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User              @relation("SaleImportAuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  template     SaleImportTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([organizationId, createdAt])
+  @@index([actorId])
+  @@index([templateId])
+  @@map("sale_import_audits")
 }
 
 model SaleCommission {
