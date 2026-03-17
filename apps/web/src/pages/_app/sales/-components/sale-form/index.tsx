@@ -62,7 +62,8 @@ export function SaleForm({
 	const {
 		companies,
 		customers,
-		products,
+		rootProducts,
+		hierarchicalProducts,
 		sellers,
 		partners,
 		supervisors,
@@ -433,7 +434,8 @@ export function SaleForm({
 		<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 			<ProductSection
 				control={control}
-				products={products}
+				rootProducts={rootProducts}
+				hierarchicalProducts={hierarchicalProducts}
 				isLoadingOptions={isLoadingOptions}
 			/>
 			<SaleDataSection control={control} />

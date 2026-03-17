@@ -16,9 +16,24 @@ export interface SaleProductOption {
 	label: string;
 }
 
+export interface SaleHierarchicalProductOption extends SaleProductOption {
+	rootId: string;
+	rootName: string;
+	depth: number;
+	relativeLabel: string;
+	fullLabel: string;
+}
+
+export interface SaleRootProductOption {
+	id: string;
+	name: string;
+	label: string;
+}
+
 type ProductTreeNode = {
 	id: string;
 	name: string;
+	parentId: string | null;
 	isActive: boolean;
 	children?: ProductTreeNode[];
 };
@@ -26,10 +41,19 @@ type ProductTreeNode = {
 function flattenActiveProductOptions(
 	nodes: ProductTreeNode[],
 	parentPath: string[] = [],
-): SaleProductOption[] {
+	rootNode?: Pick<ProductTreeNode, "id" | "name">,
+): SaleHierarchicalProductOption[] {
 	return nodes.flatMap((node) => {
 		const currentPath = [...parentPath, node.name];
 		const children = Array.isArray(node.children) ? node.children : [];
+		const resolvedRootNode = rootNode ?? {
+			id: node.id,
+			name: node.name,
+		};
+		const depth = currentPath.length - 1;
+		const fullLabel = currentPath.join(" -> ");
+		const relativeLabel =
+			depth === 0 ? node.name : currentPath.slice(1).join(" -> ");
 
 		const currentNodeOptions = node.isActive
 			? [
@@ -37,14 +61,23 @@ function flattenActiveProductOptions(
 						id: node.id,
 						name: node.name,
 						path: currentPath,
-						label: currentPath.join(" -> "),
+						label: fullLabel,
+						rootId: resolvedRootNode.id,
+						rootName: resolvedRootNode.name,
+						depth,
+						relativeLabel,
+						fullLabel,
 					},
 				]
 			: [];
 
 		return [
 			...currentNodeOptions,
-			...flattenActiveProductOptions(children, currentPath),
+			...flattenActiveProductOptions(
+				children,
+				currentPath,
+				resolvedRootNode,
+			),
 		];
 	});
 }
@@ -105,14 +138,25 @@ export function useSaleFormOptions() {
 			),
 		[customersQuery.data?.customers],
 	);
-	const baseProducts = useMemo(
+	const hierarchicalProducts = useMemo(
 		() =>
 			flattenActiveProductOptions(
 				(productsQuery.data?.products ?? []) as ProductTreeNode[],
 			),
 		[productsQuery.data?.products],
 	);
-	const products = baseProducts;
+	const products = hierarchicalProducts;
+	const rootProducts = useMemo<SaleRootProductOption[]>(
+		() =>
+			hierarchicalProducts
+				.filter((product) => product.depth === 0)
+				.map((product) => ({
+					id: product.id,
+					name: product.name,
+					label: product.name,
+				})),
+		[hierarchicalProducts],
+	);
 	const sellers = useMemo(
 		() =>
 			(sellersQuery.data?.sellers ?? []).filter(
@@ -149,6 +193,8 @@ export function useSaleFormOptions() {
 		companies,
 		customers,
 		products,
+		hierarchicalProducts,
+		rootProducts,
 		sellers,
 		partners,
 		supervisors,
