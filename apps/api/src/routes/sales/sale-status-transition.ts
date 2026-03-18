@@ -2,7 +2,11 @@ import { SaleStatus } from "generated/prisma/enums";
 
 export function isValidSaleStatusTransition(from: SaleStatus, to: SaleStatus) {
 	if (from === SaleStatus.PENDING) {
-		return to === SaleStatus.APPROVED || to === SaleStatus.CANCELED;
+		return (
+			to === SaleStatus.APPROVED ||
+			to === SaleStatus.COMPLETED ||
+			to === SaleStatus.CANCELED
+		);
 	}
 
 	if (from === SaleStatus.APPROVED) {

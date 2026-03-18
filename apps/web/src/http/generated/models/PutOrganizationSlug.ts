@@ -33,6 +33,10 @@ export type PutOrganizationSlugMutationRequest = {
    * @type boolean | undefined
    */
   shouldAttachUserByDomain?: boolean;
+  /**
+   * @type boolean | undefined
+   */
+  enableSalesTransactionsSync?: boolean;
 };
 
 export type PutOrganizationSlugMutationResponse = PutOrganizationSlug204;

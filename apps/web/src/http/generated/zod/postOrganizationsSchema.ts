@@ -16,6 +16,7 @@ export const postOrganizationsMutationRequestSchema = z.object({
   name: z.string(),
   domain: z.string().nullish(),
   shouldAttachUserByDomain: z.optional(z.boolean()),
+  enableSalesTransactionsSync: z.optional(z.boolean()),
 });
 
 export const postOrganizationsMutationResponseSchema = z.lazy(

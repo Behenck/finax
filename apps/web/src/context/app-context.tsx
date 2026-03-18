@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { OrganizationRoleEnumKey } from "@/http/generated"; // ajuste o import
+import type { OrganizationRoleEnumKey } from "@/http/generated";
 
 type User = {
 	id: string;
@@ -12,7 +12,8 @@ type Organization = {
 	id: string;
 	name: string;
 	slug: string;
-	ownerId: string
+	ownerId: string;
+	enableSalesTransactionsSync: boolean;
 };
 
 type AppContextType = {

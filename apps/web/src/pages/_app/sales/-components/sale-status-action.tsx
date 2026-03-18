@@ -21,7 +21,7 @@ import {
 	SALE_STATUS_TRANSITIONS,
 	type SaleStatus,
 } from "@/schemas/types/sales";
-import { RefreshCcw } from "lucide-react";
+import { CheckCircle2, RefreshCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface SaleStatusActionProps {
@@ -43,6 +43,21 @@ export function SaleStatusAction({
 		() => SALE_STATUS_TRANSITIONS[currentStatus],
 		[currentStatus],
 	);
+	const canCompleteDirectly = availableTransitions.includes("COMPLETED");
+	const hasAlternativeTransitions = availableTransitions.some(
+		(status) => status !== "COMPLETED",
+	);
+
+	function openStatusModal(preferAlternativeStatus = false) {
+		const defaultStatus = preferAlternativeStatus
+			? (availableTransitions.find((status) => status !== "COMPLETED") ?? "")
+			: availableTransitions.includes("COMPLETED")
+				? "COMPLETED"
+				: (availableTransitions[0] ?? "");
+
+		setNextStatus(defaultStatus);
+		setIsModalOpen(true);
+	}
 
 	async function handleConfirmStatusChange() {
 		if (!nextStatus) {
@@ -61,35 +76,93 @@ export function SaleStatusAction({
 		}
 	}
 
+	async function handleCompleteDirectly() {
+		if (!canCompleteDirectly) {
+			return;
+		}
+
+		try {
+			await patchSaleStatus({
+				saleId,
+				status: "COMPLETED",
+			});
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
 	return (
 		<>
 			{trigger === "dropdown-item" ? (
-				<DropdownMenuItem
-					disabled={isPending || availableTransitions.length === 0}
-					onSelect={(event) => {
-						event.preventDefault();
-						setNextStatus(availableTransitions[0] ?? "");
-						setIsModalOpen(true);
-					}}
-				>
-					<RefreshCcw className="size-4" />
-					{availableTransitions.length === 0
-						? "Sem transição de status"
-						: "Alterar status"}
-				</DropdownMenuItem>
+				<>
+					{canCompleteDirectly ? (
+						<DropdownMenuItem
+							disabled={isPending}
+							onSelect={() => {
+								void handleCompleteDirectly();
+							}}
+						>
+							<CheckCircle2 className="size-4 text-emerald-600" />
+							Concluir venda
+						</DropdownMenuItem>
+					) : null}
+
+					{hasAlternativeTransitions ||
+					(!canCompleteDirectly && availableTransitions.length > 0) ? (
+						<DropdownMenuItem
+							disabled={isPending}
+							onSelect={(event) => {
+								event.preventDefault();
+								openStatusModal(canCompleteDirectly);
+							}}
+						>
+							<RefreshCcw className="size-4" />
+							Alterar status
+						</DropdownMenuItem>
+					) : null}
+
+					{availableTransitions.length === 0 ? (
+						<DropdownMenuItem disabled>
+							<RefreshCcw className="size-4" />
+							Sem transição de status
+						</DropdownMenuItem>
+					) : null}
+				</>
 			) : (
-				<Button
-					variant="outline"
-					size="sm"
-					disabled={isPending || availableTransitions.length === 0}
-					onClick={() => {
-						setNextStatus(availableTransitions[0] ?? "");
-						setIsModalOpen(true);
-					}}
-				>
-					<RefreshCcw className="size-4" />
-					{availableTransitions.length === 0 ? "Sem transição" : "Alterar status"}
-				</Button>
+				<div className="flex flex-col gap-2 sm:flex-row">
+					{canCompleteDirectly ? (
+						<Button
+							size="sm"
+							disabled={isPending}
+							onClick={() => {
+								void handleCompleteDirectly();
+							}}
+						>
+							<CheckCircle2 className="size-4" />
+							Concluir venda
+						</Button>
+					) : null}
+
+					{hasAlternativeTransitions ||
+					(!canCompleteDirectly && availableTransitions.length > 0) ? (
+						<Button
+							variant="outline"
+							size="sm"
+							disabled={isPending}
+							onClick={() => openStatusModal(canCompleteDirectly)}
+						>
+							<RefreshCcw className="size-4" />
+							{canCompleteDirectly ? "Outros status" : "Alterar status"}
+						</Button>
+					) : null}
+
+					{availableTransitions.length === 0 ? (
+						<Button variant="outline" size="sm" disabled>
+							<RefreshCcw className="size-4" />
+							Sem transição
+						</Button>
+					) : null}
+				</div>
 			)}
 
 			<Dialog

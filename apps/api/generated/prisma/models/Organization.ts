@@ -30,6 +30,7 @@ export type OrganizationMinAggregateOutputType = {
   slug: string | null
   domain: string | null
   shouldAttachUserByDomain: boolean | null
+  enableSalesTransactionsSync: boolean | null
   avatarUrl: string | null
   ownerId: string | null
   createdAt: Date | null
@@ -42,6 +43,7 @@ export type OrganizationMaxAggregateOutputType = {
   slug: string | null
   domain: string | null
   shouldAttachUserByDomain: boolean | null
+  enableSalesTransactionsSync: boolean | null
   avatarUrl: string | null
   ownerId: string | null
   createdAt: Date | null
@@ -54,6 +56,7 @@ export type OrganizationCountAggregateOutputType = {
   slug: number
   domain: number
   shouldAttachUserByDomain: number
+  enableSalesTransactionsSync: number
   avatarUrl: number
   ownerId: number
   createdAt: number
@@ -68,6 +71,7 @@ export type OrganizationMinAggregateInputType = {
   slug?: true
   domain?: true
   shouldAttachUserByDomain?: true
+  enableSalesTransactionsSync?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -80,6 +84,7 @@ export type OrganizationMaxAggregateInputType = {
   slug?: true
   domain?: true
   shouldAttachUserByDomain?: true
+  enableSalesTransactionsSync?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -92,6 +97,7 @@ export type OrganizationCountAggregateInputType = {
   slug?: true
   domain?: true
   shouldAttachUserByDomain?: true
+  enableSalesTransactionsSync?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -177,6 +183,7 @@ export type OrganizationGroupByOutputType = {
   slug: string
   domain: string | null
   shouldAttachUserByDomain: boolean
+  enableSalesTransactionsSync: boolean
   avatarUrl: string | null
   ownerId: string
   createdAt: Date
@@ -210,6 +217,7 @@ export type OrganizationWhereInput = {
   slug?: Prisma.StringFilter<"Organization"> | string
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -240,6 +248,7 @@ export type OrganizationOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
+  enableSalesTransactionsSync?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -273,6 +282,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   name?: Prisma.StringFilter<"Organization"> | string
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -303,6 +313,7 @@ export type OrganizationOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
+  enableSalesTransactionsSync?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -321,6 +332,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   domain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
+  enableSalesTransactionsSync?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   ownerId?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
@@ -333,6 +345,7 @@ export type OrganizationCreateInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -362,6 +375,7 @@ export type OrganizationUncheckedCreateInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -391,6 +405,7 @@ export type OrganizationUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -420,6 +435,7 @@ export type OrganizationUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -449,6 +465,7 @@ export type OrganizationCreateManyInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -461,6 +478,7 @@ export type OrganizationUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -472,6 +490,7 @@ export type OrganizationUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -499,6 +518,7 @@ export type OrganizationCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
+  enableSalesTransactionsSync?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -511,6 +531,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
+  enableSalesTransactionsSync?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -523,6 +544,7 @@ export type OrganizationMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
+  enableSalesTransactionsSync?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -822,6 +844,7 @@ export type OrganizationCreateWithoutOwnerInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -850,6 +873,7 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -907,6 +931,7 @@ export type OrganizationScalarWhereInput = {
   slug?: Prisma.StringFilter<"Organization"> | string
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -919,6 +944,7 @@ export type OrganizationCreateWithoutInvitesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -947,6 +973,7 @@ export type OrganizationUncheckedCreateWithoutInvitesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -991,6 +1018,7 @@ export type OrganizationUpdateWithoutInvitesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1019,6 +1047,7 @@ export type OrganizationUncheckedUpdateWithoutInvitesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1047,6 +1076,7 @@ export type OrganizationCreateWithoutMembersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1075,6 +1105,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1119,6 +1150,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1147,6 +1179,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1175,6 +1208,7 @@ export type OrganizationCreateWithoutMemberCompanyAccessesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1203,6 +1237,7 @@ export type OrganizationUncheckedCreateWithoutMemberCompanyAccessesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1247,6 +1282,7 @@ export type OrganizationUpdateWithoutMemberCompanyAccessesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1275,6 +1311,7 @@ export type OrganizationUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1303,6 +1340,7 @@ export type OrganizationCreateWithoutCompaniesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1331,6 +1369,7 @@ export type OrganizationUncheckedCreateWithoutCompaniesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1375,6 +1414,7 @@ export type OrganizationUpdateWithoutCompaniesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1403,6 +1443,7 @@ export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1431,6 +1472,7 @@ export type OrganizationCreateWithoutCategoriesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1459,6 +1501,7 @@ export type OrganizationUncheckedCreateWithoutCategoriesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1503,6 +1546,7 @@ export type OrganizationUpdateWithoutCategoriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1531,6 +1575,7 @@ export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1559,6 +1604,7 @@ export type OrganizationCreateWithoutCostCentersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1587,6 +1633,7 @@ export type OrganizationUncheckedCreateWithoutCostCentersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1631,6 +1678,7 @@ export type OrganizationUpdateWithoutCostCentersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1659,6 +1707,7 @@ export type OrganizationUncheckedUpdateWithoutCostCentersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1687,6 +1736,7 @@ export type OrganizationCreateWithoutEmployeesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1715,6 +1765,7 @@ export type OrganizationUncheckedCreateWithoutEmployeesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1759,6 +1810,7 @@ export type OrganizationUpdateWithoutEmployeesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1787,6 +1839,7 @@ export type OrganizationUncheckedUpdateWithoutEmployeesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1815,6 +1868,7 @@ export type OrganizationCreateWithoutCustomersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1843,6 +1897,7 @@ export type OrganizationUncheckedCreateWithoutCustomersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1887,6 +1942,7 @@ export type OrganizationUpdateWithoutCustomersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1915,6 +1971,7 @@ export type OrganizationUncheckedUpdateWithoutCustomersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1943,6 +2000,7 @@ export type OrganizationCreateWithoutPartnersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1971,6 +2029,7 @@ export type OrganizationUncheckedCreateWithoutPartnersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2015,6 +2074,7 @@ export type OrganizationUpdateWithoutPartnersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2043,6 +2103,7 @@ export type OrganizationUncheckedUpdateWithoutPartnersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2071,6 +2132,7 @@ export type OrganizationCreateWithoutSellersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2099,6 +2161,7 @@ export type OrganizationUncheckedCreateWithoutSellersInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2143,6 +2206,7 @@ export type OrganizationUpdateWithoutSellersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2171,6 +2235,7 @@ export type OrganizationUncheckedUpdateWithoutSellersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2199,6 +2264,7 @@ export type OrganizationCreateWithoutProductsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2227,6 +2293,7 @@ export type OrganizationUncheckedCreateWithoutProductsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2271,6 +2338,7 @@ export type OrganizationUpdateWithoutProductsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2299,6 +2367,7 @@ export type OrganizationUncheckedUpdateWithoutProductsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2327,6 +2396,7 @@ export type OrganizationCreateWithoutSalesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2355,6 +2425,7 @@ export type OrganizationUncheckedCreateWithoutSalesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2399,6 +2470,7 @@ export type OrganizationUpdateWithoutSalesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2427,6 +2499,7 @@ export type OrganizationUncheckedUpdateWithoutSalesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2455,6 +2528,7 @@ export type OrganizationCreateWithoutSaleHistoryEventsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2483,6 +2557,7 @@ export type OrganizationUncheckedCreateWithoutSaleHistoryEventsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2527,6 +2602,7 @@ export type OrganizationUpdateWithoutSaleHistoryEventsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2555,6 +2631,7 @@ export type OrganizationUncheckedUpdateWithoutSaleHistoryEventsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2583,6 +2660,7 @@ export type OrganizationCreateWithoutSaleImportTemplatesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2611,6 +2689,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportTemplatesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2655,6 +2734,7 @@ export type OrganizationUpdateWithoutSaleImportTemplatesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2683,6 +2763,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportTemplatesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2711,6 +2792,7 @@ export type OrganizationCreateWithoutSaleImportAuditsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2739,6 +2821,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportAuditsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2783,6 +2866,7 @@ export type OrganizationUpdateWithoutSaleImportAuditsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2811,6 +2895,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportAuditsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2839,6 +2924,7 @@ export type OrganizationCreateWithoutTransactionsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2867,6 +2953,7 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2911,6 +2998,7 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2939,6 +3027,7 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2967,6 +3056,7 @@ export type OrganizationCreateWithoutRecurrencesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2995,6 +3085,7 @@ export type OrganizationUncheckedCreateWithoutRecurrencesInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3039,6 +3130,7 @@ export type OrganizationUpdateWithoutRecurrencesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3067,6 +3159,7 @@ export type OrganizationUncheckedUpdateWithoutRecurrencesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3095,6 +3188,7 @@ export type OrganizationCreateManyOwnerInput = {
   slug: string
   domain?: string | null
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3106,6 +3200,7 @@ export type OrganizationUpdateWithoutOwnerInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3134,6 +3229,7 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3162,6 +3258,7 @@ export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3348,6 +3445,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   slug?: boolean
   domain?: boolean
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -3379,6 +3477,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   domain?: boolean
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -3392,6 +3491,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   domain?: boolean
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -3405,13 +3505,14 @@ export type OrganizationSelectScalar = {
   slug?: boolean
   domain?: boolean
   shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "shouldAttachUserByDomain" | "avatarUrl" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "shouldAttachUserByDomain" | "enableSalesTransactionsSync" | "avatarUrl" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
   invites?: boolean | Prisma.Organization$invitesArgs<ExtArgs>
@@ -3468,6 +3569,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     slug: string
     domain: string | null
     shouldAttachUserByDomain: boolean
+    enableSalesTransactionsSync: boolean
     avatarUrl: string | null
     ownerId: string
     createdAt: Date
@@ -3918,6 +4020,7 @@ export interface OrganizationFieldRefs {
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
   readonly domain: Prisma.FieldRef<"Organization", 'String'>
   readonly shouldAttachUserByDomain: Prisma.FieldRef<"Organization", 'Boolean'>
+  readonly enableSalesTransactionsSync: Prisma.FieldRef<"Organization", 'Boolean'>
   readonly avatarUrl: Prisma.FieldRef<"Organization", 'String'>
   readonly ownerId: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>

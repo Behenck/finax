@@ -53,25 +53,28 @@ const productCommissionSchema = z
 
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
-					ctx.addIssue({
-						code: "custom",
-						message: "Informe quem receberá esta comissão",
-						path: ["beneficiaryLabel"],
-					});
+				ctx.addIssue({
+					code: "custom",
+					message: "Informe quem receberá esta comissão",
+					path: ["beneficiaryLabel"],
+				});
 			}
 		} else if (
 			(commission.recipientType === "COMPANY" ||
 				commission.recipientType === "UNIT") &&
 			!commission.beneficiaryId
 		) {
-				ctx.addIssue({
-					code: "custom",
-					message: "Selecione o beneficiário",
-					path: ["beneficiaryId"],
-				});
+			ctx.addIssue({
+				code: "custom",
+				message: "Selecione o beneficiário",
+				path: ["beneficiaryId"],
+			});
 		}
 
-		if (calculationBase === "COMMISSION" && commission.baseCommissionIndex === undefined) {
+		if (
+			calculationBase === "COMMISSION" &&
+			commission.baseCommissionIndex === undefined
+		) {
 			ctx.addIssue({
 				code: "custom",
 				message: "Selecione a comissão base.",
@@ -79,22 +82,29 @@ const productCommissionSchema = z
 			});
 		}
 
-		if (calculationBase === "SALE_TOTAL" && commission.baseCommissionIndex !== undefined) {
+		if (
+			calculationBase === "SALE_TOTAL" &&
+			commission.baseCommissionIndex !== undefined
+		) {
 			ctx.addIssue({
 				code: "custom",
-				message: "A comissão base só pode ser usada quando o cálculo for por comissão.",
+				message:
+					"A comissão base só pode ser usada quando o cálculo for por comissão.",
 				path: ["baseCommissionIndex"],
 			});
 		}
 
 		const installmentNumbers = new Set<number>();
-		for (const [installmentIndex, installment] of commission.installments.entries()) {
+		for (const [
+			installmentIndex,
+			installment,
+		] of commission.installments.entries()) {
 			if (installmentNumbers.has(installment.installmentNumber)) {
-					ctx.addIssue({
-						code: "custom",
-						message: "Número da parcela repetido",
-						path: ["installments", installmentIndex, "installmentNumber"],
-					});
+				ctx.addIssue({
+					code: "custom",
+					message: "Número da parcela repetido",
+					path: ["installments", installmentIndex, "installmentNumber"],
+				});
 			}
 			installmentNumbers.add(installment.installmentNumber);
 		}
@@ -105,16 +115,18 @@ const productCommissionSchema = z
 		const installmentsTotalScaled = commission.installments.reduce(
 			(sum, installment) =>
 				sum +
-				Math.round((installment.percentage + Number.EPSILON) * PERCENTAGE_SCALE),
+				Math.round(
+					(installment.percentage + Number.EPSILON) * PERCENTAGE_SCALE,
+				),
 			0,
 		);
 
 		if (totalScaled !== installmentsTotalScaled) {
-				ctx.addIssue({
-					code: "custom",
-					message: "A soma das parcelas deve ser igual ao % total",
-					path: ["installments"],
-				});
+			ctx.addIssue({
+				code: "custom",
+				message: "A soma das parcelas deve ser igual ao % total",
+				path: ["installments"],
+			});
 		}
 	});
 
@@ -189,108 +201,118 @@ const productSaleFieldSchema = z
 		}
 	});
 
-export const productSchema = z.object({
-	name: z
-		.string({ error: "Defina o nome do Produto" })
-		.min(1, "Defina o nome do Produto"),
-	scenarios: z.array(productCommissionScenarioSchema),
-	saleFields: z.array(productSaleFieldSchema),
-}).superRefine((data, ctx) => {
-	const scenarioNames = new Set<string>();
-	for (const [scenarioIndex, scenario] of data.scenarios.entries()) {
-		if (scenarioIndex > 0 && scenario.conditions.length === 0) {
+export const productSchema = z
+	.object({
+		name: z
+			.string({ error: "Defina o nome do Produto" })
+			.min(1, "Defina o nome do Produto"),
+		salesTransactionCategoryId: z.uuid().optional(),
+		salesTransactionCostCenterId: z.uuid().optional(),
+		scenarios: z.array(productCommissionScenarioSchema),
+		saleFields: z.array(productSaleFieldSchema),
+	})
+	.superRefine((data, ctx) => {
+		const scenarioNames = new Set<string>();
+		for (const [scenarioIndex, scenario] of data.scenarios.entries()) {
+			if (scenarioIndex > 0 && scenario.conditions.length === 0) {
 				ctx.addIssue({
 					code: "custom",
 					message: "Cenários adicionais exigem pelo menos uma condição",
 					path: ["scenarios", scenarioIndex, "conditions"],
 				});
-		}
+			}
 
-		const normalizedName = scenario.name.trim().toLowerCase();
-		if (scenarioNames.has(normalizedName)) {
+			const normalizedName = scenario.name.trim().toLowerCase();
+			if (scenarioNames.has(normalizedName)) {
 				ctx.addIssue({
 					code: "custom",
 					message: "Nome de cenário duplicado",
 					path: ["scenarios", scenarioIndex, "name"],
 				});
-		}
-		scenarioNames.add(normalizedName);
-
-		for (const [commissionIndex, commission] of scenario.commissions.entries()) {
-			const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
-			if (calculationBase !== "COMMISSION") {
-				continue;
 			}
+			scenarioNames.add(normalizedName);
 
-			const baseCommissionIndex = commission.baseCommissionIndex;
-			if (
-				baseCommissionIndex === undefined ||
-				baseCommissionIndex < 0 ||
-				baseCommissionIndex >= scenario.commissions.length
-			) {
+			for (const [
+				commissionIndex,
+				commission,
+			] of scenario.commissions.entries()) {
+				const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+				if (calculationBase !== "COMMISSION") {
+					continue;
+				}
+
+				const baseCommissionIndex = commission.baseCommissionIndex;
+				if (
+					baseCommissionIndex === undefined ||
+					baseCommissionIndex < 0 ||
+					baseCommissionIndex >= scenario.commissions.length
+				) {
+					ctx.addIssue({
+						code: "custom",
+						message: "Comissão base inválida.",
+						path: [
+							"scenarios",
+							scenarioIndex,
+							"commissions",
+							commissionIndex,
+							"baseCommissionIndex",
+						],
+					});
+					continue;
+				}
+
+				if (baseCommissionIndex === commissionIndex) {
+					ctx.addIssue({
+						code: "custom",
+						message: "A comissão não pode usar ela mesma como base.",
+						path: [
+							"scenarios",
+							scenarioIndex,
+							"commissions",
+							commissionIndex,
+							"baseCommissionIndex",
+						],
+					});
+					continue;
+				}
+
+				const baseCommission = scenario.commissions[baseCommissionIndex];
+				const baseCalculationBase =
+					baseCommission?.calculationBase ?? "SALE_TOTAL";
+				if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
+					ctx.addIssue({
+						code: "custom",
+						message:
+							"A comissão base deve ser calculada sobre o valor da venda.",
+						path: [
+							"scenarios",
+							scenarioIndex,
+							"commissions",
+							commissionIndex,
+							"baseCommissionIndex",
+						],
+					});
+				}
+			}
+		}
+
+		const saleFieldLabels = new Set<string>();
+		for (const [fieldIndex, field] of data.saleFields.entries()) {
+			const normalizedFieldLabel = field.label.trim().toLocaleLowerCase();
+			if (saleFieldLabels.has(normalizedFieldLabel)) {
 				ctx.addIssue({
 					code: "custom",
-					message: "Comissão base inválida.",
-					path: [
-						"scenarios",
-						scenarioIndex,
-						"commissions",
-						commissionIndex,
-						"baseCommissionIndex",
-					],
-				});
-				continue;
-			}
-
-			if (baseCommissionIndex === commissionIndex) {
-				ctx.addIssue({
-					code: "custom",
-					message: "A comissão não pode usar ela mesma como base.",
-					path: [
-						"scenarios",
-						scenarioIndex,
-						"commissions",
-						commissionIndex,
-						"baseCommissionIndex",
-					],
-				});
-				continue;
-			}
-
-			const baseCommission = scenario.commissions[baseCommissionIndex];
-			const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
-			if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
-				ctx.addIssue({
-					code: "custom",
-					message: "A comissão base deve ser calculada sobre o valor da venda.",
-					path: [
-						"scenarios",
-						scenarioIndex,
-						"commissions",
-						commissionIndex,
-						"baseCommissionIndex",
-					],
+					message: "Nome de campo duplicado",
+					path: ["saleFields", fieldIndex, "label"],
 				});
 			}
+			saleFieldLabels.add(normalizedFieldLabel);
 		}
-	}
-
-	const saleFieldLabels = new Set<string>();
-	for (const [fieldIndex, field] of data.saleFields.entries()) {
-		const normalizedFieldLabel = field.label.trim().toLocaleLowerCase();
-		if (saleFieldLabels.has(normalizedFieldLabel)) {
-			ctx.addIssue({
-				code: "custom",
-				message: "Nome de campo duplicado",
-				path: ["saleFields", fieldIndex, "label"],
-			});
-		}
-		saleFieldLabels.add(normalizedFieldLabel);
-	}
-});
+	});
 
 export type ProductFormData = z.infer<typeof productSchema>;
 export type ProductFormInput = z.input<typeof productSchema>;
-export type ProductCommissionScenarioFormData = ProductFormData["scenarios"][number];
+export type ProductCommissionScenarioFormData =
+	ProductFormData["scenarios"][number];
 export type ProductCommissionFormData =
 	ProductCommissionScenarioFormData["commissions"][number];

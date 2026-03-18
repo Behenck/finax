@@ -42,6 +42,8 @@ export type ProductMinAggregateOutputType = {
   description: string | null
   isActive: boolean | null
   sortOrder: number | null
+  salesTransactionCategoryId: string | null
+  salesTransactionCostCenterId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +56,8 @@ export type ProductMaxAggregateOutputType = {
   description: string | null
   isActive: boolean | null
   sortOrder: number | null
+  salesTransactionCategoryId: string | null
+  salesTransactionCostCenterId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +70,8 @@ export type ProductCountAggregateOutputType = {
   description: number
   isActive: number
   sortOrder: number
+  salesTransactionCategoryId: number
+  salesTransactionCostCenterId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +94,8 @@ export type ProductMinAggregateInputType = {
   description?: true
   isActive?: true
   sortOrder?: true
+  salesTransactionCategoryId?: true
+  salesTransactionCostCenterId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +108,8 @@ export type ProductMaxAggregateInputType = {
   description?: true
   isActive?: true
   sortOrder?: true
+  salesTransactionCategoryId?: true
+  salesTransactionCostCenterId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +122,8 @@ export type ProductCountAggregateInputType = {
   description?: true
   isActive?: true
   sortOrder?: true
+  salesTransactionCategoryId?: true
+  salesTransactionCostCenterId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +223,8 @@ export type ProductGroupByOutputType = {
   description: string | null
   isActive: boolean
   sortOrder: number
+  salesTransactionCategoryId: string | null
+  salesTransactionCostCenterId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -246,6 +260,8 @@ export type ProductWhereInput = {
   description?: Prisma.StringNullableFilter<"Product"> | string | null
   isActive?: Prisma.BoolFilter<"Product"> | boolean
   sortOrder?: Prisma.IntFilter<"Product"> | number
+  salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
+  salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -253,6 +269,8 @@ export type ProductWhereInput = {
   children?: Prisma.ProductListRelationFilter
   sales?: Prisma.SaleListRelationFilter
   saleFields?: Prisma.ProductSaleFieldListRelationFilter
+  salesTransactionCategory?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  salesTransactionCostCenter?: Prisma.XOR<Prisma.CostCenterNullableScalarRelationFilter, Prisma.CostCenterWhereInput> | null
   commissionScenarios?: Prisma.ProductCommissionScenarioListRelationFilter
 }
 
@@ -264,6 +282,8 @@ export type ProductOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  salesTransactionCategoryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  salesTransactionCostCenterId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -271,6 +291,8 @@ export type ProductOrderByWithRelationInput = {
   children?: Prisma.ProductOrderByRelationAggregateInput
   sales?: Prisma.SaleOrderByRelationAggregateInput
   saleFields?: Prisma.ProductSaleFieldOrderByRelationAggregateInput
+  salesTransactionCategory?: Prisma.CategoryOrderByWithRelationInput
+  salesTransactionCostCenter?: Prisma.CostCenterOrderByWithRelationInput
   commissionScenarios?: Prisma.ProductCommissionScenarioOrderByRelationAggregateInput
 }
 
@@ -286,6 +308,8 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Product"> | string | null
   isActive?: Prisma.BoolFilter<"Product"> | boolean
   sortOrder?: Prisma.IntFilter<"Product"> | number
+  salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
+  salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -293,6 +317,8 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   children?: Prisma.ProductListRelationFilter
   sales?: Prisma.SaleListRelationFilter
   saleFields?: Prisma.ProductSaleFieldListRelationFilter
+  salesTransactionCategory?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  salesTransactionCostCenter?: Prisma.XOR<Prisma.CostCenterNullableScalarRelationFilter, Prisma.CostCenterWhereInput> | null
   commissionScenarios?: Prisma.ProductCommissionScenarioListRelationFilter
 }, "id" | "organizationId_parentId_name">
 
@@ -304,6 +330,8 @@ export type ProductOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  salesTransactionCategoryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  salesTransactionCostCenterId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -324,6 +352,8 @@ export type ProductScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"Product"> | number
+  salesTransactionCategoryId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  salesTransactionCostCenterId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -341,6 +371,8 @@ export type ProductCreateInput = {
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -352,6 +384,8 @@ export type ProductUncheckedCreateInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -373,6 +407,8 @@ export type ProductUpdateInput = {
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -384,6 +420,8 @@ export type ProductUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -400,6 +438,8 @@ export type ProductCreateManyInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -422,6 +462,8 @@ export type ProductUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -455,6 +497,8 @@ export type ProductCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  salesTransactionCategoryId?: Prisma.SortOrder
+  salesTransactionCostCenterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -471,6 +515,8 @@ export type ProductMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  salesTransactionCategoryId?: Prisma.SortOrder
+  salesTransactionCostCenterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -483,6 +529,8 @@ export type ProductMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  salesTransactionCategoryId?: Prisma.SortOrder
+  salesTransactionCostCenterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -535,6 +583,90 @@ export type ProductUncheckedUpdateManyWithoutOrganizationNestedInput = {
   connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
   update?: Prisma.ProductUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.ProductUpdateWithWhereUniqueWithoutOrganizationInput[]
   updateMany?: Prisma.ProductUpdateManyWithWhereWithoutOrganizationInput | Prisma.ProductUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
+}
+
+export type ProductCreateNestedManyWithoutSalesTransactionCategoryInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput> | Prisma.ProductCreateWithoutSalesTransactionCategoryInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCategoryInputEnvelope
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+}
+
+export type ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput> | Prisma.ProductCreateWithoutSalesTransactionCategoryInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCategoryInputEnvelope
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+}
+
+export type ProductUpdateManyWithoutSalesTransactionCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput> | Prisma.ProductCreateWithoutSalesTransactionCategoryInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput[]
+  upsert?: Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCategoryInput | Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCategoryInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCategoryInputEnvelope
+  set?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  disconnect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  delete?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  update?: Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCategoryInput | Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCategoryInput[]
+  updateMany?: Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCategoryInput | Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCategoryInput[]
+  deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
+}
+
+export type ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput> | Prisma.ProductCreateWithoutSalesTransactionCategoryInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCategoryInput[]
+  upsert?: Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCategoryInput | Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCategoryInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCategoryInputEnvelope
+  set?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  disconnect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  delete?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  update?: Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCategoryInput | Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCategoryInput[]
+  updateMany?: Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCategoryInput | Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCategoryInput[]
+  deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
+}
+
+export type ProductCreateNestedManyWithoutSalesTransactionCostCenterInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput> | Prisma.ProductCreateWithoutSalesTransactionCostCenterInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCostCenterInputEnvelope
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+}
+
+export type ProductUncheckedCreateNestedManyWithoutSalesTransactionCostCenterInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput> | Prisma.ProductCreateWithoutSalesTransactionCostCenterInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCostCenterInputEnvelope
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+}
+
+export type ProductUpdateManyWithoutSalesTransactionCostCenterNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput> | Prisma.ProductCreateWithoutSalesTransactionCostCenterInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput[]
+  upsert?: Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCostCenterInput | Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCostCenterInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCostCenterInputEnvelope
+  set?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  disconnect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  delete?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  update?: Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCostCenterInput | Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCostCenterInput[]
+  updateMany?: Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCostCenterInput | Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCostCenterInput[]
+  deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
+}
+
+export type ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput> | Prisma.ProductCreateWithoutSalesTransactionCostCenterInput[] | Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput[]
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput | Prisma.ProductCreateOrConnectWithoutSalesTransactionCostCenterInput[]
+  upsert?: Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCostCenterInput | Prisma.ProductUpsertWithWhereUniqueWithoutSalesTransactionCostCenterInput[]
+  createMany?: Prisma.ProductCreateManySalesTransactionCostCenterInputEnvelope
+  set?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  disconnect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  delete?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  connect?: Prisma.ProductWhereUniqueInput | Prisma.ProductWhereUniqueInput[]
+  update?: Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCostCenterInput | Prisma.ProductUpdateWithWhereUniqueWithoutSalesTransactionCostCenterInput[]
+  updateMany?: Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCostCenterInput | Prisma.ProductUpdateManyWithWhereWithoutSalesTransactionCostCenterInput[]
   deleteMany?: Prisma.ProductScalarWhereInput | Prisma.ProductScalarWhereInput[]
 }
 
@@ -658,6 +790,8 @@ export type ProductCreateWithoutOrganizationInput = {
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -668,6 +802,8 @@ export type ProductUncheckedCreateWithoutOrganizationInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -713,8 +849,130 @@ export type ProductScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"Product"> | string | null
   isActive?: Prisma.BoolFilter<"Product"> | boolean
   sortOrder?: Prisma.IntFilter<"Product"> | number
+  salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
+  salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
+}
+
+export type ProductCreateWithoutSalesTransactionCategoryInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
+  parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutSalesTransactionCategoryInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCostCenterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutSalesTransactionCategoryInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput>
+}
+
+export type ProductCreateManySalesTransactionCategoryInputEnvelope = {
+  data: Prisma.ProductCreateManySalesTransactionCategoryInput | Prisma.ProductCreateManySalesTransactionCategoryInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductUpsertWithWhereUniqueWithoutSalesTransactionCategoryInput = {
+  where: Prisma.ProductWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedUpdateWithoutSalesTransactionCategoryInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCategoryInput>
+}
+
+export type ProductUpdateWithWhereUniqueWithoutSalesTransactionCategoryInput = {
+  where: Prisma.ProductWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutSalesTransactionCategoryInput, Prisma.ProductUncheckedUpdateWithoutSalesTransactionCategoryInput>
+}
+
+export type ProductUpdateManyWithWhereWithoutSalesTransactionCategoryInput = {
+  where: Prisma.ProductScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateManyMutationInput, Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryInput>
+}
+
+export type ProductCreateWithoutSalesTransactionCostCenterInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
+  parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutSalesTransactionCostCenterInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutSalesTransactionCostCenterInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput>
+}
+
+export type ProductCreateManySalesTransactionCostCenterInputEnvelope = {
+  data: Prisma.ProductCreateManySalesTransactionCostCenterInput | Prisma.ProductCreateManySalesTransactionCostCenterInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductUpsertWithWhereUniqueWithoutSalesTransactionCostCenterInput = {
+  where: Prisma.ProductWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedCreateWithoutSalesTransactionCostCenterInput>
+}
+
+export type ProductUpdateWithWhereUniqueWithoutSalesTransactionCostCenterInput = {
+  where: Prisma.ProductWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutSalesTransactionCostCenterInput, Prisma.ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput>
+}
+
+export type ProductUpdateManyWithWhereWithoutSalesTransactionCostCenterInput = {
+  where: Prisma.ProductScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateManyMutationInput, Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterInput>
 }
 
 export type ProductCreateWithoutChildrenInput = {
@@ -729,6 +987,8 @@ export type ProductCreateWithoutChildrenInput = {
   parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -740,6 +1000,8 @@ export type ProductUncheckedCreateWithoutChildrenInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
@@ -764,6 +1026,8 @@ export type ProductCreateWithoutParentInput = {
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -774,6 +1038,8 @@ export type ProductUncheckedCreateWithoutParentInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -815,6 +1081,8 @@ export type ProductUpdateWithoutChildrenInput = {
   parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -826,6 +1094,8 @@ export type ProductUncheckedUpdateWithoutChildrenInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
@@ -861,6 +1131,8 @@ export type ProductCreateWithoutSaleFieldsInput = {
   parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -872,6 +1144,8 @@ export type ProductUncheckedCreateWithoutSaleFieldsInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -907,6 +1181,8 @@ export type ProductUpdateWithoutSaleFieldsInput = {
   parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -918,6 +1194,8 @@ export type ProductUncheckedUpdateWithoutSaleFieldsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -938,6 +1216,8 @@ export type ProductCreateWithoutCommissionScenariosInput = {
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   sales?: Prisma.SaleCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
 }
 
 export type ProductUncheckedCreateWithoutCommissionScenariosInput = {
@@ -948,6 +1228,8 @@ export type ProductUncheckedCreateWithoutCommissionScenariosInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -984,6 +1266,8 @@ export type ProductUpdateWithoutCommissionScenariosInput = {
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCommissionScenariosInput = {
@@ -994,6 +1278,8 @@ export type ProductUncheckedUpdateWithoutCommissionScenariosInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1013,6 +1299,8 @@ export type ProductCreateWithoutSalesInput = {
   parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
   children?: Prisma.ProductCreateNestedManyWithoutParentInput
   saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
 }
 
@@ -1024,6 +1312,8 @@ export type ProductUncheckedCreateWithoutSalesInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1059,6 +1349,8 @@ export type ProductUpdateWithoutSalesInput = {
   parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -1070,6 +1362,8 @@ export type ProductUncheckedUpdateWithoutSalesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1084,6 +1378,8 @@ export type ProductCreateManyOrganizationInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1100,6 +1396,8 @@ export type ProductUpdateWithoutOrganizationInput = {
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -1110,6 +1408,8 @@ export type ProductUncheckedUpdateWithoutOrganizationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1125,6 +1425,128 @@ export type ProductUncheckedUpdateManyWithoutOrganizationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCreateManySalesTransactionCategoryInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCostCenterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductUpdateWithoutSalesTransactionCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutSalesTransactionCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateManyWithoutSalesTransactionCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductCreateManySalesTransactionCostCenterInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductUpdateWithoutSalesTransactionCostCenterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1136,6 +1558,8 @@ export type ProductCreateManyParentInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1152,6 +1576,8 @@ export type ProductUpdateWithoutParentInput = {
   children?: Prisma.ProductUpdateManyWithoutParentNestedInput
   sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
 }
 
@@ -1162,6 +1588,8 @@ export type ProductUncheckedUpdateWithoutParentInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1177,6 +1605,8 @@ export type ProductUncheckedUpdateManyWithoutParentInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1247,6 +1677,8 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   description?: boolean
   isActive?: boolean
   sortOrder?: boolean
+  salesTransactionCategoryId?: boolean
+  salesTransactionCostCenterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1254,6 +1686,8 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   children?: boolean | Prisma.Product$childrenArgs<ExtArgs>
   sales?: boolean | Prisma.Product$salesArgs<ExtArgs>
   saleFields?: boolean | Prisma.Product$saleFieldsArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
   commissionScenarios?: boolean | Prisma.Product$commissionScenariosArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
@@ -1266,10 +1700,14 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   description?: boolean
   isActive?: boolean
   sortOrder?: boolean
+  salesTransactionCategoryId?: boolean
+  salesTransactionCostCenterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
 export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1280,10 +1718,14 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   description?: boolean
   isActive?: boolean
   sortOrder?: boolean
+  salesTransactionCategoryId?: boolean
+  salesTransactionCostCenterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
 export type ProductSelectScalar = {
@@ -1294,27 +1736,35 @@ export type ProductSelectScalar = {
   description?: boolean
   isActive?: boolean
   sortOrder?: boolean
+  salesTransactionCategoryId?: boolean
+  salesTransactionCostCenterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "parentId" | "name" | "description" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "parentId" | "name" | "description" | "isActive" | "sortOrder" | "salesTransactionCategoryId" | "salesTransactionCostCenterId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
   children?: boolean | Prisma.Product$childrenArgs<ExtArgs>
   sales?: boolean | Prisma.Product$salesArgs<ExtArgs>
   saleFields?: boolean | Prisma.Product$saleFieldsArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
   commissionScenarios?: boolean | Prisma.Product$commissionScenariosArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
 }
 export type ProductIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
+  salesTransactionCategory?: boolean | Prisma.Product$salesTransactionCategoryArgs<ExtArgs>
+  salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
 }
 
 export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1325,6 +1775,8 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     children: Prisma.$ProductPayload<ExtArgs>[]
     sales: Prisma.$SalePayload<ExtArgs>[]
     saleFields: Prisma.$ProductSaleFieldPayload<ExtArgs>[]
+    salesTransactionCategory: Prisma.$CategoryPayload<ExtArgs> | null
+    salesTransactionCostCenter: Prisma.$CostCenterPayload<ExtArgs> | null
     commissionScenarios: Prisma.$ProductCommissionScenarioPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1335,6 +1787,8 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     description: string | null
     isActive: boolean
     sortOrder: number
+    salesTransactionCategoryId: string | null
+    salesTransactionCostCenterId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -1736,6 +2190,8 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   children<T extends Prisma.Product$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sales<T extends Prisma.Product$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleFields<T extends Prisma.Product$saleFieldsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$saleFieldsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductSaleFieldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  salesTransactionCategory<T extends Prisma.Product$salesTransactionCategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$salesTransactionCategoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  salesTransactionCostCenter<T extends Prisma.Product$salesTransactionCostCenterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>>): Prisma.Prisma__CostCenterClient<runtime.Types.Result.GetResult<Prisma.$CostCenterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   commissionScenarios<T extends Prisma.Product$commissionScenariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$commissionScenariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1773,6 +2229,8 @@ export interface ProductFieldRefs {
   readonly description: Prisma.FieldRef<"Product", 'String'>
   readonly isActive: Prisma.FieldRef<"Product", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"Product", 'Int'>
+  readonly salesTransactionCategoryId: Prisma.FieldRef<"Product", 'String'>
+  readonly salesTransactionCostCenterId: Prisma.FieldRef<"Product", 'String'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }
@@ -2259,6 +2717,44 @@ export type Product$saleFieldsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ProductSaleFieldScalarFieldEnum | Prisma.ProductSaleFieldScalarFieldEnum[]
+}
+
+/**
+ * Product.salesTransactionCategory
+ */
+export type Product$salesTransactionCategoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Category
+   */
+  select?: Prisma.CategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Category
+   */
+  omit?: Prisma.CategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoryInclude<ExtArgs> | null
+  where?: Prisma.CategoryWhereInput
+}
+
+/**
+ * Product.salesTransactionCostCenter
+ */
+export type Product$salesTransactionCostCenterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CostCenter
+   */
+  select?: Prisma.CostCenterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CostCenter
+   */
+  omit?: Prisma.CostCenterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CostCenterInclude<ExtArgs> | null
+  where?: Prisma.CostCenterWhereInput
 }
 
 /**

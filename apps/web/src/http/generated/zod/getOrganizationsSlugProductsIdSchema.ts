@@ -21,6 +21,8 @@ export const getOrganizationsSlugProductsId200Schema = z.object({
     parentId: z.nullable(z.uuid()),
     isActive: z.boolean(),
     sortOrder: z.int().min(-9007199254740991).max(9007199254740991),
+    salesTransactionCategoryId: z.nullable(z.uuid()),
+    salesTransactionCostCenterId: z.nullable(z.uuid()),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
   }),

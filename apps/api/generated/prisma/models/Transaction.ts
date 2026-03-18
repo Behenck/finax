@@ -54,6 +54,7 @@ export type TransactionMinAggregateOutputType = {
   categoryId: string | null
   notes: string | null
   parentId: string | null
+  saleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -79,6 +80,7 @@ export type TransactionMaxAggregateOutputType = {
   categoryId: string | null
   notes: string | null
   parentId: string | null
+  saleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -104,6 +106,7 @@ export type TransactionCountAggregateOutputType = {
   categoryId: number
   notes: number
   parentId: number
+  saleId: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -139,6 +142,7 @@ export type TransactionMinAggregateInputType = {
   categoryId?: true
   notes?: true
   parentId?: true
+  saleId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -164,6 +168,7 @@ export type TransactionMaxAggregateInputType = {
   categoryId?: true
   notes?: true
   parentId?: true
+  saleId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -189,6 +194,7 @@ export type TransactionCountAggregateInputType = {
   categoryId?: true
   notes?: true
   parentId?: true
+  saleId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -301,6 +307,7 @@ export type TransactionGroupByOutputType = {
   categoryId: string
   notes: string | null
   parentId: string | null
+  saleId: string | null
   createdAt: Date
   updatedAt: Date
   userId: string | null
@@ -349,6 +356,7 @@ export type TransactionWhereInput = {
   categoryId?: Prisma.StringFilter<"Transaction"> | string
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   parentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  saleId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   userId?: Prisma.StringNullableFilter<"Transaction"> | string | null
@@ -362,6 +370,7 @@ export type TransactionWhereInput = {
   transactionItens?: Prisma.TransactionItemListRelationFilter
   parent?: Prisma.XOR<Prisma.TransactionNullableScalarRelationFilter, Prisma.TransactionWhereInput> | null
   children?: Prisma.TransactionListRelationFilter
+  sale?: Prisma.XOR<Prisma.SaleNullableScalarRelationFilter, Prisma.SaleWhereInput> | null
 }
 
 export type TransactionOrderByWithRelationInput = {
@@ -384,6 +393,7 @@ export type TransactionOrderByWithRelationInput = {
   categoryId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   parentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  saleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -397,10 +407,12 @@ export type TransactionOrderByWithRelationInput = {
   transactionItens?: Prisma.TransactionItemOrderByRelationAggregateInput
   parent?: Prisma.TransactionOrderByWithRelationInput
   children?: Prisma.TransactionOrderByRelationAggregateInput
+  sale?: Prisma.SaleOrderByWithRelationInput
 }
 
 export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  saleId?: string
   AND?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
@@ -435,7 +447,8 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   transactionItens?: Prisma.TransactionItemListRelationFilter
   parent?: Prisma.XOR<Prisma.TransactionNullableScalarRelationFilter, Prisma.TransactionWhereInput> | null
   children?: Prisma.TransactionListRelationFilter
-}, "id">
+  sale?: Prisma.XOR<Prisma.SaleNullableScalarRelationFilter, Prisma.SaleWhereInput> | null
+}, "id" | "saleId">
 
 export type TransactionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -457,6 +470,7 @@ export type TransactionOrderByWithAggregationInput = {
   categoryId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   parentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  saleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -490,6 +504,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
   categoryId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   parentId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  saleId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   userId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
@@ -520,6 +535,7 @@ export type TransactionCreateInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateInput = {
@@ -542,6 +558,7 @@ export type TransactionUncheckedCreateInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -574,6 +591,7 @@ export type TransactionUpdateInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateInput = {
@@ -596,6 +614,7 @@ export type TransactionUncheckedUpdateInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -623,6 +642,7 @@ export type TransactionCreateManyInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -665,6 +685,7 @@ export type TransactionUncheckedUpdateManyInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -705,6 +726,7 @@ export type TransactionCountOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
+  saleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -734,6 +756,7 @@ export type TransactionMaxOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
+  saleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -759,6 +782,7 @@ export type TransactionMinOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
+  saleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -1067,6 +1091,38 @@ export type TransactionUncheckedUpdateManyWithoutRefundedByEmployeeNestedInput =
   deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
 }
 
+export type TransactionCreateNestedOneWithoutSaleInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutSaleInput
+  connect?: Prisma.TransactionWhereUniqueInput
+}
+
+export type TransactionUncheckedCreateNestedOneWithoutSaleInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutSaleInput
+  connect?: Prisma.TransactionWhereUniqueInput
+}
+
+export type TransactionUpdateOneWithoutSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutSaleInput
+  upsert?: Prisma.TransactionUpsertWithoutSaleInput
+  disconnect?: Prisma.TransactionWhereInput | boolean
+  delete?: Prisma.TransactionWhereInput | boolean
+  connect?: Prisma.TransactionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutSaleInput, Prisma.TransactionUpdateWithoutSaleInput>, Prisma.TransactionUncheckedUpdateWithoutSaleInput>
+}
+
+export type TransactionUncheckedUpdateOneWithoutSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutSaleInput
+  upsert?: Prisma.TransactionUpsertWithoutSaleInput
+  disconnect?: Prisma.TransactionWhereInput | boolean
+  delete?: Prisma.TransactionWhereInput | boolean
+  connect?: Prisma.TransactionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutSaleInput, Prisma.TransactionUpdateWithoutSaleInput>, Prisma.TransactionUncheckedUpdateWithoutSaleInput>
+}
+
 export type TransactionCreateNestedOneWithoutChildrenInput = {
   create?: Prisma.XOR<Prisma.TransactionCreateWithoutChildrenInput, Prisma.TransactionUncheckedCreateWithoutChildrenInput>
   connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutChildrenInput
@@ -1171,6 +1227,7 @@ export type TransactionCreateWithoutCreatedByInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutCreatedByInput = {
@@ -1192,6 +1249,7 @@ export type TransactionUncheckedCreateWithoutCreatedByInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1248,6 +1306,7 @@ export type TransactionScalarWhereInput = {
   categoryId?: Prisma.StringFilter<"Transaction"> | string
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   parentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  saleId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   userId?: Prisma.StringNullableFilter<"Transaction"> | string | null
@@ -1277,6 +1336,7 @@ export type TransactionCreateWithoutOrganizationInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutOrganizationInput = {
@@ -1298,6 +1358,7 @@ export type TransactionUncheckedCreateWithoutOrganizationInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1355,6 +1416,7 @@ export type TransactionCreateWithoutCompanyInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutCompanyInput = {
@@ -1376,6 +1438,7 @@ export type TransactionUncheckedCreateWithoutCompanyInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1433,6 +1496,7 @@ export type TransactionCreateWithoutUnitInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutUnitInput = {
@@ -1454,6 +1518,7 @@ export type TransactionUncheckedCreateWithoutUnitInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1511,6 +1576,7 @@ export type TransactionCreateWithoutCategoryInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutCategoryInput = {
@@ -1532,6 +1598,7 @@ export type TransactionUncheckedCreateWithoutCategoryInput = {
   refundedByEmployeeId?: string | null
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1589,6 +1656,7 @@ export type TransactionCreateWithoutCostCenterInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutCostCenterInput = {
@@ -1610,6 +1678,7 @@ export type TransactionUncheckedCreateWithoutCostCenterInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1667,6 +1736,7 @@ export type TransactionCreateWithoutRefundedByEmployeeInput = {
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutRefundedByEmployeeInput = {
@@ -1688,6 +1758,7 @@ export type TransactionUncheckedCreateWithoutRefundedByEmployeeInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1721,6 +1792,130 @@ export type TransactionUpdateManyWithWhereWithoutRefundedByEmployeeInput = {
   data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutRefundedByEmployeeInput>
 }
 
+export type TransactionCreateWithoutSaleInput = {
+  id?: string
+  code: string
+  description: string
+  totalAmount: number
+  type: $Enums.TransactionType
+  status: $Enums.TransactionStatus
+  nature: $Enums.TransactionNature
+  dueDate: Date | string
+  expectedPaymentDate: Date | string
+  paymentDate?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedTransactionsInput
+  refundedByEmployee?: Prisma.EmployeeCreateNestedOneWithoutTransactionsInput
+  costCenter: Prisma.CostCenterCreateNestedOneWithoutTransactionsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
+  category: Prisma.CategoryCreateNestedOneWithoutTransactionsInput
+  company: Prisma.CompanyCreateNestedOneWithoutTransactionsInput
+  unit?: Prisma.UnitCreateNestedOneWithoutTransactionsInput
+  transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
+  parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+}
+
+export type TransactionUncheckedCreateWithoutSaleInput = {
+  id?: string
+  code: string
+  description: string
+  totalAmount: number
+  type: $Enums.TransactionType
+  status: $Enums.TransactionStatus
+  nature: $Enums.TransactionNature
+  dueDate: Date | string
+  expectedPaymentDate: Date | string
+  paymentDate?: Date | string | null
+  costCenterId: string
+  organizationId: string
+  companyId: string
+  unitId?: string | null
+  createdById: string
+  refundedByEmployeeId?: string | null
+  categoryId: string
+  notes?: string | null
+  parentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutTransactionInput
+  children?: Prisma.TransactionUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type TransactionCreateOrConnectWithoutSaleInput = {
+  where: Prisma.TransactionWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+}
+
+export type TransactionUpsertWithoutSaleInput = {
+  update: Prisma.XOR<Prisma.TransactionUpdateWithoutSaleInput, Prisma.TransactionUncheckedUpdateWithoutSaleInput>
+  create: Prisma.XOR<Prisma.TransactionCreateWithoutSaleInput, Prisma.TransactionUncheckedCreateWithoutSaleInput>
+  where?: Prisma.TransactionWhereInput
+}
+
+export type TransactionUpdateToOneWithWhereWithoutSaleInput = {
+  where?: Prisma.TransactionWhereInput
+  data: Prisma.XOR<Prisma.TransactionUpdateWithoutSaleInput, Prisma.TransactionUncheckedUpdateWithoutSaleInput>
+}
+
+export type TransactionUpdateWithoutSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  nature?: Prisma.EnumTransactionNatureFieldUpdateOperationsInput | $Enums.TransactionNature
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTransactionsNestedInput
+  refundedByEmployee?: Prisma.EmployeeUpdateOneWithoutTransactionsNestedInput
+  costCenter?: Prisma.CostCenterUpdateOneRequiredWithoutTransactionsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
+  category?: Prisma.CategoryUpdateOneRequiredWithoutTransactionsNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutTransactionsNestedInput
+  unit?: Prisma.UnitUpdateOneWithoutTransactionsNestedInput
+  transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
+  parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+}
+
+export type TransactionUncheckedUpdateWithoutSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  nature?: Prisma.EnumTransactionNatureFieldUpdateOperationsInput | $Enums.TransactionNature
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  costCenterId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  unitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  refundedByEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutTransactionNestedInput
+  children?: Prisma.TransactionUncheckedUpdateManyWithoutParentNestedInput
+}
+
 export type TransactionCreateWithoutChildrenInput = {
   id?: string
   code: string
@@ -1745,6 +1940,7 @@ export type TransactionCreateWithoutChildrenInput = {
   unit?: Prisma.UnitCreateNestedOneWithoutTransactionsInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutChildrenInput = {
@@ -1767,6 +1963,7 @@ export type TransactionUncheckedCreateWithoutChildrenInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1802,6 +1999,7 @@ export type TransactionCreateWithoutParentInput = {
   unit?: Prisma.UnitCreateNestedOneWithoutTransactionsInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutParentInput = {
@@ -1823,6 +2021,7 @@ export type TransactionUncheckedCreateWithoutParentInput = {
   refundedByEmployeeId?: string | null
   categoryId: string
   notes?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -1875,6 +2074,7 @@ export type TransactionUpdateWithoutChildrenInput = {
   unit?: Prisma.UnitUpdateOneWithoutTransactionsNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutChildrenInput = {
@@ -1897,6 +2097,7 @@ export type TransactionUncheckedUpdateWithoutChildrenInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1943,6 +2144,7 @@ export type TransactionCreateWithoutTransactionItensInput = {
   unit?: Prisma.UnitCreateNestedOneWithoutTransactionsInput
   parent?: Prisma.TransactionCreateNestedOneWithoutChildrenInput
   children?: Prisma.TransactionCreateNestedManyWithoutParentInput
+  sale?: Prisma.SaleCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutTransactionItensInput = {
@@ -1965,6 +2167,7 @@ export type TransactionUncheckedCreateWithoutTransactionItensInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2011,6 +2214,7 @@ export type TransactionUpdateWithoutTransactionItensInput = {
   unit?: Prisma.UnitUpdateOneWithoutTransactionsNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutTransactionItensInput = {
@@ -2033,6 +2237,7 @@ export type TransactionUncheckedUpdateWithoutTransactionItensInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2058,6 +2263,7 @@ export type TransactionCreateManyCreatedByInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2087,6 +2293,7 @@ export type TransactionUpdateWithoutCreatedByInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutCreatedByInput = {
@@ -2108,6 +2315,7 @@ export type TransactionUncheckedUpdateWithoutCreatedByInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2134,6 +2342,7 @@ export type TransactionUncheckedUpdateManyWithoutCreatedByInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2158,6 +2367,7 @@ export type TransactionCreateManyOrganizationInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2187,6 +2397,7 @@ export type TransactionUpdateWithoutOrganizationInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutOrganizationInput = {
@@ -2208,6 +2419,7 @@ export type TransactionUncheckedUpdateWithoutOrganizationInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2234,6 +2446,7 @@ export type TransactionUncheckedUpdateManyWithoutOrganizationInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2258,6 +2471,7 @@ export type TransactionCreateManyCompanyInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2287,6 +2501,7 @@ export type TransactionUpdateWithoutCompanyInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutCompanyInput = {
@@ -2308,6 +2523,7 @@ export type TransactionUncheckedUpdateWithoutCompanyInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2334,6 +2550,7 @@ export type TransactionUncheckedUpdateManyWithoutCompanyInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2358,6 +2575,7 @@ export type TransactionCreateManyUnitInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2387,6 +2605,7 @@ export type TransactionUpdateWithoutUnitInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutUnitInput = {
@@ -2408,6 +2627,7 @@ export type TransactionUncheckedUpdateWithoutUnitInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2434,6 +2654,7 @@ export type TransactionUncheckedUpdateManyWithoutUnitInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2458,6 +2679,7 @@ export type TransactionCreateManyCategoryInput = {
   refundedByEmployeeId?: string | null
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2487,6 +2709,7 @@ export type TransactionUpdateWithoutCategoryInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutCategoryInput = {
@@ -2508,6 +2731,7 @@ export type TransactionUncheckedUpdateWithoutCategoryInput = {
   refundedByEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2534,6 +2758,7 @@ export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
   refundedByEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2558,6 +2783,7 @@ export type TransactionCreateManyCostCenterInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2587,6 +2813,7 @@ export type TransactionUpdateWithoutCostCenterInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutCostCenterInput = {
@@ -2608,6 +2835,7 @@ export type TransactionUncheckedUpdateWithoutCostCenterInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2634,6 +2862,7 @@ export type TransactionUncheckedUpdateManyWithoutCostCenterInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2658,6 +2887,7 @@ export type TransactionCreateManyRefundedByEmployeeInput = {
   categoryId: string
   notes?: string | null
   parentId?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2687,6 +2917,7 @@ export type TransactionUpdateWithoutRefundedByEmployeeInput = {
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   parent?: Prisma.TransactionUpdateOneWithoutChildrenNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutRefundedByEmployeeInput = {
@@ -2708,6 +2939,7 @@ export type TransactionUncheckedUpdateWithoutRefundedByEmployeeInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2734,6 +2966,7 @@ export type TransactionUncheckedUpdateManyWithoutRefundedByEmployeeInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2758,6 +2991,7 @@ export type TransactionCreateManyParentInput = {
   refundedByEmployeeId?: string | null
   categoryId: string
   notes?: string | null
+  saleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId?: string | null
@@ -2787,6 +3021,7 @@ export type TransactionUpdateWithoutParentInput = {
   unit?: Prisma.UnitUpdateOneWithoutTransactionsNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
   children?: Prisma.TransactionUpdateManyWithoutParentNestedInput
+  sale?: Prisma.SaleUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutParentInput = {
@@ -2808,6 +3043,7 @@ export type TransactionUncheckedUpdateWithoutParentInput = {
   refundedByEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2834,6 +3070,7 @@ export type TransactionUncheckedUpdateManyWithoutParentInput = {
   refundedByEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  saleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2899,6 +3136,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   categoryId?: boolean
   notes?: boolean
   parentId?: boolean
+  saleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -2912,6 +3150,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   transactionItens?: boolean | Prisma.Transaction$transactionItensArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
   children?: boolean | Prisma.Transaction$childrenArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
@@ -2935,6 +3174,7 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   categoryId?: boolean
   notes?: boolean
   parentId?: boolean
+  saleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -2946,6 +3186,7 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   unit?: boolean | Prisma.Transaction$unitArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2968,6 +3209,7 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   categoryId?: boolean
   notes?: boolean
   parentId?: boolean
+  saleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -2979,6 +3221,7 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   unit?: boolean | Prisma.Transaction$unitArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 export type TransactionSelectScalar = {
@@ -3001,12 +3244,13 @@ export type TransactionSelectScalar = {
   categoryId?: boolean
   notes?: boolean
   parentId?: boolean
+  saleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "description" | "totalAmount" | "type" | "status" | "nature" | "dueDate" | "expectedPaymentDate" | "paymentDate" | "costCenterId" | "organizationId" | "companyId" | "unitId" | "createdById" | "refundedByEmployeeId" | "categoryId" | "notes" | "parentId" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "description" | "totalAmount" | "type" | "status" | "nature" | "dueDate" | "expectedPaymentDate" | "paymentDate" | "costCenterId" | "organizationId" | "companyId" | "unitId" | "createdById" | "refundedByEmployeeId" | "categoryId" | "notes" | "parentId" | "saleId" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refundedByEmployee?: boolean | Prisma.Transaction$refundedByEmployeeArgs<ExtArgs>
@@ -3018,6 +3262,7 @@ export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.Internal
   transactionItens?: boolean | Prisma.Transaction$transactionItensArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
   children?: boolean | Prisma.Transaction$childrenArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TransactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3029,6 +3274,7 @@ export type TransactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   unit?: boolean | Prisma.Transaction$unitArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
 }
 export type TransactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3039,6 +3285,7 @@ export type TransactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   unit?: boolean | Prisma.Transaction$unitArgs<ExtArgs>
   parent?: boolean | Prisma.Transaction$parentArgs<ExtArgs>
+  sale?: boolean | Prisma.Transaction$saleArgs<ExtArgs>
 }
 
 export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3054,6 +3301,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     transactionItens: Prisma.$TransactionItemPayload<ExtArgs>[]
     parent: Prisma.$TransactionPayload<ExtArgs> | null
     children: Prisma.$TransactionPayload<ExtArgs>[]
+    sale: Prisma.$SalePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3075,6 +3323,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     categoryId: string
     notes: string | null
     parentId: string | null
+    saleId: string | null
     createdAt: Date
     updatedAt: Date
     userId: string | null
@@ -3482,6 +3731,7 @@ export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runt
   transactionItens<T extends Prisma.Transaction$transactionItensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$transactionItensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   parent<T extends Prisma.Transaction$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$parentArgs<ExtArgs>>): Prisma.Prisma__TransactionClient<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.Transaction$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sale<T extends Prisma.Transaction$saleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$saleArgs<ExtArgs>>): Prisma.Prisma__SaleClient<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3530,6 +3780,7 @@ export interface TransactionFieldRefs {
   readonly categoryId: Prisma.FieldRef<"Transaction", 'String'>
   readonly notes: Prisma.FieldRef<"Transaction", 'String'>
   readonly parentId: Prisma.FieldRef<"Transaction", 'String'>
+  readonly saleId: Prisma.FieldRef<"Transaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Transaction", 'String'>
@@ -4031,6 +4282,25 @@ export type Transaction$childrenArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
+}
+
+/**
+ * Transaction.sale
+ */
+export type Transaction$saleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
 }
 
 /**

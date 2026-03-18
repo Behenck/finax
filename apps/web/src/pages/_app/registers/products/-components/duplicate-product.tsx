@@ -33,6 +33,12 @@ export function DuplicateProduct({ product }: DuplicateProductProps) {
 						duplicateFromProductId={product.id}
 						duplicateFromProductName={product.name}
 						duplicateParentId={product.parentId}
+						duplicateSalesTransactionCategoryId={
+							product.salesTransactionCategoryId
+						}
+						duplicateSalesTransactionCostCenterId={
+							product.salesTransactionCostCenterId
+						}
 						onSuccess={() => setOpen(false)}
 					/>
 				</div>

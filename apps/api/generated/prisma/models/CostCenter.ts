@@ -177,6 +177,7 @@ export type CostCenterWhereInput = {
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   transactions?: Prisma.TransactionListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  salesTransactionProducts?: Prisma.ProductListRelationFilter
 }
 
 export type CostCenterOrderByWithRelationInput = {
@@ -187,6 +188,7 @@ export type CostCenterOrderByWithRelationInput = {
   organization?: Prisma.OrganizationOrderByWithRelationInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   recurrences?: Prisma.RecurrenceOrderByRelationAggregateInput
+  salesTransactionProducts?: Prisma.ProductOrderByRelationAggregateInput
 }
 
 export type CostCenterWhereUniqueInput = Prisma.AtLeast<{
@@ -201,6 +203,7 @@ export type CostCenterWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   transactions?: Prisma.TransactionListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  salesTransactionProducts?: Prisma.ProductListRelationFilter
 }, "id" | "organizationId_name">
 
 export type CostCenterOrderByWithAggregationInput = {
@@ -230,6 +233,7 @@ export type CostCenterCreateInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutCostCentersInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCostCenterInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterUncheckedCreateInput = {
@@ -239,6 +243,7 @@ export type CostCenterUncheckedCreateInput = {
   createdAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCostCenterInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterUpdateInput = {
@@ -248,6 +253,7 @@ export type CostCenterUpdateInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCostCentersNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCostCenterNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterUncheckedUpdateInput = {
@@ -257,6 +263,7 @@ export type CostCenterUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCostCenterNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterCreateManyInput = {
@@ -315,6 +322,11 @@ export type CostCenterMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
+export type CostCenterNullableScalarRelationFilter = {
+  is?: Prisma.CostCenterWhereInput | null
+  isNot?: Prisma.CostCenterWhereInput | null
+}
+
 export type CostCenterScalarRelationFilter = {
   is?: Prisma.CostCenterWhereInput
   isNot?: Prisma.CostCenterWhereInput
@@ -362,6 +374,22 @@ export type CostCenterUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.CostCenterScalarWhereInput | Prisma.CostCenterScalarWhereInput[]
 }
 
+export type CostCenterCreateNestedOneWithoutSalesTransactionProductsInput = {
+  create?: Prisma.XOR<Prisma.CostCenterCreateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedCreateWithoutSalesTransactionProductsInput>
+  connectOrCreate?: Prisma.CostCenterCreateOrConnectWithoutSalesTransactionProductsInput
+  connect?: Prisma.CostCenterWhereUniqueInput
+}
+
+export type CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput = {
+  create?: Prisma.XOR<Prisma.CostCenterCreateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedCreateWithoutSalesTransactionProductsInput>
+  connectOrCreate?: Prisma.CostCenterCreateOrConnectWithoutSalesTransactionProductsInput
+  upsert?: Prisma.CostCenterUpsertWithoutSalesTransactionProductsInput
+  disconnect?: Prisma.CostCenterWhereInput | boolean
+  delete?: Prisma.CostCenterWhereInput | boolean
+  connect?: Prisma.CostCenterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CostCenterUpdateToOneWithWhereWithoutSalesTransactionProductsInput, Prisma.CostCenterUpdateWithoutSalesTransactionProductsInput>, Prisma.CostCenterUncheckedUpdateWithoutSalesTransactionProductsInput>
+}
+
 export type CostCenterCreateNestedOneWithoutTransactionsInput = {
   create?: Prisma.XOR<Prisma.CostCenterCreateWithoutTransactionsInput, Prisma.CostCenterUncheckedCreateWithoutTransactionsInput>
   connectOrCreate?: Prisma.CostCenterCreateOrConnectWithoutTransactionsInput
@@ -396,6 +424,7 @@ export type CostCenterCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutCostCenterInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterUncheckedCreateWithoutOrganizationInput = {
@@ -404,6 +433,7 @@ export type CostCenterUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCostCenterInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterCreateOrConnectWithoutOrganizationInput = {
@@ -442,12 +472,65 @@ export type CostCenterScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CostCenter"> | Date | string
 }
 
+export type CostCenterCreateWithoutSalesTransactionProductsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutCostCentersInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCostCenterInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCostCenterInput
+}
+
+export type CostCenterUncheckedCreateWithoutSalesTransactionProductsInput = {
+  id?: string
+  name: string
+  organizationId: string
+  createdAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCostCenterInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCostCenterInput
+}
+
+export type CostCenterCreateOrConnectWithoutSalesTransactionProductsInput = {
+  where: Prisma.CostCenterWhereUniqueInput
+  create: Prisma.XOR<Prisma.CostCenterCreateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedCreateWithoutSalesTransactionProductsInput>
+}
+
+export type CostCenterUpsertWithoutSalesTransactionProductsInput = {
+  update: Prisma.XOR<Prisma.CostCenterUpdateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedUpdateWithoutSalesTransactionProductsInput>
+  create: Prisma.XOR<Prisma.CostCenterCreateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedCreateWithoutSalesTransactionProductsInput>
+  where?: Prisma.CostCenterWhereInput
+}
+
+export type CostCenterUpdateToOneWithWhereWithoutSalesTransactionProductsInput = {
+  where?: Prisma.CostCenterWhereInput
+  data: Prisma.XOR<Prisma.CostCenterUpdateWithoutSalesTransactionProductsInput, Prisma.CostCenterUncheckedUpdateWithoutSalesTransactionProductsInput>
+}
+
+export type CostCenterUpdateWithoutSalesTransactionProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCostCentersNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCostCenterNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCostCenterNestedInput
+}
+
+export type CostCenterUncheckedUpdateWithoutSalesTransactionProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCostCenterNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCostCenterNestedInput
+}
+
 export type CostCenterCreateWithoutTransactionsInput = {
   id?: string
   name: string
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutCostCentersInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterUncheckedCreateWithoutTransactionsInput = {
@@ -456,6 +539,7 @@ export type CostCenterUncheckedCreateWithoutTransactionsInput = {
   organizationId: string
   createdAt?: Date | string
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterCreateOrConnectWithoutTransactionsInput = {
@@ -480,6 +564,7 @@ export type CostCenterUpdateWithoutTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCostCentersNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterUncheckedUpdateWithoutTransactionsInput = {
@@ -488,6 +573,7 @@ export type CostCenterUncheckedUpdateWithoutTransactionsInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterCreateWithoutRecurrencesInput = {
@@ -496,6 +582,7 @@ export type CostCenterCreateWithoutRecurrencesInput = {
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutCostCentersInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterUncheckedCreateWithoutRecurrencesInput = {
@@ -504,6 +591,7 @@ export type CostCenterUncheckedCreateWithoutRecurrencesInput = {
   organizationId: string
   createdAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCostCenterInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCostCenterInput
 }
 
 export type CostCenterCreateOrConnectWithoutRecurrencesInput = {
@@ -528,6 +616,7 @@ export type CostCenterUpdateWithoutRecurrencesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutCostCentersNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterUncheckedUpdateWithoutRecurrencesInput = {
@@ -536,6 +625,7 @@ export type CostCenterUncheckedUpdateWithoutRecurrencesInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterCreateManyOrganizationInput = {
@@ -550,6 +640,7 @@ export type CostCenterUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutCostCenterNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterUncheckedUpdateWithoutOrganizationInput = {
@@ -558,6 +649,7 @@ export type CostCenterUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCostCenterNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCostCenterNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterNestedInput
 }
 
 export type CostCenterUncheckedUpdateManyWithoutOrganizationInput = {
@@ -574,11 +666,13 @@ export type CostCenterUncheckedUpdateManyWithoutOrganizationInput = {
 export type CostCenterCountOutputType = {
   transactions: number
   recurrences: number
+  salesTransactionProducts: number
 }
 
 export type CostCenterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | CostCenterCountOutputTypeCountTransactionsArgs
   recurrences?: boolean | CostCenterCountOutputTypeCountRecurrencesArgs
+  salesTransactionProducts?: boolean | CostCenterCountOutputTypeCountSalesTransactionProductsArgs
 }
 
 /**
@@ -605,6 +699,13 @@ export type CostCenterCountOutputTypeCountRecurrencesArgs<ExtArgs extends runtim
   where?: Prisma.RecurrenceWhereInput
 }
 
+/**
+ * CostCenterCountOutputType without action
+ */
+export type CostCenterCountOutputTypeCountSalesTransactionProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductWhereInput
+}
+
 
 export type CostCenterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -614,6 +715,7 @@ export type CostCenterSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.CostCenter$transactionsArgs<ExtArgs>
   recurrences?: boolean | Prisma.CostCenter$recurrencesArgs<ExtArgs>
+  salesTransactionProducts?: boolean | Prisma.CostCenter$salesTransactionProductsArgs<ExtArgs>
   _count?: boolean | Prisma.CostCenterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["costCenter"]>
 
@@ -645,6 +747,7 @@ export type CostCenterInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.CostCenter$transactionsArgs<ExtArgs>
   recurrences?: boolean | Prisma.CostCenter$recurrencesArgs<ExtArgs>
+  salesTransactionProducts?: boolean | Prisma.CostCenter$salesTransactionProductsArgs<ExtArgs>
   _count?: boolean | Prisma.CostCenterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CostCenterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -660,6 +763,7 @@ export type $CostCenterPayload<ExtArgs extends runtime.Types.Extensions.Internal
     organization: Prisma.$OrganizationPayload<ExtArgs>
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
     recurrences: Prisma.$RecurrencePayload<ExtArgs>[]
+    salesTransactionProducts: Prisma.$ProductPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1063,6 +1167,7 @@ export interface Prisma__CostCenterClient<T, Null = never, ExtArgs extends runti
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   transactions<T extends Prisma.CostCenter$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CostCenter$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurrences<T extends Prisma.CostCenter$recurrencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CostCenter$recurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  salesTransactionProducts<T extends Prisma.CostCenter$salesTransactionProductsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CostCenter$salesTransactionProductsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1537,6 +1642,30 @@ export type CostCenter$recurrencesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.RecurrenceScalarFieldEnum | Prisma.RecurrenceScalarFieldEnum[]
+}
+
+/**
+ * CostCenter.salesTransactionProducts
+ */
+export type CostCenter$salesTransactionProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Product
+   */
+  select?: Prisma.ProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Product
+   */
+  omit?: Prisma.ProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductInclude<ExtArgs> | null
+  where?: Prisma.ProductWhereInput
+  orderBy?: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[]
+  cursor?: Prisma.ProductWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductScalarFieldEnum | Prisma.ProductScalarFieldEnum[]
 }
 
 /**

@@ -220,6 +220,7 @@ export type CategoryWhereInput = {
   transactions?: Prisma.TransactionListRelationFilter
   transactionItens?: Prisma.TransactionItemListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  salesTransactionProducts?: Prisma.ProductListRelationFilter
 }
 
 export type CategoryOrderByWithRelationInput = {
@@ -238,6 +239,7 @@ export type CategoryOrderByWithRelationInput = {
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   transactionItens?: Prisma.TransactionItemOrderByRelationAggregateInput
   recurrences?: Prisma.RecurrenceOrderByRelationAggregateInput
+  salesTransactionProducts?: Prisma.ProductOrderByRelationAggregateInput
 }
 
 export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -260,6 +262,7 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   transactions?: Prisma.TransactionListRelationFilter
   transactionItens?: Prisma.TransactionItemListRelationFilter
   recurrences?: Prisma.RecurrenceListRelationFilter
+  salesTransactionProducts?: Prisma.ProductListRelationFilter
 }, "id" | "organizationId_parentId_name">
 
 export type CategoryOrderByWithAggregationInput = {
@@ -306,6 +309,7 @@ export type CategoryCreateInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateInput = {
@@ -322,6 +326,7 @@ export type CategoryUncheckedCreateInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUpdateInput = {
@@ -338,6 +343,7 @@ export type CategoryUpdateInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateInput = {
@@ -354,6 +360,7 @@ export type CategoryUncheckedUpdateInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryCreateManyInput = {
@@ -556,6 +563,22 @@ export type CategoryUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.CategoryScalarWhereInput | Prisma.CategoryScalarWhereInput[]
 }
 
+export type CategoryCreateNestedOneWithoutSalesTransactionProductsInput = {
+  create?: Prisma.XOR<Prisma.CategoryCreateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedCreateWithoutSalesTransactionProductsInput>
+  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutSalesTransactionProductsInput
+  connect?: Prisma.CategoryWhereUniqueInput
+}
+
+export type CategoryUpdateOneWithoutSalesTransactionProductsNestedInput = {
+  create?: Prisma.XOR<Prisma.CategoryCreateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedCreateWithoutSalesTransactionProductsInput>
+  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutSalesTransactionProductsInput
+  upsert?: Prisma.CategoryUpsertWithoutSalesTransactionProductsInput
+  disconnect?: Prisma.CategoryWhereInput | boolean
+  delete?: Prisma.CategoryWhereInput | boolean
+  connect?: Prisma.CategoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CategoryUpdateToOneWithWhereWithoutSalesTransactionProductsInput, Prisma.CategoryUpdateWithoutSalesTransactionProductsInput>, Prisma.CategoryUncheckedUpdateWithoutSalesTransactionProductsInput>
+}
+
 export type CategoryCreateNestedOneWithoutTransactionsInput = {
   create?: Prisma.XOR<Prisma.CategoryCreateWithoutTransactionsInput, Prisma.CategoryUncheckedCreateWithoutTransactionsInput>
   connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutTransactionsInput
@@ -611,6 +634,7 @@ export type CategoryCreateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutOrganizationInput = {
@@ -626,6 +650,7 @@ export type CategoryUncheckedCreateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutOrganizationInput = {
@@ -682,6 +707,7 @@ export type CategoryCreateWithoutChildrenInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutChildrenInput = {
@@ -697,6 +723,7 @@ export type CategoryUncheckedCreateWithoutChildrenInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutChildrenInput = {
@@ -717,6 +744,7 @@ export type CategoryCreateWithoutParentInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutParentInput = {
@@ -732,6 +760,7 @@ export type CategoryUncheckedCreateWithoutParentInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutParentInput = {
@@ -768,6 +797,7 @@ export type CategoryUpdateWithoutChildrenInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutChildrenInput = {
@@ -783,6 +813,7 @@ export type CategoryUncheckedUpdateWithoutChildrenInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUpsertWithWhereUniqueWithoutParentInput = {
@@ -801,6 +832,86 @@ export type CategoryUpdateManyWithWhereWithoutParentInput = {
   data: Prisma.XOR<Prisma.CategoryUpdateManyMutationInput, Prisma.CategoryUncheckedUpdateManyWithoutParentInput>
 }
 
+export type CategoryCreateWithoutSalesTransactionProductsInput = {
+  id?: string
+  name: string
+  code?: string | null
+  color: string
+  icon: string
+  type: $Enums.TransactionType
+  createdAt?: Date | string
+  organization?: Prisma.OrganizationCreateNestedOneWithoutCategoriesInput
+  parent?: Prisma.CategoryCreateNestedOneWithoutChildrenInput
+  children?: Prisma.CategoryCreateNestedManyWithoutParentInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
+  transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+}
+
+export type CategoryUncheckedCreateWithoutSalesTransactionProductsInput = {
+  id?: string
+  name: string
+  code?: string | null
+  color: string
+  icon: string
+  type: $Enums.TransactionType
+  organizationId?: string | null
+  parentId?: string | null
+  createdAt?: Date | string
+  children?: Prisma.CategoryUncheckedCreateNestedManyWithoutParentInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
+  transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+}
+
+export type CategoryCreateOrConnectWithoutSalesTransactionProductsInput = {
+  where: Prisma.CategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CategoryCreateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedCreateWithoutSalesTransactionProductsInput>
+}
+
+export type CategoryUpsertWithoutSalesTransactionProductsInput = {
+  update: Prisma.XOR<Prisma.CategoryUpdateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedUpdateWithoutSalesTransactionProductsInput>
+  create: Prisma.XOR<Prisma.CategoryCreateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedCreateWithoutSalesTransactionProductsInput>
+  where?: Prisma.CategoryWhereInput
+}
+
+export type CategoryUpdateToOneWithWhereWithoutSalesTransactionProductsInput = {
+  where?: Prisma.CategoryWhereInput
+  data: Prisma.XOR<Prisma.CategoryUpdateWithoutSalesTransactionProductsInput, Prisma.CategoryUncheckedUpdateWithoutSalesTransactionProductsInput>
+}
+
+export type CategoryUpdateWithoutSalesTransactionProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneWithoutCategoriesNestedInput
+  parent?: Prisma.CategoryUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.CategoryUpdateManyWithoutParentNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
+  transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+}
+
+export type CategoryUncheckedUpdateWithoutSalesTransactionProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.CategoryUncheckedUpdateManyWithoutParentNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
+  transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+}
+
 export type CategoryCreateWithoutTransactionsInput = {
   id?: string
   name: string
@@ -814,6 +925,7 @@ export type CategoryCreateWithoutTransactionsInput = {
   children?: Prisma.CategoryCreateNestedManyWithoutParentInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutTransactionsInput = {
@@ -829,6 +941,7 @@ export type CategoryUncheckedCreateWithoutTransactionsInput = {
   children?: Prisma.CategoryUncheckedCreateNestedManyWithoutParentInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutTransactionsInput = {
@@ -860,6 +973,7 @@ export type CategoryUpdateWithoutTransactionsInput = {
   children?: Prisma.CategoryUpdateManyWithoutParentNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutTransactionsInput = {
@@ -875,6 +989,7 @@ export type CategoryUncheckedUpdateWithoutTransactionsInput = {
   children?: Prisma.CategoryUncheckedUpdateManyWithoutParentNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryCreateWithoutTransactionItensInput = {
@@ -890,6 +1005,7 @@ export type CategoryCreateWithoutTransactionItensInput = {
   children?: Prisma.CategoryCreateNestedManyWithoutParentInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutTransactionItensInput = {
@@ -905,6 +1021,7 @@ export type CategoryUncheckedCreateWithoutTransactionItensInput = {
   children?: Prisma.CategoryUncheckedCreateNestedManyWithoutParentInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutTransactionItensInput = {
@@ -936,6 +1053,7 @@ export type CategoryUpdateWithoutTransactionItensInput = {
   children?: Prisma.CategoryUpdateManyWithoutParentNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutTransactionItensInput = {
@@ -951,6 +1069,7 @@ export type CategoryUncheckedUpdateWithoutTransactionItensInput = {
   children?: Prisma.CategoryUncheckedUpdateManyWithoutParentNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryCreateWithoutRecurrencesInput = {
@@ -966,6 +1085,7 @@ export type CategoryCreateWithoutRecurrencesInput = {
   children?: Prisma.CategoryCreateNestedManyWithoutParentInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryUncheckedCreateWithoutRecurrencesInput = {
@@ -981,6 +1101,7 @@ export type CategoryUncheckedCreateWithoutRecurrencesInput = {
   children?: Prisma.CategoryUncheckedCreateNestedManyWithoutParentInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput
   transactionItens?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutCategoryInput
+  salesTransactionProducts?: Prisma.ProductUncheckedCreateNestedManyWithoutSalesTransactionCategoryInput
 }
 
 export type CategoryCreateOrConnectWithoutRecurrencesInput = {
@@ -1012,6 +1133,7 @@ export type CategoryUpdateWithoutRecurrencesInput = {
   children?: Prisma.CategoryUpdateManyWithoutParentNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutRecurrencesInput = {
@@ -1027,6 +1149,7 @@ export type CategoryUncheckedUpdateWithoutRecurrencesInput = {
   children?: Prisma.CategoryUncheckedUpdateManyWithoutParentNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryCreateManyOrganizationInput = {
@@ -1053,6 +1176,7 @@ export type CategoryUpdateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutOrganizationInput = {
@@ -1068,6 +1192,7 @@ export type CategoryUncheckedUpdateWithoutOrganizationInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1105,6 +1230,7 @@ export type CategoryUpdateWithoutParentInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateWithoutParentInput = {
@@ -1120,6 +1246,7 @@ export type CategoryUncheckedUpdateWithoutParentInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCategoryNestedInput
   transactionItens?: Prisma.TransactionItemUncheckedUpdateManyWithoutCategoryNestedInput
   recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCategoryNestedInput
+  salesTransactionProducts?: Prisma.ProductUncheckedUpdateManyWithoutSalesTransactionCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateManyWithoutParentInput = {
@@ -1143,6 +1270,7 @@ export type CategoryCountOutputType = {
   transactions: number
   transactionItens: number
   recurrences: number
+  salesTransactionProducts: number
 }
 
 export type CategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1150,6 +1278,7 @@ export type CategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   transactions?: boolean | CategoryCountOutputTypeCountTransactionsArgs
   transactionItens?: boolean | CategoryCountOutputTypeCountTransactionItensArgs
   recurrences?: boolean | CategoryCountOutputTypeCountRecurrencesArgs
+  salesTransactionProducts?: boolean | CategoryCountOutputTypeCountSalesTransactionProductsArgs
 }
 
 /**
@@ -1190,6 +1319,13 @@ export type CategoryCountOutputTypeCountRecurrencesArgs<ExtArgs extends runtime.
   where?: Prisma.RecurrenceWhereInput
 }
 
+/**
+ * CategoryCountOutputType without action
+ */
+export type CategoryCountOutputTypeCountSalesTransactionProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductWhereInput
+}
+
 
 export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1207,6 +1343,7 @@ export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   transactions?: boolean | Prisma.Category$transactionsArgs<ExtArgs>
   transactionItens?: boolean | Prisma.Category$transactionItensArgs<ExtArgs>
   recurrences?: boolean | Prisma.Category$recurrencesArgs<ExtArgs>
+  salesTransactionProducts?: boolean | Prisma.Category$salesTransactionProductsArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["category"]>
 
@@ -1258,6 +1395,7 @@ export type CategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   transactions?: boolean | Prisma.Category$transactionsArgs<ExtArgs>
   transactionItens?: boolean | Prisma.Category$transactionItensArgs<ExtArgs>
   recurrences?: boolean | Prisma.Category$recurrencesArgs<ExtArgs>
+  salesTransactionProducts?: boolean | Prisma.Category$salesTransactionProductsArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1278,6 +1416,7 @@ export type $CategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
     transactionItens: Prisma.$TransactionItemPayload<ExtArgs>[]
     recurrences: Prisma.$RecurrencePayload<ExtArgs>[]
+    salesTransactionProducts: Prisma.$ProductPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1689,6 +1828,7 @@ export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends runtime
   transactions<T extends Prisma.Category$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactionItens<T extends Prisma.Category$transactionItensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$transactionItensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurrences<T extends Prisma.Category$recurrencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$recurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  salesTransactionProducts<T extends Prisma.Category$salesTransactionProductsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$salesTransactionProductsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2254,6 +2394,30 @@ export type Category$recurrencesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.RecurrenceScalarFieldEnum | Prisma.RecurrenceScalarFieldEnum[]
+}
+
+/**
+ * Category.salesTransactionProducts
+ */
+export type Category$salesTransactionProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Product
+   */
+  select?: Prisma.ProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Product
+   */
+  omit?: Prisma.ProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductInclude<ExtArgs> | null
+  where?: Prisma.ProductWhereInput
+  orderBy?: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[]
+  cursor?: Prisma.ProductWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductScalarFieldEnum | Prisma.ProductScalarFieldEnum[]
 }
 
 /**

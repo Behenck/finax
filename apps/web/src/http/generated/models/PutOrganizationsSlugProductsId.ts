@@ -49,6 +49,14 @@ export type PutOrganizationsSlugProductsIdMutationRequest = {
    * @type integer
    */
   sortOrder: number;
+  /**
+   * @type string, uuid
+   */
+  salesTransactionCategoryId?: string | null;
+  /**
+   * @type string, uuid
+   */
+  salesTransactionCostCenterId?: string | null;
 };
 
 export type PutOrganizationsSlugProductsIdMutationResponse =

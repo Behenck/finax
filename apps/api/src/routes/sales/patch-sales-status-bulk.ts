@@ -19,6 +19,10 @@ import {
 	PatchSalesStatusBulkResponseSchema,
 } from "./sale-schemas";
 import { isValidSaleStatusTransition } from "./sale-status-transition";
+import {
+	cancelPendingSaleTransactionForSale,
+	createOrSyncSaleTransactionOnSaleCompleted,
+} from "./sale-transactions";
 
 export async function patchSalesStatusBulk(app: FastifyInstance) {
 	app
@@ -51,6 +55,7 @@ export async function patchSalesStatusBulk(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						enableSalesTransactionsSync: true,
 					},
 				});
 
@@ -121,6 +126,24 @@ export async function patchSalesStatusBulk(app: FastifyInstance) {
 										paymentDate: null,
 									},
 								});
+							}
+
+							if (organization.enableSalesTransactionsSync) {
+								if (status === SaleStatus.COMPLETED) {
+									await createOrSyncSaleTransactionOnSaleCompleted(tx, {
+										saleId: sale.id,
+										organizationId: organization.id,
+										actorId,
+										completedAt: new Date(),
+									});
+								}
+
+								if (status === SaleStatus.CANCELED) {
+									await cancelPendingSaleTransactionForSale(tx, {
+										saleId: sale.id,
+										organizationId: organization.id,
+									});
+								}
 							}
 
 							const afterSnapshot = await loadSaleHistorySnapshot(

@@ -63,6 +63,10 @@ export type GetMe200 = {
      * @type string, uuid
      */
     ownerId: string;
+    /**
+     * @type boolean
+     */
+    enableSalesTransactionsSync: boolean;
   };
 };
 

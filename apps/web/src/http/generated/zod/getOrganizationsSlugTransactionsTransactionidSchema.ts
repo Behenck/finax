@@ -17,6 +17,7 @@ export const getOrganizationsSlugTransactionsTransactionidPathParamsSchema =
 export const getOrganizationsSlugTransactionsTransactionid200Schema = z.object({
   transaction: z.object({
     id: z.uuid(),
+    saleId: z.nullable(z.uuid()),
     code: z.string(),
     description: z.string(),
     totalAmount: z.number(),

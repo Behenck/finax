@@ -165,6 +165,7 @@ model Organization {
   slug                     String   @unique
   domain                   String?  @unique
   shouldAttachUserByDomain Boolean  @default(false) @map("should_attach_user_by_domain")
+  enableSalesTransactionsSync Boolean @default(false) @map("enable_sales_transactions_sync")
   avatarUrl                String?  @map("avatar_url")
   ownerId                  String   @map("owner_id")
   createdAt                DateTime @default(now()) @map("created_at")
@@ -257,6 +258,7 @@ model Category {
   transactions     Transaction[]
   transactionItens TransactionItem[]
   recurrences      Recurrence[]
+  salesTransactionProducts Product[] @relation("ProductSalesTransactionCategory")
 
   @@unique([organizationId, parentId, name])
   @@index([organizationId])
@@ -274,6 +276,7 @@ model CostCenter {
   organization Organization  @relation(fields: [organizationId], references: [id])
   transactions Transaction[]
   recurrences  Recurrence[]
+  salesTransactionProducts Product[] @relation("ProductSalesTransactionCostCenter")
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -537,22 +540,26 @@ model Seller {
 }
 
 model Product {
-  id             String  @id @default(uuid())
-  organizationId String  @map("organization_id")
-  parentId       String? @map("parent_id")
-  name           String
-  description    String?
-  isActive       Boolean @default(true) @map("is_active")
-  sortOrder      Int     @default(0) @map("sort_order")
+  id                             String  @id @default(uuid())
+  organizationId                 String  @map("organization_id")
+  parentId                       String? @map("parent_id")
+  name                           String
+  description                    String?
+  isActive                       Boolean @default(true) @map("is_active")
+  sortOrder                      Int     @default(0) @map("sort_order")
+  salesTransactionCategoryId     String? @map("sales_transaction_category_id")
+  salesTransactionCostCenterId   String? @map("sales_transaction_cost_center_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  parent       Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
-  children     Product[]    @relation("ProductTree")
-  sales        Sale[]
-  saleFields   ProductSaleField[]
+  organization              Organization @relation(fields: [organizationId], references: [id])
+  parent                    Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children                  Product[]    @relation("ProductTree")
+  sales                     Sale[]
+  saleFields                ProductSaleField[]
+  salesTransactionCategory  Category?    @relation("ProductSalesTransactionCategory", fields: [salesTransactionCategoryId], references: [id], onDelete: SetNull)
+  salesTransactionCostCenter CostCenter? @relation("ProductSalesTransactionCostCenter", fields: [salesTransactionCostCenterId], references: [id], onDelete: SetNull)
 
   commissionScenarios ProductCommissionScenario[]
 
@@ -560,6 +567,8 @@ model Product {
   @@index([organizationId])
   @@index([parentId])
   @@index([organizationId, isActive])
+  @@index([salesTransactionCategoryId])
+  @@index([salesTransactionCostCenterId])
   @@map("products")
 }
 
@@ -821,6 +830,7 @@ model Sale {
   createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
   commissions  SaleCommission[]
   historyEvents SaleHistoryEvent[]
+  transaction  Transaction? @relation("SaleTransaction")
 
   @@index([organizationId, saleDate])
   @@index([organizationId, status])
@@ -999,6 +1009,7 @@ model Transaction {
   categoryId           String            @map("category_id")
   notes                String?
   parentId             String?           @map("parent_id")
+  saleId               String?           @unique @map("sale_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -1014,6 +1025,7 @@ model Transaction {
   parent             Transaction?      @relation("TransactionTree", fields: [parentId], references: [id])
   children           Transaction[]     @relation("TransactionTree")
   userId             String?
+  sale               Sale?             @relation("SaleTransaction", fields: [saleId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, companyId])
   @@index([companyId, unitId])

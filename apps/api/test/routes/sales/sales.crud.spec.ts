@@ -7,6 +7,9 @@ import {
 	SaleStatus,
 	SellerDocumentType,
 	SellerStatus,
+	TransactionNature,
+	TransactionStatus,
+	TransactionType,
 } from "generated/prisma/enums";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -253,6 +256,60 @@ function buildCreatePayload(
 	};
 }
 
+async function setOrganizationSalesTransactionsSync(
+	organizationId: string,
+	enabled: boolean,
+) {
+	await prisma.organization.update({
+		where: {
+			id: organizationId,
+		},
+		data: {
+			enableSalesTransactionsSync: enabled,
+		},
+	});
+}
+
+async function createProductSalesTransactionMapping(organizationId: string) {
+	const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+	const costCenter = await prisma.costCenter.create({
+		data: {
+			name: `Sales Cost Center ${suffix}`,
+			organizationId,
+		},
+	});
+	const incomeCategory = await prisma.category.create({
+		data: {
+			name: `Sales Income Category ${suffix}`,
+			color: "#16a34a",
+			icon: "wallet",
+			type: TransactionType.INCOME,
+			organizationId,
+		},
+	});
+
+	return {
+		costCenter,
+		incomeCategory,
+	};
+}
+
+async function updateProductSalesTransactionMapping(params: {
+	productId: string;
+	categoryId: string | null;
+	costCenterId: string | null;
+}) {
+	await prisma.product.update({
+		where: {
+			id: params.productId,
+		},
+		data: {
+			salesTransactionCategoryId: params.categoryId,
+			salesTransactionCostCenterId: params.costCenterId,
+		},
+	});
+}
+
 function buildCommissionsPayload(
 	fixture: Awaited<ReturnType<typeof createFixture>>,
 ): SaleCommissionInput[] {
@@ -392,6 +449,21 @@ async function createSaleUsingApi(
 	expect(response.body).toHaveProperty("saleId");
 
 	return response.body.saleId as string;
+}
+
+async function patchSaleStatusUsingApi(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+	saleId: string,
+	status: "APPROVED" | "COMPLETED" | "CANCELED",
+) {
+	const response = await request(app.server)
+		.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+		.set("Authorization", `Bearer ${fixture.token}`)
+		.send({
+			status,
+		});
+
+	expect(response.statusCode).toBe(204);
 }
 
 async function createProductDynamicFields(productId: string) {
@@ -740,9 +812,9 @@ describe("sales crud", () => {
 		expect(commissions[0]?.calculationBase).toBe("SALE_TOTAL");
 		expect(commissions[0]?.baseCommissionId).toBeNull();
 		expect(commissions[0]?.totalPercentage).toBe(10_000);
-		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual([
-			10_000,
-		]);
+		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual(
+			[10_000],
+		);
 		expect(commissions[0]?.installments.map((item) => item.amount)).toEqual([
 			1_250,
 		]);
@@ -750,9 +822,9 @@ describe("sales crud", () => {
 		expect(commissions[1]?.calculationBase).toBe("COMMISSION");
 		expect(commissions[1]?.baseCommissionId).toBe(commissions[0]?.id);
 		expect(commissions[1]?.totalPercentage).toBe(100_000);
-		expect(commissions[1]?.installments.map((item) => item.percentage)).toEqual([
-			60_000, 40_000,
-		]);
+		expect(commissions[1]?.installments.map((item) => item.percentage)).toEqual(
+			[60_000, 40_000],
+		);
 		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
 			75, 50,
 		]);
@@ -1491,10 +1563,18 @@ describe("sales crud", () => {
 		expect(response.body.sale.commissions).toHaveLength(2);
 		expect(response.body.sale.commissions[0].sourceType).toBe("PULLED");
 		expect(response.body.sale.commissions[1].sourceType).toBe("MANUAL");
-		expect(response.body.sale.commissions[0].calculationBase).toBe("SALE_TOTAL");
-		expect(response.body.sale.commissions[0].baseCommissionIndex).toBeUndefined();
-		expect(response.body.sale.commissions[1].calculationBase).toBe("SALE_TOTAL");
-		expect(response.body.sale.commissions[1].baseCommissionIndex).toBeUndefined();
+		expect(response.body.sale.commissions[0].calculationBase).toBe(
+			"SALE_TOTAL",
+		);
+		expect(
+			response.body.sale.commissions[0].baseCommissionIndex,
+		).toBeUndefined();
+		expect(response.body.sale.commissions[1].calculationBase).toBe(
+			"SALE_TOTAL",
+		);
+		expect(
+			response.body.sale.commissions[1].baseCommissionIndex,
+		).toBeUndefined();
 		expect(response.body.sale.commissions[0].direction).toBe("OUTCOME");
 		expect(response.body.sale.commissions[1].direction).toBe("OUTCOME");
 		expect(response.body.sale.commissions[0].totalAmount).toBe(1_250);
@@ -3083,6 +3163,327 @@ describe("sales crud", () => {
 		expect(sale?.status).toBe(SaleStatus.COMPLETED);
 	});
 
+	it("should create a linked income transaction when sale is completed and sync is enabled", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const saleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const transaction = await prisma.transaction.findFirst({
+			where: {
+				saleId,
+				organizationId: fixture.org.id,
+			},
+			select: {
+				id: true,
+				type: true,
+				status: true,
+				nature: true,
+				totalAmount: true,
+				companyId: true,
+				unitId: true,
+				categoryId: true,
+				costCenterId: true,
+				dueDate: true,
+				expectedPaymentDate: true,
+				description: true,
+			},
+		});
+
+		expect(transaction).not.toBeNull();
+		expect(transaction?.type).toBe(TransactionType.INCOME);
+		expect(transaction?.status).toBe(TransactionStatus.PENDING);
+		expect(transaction?.nature).toBe(TransactionNature.VARIABLE);
+		expect(transaction?.totalAmount).toBe(125_000);
+		expect(transaction?.companyId).toBe(fixture.company.id);
+		expect(transaction?.unitId).toBe(fixture.unit.id);
+		expect(transaction?.categoryId).toBe(mapping.incomeCategory.id);
+		expect(transaction?.costCenterId).toBe(mapping.costCenter.id);
+		expect(transaction?.dueDate.toISOString().slice(0, 10)).toBe(
+			transaction?.expectedPaymentDate.toISOString().slice(0, 10),
+		);
+		expect(transaction?.description).toContain(fixture.product.name);
+		expect(transaction?.description).toContain(fixture.customer.name);
+		expect(transaction?.description).toContain(saleId);
+	});
+
+	it("should not create a linked transaction when sales sync is disabled", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const saleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const linkedTransaction = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		expect(linkedTransaction).toBeNull();
+	});
+
+	it("should not create a linked transaction when product has no financial mapping", async () => {
+		const fixture = await createFixture();
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		const saleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const linkedTransaction = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		expect(linkedTransaction).toBeNull();
+	});
+
+	it("should sync linked pending transaction when completed sale is updated", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const saleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 240_000,
+					companyId: fixture.secondCompany.id,
+					unitId: fixture.foreignUnit.id,
+					notes: "Venda atualizada após conclusão",
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const linkedTransaction = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId,
+			},
+			select: {
+				status: true,
+				totalAmount: true,
+				companyId: true,
+				unitId: true,
+			},
+		});
+
+		expect(linkedTransaction?.status).toBe(TransactionStatus.PENDING);
+		expect(linkedTransaction?.totalAmount).toBe(240_000);
+		expect(linkedTransaction?.companyId).toBe(fixture.secondCompany.id);
+		expect(linkedTransaction?.unitId).toBe(fixture.foreignUnit.id);
+	});
+
+	it("should cancel linked pending transaction when deleting a sale", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const saleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const linkedTransactionBeforeDelete = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId,
+			},
+			select: {
+				id: true,
+			},
+		});
+		expect(linkedTransactionBeforeDelete).not.toBeNull();
+		const linkedTransactionBeforeDeleteId =
+			linkedTransactionBeforeDelete?.id as string;
+
+		const deleteResponse = await request(app.server)
+			.delete(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(deleteResponse.statusCode).toBe(204);
+
+		const linkedTransactionAfterDelete = await prisma.transaction.findUnique({
+			where: {
+				id: linkedTransactionBeforeDeleteId,
+			},
+			select: {
+				status: true,
+				saleId: true,
+			},
+		});
+
+		expect(linkedTransactionAfterDelete?.status).toBe(
+			TransactionStatus.CANCELED,
+		);
+		expect(linkedTransactionAfterDelete?.saleId).toBeNull();
+	});
+
+	it("should not sync linked transactions when they are paid or canceled", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const paidSaleId = await createSaleUsingApi(fixture);
+		await patchSaleStatusUsingApi(fixture, paidSaleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, paidSaleId, "COMPLETED");
+
+		const paidTransaction = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId: paidSaleId,
+			},
+			select: {
+				id: true,
+			},
+		});
+		expect(paidTransaction).not.toBeNull();
+		const paidTransactionId = paidTransaction?.id as string;
+
+		await prisma.transaction.update({
+			where: {
+				id: paidTransactionId,
+			},
+			data: {
+				status: TransactionStatus.PAID,
+				totalAmount: 999_999,
+			},
+		});
+
+		const paidSaleUpdateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${paidSaleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					totalAmount: 111_111,
+					notes: "Atualização não deve refletir em transação paga",
+				}),
+			);
+
+		expect(paidSaleUpdateResponse.statusCode).toBe(204);
+
+		const paidTransactionAfterSaleUpdate = await prisma.transaction.findUnique({
+			where: {
+				id: paidTransactionId,
+			},
+			select: {
+				status: true,
+				totalAmount: true,
+			},
+		});
+		expect(paidTransactionAfterSaleUpdate?.status).toBe(TransactionStatus.PAID);
+		expect(paidTransactionAfterSaleUpdate?.totalAmount).toBe(999_999);
+
+		const canceledSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-07",
+				totalAmount: 155_000,
+			}),
+		);
+		await patchSaleStatusUsingApi(fixture, canceledSaleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, canceledSaleId, "COMPLETED");
+
+		const canceledTransaction = await prisma.transaction.findFirst({
+			where: {
+				organizationId: fixture.org.id,
+				saleId: canceledSaleId,
+			},
+			select: {
+				id: true,
+			},
+		});
+		expect(canceledTransaction).not.toBeNull();
+		const canceledTransactionId = canceledTransaction?.id as string;
+
+		await prisma.transaction.update({
+			where: {
+				id: canceledTransactionId,
+			},
+			data: {
+				status: TransactionStatus.CANCELED,
+				totalAmount: 888_888,
+			},
+		});
+
+		const canceledSaleUpdateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${canceledSaleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					saleDate: "2026-03-08",
+					totalAmount: 166_000,
+					notes: "Atualização não deve refletir em transação cancelada",
+				}),
+			);
+
+		expect(canceledSaleUpdateResponse.statusCode).toBe(204);
+
+		const canceledTransactionAfterSaleUpdate =
+			await prisma.transaction.findUnique({
+				where: {
+					id: canceledTransactionId,
+				},
+				select: {
+					status: true,
+					totalAmount: true,
+				},
+			});
+		expect(canceledTransactionAfterSaleUpdate?.status).toBe(
+			TransactionStatus.CANCELED,
+		);
+		expect(canceledTransactionAfterSaleUpdate?.totalAmount).toBe(888_888);
+	});
+
 	it("should patch status in bulk for valid transitions", async () => {
 		const fixture = await createFixture();
 		const firstSaleId = await createSaleUsingApi(fixture);
@@ -3121,6 +3522,70 @@ describe("sales crud", () => {
 		expect(sales.every((sale) => sale.status === SaleStatus.APPROVED)).toBe(
 			true,
 		);
+	});
+
+	it("should create linked transactions when completing sales status in bulk", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const firstSaleId = await createSaleUsingApi(fixture);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-09",
+				totalAmount: 140_000,
+			}),
+		);
+		const saleIds = [firstSaleId, secondSaleId];
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(200);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "COMPLETED",
+			});
+		expect(completeResponse.statusCode).toBe(200);
+		expect(completeResponse.body.updated).toBe(2);
+
+		const linkedTransactions = await prisma.transaction.findMany({
+			where: {
+				organizationId: fixture.org.id,
+				saleId: {
+					in: saleIds,
+				},
+			},
+			select: {
+				saleId: true,
+				status: true,
+			},
+		});
+
+		expect(linkedTransactions).toHaveLength(2);
+		expect(
+			linkedTransactions.every(
+				(transaction) => transaction.status === TransactionStatus.PENDING,
+			),
+		).toBe(true);
+		expect(
+			linkedTransactions.map((transaction) => transaction.saleId).sort(),
+		).toEqual([...saleIds].sort());
 	});
 
 	it("should delete sales in bulk with commissions cascade", async () => {
@@ -3204,6 +3669,98 @@ describe("sales crud", () => {
 		expect(installmentsAfterDelete).toBe(0);
 	});
 
+	it("should cancel linked pending transactions when deleting sales in bulk", async () => {
+		const fixture = await createFixture();
+		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+
+		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
+		await updateProductSalesTransactionMapping({
+			productId: fixture.product.id,
+			categoryId: mapping.incomeCategory.id,
+			costCenterId: mapping.costCenter.id,
+		});
+
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-10",
+			}),
+		);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-11",
+			}),
+		);
+		const saleIds = [firstSaleId, secondSaleId];
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(200);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "COMPLETED",
+			});
+		expect(completeResponse.statusCode).toBe(200);
+
+		const linkedTransactionIds = (
+			await prisma.transaction.findMany({
+				where: {
+					organizationId: fixture.org.id,
+					saleId: {
+						in: saleIds,
+					},
+				},
+				select: {
+					id: true,
+				},
+			})
+		).map((transaction) => transaction.id);
+		expect(linkedTransactionIds).toHaveLength(2);
+
+		const deleteResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/delete/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+			});
+		expect(deleteResponse.statusCode).toBe(200);
+		expect(deleteResponse.body.deleted).toBe(2);
+
+		const linkedTransactionsAfterDelete = await prisma.transaction.findMany({
+			where: {
+				id: {
+					in: linkedTransactionIds,
+				},
+			},
+			select: {
+				status: true,
+				saleId: true,
+			},
+		});
+
+		expect(linkedTransactionsAfterDelete).toHaveLength(2);
+		expect(
+			linkedTransactionsAfterDelete.every(
+				(transaction) => transaction.status === TransactionStatus.CANCELED,
+			),
+		).toBe(true);
+		expect(
+			linkedTransactionsAfterDelete.every(
+				(transaction) => transaction.saleId === null,
+			),
+		).toBe(true);
+	});
+
 	it("should keep all sales when bulk delete contains an invalid id", async () => {
 		const fixture = await createFixture();
 		const firstSaleId = await createSaleUsingApi(
@@ -3247,16 +3804,25 @@ describe("sales crud", () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(fixture);
 
-		const response = await request(app.server)
+		const completeResponse = await request(app.server)
 			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
 				status: "COMPLETED",
 			});
 
+		expect(completeResponse.statusCode).toBe(204);
+
+		const response = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
 		expect(response.statusCode).toBe(400);
 		expect(response.body.message).toBe(
-			"Cannot change sale status from PENDING to COMPLETED",
+			"Cannot change sale status from COMPLETED to APPROVED",
 		);
 	});
 

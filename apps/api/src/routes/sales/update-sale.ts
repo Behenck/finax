@@ -24,6 +24,7 @@ import {
 } from "./sale-dynamic-fields";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
+import { syncPendingSaleTransactionFromSale } from "./sale-transactions";
 
 export async function updateSale(app: FastifyInstance) {
 	app
@@ -57,6 +58,7 @@ export async function updateSale(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						enableSalesTransactionsSync: true,
 					},
 				});
 
@@ -227,6 +229,13 @@ export async function updateSale(app: FastifyInstance) {
 								saleId,
 								data.totalAmount,
 							);
+						}
+
+						if (organization.enableSalesTransactionsSync) {
+							await syncPendingSaleTransactionFromSale(tx, {
+								saleId,
+								organizationId: organization.id,
+							});
 						}
 
 						const afterSnapshot = await loadSaleHistorySnapshot(

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
+import { assertProductSalesTransactionConfig } from "./product-sales-transaction-config";
 
 export async function updateProduct(app: FastifyInstance) {
 	app
@@ -27,6 +28,8 @@ export async function updateProduct(app: FastifyInstance) {
 						parentId: z.uuid().nullable(),
 						isActive: z.boolean(),
 						sortOrder: z.number().int().min(0),
+						salesTransactionCategoryId: z.uuid().nullable().optional(),
+						salesTransactionCostCenterId: z.uuid().nullable().optional(),
 					}),
 					response: {
 						204: z.null(),
@@ -55,6 +58,8 @@ export async function updateProduct(app: FastifyInstance) {
 						id: true,
 						parentId: true,
 						isActive: true,
+						salesTransactionCategoryId: true,
+						salesTransactionCostCenterId: true,
 						_count: {
 							select: {
 								children: true,
@@ -101,6 +106,20 @@ export async function updateProduct(app: FastifyInstance) {
 					}
 				}
 
+				const nextSalesTransactionCategoryId =
+					data.salesTransactionCategoryId === undefined
+						? product.salesTransactionCategoryId
+						: data.salesTransactionCategoryId;
+				const nextSalesTransactionCostCenterId =
+					data.salesTransactionCostCenterId === undefined
+						? product.salesTransactionCostCenterId
+						: data.salesTransactionCostCenterId;
+
+				await assertProductSalesTransactionConfig(prisma, organization.id, {
+					salesTransactionCategoryId: nextSalesTransactionCategoryId,
+					salesTransactionCostCenterId: nextSalesTransactionCostCenterId,
+				});
+
 				await db(() =>
 					prisma.$transaction(async (tx) => {
 						await tx.product.update({
@@ -113,6 +132,8 @@ export async function updateProduct(app: FastifyInstance) {
 								parentId: data.parentId,
 								isActive: data.isActive,
 								sortOrder: data.sortOrder,
+								salesTransactionCategoryId: nextSalesTransactionCategoryId,
+								salesTransactionCostCenterId: nextSalesTransactionCostCenterId,
 							},
 						});
 

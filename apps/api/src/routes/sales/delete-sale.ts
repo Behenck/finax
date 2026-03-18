@@ -5,6 +5,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
+import { cancelPendingSaleTransactionForSale } from "./sale-transactions";
 
 export async function deleteSale(app: FastifyInstance) {
 	app
@@ -35,6 +36,7 @@ export async function deleteSale(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						enableSalesTransactionsSync: true,
 					},
 				});
 
@@ -57,10 +59,19 @@ export async function deleteSale(app: FastifyInstance) {
 				}
 
 				await db(() =>
-					prisma.sale.delete({
-						where: {
-							id: saleId,
-						},
+					prisma.$transaction(async (tx) => {
+						if (organization.enableSalesTransactionsSync) {
+							await cancelPendingSaleTransactionForSale(tx, {
+								saleId,
+								organizationId: organization.id,
+							});
+						}
+
+						await tx.sale.delete({
+							where: {
+								id: saleId,
+							},
+						});
 					}),
 				);
 
@@ -68,4 +79,3 @@ export async function deleteSale(app: FastifyInstance) {
 			},
 		);
 }
-

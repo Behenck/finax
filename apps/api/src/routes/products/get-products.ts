@@ -13,6 +13,8 @@ const ProductTreeNodeSchema = z.object({
 	parentId: z.uuid().nullable(),
 	isActive: z.boolean(),
 	sortOrder: z.number().int(),
+	salesTransactionCategoryId: z.uuid().nullable(),
+	salesTransactionCostCenterId: z.uuid().nullable(),
 	// Avoid recursive $ref generation that breaks OpenAPI/Kubb.
 	children: z.array(z.unknown()),
 });
@@ -61,6 +63,8 @@ export async function getProducts(app: FastifyInstance) {
 						parentId: true,
 						isActive: true,
 						sortOrder: true,
+						salesTransactionCategoryId: true,
+						salesTransactionCostCenterId: true,
 					},
 					orderBy: [
 						{

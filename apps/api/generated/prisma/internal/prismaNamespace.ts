@@ -3082,6 +3082,7 @@ export const OrganizationScalarFieldEnum = {
   slug: 'slug',
   domain: 'domain',
   shouldAttachUserByDomain: 'shouldAttachUserByDomain',
+  enableSalesTransactionsSync: 'enableSalesTransactionsSync',
   avatarUrl: 'avatarUrl',
   ownerId: 'ownerId',
   createdAt: 'createdAt',
@@ -3280,6 +3281,8 @@ export const ProductScalarFieldEnum = {
   description: 'description',
   isActive: 'isActive',
   sortOrder: 'sortOrder',
+  salesTransactionCategoryId: 'salesTransactionCategoryId',
+  salesTransactionCostCenterId: 'salesTransactionCostCenterId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3503,6 +3506,7 @@ export const TransactionScalarFieldEnum = {
   categoryId: 'categoryId',
   notes: 'notes',
   parentId: 'parentId',
+  saleId: 'saleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'

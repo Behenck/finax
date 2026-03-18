@@ -9,6 +9,7 @@ import {
 	PatchSalesDeleteBulkBodySchema,
 	PatchSalesDeleteBulkResponseSchema,
 } from "./sale-schemas";
+import { cancelPendingSaleTransactionForSale } from "./sale-transactions";
 
 export async function patchSalesDeleteBulk(app: FastifyInstance) {
 	app
@@ -55,6 +56,15 @@ export async function patchSalesDeleteBulk(app: FastifyInstance) {
 
 				const deleted = await db(() =>
 					prisma.$transaction(async (tx) => {
+						if (organization.enableSalesTransactionsSync) {
+							for (const saleId of uniqueSaleIds) {
+								await cancelPendingSaleTransactionForSale(tx, {
+									saleId,
+									organizationId: organization.id,
+								});
+							}
+						}
+
 						const result = await tx.sale.deleteMany({
 							where: {
 								organizationId: organization.id,

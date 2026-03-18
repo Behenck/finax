@@ -1,46 +1,49 @@
-import { describe, beforeAll, afterAll, it, expect } from "vitest"
-import request from "supertest"
-import { createTestApp } from "../../utils/test-app"
-import { makeUser } from "../../factories/make-user"
+import { describe, beforeAll, afterAll, it, expect } from "vitest";
+import request from "supertest";
+import { createTestApp } from "../../utils/test-app";
+import { makeUser } from "../../factories/make-user";
 
-let app: any
+let app: any;
 
 describe("Get me", () => {
+	beforeAll(async () => {
+		app = await createTestApp();
+	});
 
-  beforeAll(async () => {
-    app = await createTestApp()
-  })
+	afterAll(async () => {
+		await app.close();
+	});
 
-  afterAll(async () => {
-    await app.close()
-  })
+	it("should request me", async () => {
+		const { user, org } = await makeUser();
 
-  it("should request me", async () => {
+		const loginResponse = await request(app.server)
+			.post("/sessions/password")
+			.send({
+				email: user.email,
+				password: user.password,
+			});
 
-    const { user, org } = await makeUser()
+		expect(loginResponse.statusCode).toBe(200);
 
-    const loginResponse = await request(app.server)
-      .post("/sessions/password")
-      .send({
-        email: user.email,
-        password: user.password,
-      })
+		const accessToken = loginResponse.body.accessToken;
 
-    expect(loginResponse.statusCode).toBe(200)
+		const meResponse = await request(app.server)
+			.get("/me")
+			.set("Authorization", `Bearer ${accessToken}`)
+			.query({
+				slug: org.slug,
+			});
 
-    const accessToken = loginResponse.body.accessToken
+		expect(meResponse.statusCode).toBe(200);
 
-    const meResponse = await request(app.server)
-      .get("/me")
-      .set("Authorization", `Bearer ${accessToken}`)
-      .query({
-        slug: org.slug,
-      })
-
-    expect(meResponse.statusCode).toBe(200)
-
-    expect(meResponse.body).toHaveProperty("user")
-    expect(meResponse.body).toHaveProperty("organization")
-  })
-
-})
+		expect(meResponse.body).toHaveProperty("user");
+		expect(meResponse.body).toHaveProperty("organization");
+		expect(meResponse.body.organization).toHaveProperty(
+			"enableSalesTransactionsSync",
+		);
+		expect(
+			typeof meResponse.body.organization.enableSalesTransactionsSync,
+		).toBe("boolean");
+	});
+});

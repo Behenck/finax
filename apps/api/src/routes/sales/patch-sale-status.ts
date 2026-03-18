@@ -16,6 +16,10 @@ import {
 } from "./sale-history";
 import { PatchSaleStatusBodySchema } from "./sale-schemas";
 import { isValidSaleStatusTransition } from "./sale-status-transition";
+import {
+	cancelPendingSaleTransactionForSale,
+	createOrSyncSaleTransactionOnSaleCompleted,
+} from "./sale-transactions";
 
 export async function patchSaleStatus(app: FastifyInstance) {
 	app
@@ -49,6 +53,7 @@ export async function patchSaleStatus(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						enableSalesTransactionsSync: true,
 					},
 				});
 
@@ -87,6 +92,8 @@ export async function patchSaleStatus(app: FastifyInstance) {
 					);
 				}
 
+				const statusChangedAt = new Date();
+
 				await db(() =>
 					prisma.$transaction(async (tx) => {
 						await tx.sale.update({
@@ -110,6 +117,24 @@ export async function patchSaleStatus(app: FastifyInstance) {
 									paymentDate: null,
 								},
 							});
+						}
+
+						if (organization.enableSalesTransactionsSync) {
+							if (status === SaleStatus.COMPLETED) {
+								await createOrSyncSaleTransactionOnSaleCompleted(tx, {
+									saleId,
+									organizationId: organization.id,
+									actorId,
+									completedAt: statusChangedAt,
+								});
+							}
+
+							if (status === SaleStatus.CANCELED) {
+								await cancelPendingSaleTransactionForSale(tx, {
+									saleId,
+									organizationId: organization.id,
+								});
+							}
 						}
 
 						const afterSnapshot = await loadSaleHistorySnapshot(

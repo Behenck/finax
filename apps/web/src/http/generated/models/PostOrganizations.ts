@@ -26,6 +26,10 @@ export type PostOrganizationsMutationRequest = {
    * @type boolean | undefined
    */
   shouldAttachUserByDomain?: boolean;
+  /**
+   * @type boolean | undefined
+   */
+  enableSalesTransactionsSync?: boolean;
 };
 
 export type PostOrganizationsMutationResponse = PostOrganizations201;

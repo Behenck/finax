@@ -5,77 +5,92 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
+import { assertProductSalesTransactionConfig } from "./product-sales-transaction-config";
 
 export async function createProduct(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>()
-    .register(auth)
-    .post("/organizations/:slug/products", {
-      schema: {
-        tags: ["products"],
-        summary: "Create a new product",
-        security: [{ bearerAuth: [] }],
-        params: z.object({
-          slug: z.string(),
-        }),
-        body: z.object({
-          name: z.string().min(1),
-          description: z.string().nullable().optional(),
-          parentId: z.uuid().nullable().optional(),
-          isActive: z.boolean().optional(),
-          sortOrder: z.number().int().min(0).optional(),
-        }),
-        response: {
-          201: z.object({
-            productId: z.uuid(),
-          }),
-        },
-      },
-    },
-      async (request, reply) => {
-        const { slug } = request.params
-        const data = request.body
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.post(
+			"/organizations/:slug/products",
+			{
+				schema: {
+					tags: ["products"],
+					summary: "Create a new product",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+					}),
+					body: z.object({
+						name: z.string().min(1),
+						description: z.string().nullable().optional(),
+						parentId: z.uuid().nullable().optional(),
+						isActive: z.boolean().optional(),
+						sortOrder: z.number().int().min(0).optional(),
+						salesTransactionCategoryId: z.uuid().nullable().optional(),
+						salesTransactionCostCenterId: z.uuid().nullable().optional(),
+					}),
+					response: {
+						201: z.object({
+							productId: z.uuid(),
+						}),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug } = request.params;
+				const data = request.body;
 
-        const organization = await prisma.organization.findUnique({
-          where: { slug },
-          select: { id: true },
-        })
+				const organization = await prisma.organization.findUnique({
+					where: { slug },
+					select: { id: true },
+				});
 
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
 
-        if (data.parentId) {
-          const parent = await prisma.product.findFirst({
-            where: {
-              id: data.parentId,
-              organizationId: organization.id,
-            },
-            select: {
-              id: true,
-            },
-          })
+				if (data.parentId) {
+					const parent = await prisma.product.findFirst({
+						where: {
+							id: data.parentId,
+							organizationId: organization.id,
+						},
+						select: {
+							id: true,
+						},
+					});
 
-          if (!parent) {
-            throw new BadRequestError("Parent product not found")
-          }
-        }
+					if (!parent) {
+						throw new BadRequestError("Parent product not found");
+					}
+				}
 
-        const product = await db(() =>
-          prisma.product.create({
-            data: {
-              organizationId: organization.id,
-              name: data.name,
-              description: data.description ?? null,
-              parentId: data.parentId ?? null,
-              isActive: data.isActive ?? true,
-              sortOrder: data.sortOrder ?? 0,
-            },
-          })
-        )
+				await assertProductSalesTransactionConfig(prisma, organization.id, {
+					salesTransactionCategoryId: data.salesTransactionCategoryId,
+					salesTransactionCostCenterId: data.salesTransactionCostCenterId,
+				});
 
-        return reply.status(201).send({
-          productId: product.id,
-        })
-      }
-    )
+				const product = await db(() =>
+					prisma.product.create({
+						data: {
+							organizationId: organization.id,
+							name: data.name,
+							description: data.description ?? null,
+							parentId: data.parentId ?? null,
+							isActive: data.isActive ?? true,
+							sortOrder: data.sortOrder ?? 0,
+							salesTransactionCategoryId:
+								data.salesTransactionCategoryId ?? null,
+							salesTransactionCostCenterId:
+								data.salesTransactionCostCenterId ?? null,
+						},
+					}),
+				);
+
+				return reply.status(201).send({
+					productId: product.id,
+				});
+			},
+		);
 }

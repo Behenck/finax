@@ -32,6 +32,7 @@ import {
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
 	SALE_RESPONSIBLE_TYPE_LABEL,
+	type SaleStatus,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import {
@@ -39,10 +40,9 @@ import {
 	type SaleHistoryEvent,
 	toSaleHistoryTimelineEvent,
 } from "./-components/sale-history-presenter";
-import {
-	formatSaleDynamicFieldValue,
-} from "./-components/sale-dynamic-fields";
+import { formatSaleDynamicFieldValue } from "./-components/sale-dynamic-fields";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
+import { SaleStatusAction } from "./-components/sale-status-action";
 
 type ProductTreeNode = {
 	id: string;
@@ -86,20 +86,25 @@ function buildProductPathMap(
 	return map;
 }
 
-const SALE_HISTORY_ACTION_ICON: Record<SaleHistoryEvent["action"], LucideIcon> = {
-	CREATED: PlusCircle,
-	UPDATED: FilePenLine,
-	STATUS_CHANGED: CheckCircle2,
-	COMMISSION_INSTALLMENT_UPDATED: WalletCards,
-	COMMISSION_INSTALLMENT_STATUS_UPDATED: CheckCircle2,
-	COMMISSION_INSTALLMENT_DELETED: Trash2,
-};
+const SALE_HISTORY_ACTION_ICON: Record<SaleHistoryEvent["action"], LucideIcon> =
+	{
+		CREATED: PlusCircle,
+		UPDATED: FilePenLine,
+		STATUS_CHANGED: CheckCircle2,
+		COMMISSION_INSTALLMENT_UPDATED: WalletCards,
+		COMMISSION_INSTALLMENT_STATUS_UPDATED: CheckCircle2,
+		COMMISSION_INSTALLMENT_DELETED: Trash2,
+	};
 
-const SALE_HISTORY_ACTION_ICON_CLASS: Record<SaleHistoryEvent["action"], string> = {
+const SALE_HISTORY_ACTION_ICON_CLASS: Record<
+	SaleHistoryEvent["action"],
+	string
+> = {
 	CREATED: "bg-emerald-50 text-emerald-600 border-emerald-200",
 	UPDATED: "bg-blue-50 text-blue-600 border-blue-200",
 	STATUS_CHANGED: "bg-amber-50 text-amber-600 border-amber-200",
-	COMMISSION_INSTALLMENT_UPDATED: "bg-indigo-50 text-indigo-600 border-indigo-200",
+	COMMISSION_INSTALLMENT_UPDATED:
+		"bg-indigo-50 text-indigo-600 border-indigo-200",
 	COMMISSION_INSTALLMENT_STATUS_UPDATED:
 		"bg-orange-50 text-orange-600 border-orange-200",
 	COMMISSION_INSTALLMENT_DELETED: "bg-rose-50 text-rose-600 border-rose-200",
@@ -184,7 +189,8 @@ function SaleDetailsPage() {
 	}
 
 	const { sale } = data;
-	const saleProductPath = productPathById.get(sale.product.id) ?? sale.product.name;
+	const saleProductPath =
+		productPathById.get(sale.product.id) ?? sale.product.name;
 	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
 		...field,
 		value: Object.prototype.hasOwnProperty.call(
@@ -205,7 +211,7 @@ function SaleDetailsPage() {
 					</span>
 				</div>
 
-				<div className="grid w-full gap-2 sm:grid-cols-3 md:flex md:w-auto md:items-center">
+				<div className="grid w-full gap-2 sm:grid-cols-4 md:flex md:w-auto md:items-center">
 					<Button variant="outline" className="w-full md:w-auto" asChild>
 						<Link to="/sales">
 							<ArrowLeft className="size-4" />
@@ -218,6 +224,10 @@ function SaleDetailsPage() {
 							Editar
 						</Link>
 					</Button>
+					<SaleStatusAction
+						saleId={sale.id}
+						currentStatus={sale.status as SaleStatus}
+					/>
 					<Button
 						variant="destructive"
 						className="w-full md:w-auto"
@@ -328,7 +338,7 @@ function SaleDetailsPage() {
 										{SALE_COMMISSION_SOURCE_TYPE_LABEL[commission.sourceType]} •{" "}
 										{
 											SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
-											commission.recipientType
+												commission.recipientType
 											]
 										}{" "}
 										• {SALE_COMMISSION_DIRECTION_LABEL[commission.direction]}
@@ -435,7 +445,10 @@ function SaleDetailsPage() {
 
 										<ul className="mt-3 space-y-1.5 text-sm">
 											{event.messages.map((message, index) => (
-												<li key={`${event.id}-${index}`} className="leading-relaxed">
+												<li
+													key={`${event.id}-${index}`}
+													className="leading-relaxed"
+												>
 													{message}
 												</li>
 											))}

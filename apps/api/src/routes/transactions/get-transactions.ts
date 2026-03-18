@@ -62,6 +62,7 @@ const TransactionItemSchema = z.object({
 
 const TransactionSchema = z.object({
 	id: z.uuid(),
+	saleId: z.uuid().nullable(),
 	code: z.string(),
 	description: z.string(),
 	totalAmount: z.number(),
@@ -107,14 +108,8 @@ const GetTransactionsQuerySchema = z
 		type: z.enum(TransactionType).optional(),
 		companyId: z.uuid().optional(),
 		unitId: z.uuid().optional(),
-		dueFrom: z
-			.string()
-			.regex(saleDateRegex)
-			.optional(),
-		dueTo: z
-			.string()
-			.regex(saleDateRegex)
-			.optional(),
+		dueFrom: z.string().regex(saleDateRegex).optional(),
+		dueTo: z.string().regex(saleDateRegex).optional(),
 		page: z.coerce.number().int().min(1).default(1),
 		pageSize: z.coerce.number().int().min(1).max(100).default(20),
 		sortBy: z.enum(transactionSortByValues).default("dueDate"),
@@ -280,6 +275,7 @@ export async function getTransactions(app: FastifyInstance) {
 						take: pageSize,
 						select: {
 							id: true,
+							saleId: true,
 							code: true,
 							description: true,
 							totalAmount: true,

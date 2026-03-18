@@ -91,6 +91,8 @@ export function ProductCard({ product }: ProductCardProps) {
 					parentId: target.parentId,
 					isActive: !target.isActive,
 					sortOrder: target.sortOrder,
+					salesTransactionCategoryId: target.salesTransactionCategoryId,
+					salesTransactionCostCenterId: target.salesTransactionCostCenterId,
 				},
 			});
 
@@ -141,19 +143,19 @@ export function ProductCard({ product }: ProductCardProps) {
 									<span className="font-medium">{product.name}</span>
 								</div>
 
-									{product.description && (
-										<p className="mt-1 truncate text-sm text-muted-foreground">
-											{product.description}
-										</p>
-									)}
+								{product.description && (
+									<p className="mt-1 truncate text-sm text-muted-foreground">
+										{product.description}
+									</p>
+								)}
 
-									<ProductScenarioBadges productId={product.id} />
+								<ProductScenarioBadges productId={product.id} />
 
-									{hasChildren && (
-										<p className="mt-1 text-xs text-muted-foreground">
-											{children.length} produto(s) filho(s)
-										</p>
-									)}
+								{hasChildren && (
+									<p className="mt-1 text-xs text-muted-foreground">
+										{children.length} produto(s) filho(s)
+									</p>
+								)}
 							</div>
 						</div>
 					</CollapsibleTrigger>

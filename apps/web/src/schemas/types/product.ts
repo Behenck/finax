@@ -5,6 +5,8 @@ export interface ProductListItem {
 	parentId: string | null;
 	isActive: boolean;
 	sortOrder: number;
+	salesTransactionCategoryId: string | null;
+	salesTransactionCostCenterId: string | null;
 	children?: ProductListItem[];
 }
 

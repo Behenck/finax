@@ -39,6 +39,7 @@ export const getOrganizationsSlugTransactions200Schema = z.object({
   transactions: z.array(
     z.object({
       id: z.uuid(),
+      saleId: z.nullable(z.uuid()),
       code: z.string(),
       description: z.string(),
       totalAmount: z.number(),

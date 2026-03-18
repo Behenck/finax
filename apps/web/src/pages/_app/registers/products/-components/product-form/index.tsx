@@ -27,10 +27,12 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	useGetOrganizationsSlugCategories,
 	getOrganizationsSlugProductsIdCommissionScenariosQueryKey,
 	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
 	getOrganizationsSlugProductsQueryKey,
 	useGetOrganizationsSlugCompanies,
+	useGetOrganizationsSlugCostcenters,
 	useGetOrganizationsSlugMembersRole,
 	useGetOrganizationsSlugPartners,
 	useGetOrganizationsSlugProductsIdCommissionScenarios,
@@ -41,10 +43,7 @@ import {
 	usePutOrganizationsSlugProductsIdCommissionScenarios,
 	usePutOrganizationsSlugProductsIdSaleFields,
 } from "@/http/generated";
-import {
-	type ProductFormData,
-	productSchema,
-} from "@/schemas/product-schema";
+import { type ProductFormData, productSchema } from "@/schemas/product-schema";
 import {
 	SALE_DYNAMIC_FIELD_TYPE_LABEL,
 	SALE_DYNAMIC_FIELD_TYPE_VALUES,
@@ -70,6 +69,8 @@ interface ProductFormProps {
 	duplicateFromProductId?: string;
 	duplicateFromProductName?: string;
 	duplicateParentId?: string | null;
+	duplicateSalesTransactionCategoryId?: string | null;
+	duplicateSalesTransactionCostCenterId?: string | null;
 }
 
 function isDatabaseSchemaOutdatedMessage(message: string) {
@@ -108,31 +109,54 @@ export function ProductForm({
 	duplicateFromProductId,
 	duplicateFromProductName,
 	duplicateParentId,
+	duplicateSalesTransactionCategoryId,
+	duplicateSalesTransactionCostCenterId,
 }: ProductFormProps) {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
 	const initializedFromApiRef = useRef(false);
+	const isSalesTransactionsSyncEnabled =
+		organization?.enableSalesTransactionsSync ?? false;
 
 	const { mutateAsync: createProduct, isPending: isCreating } =
 		usePostOrganizationsSlugProducts();
 	const { mutateAsync: updateProduct, isPending: isUpdating } =
 		usePutOrganizationsSlugProductsId();
-	const { mutateAsync: replaceCommissionScenarios, isPending: isSavingScenarios } =
-		usePutOrganizationsSlugProductsIdCommissionScenarios();
-	const { mutateAsync: replaceProductSaleFields, isPending: isSavingSaleFields } =
-		usePutOrganizationsSlugProductsIdSaleFields();
+	const {
+		mutateAsync: replaceCommissionScenarios,
+		isPending: isSavingScenarios,
+	} = usePutOrganizationsSlugProductsIdCommissionScenarios();
+	const {
+		mutateAsync: replaceProductSaleFields,
+		isPending: isSavingSaleFields,
+	} = usePutOrganizationsSlugProductsIdSaleFields();
 
 	const isEditMode = mode === "edit" && !!initialData;
 	const sourceProductId = isEditMode
-		? initialData?.id ?? ""
-		: duplicateFromProductId ?? "";
+		? (initialData?.id ?? "")
+		: (duplicateFromProductId ?? "");
 	const shouldLoadSourceProductData = Boolean(sourceProductId);
-	const duplicateProductName =
-		duplicateFromProductName?.trim() ?? "";
+	const duplicateProductName = duplicateFromProductName?.trim() ?? "";
 
 	const { data: companiesData } = useGetOrganizationsSlugCompanies(
 		{ slug: organization?.slug ?? "" },
 		{ query: { enabled: !!organization?.slug } },
+	);
+	const { data: categoriesData } = useGetOrganizationsSlugCategories(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && isSalesTransactionsSyncEnabled,
+			},
+		},
+	);
+	const { data: costCentersData } = useGetOrganizationsSlugCostcenters(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && isSalesTransactionsSyncEnabled,
+			},
+		},
 	);
 
 	const { data: sellersData } = useGetOrganizationsSlugSellers(
@@ -168,24 +192,29 @@ export function ProductForm({
 		isLoading: isLoadingSaleFields,
 		isError: isSaleFieldsError,
 		error: saleFieldsError,
-	} =
-		useGetOrganizationsSlugProductsIdSaleFields(
-			{ slug: organization?.slug ?? "", id: sourceProductId },
-			{
-				query: {
-					enabled: !!organization?.slug && shouldLoadSourceProductData,
-				},
+	} = useGetOrganizationsSlugProductsIdSaleFields(
+		{ slug: organization?.slug ?? "", id: sourceProductId },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadSourceProductData,
 			},
-		);
+		},
+	);
 
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
 			name: isEditMode
-				? initialData?.name ?? ""
+				? (initialData?.name ?? "")
 				: duplicateProductName
 					? `Cópia de ${duplicateProductName}`
 					: "",
+			salesTransactionCategoryId: isEditMode
+				? (initialData?.salesTransactionCategoryId ?? undefined)
+				: (duplicateSalesTransactionCategoryId ?? undefined),
+			salesTransactionCostCenterId: isEditMode
+				? (initialData?.salesTransactionCostCenterId ?? undefined)
+				: (duplicateSalesTransactionCostCenterId ?? undefined),
 			scenarios: [],
 			saleFields: [],
 		},
@@ -197,6 +226,7 @@ export function ProductForm({
 		register,
 		reset,
 		setValue,
+		setError,
 		getValues,
 		clearErrors,
 		trigger,
@@ -225,8 +255,9 @@ export function ProductForm({
 	const saleFieldValues = useWatch({ control, name: "saleFields" }) ?? [];
 
 	const [activeScenarioTab, setActiveScenarioTab] = useState("");
-	const [activeProductConfigTab, setActiveProductConfigTab] =
-		useState("commission-scenarios");
+	const [activeProductConfigTab, setActiveProductConfigTab] = useState(
+		"commission-scenarios",
+	);
 	const isPending =
 		isCreating || isUpdating || isSavingScenarios || isSavingSaleFields;
 	const resolvedActiveScenarioTab = scenarioFields.some(
@@ -236,6 +267,20 @@ export function ProductForm({
 		: scenarioFields.length > 0
 			? "scenario-0"
 			: "";
+
+	useEffect(() => {
+		if (!isSalesTransactionsSyncEnabled) {
+			clearErrors("salesTransactionCategoryId");
+			clearErrors("salesTransactionCostCenterId");
+		}
+
+		if (
+			!isSalesTransactionsSyncEnabled &&
+			activeProductConfigTab === "transaction"
+		) {
+			setActiveProductConfigTab("commission-scenarios");
+		}
+	}, [activeProductConfigTab, clearErrors, isSalesTransactionsSyncEnabled]);
 
 	const companyOptions = useMemo<SelectOption[]>(() => {
 		const companies = companiesData?.companies ?? [];
@@ -254,6 +299,36 @@ export function ProductForm({
 			})),
 		);
 	}, [companiesData?.companies]);
+
+	const salesCategoryOptions = useMemo<SelectOption[]>(() => {
+		const categories = categoriesData?.categories ?? [];
+		return categories
+			.flatMap((category) => [
+				{
+					id: category.id,
+					label: category.name,
+					type: category.type,
+				},
+				...category.children.map((child) => ({
+					id: child.id,
+					label: `${category.name} -> ${child.name}`,
+					type: child.type,
+				})),
+			])
+			.filter((category) => category.type === "INCOME")
+			.map(({ id, label }) => ({
+				id,
+				label,
+			}));
+	}, [categoriesData?.categories]);
+
+	const salesCostCenterOptions = useMemo<SelectOption[]>(() => {
+		const costCenters = costCentersData?.costCenters ?? [];
+		return costCenters.map((costCenter) => ({
+			id: costCenter.id,
+			label: costCenter.name,
+		}));
+	}, [costCentersData?.costCenters]);
 
 	const sellerOptions = useMemo<SelectOption[]>(() => {
 		const sellers = sellersData?.sellers ?? [];
@@ -304,12 +379,18 @@ export function ProductForm({
 
 		const currentName = getValues("name").trim();
 		const resolvedName = isEditMode
-			? initialData?.name ?? ""
+			? (initialData?.name ?? "")
 			: currentName ||
 				(duplicateProductName ? `Cópia de ${duplicateProductName}` : "");
 
 		reset({
 			name: resolvedName,
+			salesTransactionCategoryId: isEditMode
+				? (initialData?.salesTransactionCategoryId ?? undefined)
+				: (duplicateSalesTransactionCategoryId ?? undefined),
+			salesTransactionCostCenterId: isEditMode
+				? (initialData?.salesTransactionCostCenterId ?? undefined)
+				: (duplicateSalesTransactionCostCenterId ?? undefined),
 			scenarios:
 				(scenariosData?.scenarios ?? []).length > 0
 					? (scenariosData?.scenarios ?? []).map(mapApiScenarioToForm)
@@ -326,6 +407,8 @@ export function ProductForm({
 		});
 		initializedFromApiRef.current = true;
 	}, [
+		duplicateSalesTransactionCategoryId,
+		duplicateSalesTransactionCostCenterId,
 		duplicateProductName,
 		getValues,
 		initialData,
@@ -533,6 +616,38 @@ export function ProductForm({
 
 	const onSubmit = async (data: ProductFormData) => {
 		const name = data.name.trim();
+		const salesTransactionCategoryId = data.salesTransactionCategoryId ?? null;
+		const salesTransactionCostCenterId =
+			data.salesTransactionCostCenterId ?? null;
+
+		if (isSalesTransactionsSyncEnabled) {
+			let hasMissingSalesTransactionMapping = false;
+
+			if (!salesTransactionCategoryId) {
+				setError("salesTransactionCategoryId", {
+					type: "manual",
+					message:
+						"Selecione a categoria de receita para sincronizar vendas com transações.",
+				});
+				hasMissingSalesTransactionMapping = true;
+			}
+
+			if (!salesTransactionCostCenterId) {
+				setError("salesTransactionCostCenterId", {
+					type: "manual",
+					message:
+						"Selecione o centro de custo para sincronizar vendas com transações.",
+				});
+				hasMissingSalesTransactionMapping = true;
+			}
+
+			if (hasMissingSalesTransactionMapping) {
+				toast.error(
+					"Preencha os campos financeiros para salvar o produto com a sincronização ativa.",
+				);
+				return;
+			}
+		}
 
 		if (!isEditMode) {
 			let createdProductId: string;
@@ -543,6 +658,8 @@ export function ProductForm({
 						name,
 						description: null,
 						parentId: fixedParentId ?? duplicateParentId ?? null,
+						salesTransactionCategoryId,
+						salesTransactionCostCenterId,
 					},
 				});
 				createdProductId = createdProduct.productId;
@@ -589,6 +706,8 @@ export function ProductForm({
 					parentId: initialData.parentId,
 					isActive: initialData.isActive,
 					sortOrder: initialData.sortOrder,
+					salesTransactionCategoryId,
+					salesTransactionCostCenterId,
 				},
 			});
 		} catch (error) {
@@ -632,28 +751,26 @@ export function ProductForm({
 			onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
 			className="space-y-6 py-4 [&_[data-slot=label]]:font-normal [&_span]:font-normal"
 		>
-			<div className="grid gap-3">
-				<FieldGroup>
-					<Field className="gap-1">
-						<FieldLabel htmlFor="product-name">Nome</FieldLabel>
-						<Controller
-							name="name"
-							control={control}
-							render={({ field, fieldState }) => (
-								<>
-									<Input
-										{...field}
-										id="product-name"
-										type="text"
-										placeholder="Digite o nome do produto"
-									/>
-									<FormFieldError error={fieldState.error} />
-								</>
-							)}
-						/>
-					</Field>
-				</FieldGroup>
-			</div>
+			<FieldGroup>
+				<Field className="gap-1">
+					<FieldLabel htmlFor="product-name">Nome</FieldLabel>
+					<Controller
+						name="name"
+						control={control}
+						render={({ field, fieldState }) => (
+							<>
+								<Input
+									{...field}
+									id="product-name"
+									type="text"
+									placeholder="Digite o nome do produto"
+								/>
+								<FormFieldError error={fieldState.error} />
+							</>
+						)}
+					/>
+				</Field>
+			</FieldGroup>
 
 			<Tabs
 				value={activeProductConfigTab}
@@ -670,6 +787,11 @@ export function ProductForm({
 					<TabsTrigger value="sale-fields" className="rounded-sm font-normal">
 						Campos da venda
 					</TabsTrigger>
+					{isSalesTransactionsSyncEnabled ? (
+						<TabsTrigger value="transaction" className="rounded-sm font-normal">
+							Transação
+						</TabsTrigger>
+					) : null}
 				</TabsList>
 
 				<TabsContent value="sale-fields" className="space-y-4">
@@ -699,7 +821,9 @@ export function ProductForm({
 									{saleFieldsLoadErrorMessage ??
 										"Não foi possível carregar os campos da venda."}
 								</span>
-								{isDatabaseSchemaOutdatedMessage(saleFieldsLoadErrorMessage ?? "") ? (
+								{isDatabaseSchemaOutdatedMessage(
+									saleFieldsLoadErrorMessage ?? "",
+								) ? (
 									<p className="text-muted-foreground text-xs">
 										Execute as migrações no backend e tente novamente.
 									</p>
@@ -726,7 +850,9 @@ export function ProductForm({
 												<FieldLabel>Nome do campo</FieldLabel>
 												<Input
 													placeholder="Ex.: Grupo"
-													{...register(`saleFields.${fieldIndex}.label` as const)}
+													{...register(
+														`saleFields.${fieldIndex}.label` as const,
+													)}
 												/>
 												<FormFieldError error={fieldErrors?.label} />
 											</Field>
@@ -743,7 +869,8 @@ export function ProductForm({
 																onValueChange={(value) => {
 																	field.onChange(value as SaleDynamicFieldType);
 																	const nextIsSelectionField =
-																		value === "SELECT" || value === "MULTI_SELECT";
+																		value === "SELECT" ||
+																		value === "MULTI_SELECT";
 																	if (!nextIsSelectionField) {
 																		setValue(
 																			`saleFields.${fieldIndex}.options`,
@@ -758,10 +885,13 @@ export function ProductForm({
 
 																	if (value === "SELECT") {
 																		const currentOptions =
-																			getValues(`saleFields.${fieldIndex}.options`) ?? [];
-																		const firstDefaultIndex = currentOptions.findIndex(
-																			(option) => Boolean(option.isDefault),
-																		);
+																			getValues(
+																				`saleFields.${fieldIndex}.options`,
+																			) ?? [];
+																		const firstDefaultIndex =
+																			currentOptions.findIndex((option) =>
+																				Boolean(option.isDefault),
+																			);
 
 																		if (firstDefaultIndex === -1) {
 																			return;
@@ -769,10 +899,13 @@ export function ProductForm({
 
 																		setValue(
 																			`saleFields.${fieldIndex}.options`,
-																			currentOptions.map((option, optionIndex) => ({
-																				...option,
-																				isDefault: optionIndex === firstDefaultIndex,
-																			})),
+																			currentOptions.map(
+																				(option, optionIndex) => ({
+																					...option,
+																					isDefault:
+																						optionIndex === firstDefaultIndex,
+																				}),
+																			),
 																			{
 																				shouldDirty: true,
 																				shouldValidate: true,
@@ -785,11 +918,13 @@ export function ProductForm({
 																	<SelectValue />
 																</SelectTrigger>
 																<SelectContent>
-																	{SALE_DYNAMIC_FIELD_TYPE_VALUES.map((type) => (
-																		<SelectItem key={type} value={type}>
-																			{SALE_DYNAMIC_FIELD_TYPE_LABEL[type]}
-																		</SelectItem>
-																	))}
+																	{SALE_DYNAMIC_FIELD_TYPE_VALUES.map(
+																		(type) => (
+																			<SelectItem key={type} value={type}>
+																				{SALE_DYNAMIC_FIELD_TYPE_LABEL[type]}
+																			</SelectItem>
+																		),
+																	)}
 																</SelectContent>
 															</Select>
 															<FormFieldError error={fieldState.error} />
@@ -886,7 +1021,9 @@ export function ProductForm({
 																<div className="flex items-center gap-2 rounded-sm border px-2 py-1">
 																	<span className="text-sm">Padrão</span>
 																	<Switch
-																		checked={Boolean(options[optionIndex]?.isDefault)}
+																		checked={Boolean(
+																			options[optionIndex]?.isDefault,
+																		)}
 																		onCheckedChange={(checked) =>
 																			handleToggleSaleFieldOptionDefault(
 																				fieldIndex,
@@ -952,7 +1089,9 @@ export function ProductForm({
 									{scenariosLoadErrorMessage ??
 										"Não foi possível carregar os cenários de comissão."}
 								</span>
-								{isDatabaseSchemaOutdatedMessage(scenariosLoadErrorMessage ?? "") ? (
+								{isDatabaseSchemaOutdatedMessage(
+									scenariosLoadErrorMessage ?? "",
+								) ? (
 									<p className="text-muted-foreground text-xs">
 										Execute as migrações no backend e tente novamente.
 									</p>
@@ -1013,6 +1152,95 @@ export function ProductForm({
 						)}
 					</div>
 				</TabsContent>
+
+				{isSalesTransactionsSyncEnabled ? (
+					<TabsContent value="transaction" className="space-y-4">
+						<div className="grid gap-3 md:grid-cols-2">
+							<FieldGroup>
+								<Field className="gap-1">
+									<FieldLabel>Categoria de receita</FieldLabel>
+									<Controller
+										control={control}
+										name="salesTransactionCategoryId"
+										render={({ field, fieldState }) => (
+											<>
+												<Select
+													value={field.value ?? "none"}
+													onValueChange={(value) => {
+														field.onChange(
+															value === "none" ? undefined : value,
+														);
+														clearErrors("salesTransactionCategoryId");
+													}}
+												>
+													<SelectTrigger>
+														<SelectValue placeholder="Selecione" />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="none">Sem categoria</SelectItem>
+														{salesCategoryOptions.map((category) => (
+															<SelectItem key={category.id} value={category.id}>
+																{category.label}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												<FormFieldError error={fieldState.error} />
+											</>
+										)}
+									/>
+								</Field>
+							</FieldGroup>
+
+							<FieldGroup>
+								<Field className="gap-1">
+									<FieldLabel>Centro de custo</FieldLabel>
+									<Controller
+										control={control}
+										name="salesTransactionCostCenterId"
+										render={({ field, fieldState }) => (
+											<>
+												<Select
+													value={field.value ?? "none"}
+													onValueChange={(value) => {
+														field.onChange(
+															value === "none" ? undefined : value,
+														);
+														clearErrors("salesTransactionCostCenterId");
+													}}
+												>
+													<SelectTrigger>
+														<SelectValue placeholder="Selecione" />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="none">
+															Sem centro de custo
+														</SelectItem>
+														{salesCostCenterOptions.map((costCenter) => (
+															<SelectItem
+																key={costCenter.id}
+																value={costCenter.id}
+															>
+																{costCenter.label}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												<FormFieldError error={fieldState.error} />
+											</>
+										)}
+									/>
+								</Field>
+							</FieldGroup>
+						</div>
+
+						<p className="text-xs text-muted-foreground">
+							A sincronização de vendas com transações está ativa. Para novos
+							produtos ou atualizações, configure categoria de receita e centro
+							de custo.
+						</p>
+					</TabsContent>
+				) : null}
 			</Tabs>
 
 			<div className="hidden justify-end gap-2 md:flex">
