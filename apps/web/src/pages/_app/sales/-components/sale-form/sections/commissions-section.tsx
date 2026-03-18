@@ -1,4 +1,6 @@
-import { Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Plus, Trash2 } from "lucide-react";
+import { useMemo } from "react";
+import { useWatch } from "react-hook-form";
 import type {
 	Control,
 	UseFormGetValues,
@@ -7,6 +9,11 @@ import type {
 import { FieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+	buildSaleCommissionBaseOptionsByIndex,
+	groupSaleCommissionsByBase,
+	resolveEffectiveSaleCommissionsPercentages,
+} from "../../sale-commission-helpers";
 import { SaleCommissionCard } from "../../sale-commission-card";
 import { SaleInstallmentsPanel } from "../../sale-installments-panel";
 import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
@@ -78,6 +85,25 @@ export function CommissionsSection({
 	saleTotalAmountInCents,
 	commissionsError,
 }: CommissionsSectionProps) {
+	const commissionValues =
+		(useWatch({
+			control,
+			name: "commissions",
+		}) as SaleFormData["commissions"] | undefined) ?? [];
+
+	const baseCommissionOptionsByIndex = useMemo(
+		() => buildSaleCommissionBaseOptionsByIndex(commissionValues),
+		[commissionValues],
+	);
+	const commissionGroups = useMemo(
+		() => groupSaleCommissionsByBase(commissionValues),
+		[commissionValues],
+	);
+	const effectivePercentagesByIndex = useMemo(
+		() => resolveEffectiveSaleCommissionsPercentages(commissionValues),
+		[commissionValues],
+	);
+
 	if (!isCommissionEditable) {
 		return (
 			<Card className="rounded-sm gap-4 p-5">
@@ -171,23 +197,86 @@ export function CommissionsSection({
 						Nenhuma comissão adicionada.
 					</p>
 				) : (
-					commissionFields.map((commission, commissionIndex) => (
-						<SaleCommissionCard
-							key={commission.id}
-							index={commissionIndex}
-							control={control}
-							setValue={setValue}
-							getValues={getValues}
-							onRemove={onRemoveCommission}
-							onInstallmentCountChange={onInstallmentCountChange}
-							companyOptions={companyOptions}
-							unitOptions={unitOptions}
-							sellerOptions={sellerOptions}
-							partnerOptions={partnerOptions}
-							supervisorOptions={supervisorOptions}
-							saleTotalAmountInCents={saleTotalAmountInCents}
-						/>
-					))
+					commissionGroups.map((group) => {
+						const parentCommissionField = commissionFields[group.parentIndex];
+						if (!parentCommissionField) {
+							return null;
+						}
+
+						return (
+							<div key={parentCommissionField.id} className="space-y-3">
+								<SaleCommissionCard
+									index={group.parentIndex}
+									control={control}
+									setValue={setValue}
+									getValues={getValues}
+									onRemove={onRemoveCommission}
+									onInstallmentCountChange={onInstallmentCountChange}
+									companyOptions={companyOptions}
+									unitOptions={unitOptions}
+									sellerOptions={sellerOptions}
+									partnerOptions={partnerOptions}
+									supervisorOptions={supervisorOptions}
+									saleTotalAmountInCents={saleTotalAmountInCents}
+									baseCommissionOptions={
+										baseCommissionOptionsByIndex[group.parentIndex] ?? []
+									}
+									effectiveTotalPercentage={
+										effectivePercentagesByIndex[group.parentIndex]?.totalPercentage
+									}
+									effectiveInstallmentPercentages={
+										effectivePercentagesByIndex[group.parentIndex]
+											?.installmentPercentages
+									}
+								/>
+
+								{group.childIndexes.map((childIndex) => {
+									const childCommissionField = commissionFields[childIndex];
+									if (!childCommissionField) {
+										return null;
+									}
+
+									return (
+										<div
+											key={childCommissionField.id}
+											className="ml-4 space-y-2 border-l border-dashed border-muted-foreground/40 pl-4"
+										>
+											<div className="flex items-center gap-2 text-muted-foreground text-xs">
+												<ArrowRight className="size-3.5" />
+												Vinculada à comissão {group.parentIndex + 1}
+											</div>
+
+											<SaleCommissionCard
+												index={childIndex}
+												control={control}
+												setValue={setValue}
+												getValues={getValues}
+												onRemove={onRemoveCommission}
+												onInstallmentCountChange={onInstallmentCountChange}
+												companyOptions={companyOptions}
+												unitOptions={unitOptions}
+												sellerOptions={sellerOptions}
+												partnerOptions={partnerOptions}
+												supervisorOptions={supervisorOptions}
+												saleTotalAmountInCents={saleTotalAmountInCents}
+												baseCommissionOptions={
+													baseCommissionOptionsByIndex[childIndex] ?? []
+												}
+												effectiveTotalPercentage={
+													effectivePercentagesByIndex[childIndex]
+														?.totalPercentage
+												}
+												effectiveInstallmentPercentages={
+													effectivePercentagesByIndex[childIndex]
+														?.installmentPercentages
+												}
+											/>
+										</div>
+									);
+								})}
+							</div>
+						);
+					})
 				)}
 			</div>
 

@@ -172,6 +172,14 @@ export const ProductCommissionRecipientType = {
 export type ProductCommissionRecipientType = (typeof ProductCommissionRecipientType)[keyof typeof ProductCommissionRecipientType]
 
 
+export const ProductCommissionCalculationBase = {
+  SALE_TOTAL: 'SALE_TOTAL',
+  COMMISSION: 'COMMISSION'
+} as const
+
+export type ProductCommissionCalculationBase = (typeof ProductCommissionCalculationBase)[keyof typeof ProductCommissionCalculationBase]
+
+
 export const SaleStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
@@ -216,6 +224,14 @@ export const SaleCommissionDirection = {
 } as const
 
 export type SaleCommissionDirection = (typeof SaleCommissionDirection)[keyof typeof SaleCommissionDirection]
+
+
+export const SaleCommissionCalculationBase = {
+  SALE_TOTAL: 'SALE_TOTAL',
+  COMMISSION: 'COMMISSION'
+} as const
+
+export type SaleCommissionCalculationBase = (typeof SaleCommissionCalculationBase)[keyof typeof SaleCommissionCalculationBase]
 
 
 export const SaleCommissionInstallmentStatus = {

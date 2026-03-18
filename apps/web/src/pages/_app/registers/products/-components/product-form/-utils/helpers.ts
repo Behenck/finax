@@ -39,6 +39,8 @@ export function createDefaultCommission(): ProductCommissionFormData {
 		recipientType: "COMPANY",
 		beneficiaryId: undefined,
 		beneficiaryLabel: undefined,
+		calculationBase: "SALE_TOTAL",
+		baseCommissionIndex: undefined,
 		totalPercentage: 1,
 		installments: distributeInstallments(1, 1),
 	};
@@ -98,11 +100,20 @@ export function mapApiScenarioToForm(
 										percentage: roundPercentage(installment.percentage),
 									}))
 								: distributeInstallments(commission.totalPercentage, 1);
+						const calculationBase: "SALE_TOTAL" | "COMMISSION" =
+							commission.calculationBase === "COMMISSION"
+								? "COMMISSION"
+								: "SALE_TOTAL";
 
 						return {
 							recipientType: commission.recipientType,
 							beneficiaryId: commission.beneficiaryId,
 							beneficiaryLabel: commission.beneficiaryLabel,
+							calculationBase,
+							baseCommissionIndex:
+								calculationBase === "COMMISSION"
+									? commission.baseCommissionIndex
+									: undefined,
 							totalPercentage: roundPercentage(commission.totalPercentage),
 							installments,
 						};
@@ -120,18 +131,32 @@ export function mapScenariosToPayload(scenarios: ProductFormData["scenarios"]) {
 				valueId,
 			})),
 		),
-		commissions: scenario.commissions.map((commission) => ({
-			recipientType: commission.recipientType,
-			beneficiaryId: commission.beneficiaryId,
-			beneficiaryLabel:
-				commission.recipientType === "OTHER"
-					? commission.beneficiaryLabel?.trim()
-					: undefined,
-			totalPercentage: roundPercentage(commission.totalPercentage),
-			installments: commission.installments.map((installment, installmentIndex) => ({
-				installmentNumber: installmentIndex + 1,
-				percentage: roundPercentage(installment.percentage),
-			})),
-		})),
+		commissions: scenario.commissions.map((commission) => {
+			const calculationBase: "SALE_TOTAL" | "COMMISSION" =
+				commission.calculationBase === "COMMISSION"
+					? "COMMISSION"
+					: "SALE_TOTAL";
+
+			return {
+				recipientType: commission.recipientType,
+				beneficiaryId: commission.beneficiaryId,
+				beneficiaryLabel:
+					commission.recipientType === "OTHER"
+						? commission.beneficiaryLabel?.trim()
+						: undefined,
+				calculationBase,
+				baseCommissionIndex:
+					calculationBase === "COMMISSION"
+						? commission.baseCommissionIndex
+						: undefined,
+				totalPercentage: roundPercentage(commission.totalPercentage),
+				installments: commission.installments.map(
+					(installment, installmentIndex) => ({
+						installmentNumber: installmentIndex + 1,
+						percentage: roundPercentage(installment.percentage),
+					}),
+				),
+			};
+		}),
 	}));
 }

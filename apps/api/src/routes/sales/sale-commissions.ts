@@ -3,6 +3,7 @@ import type { Prisma } from "generated/prisma/client";
 import {
 	PartnerStatus,
 	Role,
+	type SaleCommissionCalculationBase,
 	type SaleCommissionDirection,
 	SaleCommissionInstallmentStatus,
 	type SaleCommissionRecipientType,
@@ -32,6 +33,8 @@ type ResolvedSaleCommission = {
 	beneficiarySupervisorId: string | null;
 	beneficiaryLabel: string | null;
 	startDate: Date;
+	calculationBase: SaleCommissionCalculationBase;
+	baseCommissionIndex: number | undefined;
 	totalPercentage: number;
 	sortOrder: number;
 	installments: Array<{
@@ -59,6 +62,8 @@ function assertIdsFound({
 }
 
 const COMMISSION_AMOUNT_DENOMINATOR = BigInt(100 * COMMISSION_PERCENTAGE_SCALE);
+const COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR =
+	100 * COMMISSION_PERCENTAGE_SCALE;
 
 function toScaledAmountFloor(totalAmount: number, percentageScaled: number) {
 	const numerator = BigInt(totalAmount) * BigInt(percentageScaled);
@@ -106,6 +111,131 @@ function calculateInstallmentAmountsFromScaled({
 
 	return baseAmounts.map((amount, index) =>
 		index === lastInstallmentIndex ? lastInstallmentAmount : amount,
+	);
+}
+
+function composeScaledPercentages(baseScaled: number, dependentScaled: number) {
+	return Math.round(
+		(baseScaled * dependentScaled) / COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR,
+	);
+}
+
+function normalizeInstallmentsScaledToTotal({
+	totalScaled,
+	installmentsScaled,
+}: {
+	totalScaled: number;
+	installmentsScaled: number[];
+}) {
+	if (installmentsScaled.length === 0) {
+		return [];
+	}
+
+	const normalizedInstallmentsScaled = [...installmentsScaled];
+	const installmentsTotalScaled = normalizedInstallmentsScaled.reduce(
+		(sum, installmentScaled) => sum + installmentScaled,
+		0,
+	);
+	const residual = totalScaled - installmentsTotalScaled;
+	const lastInstallmentIndex = normalizedInstallmentsScaled.length - 1;
+	const adjustedLastInstallmentScaled = Math.max(
+		0,
+		(normalizedInstallmentsScaled[lastInstallmentIndex] ?? 0) + residual,
+	);
+	normalizedInstallmentsScaled[lastInstallmentIndex] =
+		adjustedLastInstallmentScaled;
+
+	return normalizedInstallmentsScaled;
+}
+
+function resolveEffectiveCommissionsScaledPercentages(
+	commissions: Array<{
+		calculationBase: SaleCommissionCalculationBase;
+		baseCommissionIndex: number | undefined;
+		totalPercentageScaled: number;
+		installmentPercentagesScaled: number[];
+	}>,
+) {
+	const memo = new Map<
+		number,
+		{
+			totalScaled: number;
+			installmentsScaled: number[];
+		}
+	>();
+
+	const resolveByIndex = (
+		commissionIndex: number,
+		stack: Set<number>,
+	): {
+		totalScaled: number;
+		installmentsScaled: number[];
+	} => {
+		const memoized = memo.get(commissionIndex);
+		if (memoized) {
+			return memoized;
+		}
+
+		const commission = commissions[commissionIndex];
+		const ownTotalScaled = commission?.totalPercentageScaled ?? 0;
+		const ownInstallmentsScaled = normalizeInstallmentsScaledToTotal({
+			totalScaled: ownTotalScaled,
+			installmentsScaled: commission?.installmentPercentagesScaled ?? [],
+		});
+		const calculationBase = commission?.calculationBase ?? "SALE_TOTAL";
+		const baseCommissionIndex = commission?.baseCommissionIndex;
+
+		if (
+			calculationBase !== "COMMISSION" ||
+			baseCommissionIndex === undefined ||
+			baseCommissionIndex < 0 ||
+			baseCommissionIndex >= commissions.length ||
+			baseCommissionIndex === commissionIndex ||
+			stack.has(commissionIndex)
+		) {
+			const ownResult = {
+				totalScaled: ownTotalScaled,
+				installmentsScaled: ownInstallmentsScaled,
+			};
+			memo.set(commissionIndex, ownResult);
+			return ownResult;
+		}
+
+		const baseCommission = commissions[baseCommissionIndex];
+		const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
+		if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
+			const ownResult = {
+				totalScaled: ownTotalScaled,
+				installmentsScaled: ownInstallmentsScaled,
+			};
+			memo.set(commissionIndex, ownResult);
+			return ownResult;
+		}
+
+		const nextStack = new Set(stack);
+		nextStack.add(commissionIndex);
+		const baseEffective = resolveByIndex(baseCommissionIndex, nextStack);
+		const effectiveTotalScaled = composeScaledPercentages(
+			baseEffective.totalScaled,
+			ownTotalScaled,
+		);
+		const effectiveInstallmentsScaled = normalizeInstallmentsScaledToTotal({
+			totalScaled: effectiveTotalScaled,
+			installmentsScaled: ownInstallmentsScaled.map((installmentScaled) =>
+				composeScaledPercentages(baseEffective.totalScaled, installmentScaled),
+			),
+		});
+
+		const result = {
+			totalScaled: effectiveTotalScaled,
+			installmentsScaled: effectiveInstallmentsScaled,
+		};
+		memo.set(commissionIndex, result);
+		return result;
+	};
+
+	return commissions.map((_commission, commissionIndex) =>
+		resolveByIndex(commissionIndex, new Set<number>()),
 	);
 }
 
@@ -296,23 +426,21 @@ export async function resolveSaleCommissionsData(
 		]),
 	);
 
-	return commissions.map((commission, index): ResolvedSaleCommission => {
+	const normalizedCommissions = commissions.map((commission, index) => {
 		const beneficiaryId = commission.beneficiaryId ?? null;
 		const startDate = parseSaleDateInput(commission.startDate);
 		const direction =
 			commission.direction ??
 			deriveSaleCommissionDirectionFromRecipientType(commission.recipientType);
-		const totalPercentageScaled = toScaledPercentage(
-			commission.totalPercentage,
+		const totalPercentageScaled = toScaledPercentage(commission.totalPercentage);
+		const installmentPercentagesScaled = commission.installments.map((installment) =>
+			toScaledPercentage(installment.percentage),
 		);
-		const installmentPercentagesScaled = commission.installments.map(
-			(installment) => toScaledPercentage(installment.percentage),
-		);
-		const installmentAmounts = calculateInstallmentAmountsFromScaled({
-			totalAmount: saleTotalAmount,
-			totalPercentageScaled,
-			installmentPercentagesScaled,
-		});
+		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+		const baseCommissionIndex =
+			calculationBase === "COMMISSION"
+				? commission.baseCommissionIndex
+				: undefined;
 
 		const beneficiaryCompanyId =
 			commission.recipientType === "COMPANY" ? beneficiaryId : null;
@@ -344,6 +472,8 @@ export async function resolveSaleCommissionsData(
 			sourceType: commission.sourceType,
 			recipientType: commission.recipientType,
 			direction,
+			calculationBase,
+			baseCommissionIndex,
 			beneficiaryCompanyId,
 			beneficiaryUnitId,
 			beneficiarySellerId,
@@ -353,21 +483,72 @@ export async function resolveSaleCommissionsData(
 			startDate,
 			totalPercentage: totalPercentageScaled,
 			sortOrder: index,
-			installments: commission.installments.map(
-				(installment, installmentIndex) => ({
-					installmentNumber: installment.installmentNumber,
-					percentage: toScaledPercentage(installment.percentage),
-					amount: installmentAmounts[installmentIndex] ?? 0,
-					status: SaleCommissionInstallmentStatus.PENDING,
-					expectedPaymentDate: resolveCommissionInstallmentExpectedPaymentDate(
-						startDate,
-						installment.installmentNumber,
-					),
-					paymentDate: null,
-				}),
-			),
+			installments: commission.installments.map((installment) => ({
+				installmentNumber: installment.installmentNumber,
+				percentage: toScaledPercentage(installment.percentage),
+				status: SaleCommissionInstallmentStatus.PENDING,
+				expectedPaymentDate: resolveCommissionInstallmentExpectedPaymentDate(
+					startDate,
+					installment.installmentNumber,
+				),
+				paymentDate: null,
+			})),
 		};
 	});
+
+	const effectivePercentagesByCommissionIndex =
+		resolveEffectiveCommissionsScaledPercentages(
+			normalizedCommissions.map((commission) => ({
+				calculationBase: commission.calculationBase,
+				baseCommissionIndex: commission.baseCommissionIndex,
+				totalPercentageScaled: commission.totalPercentage,
+				installmentPercentagesScaled: commission.installments.map(
+					(installment) => installment.percentage,
+				),
+			})),
+		);
+
+	return normalizedCommissions.map(
+		(commission, commissionIndex): ResolvedSaleCommission => {
+			const effectivePercentages =
+				effectivePercentagesByCommissionIndex[commissionIndex];
+			const installmentAmounts = calculateInstallmentAmountsFromScaled({
+				totalAmount: saleTotalAmount,
+				totalPercentageScaled:
+					effectivePercentages?.totalScaled ?? commission.totalPercentage,
+				installmentPercentagesScaled:
+					effectivePercentages?.installmentsScaled ??
+					commission.installments.map((installment) => installment.percentage),
+			});
+
+			return {
+				sourceType: commission.sourceType,
+				recipientType: commission.recipientType,
+				direction: commission.direction,
+				calculationBase: commission.calculationBase,
+				baseCommissionIndex: commission.baseCommissionIndex,
+				beneficiaryCompanyId: commission.beneficiaryCompanyId,
+				beneficiaryUnitId: commission.beneficiaryUnitId,
+				beneficiarySellerId: commission.beneficiarySellerId,
+				beneficiaryPartnerId: commission.beneficiaryPartnerId,
+				beneficiarySupervisorId: commission.beneficiarySupervisorId,
+				beneficiaryLabel: commission.beneficiaryLabel,
+				startDate: commission.startDate,
+				totalPercentage: commission.totalPercentage,
+				sortOrder: commission.sortOrder,
+				installments: commission.installments.map(
+					(installment, installmentIndex) => ({
+						installmentNumber: installment.installmentNumber,
+						percentage: installment.percentage,
+						amount: installmentAmounts[installmentIndex] ?? 0,
+						status: installment.status,
+						expectedPaymentDate: installment.expectedPaymentDate,
+						paymentDate: installment.paymentDate,
+					}),
+				),
+			};
+		},
+	);
 }
 
 export async function replaceSaleCommissions(
@@ -381,13 +562,16 @@ export async function replaceSaleCommissions(
 		},
 	});
 
+	const createdCommissionIdsBySortOrder: string[] = [];
 	for (const commission of commissions) {
-		await tx.saleCommission.create({
+		const createdCommission = await tx.saleCommission.create({
 			data: {
 				saleId,
 				sourceType: commission.sourceType,
 				recipientType: commission.recipientType,
 				direction: commission.direction,
+				calculationBase: commission.calculationBase,
+				baseCommissionId: null,
 				beneficiaryCompanyId: commission.beneficiaryCompanyId,
 				beneficiaryUnitId: commission.beneficiaryUnitId,
 				beneficiarySellerId: commission.beneficiarySellerId,
@@ -408,6 +592,37 @@ export async function replaceSaleCommissions(
 					})),
 				},
 			},
+			select: {
+				id: true,
+			},
+		});
+
+		createdCommissionIdsBySortOrder[commission.sortOrder] = createdCommission.id;
+	}
+
+	for (const commission of commissions) {
+		if (commission.calculationBase !== "COMMISSION") {
+			continue;
+		}
+
+		const baseCommissionIndex = commission.baseCommissionIndex;
+		if (baseCommissionIndex === undefined) {
+			continue;
+		}
+
+		const commissionId = createdCommissionIdsBySortOrder[commission.sortOrder];
+		const baseCommissionId = createdCommissionIdsBySortOrder[baseCommissionIndex];
+		if (!commissionId || !baseCommissionId) {
+			throw new BadRequestError("Invalid base commission reference");
+		}
+
+		await tx.saleCommission.update({
+			where: {
+				id: commissionId,
+			},
+			data: {
+				baseCommissionId,
+			},
 		});
 	}
 }
@@ -426,6 +641,9 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 		},
 		select: {
 			id: true,
+			calculationBase: true,
+			baseCommissionId: true,
+			sortOrder: true,
 			totalPercentage: true,
 			installments: {
 				orderBy: {
@@ -439,17 +657,39 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 		},
 	});
 
-	for (const commission of commissions) {
+	const commissionIndexById = new Map<string, number>();
+	for (const [index, commission] of commissions.entries()) {
+		commissionIndexById.set(commission.id, index);
+	}
+
+	const effectivePercentagesByCommissionIndex =
+		resolveEffectiveCommissionsScaledPercentages(
+			commissions.map((commission) => ({
+				calculationBase: commission.calculationBase,
+				baseCommissionIndex: commission.baseCommissionId
+					? commissionIndexById.get(commission.baseCommissionId)
+					: undefined,
+				totalPercentageScaled: commission.totalPercentage,
+				installmentPercentagesScaled: commission.installments.map(
+					(installment) => installment.percentage,
+				),
+			})),
+		);
+
+	for (const [commissionIndex, commission] of commissions.entries()) {
 		if (commission.installments.length === 0) {
 			continue;
 		}
 
+		const effectivePercentages =
+			effectivePercentagesByCommissionIndex[commissionIndex];
 		const installmentAmounts = calculateInstallmentAmountsFromScaled({
 			totalAmount: saleTotalAmount,
-			totalPercentageScaled: commission.totalPercentage,
-			installmentPercentagesScaled: commission.installments.map(
-				(installment) => installment.percentage,
-			),
+			totalPercentageScaled:
+				effectivePercentages?.totalScaled ?? commission.totalPercentage,
+			installmentPercentagesScaled:
+				effectivePercentages?.installmentsScaled ??
+				commission.installments.map((installment) => installment.percentage),
 		});
 
 		for (const [index, installment] of commission.installments.entries()) {
@@ -644,6 +884,7 @@ export async function loadSaleCommissions(
 			sourceType: true,
 			recipientType: true,
 			direction: true,
+			calculationBase: true,
 			beneficiaryCompanyId: true,
 			beneficiaryUnitId: true,
 			beneficiarySellerId: true,
@@ -653,6 +894,11 @@ export async function loadSaleCommissions(
 			startDate: true,
 			totalPercentage: true,
 			sortOrder: true,
+			baseCommission: {
+				select: {
+					sortOrder: true,
+				},
+			},
 			beneficiaryCompany: {
 				select: {
 					name: true,
@@ -719,6 +965,12 @@ export async function loadSaleCommissions(
 			sourceType: commission.sourceType,
 			recipientType: commission.recipientType,
 			direction: commission.direction,
+			calculationBase: commission.calculationBase,
+			baseCommissionIndex:
+				commission.calculationBase === "COMMISSION" &&
+				commission.baseCommission
+					? commission.baseCommission.sortOrder
+					: undefined,
 			beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
 			beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel(commission),
 			startDate: commission.startDate,

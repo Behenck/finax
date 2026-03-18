@@ -43,6 +43,10 @@ interface ScenarioCommissionCardProps {
 		commissionIndex: number,
 		nextCount: number,
 	): void;
+	baseCommissionOptions: Array<{
+		index: number;
+		label: string;
+	}>;
 }
 
 export function ScenarioCommissionCard({
@@ -58,6 +62,7 @@ export function ScenarioCommissionCard({
 	setValue,
 	getValues,
 	onInstallmentCountChange,
+	baseCommissionOptions,
 }: ScenarioCommissionCardProps) {
 	const installmentsFieldPath =
 		`scenarios.${scenarioIndex}.commissions.${commissionIndex}.installments` as const;
@@ -75,9 +80,23 @@ export function ScenarioCommissionCard({
 		control,
 		name: `${commissionPath}.totalPercentage`,
 	}) as number;
+	const calculationBase = useWatch({
+		control,
+		name: `${commissionPath}.calculationBase`,
+	}) as ProductCommissionFormData["calculationBase"];
+	const baseCommissionIndex = useWatch({
+		control,
+		name: `${commissionPath}.baseCommissionIndex`,
+	}) as ProductCommissionFormData["baseCommissionIndex"];
 
 	const commissionErrors =
 		errors.scenarios?.[scenarioIndex]?.commissions?.[commissionIndex];
+	const normalizedCalculationBase = calculationBase ?? "SALE_TOTAL";
+	const linkedCommissionSelectValue =
+		normalizedCalculationBase === "COMMISSION" &&
+		typeof baseCommissionIndex === "number"
+			? `COMMISSION:${baseCommissionIndex}`
+			: "SALE_TOTAL";
 
 	useEffect(() => {
 		if (installmentFields.length !== 1) return;
@@ -130,7 +149,7 @@ export function ScenarioCommissionCard({
 
 	return (
 		<Card className="space-y-4 p-4">
-			<div className="grid gap-2 md:grid-cols-[190px_1fr_120px_120px_auto] md:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_220px_1fr_120px_120px_auto] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
@@ -167,6 +186,78 @@ export function ScenarioCommissionCard({
 									<FormFieldError error={fieldState.error} />
 								</>
 							)}
+						/>
+					</Field>
+				</FieldGroup>
+
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel className="font-normal">Base de cálculo</FieldLabel>
+						<Select
+							value={linkedCommissionSelectValue}
+							onValueChange={(value) => {
+								if (value === "SALE_TOTAL") {
+									setValue(`${commissionPath}.calculationBase`, "SALE_TOTAL", {
+										shouldDirty: true,
+										shouldValidate: true,
+									});
+									setValue(`${commissionPath}.baseCommissionIndex`, undefined, {
+										shouldDirty: true,
+										shouldValidate: true,
+									});
+									return;
+								}
+
+								const resolvedBaseCommissionIndex = Number(
+									value.replace("COMMISSION:", ""),
+								);
+								if (!Number.isInteger(resolvedBaseCommissionIndex)) {
+									return;
+								}
+
+								setValue(`${commissionPath}.calculationBase`, "COMMISSION", {
+									shouldDirty: true,
+									shouldValidate: true,
+								});
+								setValue(
+									`${commissionPath}.baseCommissionIndex`,
+									resolvedBaseCommissionIndex,
+									{
+										shouldDirty: true,
+										shouldValidate: true,
+									},
+								);
+							}}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Selecione" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="SALE_TOTAL">Valor da venda</SelectItem>
+								{baseCommissionOptions.map((option) => (
+									<SelectItem
+										key={`${commissionPath}-base-${option.index}`}
+										value={`COMMISSION:${option.index}`}
+									>
+										{option.label}
+									</SelectItem>
+								))}
+								{normalizedCalculationBase === "COMMISSION" &&
+								typeof baseCommissionIndex === "number" &&
+								!baseCommissionOptions.some(
+									(option) => option.index === baseCommissionIndex,
+								) ? (
+									<SelectItem value={`COMMISSION:${baseCommissionIndex}`}>
+										Comissão {baseCommissionIndex + 1}
+									</SelectItem>
+								) : null}
+							</SelectContent>
+						</Select>
+						<FormFieldError
+							error={
+								commissionErrors?.calculationBase ??
+								commissionErrors?.baseCommissionIndex
+							}
 						/>
 					</Field>
 				</FieldGroup>

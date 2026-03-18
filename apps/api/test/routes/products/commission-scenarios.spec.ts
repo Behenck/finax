@@ -208,6 +208,63 @@ describe("product commission scenarios", () => {
 		);
 	});
 
+	it("should save and fetch a commission linked to another commission", async () => {
+		const fixture = await createFixture();
+
+		const saveResponse = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				scenarios: [
+					{
+						name: "Venda padrão",
+						conditions: [],
+						commissions: [
+							{
+								recipientType: "COMPANY",
+								beneficiaryId: fixture.company.id,
+								calculationBase: "SALE_TOTAL",
+								totalPercentage: 5,
+								installments: [{ installmentNumber: 1, percentage: 5 }],
+							},
+							{
+								recipientType: "SELLER",
+								beneficiaryId: fixture.seller.id,
+								calculationBase: "COMMISSION",
+								baseCommissionIndex: 0,
+								totalPercentage: 20,
+								installments: [{ installmentNumber: 1, percentage: 20 }],
+							},
+						],
+					},
+				],
+			});
+
+		expect(saveResponse.statusCode).toBe(204);
+
+		const getResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(getResponse.statusCode).toBe(200);
+		expect(getResponse.body.scenarios[0].commissions[0].calculationBase).toBe(
+			"SALE_TOTAL",
+		);
+		expect(getResponse.body.scenarios[0].commissions[0].baseCommissionIndex).toBe(
+			undefined,
+		);
+		expect(getResponse.body.scenarios[0].commissions[1].calculationBase).toBe(
+			"COMMISSION",
+		);
+		expect(getResponse.body.scenarios[0].commissions[1].baseCommissionIndex).toBe(
+			0,
+		);
+	});
+
 	it("should reject non-default scenario without condition", async () => {
 		const fixture = await createFixture();
 
@@ -413,6 +470,51 @@ describe("product commission scenarios", () => {
 									{ installmentNumber: 1, percentage: 1 },
 									{ installmentNumber: 2, percentage: 1 },
 								],
+							},
+						],
+					},
+				],
+			});
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject a linked commission referencing another linked commission", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				scenarios: [
+					{
+						name: "Venda padrão",
+						conditions: [],
+						commissions: [
+							{
+								recipientType: "COMPANY",
+								beneficiaryId: fixture.company.id,
+								calculationBase: "SALE_TOTAL",
+								totalPercentage: 5,
+								installments: [{ installmentNumber: 1, percentage: 5 }],
+							},
+							{
+								recipientType: "SELLER",
+								beneficiaryId: fixture.seller.id,
+								calculationBase: "COMMISSION",
+								baseCommissionIndex: 0,
+								totalPercentage: 20,
+								installments: [{ installmentNumber: 1, percentage: 20 }],
+							},
+							{
+								recipientType: "SUPERVISOR",
+								beneficiaryId: fixture.supervisor.id,
+								calculationBase: "COMMISSION",
+								baseCommissionIndex: 1,
+								totalPercentage: 10,
+								installments: [{ installmentNumber: 1, percentage: 10 }],
 							},
 						],
 					},

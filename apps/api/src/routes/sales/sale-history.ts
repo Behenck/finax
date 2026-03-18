@@ -1,6 +1,7 @@
 import type { Prisma } from "generated/prisma/client";
 import {
 	SaleHistoryAction,
+	type SaleCommissionCalculationBase,
 	type SaleCommissionDirection,
 	type SaleCommissionInstallmentStatus,
 	type SaleCommissionRecipientType,
@@ -44,6 +45,8 @@ export type SaleHistorySnapshot = {
 		sourceType: SaleCommissionSourceType;
 		recipientType: SaleCommissionRecipientType;
 		direction: SaleCommissionDirection;
+		calculationBase: SaleCommissionCalculationBase;
+		baseCommissionIndex: number | undefined;
 		beneficiaryCompanyId: string | null;
 		beneficiaryUnitId: string | null;
 		beneficiarySellerId: string | null;
@@ -202,6 +205,12 @@ export async function loadSaleHistorySnapshot(
 					sourceType: true,
 					recipientType: true,
 					direction: true,
+					calculationBase: true,
+					baseCommission: {
+						select: {
+							sortOrder: true,
+						},
+					},
 					beneficiaryCompanyId: true,
 					beneficiaryUnitId: true,
 					beneficiarySellerId: true,
@@ -256,6 +265,11 @@ export async function loadSaleHistorySnapshot(
 			sourceType: commission.sourceType,
 			recipientType: commission.recipientType,
 			direction: commission.direction,
+			calculationBase: commission.calculationBase,
+			baseCommissionIndex:
+				commission.calculationBase === "COMMISSION" && commission.baseCommission
+					? commission.baseCommission.sortOrder
+					: undefined,
 			beneficiaryCompanyId: commission.beneficiaryCompanyId,
 			beneficiaryUnitId: commission.beneficiaryUnitId,
 			beneficiarySellerId: commission.beneficiarySellerId,

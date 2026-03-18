@@ -19,6 +19,7 @@ import {
   getProductCommissionScenarios,
   getProductSaleFields,
   listSaleFormOptions,
+  mapScenarioCommissionsToPulledCommissions,
   parseCurrencyToCents,
   saleFormSchema,
   salesQueryKeys,
@@ -81,8 +82,8 @@ function mapSaleToFormValues(
     productId: sale.productId,
     companyId: sale.companyId,
     unitId: sale.unitId ?? "",
-    responsibleType: sale.responsibleType,
-    responsibleId: sale.responsibleId,
+    responsibleType: sale.responsibleType ?? "SELLER",
+    responsibleId: sale.responsibleId ?? "",
     totalAmount: formatCurrencyInput(String(sale.totalAmount)),
     notes: sale.notes ?? "",
     dynamicFields: sale.dynamicFieldValues ?? {},
@@ -559,21 +560,11 @@ export function SaleFormScreen({
         return;
       }
 
-      const nextPulledCommissions: SaleCommissionValues[] = matchedScenario.commissions.map(
-        (commission) => ({
-          sourceType: "PULLED",
-          recipientType: commission.recipientType,
-          direction: "OUTCOME",
-          beneficiaryId: commission.beneficiaryId ?? "",
-          beneficiaryLabel: commission.beneficiaryLabel ?? "",
+      const nextPulledCommissions: SaleCommissionValues[] =
+        mapScenarioCommissionsToPulledCommissions({
+          commissions: matchedScenario.commissions,
           startDate: getValues("saleDate"),
-          totalPercentage: commission.totalPercentage,
-          installments: commission.installments.map((installment) => ({
-            installmentNumber: installment.installmentNumber,
-            percentage: installment.percentage,
-          })),
-        }),
-      );
+        });
 
       const manualCommissions = (getValues("commissions") ?? []).filter(
         (commission) => commission.sourceType !== "PULLED",

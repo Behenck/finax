@@ -299,7 +299,9 @@ export default function SaleDetailsScreen() {
         <Text className="text-[13px] text-slate-600">Unidade: {sale.unit?.name ?? "-"}</Text>
         <Text className="text-[13px] text-slate-600">
           Responsável: {sale.responsible?.name ?? "-"} (
-          {SALE_RESPONSIBLE_TYPE_LABEL[sale.responsibleType]})
+          {sale.responsibleType
+            ? SALE_RESPONSIBLE_TYPE_LABEL[sale.responsibleType]
+            : "-"})
         </Text>
       </Card>
 

@@ -50,6 +50,8 @@ const COMMISSION_FIELD_LABEL: Record<string, string> = {
 	sourceType: "origem da comissão",
 	recipientType: "tipo de beneficiário",
 	direction: "direção da comissão",
+	calculationBase: "base de cálculo",
+	baseCommissionIndex: "comissão base",
 	beneficiaryCompanyId: "empresa beneficiária",
 	beneficiaryUnitId: "unidade beneficiária",
 	beneficiarySellerId: "vendedor beneficiário",
@@ -300,6 +302,16 @@ function formatChangeValue(value: unknown, parsedPath: ParsedHistoryPath) {
 		if (parsedPath.field === "direction") {
 			return getDirectionLabel(normalizedValue);
 		}
+
+		if (parsedPath.field === "calculationBase") {
+			if (normalizedValue === "COMMISSION") {
+				return "Comissão";
+			}
+
+			if (normalizedValue === "SALE_TOTAL") {
+				return "Valor da venda";
+			}
+		}
 	}
 
 	if (parsedPath.type === "installment") {
@@ -461,6 +473,10 @@ function formatCommissionChange(
 			return `${commissionLabel}: beneficiário alterado de ${beforeValue} para ${afterValue}.`;
 		case "direction":
 			return `${commissionLabel}: direção alterada de ${beforeValue} para ${afterValue}.`;
+		case "calculationBase":
+			return `${commissionLabel}: base de cálculo alterada de ${beforeValue} para ${afterValue}.`;
+		case "baseCommissionIndex":
+			return `${commissionLabel}: comissão base alterada de ${beforeValue} para ${afterValue}.`;
 		case "beneficiaryCompanyId":
 		case "beneficiaryUnitId":
 		case "beneficiarySellerId":

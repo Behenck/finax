@@ -61,6 +61,14 @@ export const commissionsDirectionEnum2 = {
 export type CommissionsDirectionEnum2Key =
   (typeof commissionsDirectionEnum2)[keyof typeof commissionsDirectionEnum2];
 
+export const commissionsCalculationBaseEnum4 = {
+  SALE_TOTAL: "SALE_TOTAL",
+  COMMISSION: "COMMISSION",
+} as const;
+
+export type CommissionsCalculationBaseEnum4Key =
+  (typeof commissionsCalculationBaseEnum4)[keyof typeof commissionsCalculationBaseEnum4];
+
 export type PutOrganizationsSlugSalesSaleidMutationRequest = {
   /**
    * @pattern ^\d{4}-\d{2}-\d{2}$
@@ -127,6 +135,16 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
      * @type string | undefined
      */
     direction?: CommissionsDirectionEnum2Key;
+    /**
+     * @type string | undefined
+     */
+    calculationBase?: CommissionsCalculationBaseEnum4Key;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer | undefined
+     */
+    baseCommissionIndex?: number;
     /**
      * @type string | undefined, uuid
      */

@@ -481,6 +481,13 @@ export type EnumProductCommissionRecipientTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel> | $Enums.ProductCommissionRecipientType
 }
 
+export type EnumProductCommissionCalculationBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProductCommissionCalculationBase | Prisma.EnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel> | $Enums.ProductCommissionCalculationBase
+}
+
 export type EnumProductCommissionRecipientTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ProductCommissionRecipientType | Prisma.EnumProductCommissionRecipientTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ProductCommissionRecipientType[] | Prisma.ListEnumProductCommissionRecipientTypeFieldRefInput<$PrismaModel>
@@ -489,6 +496,16 @@ export type EnumProductCommissionRecipientTypeWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
+}
+
+export type EnumProductCommissionCalculationBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProductCommissionCalculationBase | Prisma.EnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProductCommissionCalculationBaseWithAggregatesFilter<$PrismaModel> | $Enums.ProductCommissionCalculationBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel>
 }
 
 export type EnumSaleStatusFilter<$PrismaModel = never> = {
@@ -614,6 +631,13 @@ export type EnumSaleCommissionDirectionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel> | $Enums.SaleCommissionDirection
 }
 
+export type EnumSaleCommissionCalculationBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionCalculationBase | Prisma.EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel> | $Enums.SaleCommissionCalculationBase
+}
+
 export type EnumSaleCommissionSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SaleCommissionSourceType | Prisma.EnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.SaleCommissionSourceType[] | Prisma.ListEnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel>
@@ -642,6 +666,16 @@ export type EnumSaleCommissionDirectionWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel>
+}
+
+export type EnumSaleCommissionCalculationBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionCalculationBase | Prisma.EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionCalculationBaseWithAggregatesFilter<$PrismaModel> | $Enums.SaleCommissionCalculationBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel>
 }
 
 export type EnumSaleCommissionInstallmentStatusFilter<$PrismaModel = never> = {
@@ -1226,6 +1260,13 @@ export type NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel = never>
   not?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel> | $Enums.ProductCommissionRecipientType
 }
 
+export type NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProductCommissionCalculationBase | Prisma.EnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel> | $Enums.ProductCommissionCalculationBase
+}
+
 export type NestedEnumProductCommissionRecipientTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ProductCommissionRecipientType | Prisma.EnumProductCommissionRecipientTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ProductCommissionRecipientType[] | Prisma.ListEnumProductCommissionRecipientTypeFieldRefInput<$PrismaModel>
@@ -1234,6 +1275,16 @@ export type NestedEnumProductCommissionRecipientTypeWithAggregatesFilter<$Prisma
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProductCommissionRecipientTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumProductCommissionCalculationBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProductCommissionCalculationBase | Prisma.EnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProductCommissionCalculationBase[] | Prisma.ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProductCommissionCalculationBaseWithAggregatesFilter<$PrismaModel> | $Enums.ProductCommissionCalculationBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProductCommissionCalculationBaseFilter<$PrismaModel>
 }
 
 export type NestedEnumSaleStatusFilter<$PrismaModel = never> = {
@@ -1332,6 +1383,13 @@ export type NestedEnumSaleCommissionDirectionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel> | $Enums.SaleCommissionDirection
 }
 
+export type NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionCalculationBase | Prisma.EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel> | $Enums.SaleCommissionCalculationBase
+}
+
 export type NestedEnumSaleCommissionSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SaleCommissionSourceType | Prisma.EnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.SaleCommissionSourceType[] | Prisma.ListEnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel>
@@ -1360,6 +1418,16 @@ export type NestedEnumSaleCommissionDirectionWithAggregatesFilter<$PrismaModel =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSaleCommissionDirectionFilter<$PrismaModel>
+}
+
+export type NestedEnumSaleCommissionCalculationBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SaleCommissionCalculationBase | Prisma.EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SaleCommissionCalculationBase[] | Prisma.ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSaleCommissionCalculationBaseWithAggregatesFilter<$PrismaModel> | $Enums.SaleCommissionCalculationBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSaleCommissionCalculationBaseFilter<$PrismaModel>
 }
 
 export type NestedEnumSaleCommissionInstallmentStatusFilter<$PrismaModel = never> = {

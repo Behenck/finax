@@ -3350,6 +3350,8 @@ export const ProductCommissionScalarFieldEnum = {
   scenarioId: 'scenarioId',
   description: 'description',
   recipientType: 'recipientType',
+  calculationBase: 'calculationBase',
+  baseCommissionId: 'baseCommissionId',
   recipientCompanyId: 'recipientCompanyId',
   recipientUnitId: 'recipientUnitId',
   recipientSellerId: 'recipientSellerId',
@@ -3448,6 +3450,8 @@ export const SaleCommissionScalarFieldEnum = {
   sourceType: 'sourceType',
   recipientType: 'recipientType',
   direction: 'direction',
+  calculationBase: 'calculationBase',
+  baseCommissionId: 'baseCommissionId',
   beneficiaryCompanyId: 'beneficiaryCompanyId',
   beneficiaryUnitId: 'beneficiaryUnitId',
   beneficiarySellerId: 'beneficiarySellerId',
@@ -3880,6 +3884,20 @@ export type ListEnumProductCommissionRecipientTypeFieldRefInput<$PrismaModel> = 
 
 
 /**
+ * Reference to a field of type 'ProductCommissionCalculationBase'
+ */
+export type EnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductCommissionCalculationBase'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductCommissionCalculationBase[]'
+ */
+export type ListEnumProductCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductCommissionCalculationBase[]'>
+    
+
+
+/**
  * Reference to a field of type 'SaleStatus'
  */
 export type EnumSaleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleStatus'>
@@ -3974,6 +3992,20 @@ export type EnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInp
  * Reference to a field of type 'SaleCommissionDirection[]'
  */
 export type ListEnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionCalculationBase'
+ */
+export type EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionCalculationBase'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionCalculationBase[]'
+ */
+export type ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionCalculationBase[]'>
     
 
 

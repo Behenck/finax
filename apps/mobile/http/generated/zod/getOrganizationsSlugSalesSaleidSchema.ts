@@ -57,8 +57,8 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
     unitId: z.nullable(z.uuid()),
     customerId: z.uuid(),
     productId: z.uuid(),
-    responsibleType: z.enum(["SELLER", "PARTNER"]),
-    responsibleId: z.uuid(),
+    responsibleType: z.nullable(z.enum(["SELLER", "PARTNER"])),
+    responsibleId: z.nullable(z.uuid()),
     createdById: z.uuid(),
     dynamicFieldSchema: z.array(
       z.object({

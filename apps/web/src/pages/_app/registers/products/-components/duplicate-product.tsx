@@ -1,7 +1,7 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { ProductListItem } from "@/schemas/types/product";
 import { ProductForm } from "./product-form";
 
@@ -13,8 +13,8 @@ export function DuplicateProduct({ product }: DuplicateProductProps) {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger asChild>
 				<Button
 					variant="ghost"
 					size="icon"
@@ -23,15 +23,20 @@ export function DuplicateProduct({ product }: DuplicateProductProps) {
 				>
 					<Copy className="text-gray-700" />
 				</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-4xl">
-				<ProductForm
-					duplicateFromProductId={product.id}
-					duplicateFromProductName={product.name}
-					duplicateParentId={product.parentId}
-					onSuccess={() => setOpen(false)}
-				/>
-			</DialogContent>
-		</Dialog>
+			</SheetTrigger>
+			<SheetContent
+				side="right"
+				className="w-full sm:max-w-5xl overflow-y-auto"
+			>
+				<div className="px-4 pb-6 sm:px-6">
+					<ProductForm
+						duplicateFromProductId={product.id}
+						duplicateFromProductName={product.name}
+						duplicateParentId={product.parentId}
+						onSuccess={() => setOpen(false)}
+					/>
+				</div>
+			</SheetContent>
+		</Sheet>
 	);
 }

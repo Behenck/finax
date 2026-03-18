@@ -41,12 +41,16 @@ const productCommissionSchema = z
 		]),
 		beneficiaryId: z.string().uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		calculationBase: z.enum(["SALE_TOTAL", "COMMISSION"]).optional(),
+		baseCommissionIndex: z.number().int().min(0).optional(),
 		totalPercentage: totalPercentageSchema,
 		installments: z
 			.array(commissionInstallmentSchema)
 			.min(1, "Informe ao menos uma parcela"),
 	})
 	.superRefine((commission, ctx) => {
+		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
 					ctx.addIssue({
@@ -65,6 +69,22 @@ const productCommissionSchema = z
 					message: "Selecione o beneficiário",
 					path: ["beneficiaryId"],
 				});
+		}
+
+		if (calculationBase === "COMMISSION" && commission.baseCommissionIndex === undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Selecione a comissão base.",
+				path: ["baseCommissionIndex"],
+			});
+		}
+
+		if (calculationBase === "SALE_TOTAL" && commission.baseCommissionIndex !== undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message: "A comissão base só pode ser usada quando o cálculo for por comissão.",
+				path: ["baseCommissionIndex"],
+			});
 		}
 
 		const installmentNumbers = new Set<number>();
@@ -195,6 +215,64 @@ export const productSchema = z.object({
 				});
 		}
 		scenarioNames.add(normalizedName);
+
+		for (const [commissionIndex, commission] of scenario.commissions.entries()) {
+			const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+			if (calculationBase !== "COMMISSION") {
+				continue;
+			}
+
+			const baseCommissionIndex = commission.baseCommissionIndex;
+			if (
+				baseCommissionIndex === undefined ||
+				baseCommissionIndex < 0 ||
+				baseCommissionIndex >= scenario.commissions.length
+			) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Comissão base inválida.",
+					path: [
+						"scenarios",
+						scenarioIndex,
+						"commissions",
+						commissionIndex,
+						"baseCommissionIndex",
+					],
+				});
+				continue;
+			}
+
+			if (baseCommissionIndex === commissionIndex) {
+				ctx.addIssue({
+					code: "custom",
+					message: "A comissão não pode usar ela mesma como base.",
+					path: [
+						"scenarios",
+						scenarioIndex,
+						"commissions",
+						commissionIndex,
+						"baseCommissionIndex",
+					],
+				});
+				continue;
+			}
+
+			const baseCommission = scenario.commissions[baseCommissionIndex];
+			const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
+			if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
+				ctx.addIssue({
+					code: "custom",
+					message: "A comissão base deve ser calculada sobre o valor da venda.",
+					path: [
+						"scenarios",
+						scenarioIndex,
+						"commissions",
+						commissionIndex,
+						"baseCommissionIndex",
+					],
+				});
+			}
+		}
 	}
 
 	const saleFieldLabels = new Set<string>();

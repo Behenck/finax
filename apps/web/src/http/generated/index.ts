@@ -438,6 +438,7 @@ export type {
   ConditionsTypeEnum3Key,
   ConditionsTypeEnum4Key,
   CommissionsRecipientTypeEnumKey,
+  CommissionsCalculationBaseEnumKey,
   GetOrganizationsSlugProductsIdCommissionScenarios200,
   GetOrganizationsSlugProductsIdCommissionScenariosQueryResponse,
   GetOrganizationsSlugProductsIdCommissionScenariosQuery,
@@ -494,6 +495,7 @@ export type {
   CommissionsSourceTypeEnum3Key,
   CommissionsRecipientTypeEnum5Key,
   CommissionsDirectionEnum3Key,
+  CommissionsCalculationBaseEnum5Key,
   InstallmentsStatusEnumKey,
   GetOrganizationsSlugSalesSaleid200,
   GetOrganizationsSlugSalesSaleidQueryResponse,
@@ -808,6 +810,7 @@ export type {
   CommissionsSourceTypeEnumKey,
   CommissionsRecipientTypeEnum3Key,
   CommissionsDirectionEnumKey,
+  CommissionsCalculationBaseEnum3Key,
   PostOrganizationsSlugSalesMutationRequest,
   PostOrganizationsSlugSalesMutationResponse,
   PostOrganizationsSlugSalesMutation,
@@ -991,6 +994,7 @@ export type {
   ConditionsTypeEnum7Key,
   ConditionsTypeEnum8Key,
   CommissionsRecipientTypeEnum2Key,
+  CommissionsCalculationBaseEnum2Key,
   PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest,
   PutOrganizationsSlugProductsIdCommissionScenariosMutationResponse,
   PutOrganizationsSlugProductsIdCommissionScenariosMutation,
@@ -1033,6 +1037,7 @@ export type {
   CommissionsSourceTypeEnum2Key,
   CommissionsRecipientTypeEnum4Key,
   CommissionsDirectionEnum2Key,
+  CommissionsCalculationBaseEnum4Key,
   PutOrganizationsSlugSalesSaleidMutationRequest,
   PutOrganizationsSlugSalesSaleidMutationResponse,
   PutOrganizationsSlugSalesSaleidMutation,
@@ -1616,6 +1621,7 @@ export { conditionsTypeEnum2 } from "./models/GetOrganizationsSlugProductsIdComm
 export { conditionsTypeEnum3 } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { conditionsTypeEnum4 } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { commissionsRecipientTypeEnum } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { commissionsCalculationBaseEnum } from "./models/GetOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { fieldsTypeEnum } from "./models/GetOrganizationsSlugProductsIdSaleFields.ts";
 export { recurrencesTypeEnum } from "./models/GetOrganizationsSlugRecurrences.ts";
 export { recurrencesStatusEnum } from "./models/GetOrganizationsSlugRecurrences.ts";
@@ -1633,6 +1639,7 @@ export { dynamicFieldSchemaTypeEnum } from "./models/GetOrganizationsSlugSalesSa
 export { commissionsSourceTypeEnum3 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { commissionsRecipientTypeEnum5 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { commissionsDirectionEnum3 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export { commissionsCalculationBaseEnum5 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { installmentsStatusEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { installmentsRecipientTypeEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { installmentsSourceTypeEnum } from "./models/GetOrganizationsSlugSalesSaleidCommissionInstallments.ts";
@@ -1690,6 +1697,7 @@ export { responsibleTypeEnum5 } from "./models/PostOrganizationsSlugSales.ts";
 export { commissionsSourceTypeEnum } from "./models/PostOrganizationsSlugSales.ts";
 export { commissionsRecipientTypeEnum3 } from "./models/PostOrganizationsSlugSales.ts";
 export { commissionsDirectionEnum } from "./models/PostOrganizationsSlugSales.ts";
+export { commissionsCalculationBaseEnum3 } from "./models/PostOrganizationsSlugSales.ts";
 export { postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum } from "./models/PostOrganizationsSlugSalesImports.ts";
 export { responsibleTypeEnum12 } from "./models/PostOrganizationsSlugSalesImports.ts";
 export { responsibleTypeEnum10 } from "./models/PostOrganizationsSlugSalesImportTemplates.ts";
@@ -1727,6 +1735,7 @@ export { conditionsTypeEnum6 } from "./models/PutOrganizationsSlugProductsIdComm
 export { conditionsTypeEnum7 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { conditionsTypeEnum8 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { commissionsRecipientTypeEnum2 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
+export { commissionsCalculationBaseEnum2 } from "./models/PutOrganizationsSlugProductsIdCommissionScenarios.ts";
 export { putOrganizationsSlugProductsIdSaleFields204Enum } from "./models/PutOrganizationsSlugProductsIdSaleFields.ts";
 export { fieldsTypeEnum2 } from "./models/PutOrganizationsSlugProductsIdSaleFields.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceid201Enum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
@@ -1741,6 +1750,7 @@ export { responsibleTypeEnum7 } from "./models/PutOrganizationsSlugSalesSaleid.t
 export { commissionsSourceTypeEnum2 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { commissionsRecipientTypeEnum4 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { commissionsDirectionEnum2 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
+export { commissionsCalculationBaseEnum4 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { putOrganizationsSlugSellersSellerid204Enum } from "./models/PutOrganizationsSlugSellersSellerid.ts";
 export { putOrganizationsSlugSellersSelleridMutationRequestDocumentTypeEnum } from "./models/PutOrganizationsSlugSellersSellerid.ts";
 export { putOrganizationsSlugSellersSelleridMutationRequestStatusEnum } from "./models/PutOrganizationsSlugSellersSellerid.ts";

@@ -11,6 +11,7 @@ import {
 	createDefaultManualSaleCommission,
 	distributeSaleCommissionInstallments,
 	mapScenarioCommissionsToPulledSaleCommissions,
+	removeSaleCommissionWithDependents,
 	replacePulledSaleCommissions,
 	resolveMatchedCommissionScenario,
 	type SaleCommissionMatchContext,
@@ -27,7 +28,6 @@ interface UseSaleCommissionsParams {
 	getValues: UseFormGetValues<SaleFormInput>;
 	setValue: UseFormSetValue<SaleFormInput>;
 	appendCommission: (value: SaleCommissionFormData) => void;
-	removeCommission: (index: number) => void;
 	replaceCommissions: (values: SaleCommissionFormData[]) => void;
 }
 
@@ -42,7 +42,6 @@ export function useSaleCommissions({
 	getValues,
 	setValue,
 	appendCommission,
-	removeCommission,
 	replaceCommissions,
 }: UseSaleCommissionsParams) {
 	const [commissionRequestedProductId, setCommissionRequestedProductId] =
@@ -148,9 +147,13 @@ export function useSaleCommissions({
 
 	const handleRemoveCommission = useCallback(
 		(index: number) => {
-			removeCommission(index);
+			const currentCommissions =
+				(getValues("commissions") as SaleCommissionFormData[] | undefined) ?? [];
+			replaceCommissions(
+				removeSaleCommissionWithDependents(currentCommissions, index),
+			);
 		},
-		[removeCommission],
+		[getValues, replaceCommissions],
 	);
 
 	const handleRemovePulledCommissions = useCallback(() => {

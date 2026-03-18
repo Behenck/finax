@@ -686,7 +686,7 @@ export function ProductForm({
 						</Button>
 					</div>
 
-					<div className="max-h-[45vh] space-y-3 overflow-y-auto pr-1">
+					<div className="max-h-[58vh] space-y-3 overflow-y-auto pr-1">
 						{shouldLoadSourceProductData && isLoadingSaleFields ? (
 							<Card className="p-4">
 								<span className="text-muted-foreground text-sm">
@@ -939,7 +939,7 @@ export function ProductForm({
 						</Button>
 					</div>
 
-					<div className="max-h-[60vh] overflow-y-auto pr-1">
+					<div className="max-h-[72vh] overflow-y-auto pr-1">
 						{shouldLoadSourceProductData && isLoadingScenarios ? (
 							<Card className="p-4">
 								<span className="text-muted-foreground text-sm">

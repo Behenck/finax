@@ -66,6 +66,14 @@ export const commissionsRecipientTypeEnum2 = {
 export type CommissionsRecipientTypeEnum2Key =
   (typeof commissionsRecipientTypeEnum2)[keyof typeof commissionsRecipientTypeEnum2];
 
+export const commissionsCalculationBaseEnum2 = {
+  SALE_TOTAL: "SALE_TOTAL",
+  COMMISSION: "COMMISSION",
+} as const;
+
+export type CommissionsCalculationBaseEnum2Key =
+  (typeof commissionsCalculationBaseEnum2)[keyof typeof commissionsCalculationBaseEnum2];
+
 export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
   /**
    * @type array
@@ -137,6 +145,16 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
        * @type string | undefined
        */
       beneficiaryLabel?: string;
+      /**
+       * @type string | undefined
+       */
+      calculationBase?: CommissionsCalculationBaseEnum2Key;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer | undefined
+       */
+      baseCommissionIndex?: number;
       /**
        * @maxLength 100
        * @type number

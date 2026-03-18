@@ -122,7 +122,6 @@ export function SaleForm({
 	const {
 		fields: commissionFields,
 		append: appendCommission,
-		remove: removeCommission,
 		replace: replaceCommissions,
 	} = useFieldArray({
 		control,
@@ -193,7 +192,6 @@ export function SaleForm({
 		getValues,
 		setValue,
 		appendCommission,
-		removeCommission,
 		replaceCommissions,
 	});
 
@@ -331,31 +329,40 @@ export function SaleForm({
 
 	async function onSubmit(data: SaleFormData) {
 		const commissions = isCommissionEditable
-			? (data.commissions ?? []).map((commission) => ({
-					sourceType: commission.sourceType,
-					recipientType: commission.recipientType,
-					direction: commission.direction,
-					beneficiaryId:
-						commission.recipientType === "OTHER"
-							? undefined
-							: commission.beneficiaryId,
-					beneficiaryLabel:
-						commission.recipientType === "OTHER"
-							? commission.beneficiaryLabel?.trim() || undefined
-							: undefined,
-					startDate: format(commission.startDate, "yyyy-MM-dd"),
-					totalPercentage: roundSaleCommissionPercentage(
-						commission.totalPercentage,
-					),
-					installments: commission.installments.map(
-						(installment, installmentIndex) => ({
-							installmentNumber: installmentIndex + 1,
-							percentage: roundSaleCommissionPercentage(
-								installment.percentage,
-							),
-						}),
-					),
-			  }))
+			? (data.commissions ?? []).map((commission) => {
+					const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+
+					return {
+						sourceType: commission.sourceType,
+						recipientType: commission.recipientType,
+						direction: commission.direction,
+						calculationBase,
+						baseCommissionIndex:
+							calculationBase === "COMMISSION"
+								? commission.baseCommissionIndex
+								: undefined,
+						beneficiaryId:
+							commission.recipientType === "OTHER"
+								? undefined
+								: commission.beneficiaryId,
+						beneficiaryLabel:
+							commission.recipientType === "OTHER"
+								? commission.beneficiaryLabel?.trim() || undefined
+								: undefined,
+						startDate: format(commission.startDate, "yyyy-MM-dd"),
+						totalPercentage: roundSaleCommissionPercentage(
+							commission.totalPercentage,
+						),
+						installments: commission.installments.map(
+							(installment, installmentIndex) => ({
+								installmentNumber: installmentIndex + 1,
+								percentage: roundSaleCommissionPercentage(
+									installment.percentage,
+								),
+							}),
+						),
+					};
+				})
 			: undefined;
 		const dynamicFields = toSaleDynamicFieldPayloadValues(
 			dynamicFieldSchema,

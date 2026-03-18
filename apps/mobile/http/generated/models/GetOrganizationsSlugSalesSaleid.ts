@@ -239,11 +239,11 @@ export type GetOrganizationsSlugSalesSaleid200 = {
     /**
      * @type string
      */
-    responsibleType: SaleResponsibleTypeEnumKey;
+    responsibleType: SaleResponsibleTypeEnumKey | null;
     /**
      * @type string, uuid
      */
-    responsibleId: string;
+    responsibleId: string | null;
     /**
      * @type string, uuid
      */

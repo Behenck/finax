@@ -1,4 +1,5 @@
 import {
+	SaleCommissionCalculationBase,
 	SaleCommissionDirection,
 	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
@@ -111,6 +112,9 @@ export const SaleCommissionRecipientTypeSchema = z.enum(
 	SaleCommissionRecipientType,
 );
 export const SaleCommissionDirectionSchema = z.enum(SaleCommissionDirection);
+export const SaleCommissionCalculationBaseSchema = z.enum(
+	SaleCommissionCalculationBase,
+);
 export const SaleCommissionInstallmentStatusSchema = z.enum(
 	SaleCommissionInstallmentStatus,
 );
@@ -127,6 +131,8 @@ export const SaleCommissionInputSchema = z
 		sourceType: SaleCommissionSourceTypeSchema,
 		recipientType: SaleCommissionRecipientTypeSchema,
 		direction: SaleCommissionDirectionSchema.optional(),
+		calculationBase: SaleCommissionCalculationBaseSchema.optional(),
+		baseCommissionIndex: z.number().int().min(0).optional(),
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
 		startDate: SaleDateInputSchema,
@@ -135,6 +141,8 @@ export const SaleCommissionInputSchema = z
 	})
 	.strict()
 	.superRefine((commission, ctx) => {
+		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
 				ctx.addIssue({
@@ -148,6 +156,30 @@ export const SaleCommissionInputSchema = z
 				code: "custom",
 				message: "Beneficiary id is required for this recipient type",
 				path: ["beneficiaryId"],
+			});
+		}
+
+		if (
+			calculationBase === "COMMISSION" &&
+			commission.baseCommissionIndex === undefined
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message:
+					"Base commission index is required when calculation base is COMMISSION",
+				path: ["baseCommissionIndex"],
+			});
+		}
+
+		if (
+			calculationBase === "SALE_TOTAL" &&
+			commission.baseCommissionIndex !== undefined
+		) {
+			ctx.addIssue({
+				code: "custom",
+				message:
+					"Base commission index is only allowed when calculation base is COMMISSION",
+				path: ["baseCommissionIndex"],
 			});
 		}
 
@@ -196,6 +228,8 @@ export const SaleCommissionDetailSchema = z.object({
 	sourceType: SaleCommissionSourceTypeSchema,
 	recipientType: SaleCommissionRecipientTypeSchema,
 	direction: SaleCommissionDirectionSchema,
+	calculationBase: SaleCommissionCalculationBaseSchema,
+	baseCommissionIndex: z.number().int().min(0).optional(),
 	beneficiaryId: z.uuid().nullable(),
 	beneficiaryLabel: z.string().nullable(),
 	startDate: z.date(),
@@ -392,7 +426,53 @@ export const CreateSaleBodySchema = z
 		dynamicFields: SaleDynamicFieldsInputSchema.optional(),
 		commissions: z.array(SaleCommissionInputSchema).optional(),
 	})
-	.strict();
+	.strict()
+	.superRefine((data, ctx) => {
+		if (!data.commissions) {
+			return;
+		}
+
+		for (const [commissionIndex, commission] of data.commissions.entries()) {
+			const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+			if (calculationBase !== "COMMISSION") {
+				continue;
+			}
+
+			const baseCommissionIndex = commission.baseCommissionIndex;
+			if (
+				baseCommissionIndex === undefined ||
+				baseCommissionIndex < 0 ||
+				baseCommissionIndex >= data.commissions.length
+			) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Invalid base commission reference",
+					path: ["commissions", commissionIndex, "baseCommissionIndex"],
+				});
+				continue;
+			}
+
+			if (baseCommissionIndex === commissionIndex) {
+				ctx.addIssue({
+					code: "custom",
+					message: "A commission cannot reference itself as calculation base",
+					path: ["commissions", commissionIndex, "baseCommissionIndex"],
+				});
+				continue;
+			}
+
+			const baseCommission = data.commissions[baseCommissionIndex];
+			const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
+			if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
+				ctx.addIssue({
+					code: "custom",
+					message:
+						"Commission base must reference a SALE_TOTAL commission",
+					path: ["commissions", commissionIndex, "baseCommissionIndex"],
+				});
+			}
+		}
+	});
 
 export const UpdateSaleBodySchema = CreateSaleBodySchema;
 

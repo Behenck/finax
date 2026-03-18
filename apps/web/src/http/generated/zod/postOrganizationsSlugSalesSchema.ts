@@ -42,6 +42,8 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
           "OTHER",
         ]),
         direction: z.optional(z.enum(["INCOME", "OUTCOME"])),
+        calculationBase: z.optional(z.enum(["SALE_TOTAL", "COMMISSION"])),
+        baseCommissionIndex: z.optional(z.int().min(0).max(9007199254740991)),
         beneficiaryId: z.optional(z.uuid()),
         beneficiaryLabel: z.optional(z.string()),
         startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

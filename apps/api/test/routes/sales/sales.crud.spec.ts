@@ -36,6 +36,8 @@ type SaleCommissionInput = {
 		| "SUPERVISOR"
 		| "OTHER";
 	direction?: "INCOME" | "OUTCOME";
+	calculationBase?: "SALE_TOTAL" | "COMMISSION";
+	baseCommissionIndex?: number;
 	beneficiaryId?: string;
 	beneficiaryLabel?: string;
 	startDate: string;
@@ -332,6 +334,45 @@ function buildMixedDirectionCommissionsPayload(
 				{
 					installmentNumber: 1,
 					percentage: 1,
+				},
+			],
+		},
+	];
+}
+
+function buildLinkedCommissionsPayload(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+): SaleCommissionInput[] {
+	return [
+		{
+			sourceType: "PULLED",
+			recipientType: "SELLER",
+			beneficiaryId: fixture.seller.id,
+			startDate: "2026-03-10",
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 1,
+				},
+			],
+		},
+		{
+			sourceType: "MANUAL",
+			recipientType: "OTHER",
+			beneficiaryLabel: "Comissão em cascata",
+			calculationBase: "COMMISSION",
+			baseCommissionIndex: 0,
+			startDate: "2026-03-15",
+			totalPercentage: 10,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 6,
+				},
+				{
+					installmentNumber: 2,
+					percentage: 4,
 				},
 			],
 		},
@@ -663,6 +704,238 @@ describe("sales crud", () => {
 		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
 			625,
 		]);
+	});
+
+	it("should create sale with linked commission and preserve own percentages", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: buildLinkedCommissionsPayload(fixture),
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId: response.body.saleId,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			include: {
+				installments: {
+					orderBy: {
+						installmentNumber: "asc",
+					},
+				},
+			},
+		});
+
+		expect(commissions).toHaveLength(2);
+		expect(commissions[0]?.calculationBase).toBe("SALE_TOTAL");
+		expect(commissions[0]?.baseCommissionId).toBeNull();
+		expect(commissions[0]?.totalPercentage).toBe(10_000);
+		expect(commissions[0]?.installments.map((item) => item.percentage)).toEqual([
+			10_000,
+		]);
+		expect(commissions[0]?.installments.map((item) => item.amount)).toEqual([
+			1_250,
+		]);
+
+		expect(commissions[1]?.calculationBase).toBe("COMMISSION");
+		expect(commissions[1]?.baseCommissionId).toBe(commissions[0]?.id);
+		expect(commissions[1]?.totalPercentage).toBe(100_000);
+		expect(commissions[1]?.installments.map((item) => item.percentage)).toEqual([
+			60_000, 40_000,
+		]);
+		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
+			75, 50,
+		]);
+
+		const detailResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/${response.body.saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(detailResponse.statusCode).toBe(200);
+		expect(detailResponse.body.sale.commissions[0].calculationBase).toBe(
+			"SALE_TOTAL",
+		);
+		expect(detailResponse.body.sale.commissions[0].baseCommissionIndex).toBe(
+			undefined,
+		);
+		expect(detailResponse.body.sale.commissions[1].calculationBase).toBe(
+			"COMMISSION",
+		);
+		expect(detailResponse.body.sale.commissions[1].baseCommissionIndex).toBe(0);
+	});
+
+	it("should reject commission link when base index is missing", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Sem base",
+							calculationBase: "COMMISSION",
+							startDate: "2026-03-10",
+							totalPercentage: 10,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 10,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject commission link when base index is out of range", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Fora do range",
+							calculationBase: "COMMISSION",
+							baseCommissionIndex: 9,
+							startDate: "2026-03-10",
+							totalPercentage: 10,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 10,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject commission self-link", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Auto referência",
+							calculationBase: "COMMISSION",
+							baseCommissionIndex: 0,
+							startDate: "2026-03-10",
+							totalPercentage: 10,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 10,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject commission link when base commission is also commission-based", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: [
+						{
+							sourceType: "MANUAL",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Base inválida A",
+							calculationBase: "COMMISSION",
+							baseCommissionIndex: 0,
+							startDate: "2026-03-10",
+							totalPercentage: 10,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 10,
+								},
+							],
+						},
+						{
+							sourceType: "MANUAL",
+							recipientType: "OTHER",
+							beneficiaryLabel: "Base inválida B",
+							calculationBase: "COMMISSION",
+							baseCommissionIndex: 1,
+							startDate: "2026-03-10",
+							totalPercentage: 10,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 10,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
 	});
 
 	it("should persist explicit commission direction when provided", async () => {
@@ -1218,6 +1491,10 @@ describe("sales crud", () => {
 		expect(response.body.sale.commissions).toHaveLength(2);
 		expect(response.body.sale.commissions[0].sourceType).toBe("PULLED");
 		expect(response.body.sale.commissions[1].sourceType).toBe("MANUAL");
+		expect(response.body.sale.commissions[0].calculationBase).toBe("SALE_TOTAL");
+		expect(response.body.sale.commissions[0].baseCommissionIndex).toBeUndefined();
+		expect(response.body.sale.commissions[1].calculationBase).toBe("SALE_TOTAL");
+		expect(response.body.sale.commissions[1].baseCommissionIndex).toBeUndefined();
 		expect(response.body.sale.commissions[0].direction).toBe("OUTCOME");
 		expect(response.body.sale.commissions[1].direction).toBe("OUTCOME");
 		expect(response.body.sale.commissions[0].totalAmount).toBe(1_250);
@@ -1676,6 +1953,52 @@ describe("sales crud", () => {
 		]);
 		expect(installments.map((installment) => installment.amount)).toEqual([
 			625, 1_250,
+		]);
+	});
+
+	it("should replace sale commissions with link on update when commissions is provided", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					commissions: buildLinkedCommissionsPayload(fixture),
+				}),
+			);
+
+		expect(updateResponse.statusCode).toBe(204);
+
+		const commissions = await prisma.saleCommission.findMany({
+			where: {
+				saleId,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			include: {
+				installments: {
+					orderBy: {
+						installmentNumber: "asc",
+					},
+				},
+			},
+		});
+
+		expect(commissions).toHaveLength(2);
+		expect(commissions[0]?.calculationBase).toBe("SALE_TOTAL");
+		expect(commissions[0]?.baseCommissionId).toBeNull();
+		expect(commissions[1]?.calculationBase).toBe("COMMISSION");
+		expect(commissions[1]?.baseCommissionId).toBe(commissions[0]?.id);
+		expect(commissions[1]?.installments.map((item) => item.amount)).toEqual([
+			75, 50,
 		]);
 	});
 

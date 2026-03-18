@@ -19,6 +19,8 @@ export type SaleCommissionDetailLike = {
 	sourceType: "PULLED" | "MANUAL";
 	recipientType: SaleCommissionFormData["recipientType"];
 	direction?: SaleCommissionFormData["direction"];
+	calculationBase?: "SALE_TOTAL" | "COMMISSION";
+	baseCommissionIndex?: number;
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
 	startDate?: string | null;

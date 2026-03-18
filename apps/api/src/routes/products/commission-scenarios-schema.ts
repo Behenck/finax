@@ -58,15 +58,24 @@ export const CommissionRecipientTypeSchema = z.enum([
 	"OTHER",
 ]);
 
+export const ProductCommissionCalculationBaseSchema = z.enum([
+	"SALE_TOTAL",
+	"COMMISSION",
+]);
+
 export const ProductCommissionSchema = z
 	.object({
 		recipientType: CommissionRecipientTypeSchema,
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		calculationBase: ProductCommissionCalculationBaseSchema.optional(),
+		baseCommissionIndex: z.number().int().min(0).optional(),
 		totalPercentage: TotalPercentageSchema,
 		installments: z.array(CommissionInstallmentSchema).min(1),
 	})
 	.superRefine((commission, ctx) => {
+		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+
 		if (commission.recipientType === "OTHER") {
 			if (!commission.beneficiaryLabel) {
 				ctx.addIssue({
@@ -84,6 +93,24 @@ export const ProductCommissionSchema = z
 				code: "custom",
 				message: "Beneficiary id is required for this recipient type",
 				path: ["beneficiaryId"],
+			});
+		}
+
+		if (calculationBase === "COMMISSION" && commission.baseCommissionIndex === undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message:
+					"Base commission index is required when calculation base is COMMISSION",
+				path: ["baseCommissionIndex"],
+			});
+		}
+
+		if (calculationBase === "SALE_TOTAL" && commission.baseCommissionIndex !== undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message:
+					"Base commission index is only allowed when calculation base is COMMISSION",
+				path: ["baseCommissionIndex"],
 			});
 		}
 

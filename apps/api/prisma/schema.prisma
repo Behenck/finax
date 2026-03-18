@@ -684,11 +684,18 @@ enum ProductCommissionRecipientType {
   OTHER
 }
 
+enum ProductCommissionCalculationBase {
+  SALE_TOTAL
+  COMMISSION
+}
+
 model ProductCommission {
   id                        String                         @id @default(uuid())
   scenarioId                String                         @map("scenario_id")
   description               String
   recipientType             ProductCommissionRecipientType @map("recipient_type")
+  calculationBase           ProductCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
+  baseCommissionId          String?                        @map("base_commission_id")
   recipientCompanyId        String?                        @map("recipient_company_id")
   recipientUnitId           String?                        @map("recipient_unit_id")
   recipientSellerId         String?                        @map("recipient_seller_id")
@@ -700,7 +707,9 @@ model ProductCommission {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  scenario     ProductCommissionScenario      @relation(fields: [scenarioId], references: [id])
+  scenario            ProductCommissionScenario      @relation(fields: [scenarioId], references: [id])
+  baseCommission      ProductCommission?             @relation("ProductCommissionBaseLink", fields: [baseCommissionId], references: [id], onDelete: SetNull)
+  childCommissions    ProductCommission[]            @relation("ProductCommissionBaseLink")
   recipientCompany    Company?                @relation("ProductCommissionRecipientCompany", fields: [recipientCompanyId], references: [id])
   recipientUnit       Unit?                   @relation("ProductCommissionRecipientUnit", fields: [recipientUnitId], references: [id])
   recipientSeller     Seller?                 @relation("ProductCommissionRecipientSeller", fields: [recipientSellerId], references: [id])
@@ -709,6 +718,7 @@ model ProductCommission {
 
   @@index([scenarioId])
   @@index([scenarioId, sortOrder])
+  @@index([baseCommissionId])
   @@index([recipientCompanyId])
   @@index([recipientUnitId])
   @@index([recipientSellerId])
@@ -760,6 +770,11 @@ enum SaleCommissionRecipientType {
 enum SaleCommissionDirection {
   INCOME
   OUTCOME
+}
+
+enum SaleCommissionCalculationBase {
+  SALE_TOTAL
+  COMMISSION
 }
 
 enum SaleCommissionInstallmentStatus {
@@ -891,6 +906,8 @@ model SaleCommission {
   sourceType            SaleCommissionSourceType  @map("source_type")
   recipientType         SaleCommissionRecipientType @map("recipient_type")
   direction             SaleCommissionDirection   @map("direction")
+  calculationBase       SaleCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
+  baseCommissionId      String?                   @map("base_commission_id")
   beneficiaryCompanyId  String?                   @map("beneficiary_company_id")
   beneficiaryUnitId     String?                   @map("beneficiary_unit_id")
   beneficiarySellerId   String?                   @map("beneficiary_seller_id")
@@ -905,6 +922,8 @@ model SaleCommission {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   sale                 Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  baseCommission       SaleCommission? @relation("SaleCommissionBaseLink", fields: [baseCommissionId], references: [id], onDelete: SetNull)
+  childCommissions     SaleCommission[] @relation("SaleCommissionBaseLink")
   beneficiaryCompany   Company? @relation("SaleCommissionBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
   beneficiaryUnit      Unit?    @relation("SaleCommissionBeneficiaryUnit", fields: [beneficiaryUnitId], references: [id], onDelete: SetNull)
   beneficiarySeller    Seller?  @relation("SaleCommissionBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
@@ -914,6 +933,7 @@ model SaleCommission {
 
   @@index([saleId])
   @@index([saleId, sortOrder])
+  @@index([baseCommissionId])
   @@index([beneficiaryCompanyId])
   @@index([beneficiaryUnitId])
   @@index([beneficiarySellerId])

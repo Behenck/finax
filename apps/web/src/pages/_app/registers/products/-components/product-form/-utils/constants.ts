@@ -23,3 +23,8 @@ export const RECIPIENT_OPTIONS = [
 	{ value: "SUPERVISOR", label: "Supervisor" },
 	{ value: "OTHER", label: "Outro" },
 ] as const;
+
+export const COMMISSION_CALCULATION_BASE_LABEL = {
+	SALE_TOTAL: "Valor da venda",
+	COMMISSION: "Comissão",
+} as const;

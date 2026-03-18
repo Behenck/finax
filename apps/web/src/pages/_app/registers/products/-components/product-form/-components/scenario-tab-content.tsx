@@ -12,9 +12,13 @@ import { FieldError as FormFieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import type { ProductCommissionScenarioFormData, ProductFormData } from "@/schemas/product-schema";
-import { CirclePlus, Plus, Trash2 } from "lucide-react";
-import { CONDITION_OPTIONS } from "../-utils/constants";
+import type {
+	ProductCommissionFormData,
+	ProductCommissionScenarioFormData,
+	ProductFormData,
+} from "@/schemas/product-schema";
+import { ArrowRight, CirclePlus, Plus, Trash2 } from "lucide-react";
+import { CONDITION_OPTIONS, RECIPIENT_OPTIONS } from "../-utils/constants";
 import { createDefaultCommission } from "../-utils/helpers";
 import type { SelectOption } from "../-utils/types";
 import { ScenarioCommissionCard } from "./scenario-commission-card";
@@ -82,11 +86,211 @@ export function ScenarioTabContent({
 	const {
 		fields: commissionFields,
 		append: appendCommission,
-		remove: removeCommission,
+		replace: replaceCommissions,
 	} = useFieldArray({
 		control,
 		name: `scenarios.${scenarioIndex}.commissions`,
 	});
+
+	const commissionValues = useWatch({
+		control,
+		name: `scenarios.${scenarioIndex}.commissions`,
+	}) as ProductCommissionFormData[] | undefined;
+
+	const baseCommissionOptionsByIndex = useMemo(() => {
+		const commissions = commissionValues ?? [];
+
+		return commissions.map((_commission, commissionIndex) =>
+			commissions.flatMap((candidateCommission, candidateIndex) => {
+				if (candidateIndex === commissionIndex) {
+					return [];
+				}
+
+				const candidateCalculationBase =
+					candidateCommission.calculationBase ?? "SALE_TOTAL";
+				if (candidateCalculationBase !== "SALE_TOTAL") {
+					return [];
+				}
+
+				const recipientLabel =
+					RECIPIENT_OPTIONS.find(
+						(option) => option.value === candidateCommission.recipientType,
+					)?.label ?? "Beneficiário";
+
+				return [
+					{
+						index: candidateIndex,
+						label: `Comissão ${candidateIndex + 1} • ${recipientLabel}`,
+					},
+				];
+			}),
+		);
+	}, [commissionValues]);
+
+	const commissionGroups = useMemo(() => {
+		const commissions = commissionValues ?? [];
+		const childrenByParent = new Map<number, number[]>();
+		const childIndexes = new Set<number>();
+
+		for (const [commissionIndex, commission] of commissions.entries()) {
+			const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+			const baseCommissionIndex = commission.baseCommissionIndex;
+			if (
+				calculationBase !== "COMMISSION" ||
+				baseCommissionIndex === undefined ||
+				baseCommissionIndex < 0 ||
+				baseCommissionIndex >= commissions.length ||
+				baseCommissionIndex === commissionIndex
+			) {
+				continue;
+			}
+
+			const currentChildren = childrenByParent.get(baseCommissionIndex) ?? [];
+			currentChildren.push(commissionIndex);
+			childrenByParent.set(baseCommissionIndex, currentChildren);
+			childIndexes.add(commissionIndex);
+		}
+
+		const groups: Array<{
+			parentIndex: number;
+			childIndexes: number[];
+		}> = [];
+		const renderedIndexes = new Set<number>();
+
+		for (const [commissionIndex] of commissions.entries()) {
+			if (childIndexes.has(commissionIndex)) {
+				continue;
+			}
+
+			const children = [...(childrenByParent.get(commissionIndex) ?? [])].sort(
+				(a, b) => a - b,
+			);
+			groups.push({
+				parentIndex: commissionIndex,
+				childIndexes: children,
+			});
+
+			renderedIndexes.add(commissionIndex);
+			for (const childIndex of children) {
+				renderedIndexes.add(childIndex);
+			}
+		}
+
+		for (const [commissionIndex] of commissions.entries()) {
+			if (renderedIndexes.has(commissionIndex)) {
+				continue;
+			}
+
+			groups.push({
+				parentIndex: commissionIndex,
+				childIndexes: [],
+			});
+		}
+
+		return groups;
+	}, [commissionValues]);
+
+	const removeCommissionWithDependents = (commissionIndex: number) => {
+		const currentCommissions =
+			(getValues(`scenarios.${scenarioIndex}.commissions`) as
+				| ProductCommissionFormData[]
+				| undefined) ?? [];
+		if (
+			commissionIndex < 0 ||
+			commissionIndex >= currentCommissions.length ||
+			currentCommissions.length === 0
+		) {
+			return;
+		}
+
+		const indexesToRemove = new Set<number>([commissionIndex]);
+		let hasNewDependent = true;
+
+		while (hasNewDependent) {
+			hasNewDependent = false;
+			for (const [currentIndex, commission] of currentCommissions.entries()) {
+				if (indexesToRemove.has(currentIndex)) {
+					continue;
+				}
+
+				const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+				const baseCommissionIndex = commission.baseCommissionIndex;
+				if (
+					calculationBase === "COMMISSION" &&
+					baseCommissionIndex !== undefined &&
+					indexesToRemove.has(baseCommissionIndex)
+				) {
+					indexesToRemove.add(currentIndex);
+					hasNewDependent = true;
+				}
+			}
+		}
+
+		const oldIndexToNewIndex = new Map<number, number>();
+		const remainingCommissions: ProductCommissionFormData[] = [];
+		for (const [currentIndex, commission] of currentCommissions.entries()) {
+			if (indexesToRemove.has(currentIndex)) {
+				continue;
+			}
+
+			oldIndexToNewIndex.set(currentIndex, remainingCommissions.length);
+			remainingCommissions.push(commission);
+		}
+
+		const normalizedCommissions = remainingCommissions.map(
+			(commission, nextCommissionIndex) => {
+				const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+				if (calculationBase !== "COMMISSION") {
+					return {
+						...commission,
+						calculationBase: "SALE_TOTAL" as const,
+						baseCommissionIndex: undefined,
+					};
+				}
+
+				const oldBaseCommissionIndex = commission.baseCommissionIndex;
+				if (oldBaseCommissionIndex === undefined) {
+					return {
+						...commission,
+						calculationBase: "SALE_TOTAL" as const,
+						baseCommissionIndex: undefined,
+					};
+				}
+
+				const nextBaseCommissionIndex = oldIndexToNewIndex.get(
+					oldBaseCommissionIndex,
+				);
+				if (
+					nextBaseCommissionIndex === undefined ||
+					nextBaseCommissionIndex === nextCommissionIndex
+				) {
+					return {
+						...commission,
+						calculationBase: "SALE_TOTAL" as const,
+						baseCommissionIndex: undefined,
+					};
+				}
+
+				const baseCommission = remainingCommissions[nextBaseCommissionIndex];
+				const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
+				if (baseCalculationBase !== "SALE_TOTAL") {
+					return {
+						...commission,
+						calculationBase: "SALE_TOTAL" as const,
+						baseCommissionIndex: undefined,
+					};
+				}
+
+				return {
+					...commission,
+					calculationBase: "COMMISSION" as const,
+					baseCommissionIndex: nextBaseCommissionIndex,
+				};
+			},
+		);
+
+		replaceCommissions(normalizedCommissions);
+	};
 
 	return (
 		<div className="space-y-4 rounded-md border p-4">
@@ -189,23 +393,71 @@ export function ScenarioTabContent({
 					</Button>
 				</div>
 
-				{commissionFields.map((commissionField, commissionIndex) => (
-					<ScenarioCommissionCard
-						key={commissionField.id}
-						control={control}
-						errors={errors}
-						scenarioIndex={scenarioIndex}
-						commissionIndex={commissionIndex}
-						companyOptions={companyOptions}
-						unitOptions={unitOptions}
-						sellerOptions={sellerOptions}
-						supervisorOptions={supervisorOptions}
-						removeCommission={removeCommission}
-						setValue={setValue}
-						getValues={getValues}
-						onInstallmentCountChange={onInstallmentCountChange}
-					/>
-				))}
+				{commissionGroups.map((group) => {
+					const parentCommissionField = commissionFields[group.parentIndex];
+					if (!parentCommissionField) {
+						return null;
+					}
+
+					return (
+						<div key={parentCommissionField.id} className="space-y-3">
+							<ScenarioCommissionCard
+								control={control}
+								errors={errors}
+								scenarioIndex={scenarioIndex}
+								commissionIndex={group.parentIndex}
+								companyOptions={companyOptions}
+								unitOptions={unitOptions}
+								sellerOptions={sellerOptions}
+								supervisorOptions={supervisorOptions}
+								removeCommission={removeCommissionWithDependents}
+								setValue={setValue}
+								getValues={getValues}
+								onInstallmentCountChange={onInstallmentCountChange}
+								baseCommissionOptions={
+									baseCommissionOptionsByIndex[group.parentIndex] ?? []
+								}
+							/>
+
+							{group.childIndexes.map((childIndex) => {
+								const childCommissionField = commissionFields[childIndex];
+								if (!childCommissionField) {
+									return null;
+								}
+
+								return (
+									<div
+										key={childCommissionField.id}
+										className="ml-4 space-y-2 border-l border-dashed border-muted-foreground/40 pl-4"
+									>
+										<div className="flex items-center gap-2 text-muted-foreground text-xs">
+											<ArrowRight className="size-3.5" />
+											Vinculada à comissão {group.parentIndex + 1}
+										</div>
+
+										<ScenarioCommissionCard
+											control={control}
+											errors={errors}
+											scenarioIndex={scenarioIndex}
+											commissionIndex={childIndex}
+											companyOptions={companyOptions}
+											unitOptions={unitOptions}
+											sellerOptions={sellerOptions}
+											supervisorOptions={supervisorOptions}
+											removeCommission={removeCommissionWithDependents}
+											setValue={setValue}
+											getValues={getValues}
+											onInstallmentCountChange={onInstallmentCountChange}
+											baseCommissionOptions={
+												baseCommissionOptionsByIndex[childIndex] ?? []
+											}
+										/>
+									</div>
+								);
+							})}
+						</div>
+					);
+				})}
 
 				<FormFieldError error={errors.scenarios?.[scenarioIndex]?.commissions} />
 			</div>

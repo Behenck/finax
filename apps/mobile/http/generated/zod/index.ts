@@ -65,6 +65,11 @@ export {
   deleteOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema,
 } from "./deleteOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
 export {
+  deleteOrganizationsSlugSalesImportTemplatesTemplateidPathParamsSchema,
+  deleteOrganizationsSlugSalesImportTemplatesTemplateid204Schema,
+  deleteOrganizationsSlugSalesImportTemplatesTemplateidMutationResponseSchema,
+} from "./deleteOrganizationsSlugSalesImportTemplatesTemplateidSchema.ts";
+export {
   deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParamsSchema,
   deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid204Schema,
   deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationResponseSchema,
@@ -207,6 +212,12 @@ export {
   getOrganizationsSlugSalesDashboardQueryResponseSchema,
 } from "./getOrganizationsSlugSalesDashboardSchema.ts";
 export {
+  getOrganizationsSlugSalesImportTemplatesPathParamsSchema,
+  getOrganizationsSlugSalesImportTemplatesQueryParamsSchema,
+  getOrganizationsSlugSalesImportTemplates200Schema,
+  getOrganizationsSlugSalesImportTemplatesQueryResponseSchema,
+} from "./getOrganizationsSlugSalesImportTemplatesSchema.ts";
+export {
   getOrganizationsSlugSalesSaleidCommissionInstallmentsPathParamsSchema,
   getOrganizationsSlugSalesSaleidCommissionInstallments200Schema,
   getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryResponseSchema,
@@ -284,6 +295,12 @@ export {
   patchOrganizationsSlugRecurrencesRecurrenceid204Schema,
   patchOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema,
 } from "./patchOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
+export {
+  patchOrganizationsSlugSalesDeleteBulkPathParamsSchema,
+  patchOrganizationsSlugSalesDeleteBulk200Schema,
+  patchOrganizationsSlugSalesDeleteBulkMutationRequestSchema,
+  patchOrganizationsSlugSalesDeleteBulkMutationResponseSchema,
+} from "./patchOrganizationsSlugSalesDeleteBulkSchema.ts";
 export {
   patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidPathParamsSchema,
   patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid204Schema,
@@ -423,6 +440,18 @@ export {
   postOrganizationsSlugRecurrencesMutationResponseSchema,
 } from "./postOrganizationsSlugRecurrencesSchema.ts";
 export {
+  postOrganizationsSlugSalesImportsPathParamsSchema,
+  postOrganizationsSlugSalesImports200Schema,
+  postOrganizationsSlugSalesImportsMutationRequestSchema,
+  postOrganizationsSlugSalesImportsMutationResponseSchema,
+} from "./postOrganizationsSlugSalesImportsSchema.ts";
+export {
+  postOrganizationsSlugSalesImportTemplatesPathParamsSchema,
+  postOrganizationsSlugSalesImportTemplates201Schema,
+  postOrganizationsSlugSalesImportTemplatesMutationRequestSchema,
+  postOrganizationsSlugSalesImportTemplatesMutationResponseSchema,
+} from "./postOrganizationsSlugSalesImportTemplatesSchema.ts";
+export {
   postOrganizationsSlugSalesPathParamsSchema,
   postOrganizationsSlugSales201Schema,
   postOrganizationsSlugSalesMutationRequestSchema,
@@ -553,6 +582,12 @@ export {
   putOrganizationsSlugRecurrencesRecurrenceidMutationRequestSchema,
   putOrganizationsSlugRecurrencesRecurrenceidMutationResponseSchema,
 } from "./putOrganizationsSlugRecurrencesRecurrenceidSchema.ts";
+export {
+  putOrganizationsSlugSalesImportTemplatesTemplateidPathParamsSchema,
+  putOrganizationsSlugSalesImportTemplatesTemplateid204Schema,
+  putOrganizationsSlugSalesImportTemplatesTemplateidMutationRequestSchema,
+  putOrganizationsSlugSalesImportTemplatesTemplateidMutationResponseSchema,
+} from "./putOrganizationsSlugSalesImportTemplatesTemplateidSchema.ts";
 export {
   putOrganizationsSlugSalesSaleidPathParamsSchema,
   putOrganizationsSlugSalesSaleid204Schema,

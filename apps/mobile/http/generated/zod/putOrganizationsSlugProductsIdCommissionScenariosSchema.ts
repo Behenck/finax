@@ -56,6 +56,10 @@ export const putOrganizationsSlugProductsIdCommissionScenariosMutationRequestSch
               ]),
               beneficiaryId: z.optional(z.uuid()),
               beneficiaryLabel: z.optional(z.string()),
+              calculationBase: z.optional(z.enum(["SALE_TOTAL", "COMMISSION"])),
+              baseCommissionIndex: z.optional(
+                z.int().min(0).max(9007199254740991),
+              ),
               totalPercentage: z.number().max(100).gt(0),
               installments: z
                 .array(

@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import {
 	type Control,
 	Controller,
+	useController,
 	type UseFormGetValues,
 	type UseFormSetValue,
 	useWatch,
@@ -22,7 +23,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
+import type {
+	SaleCommissionFormData,
+	SaleFormData,
+	SaleFormInput,
+} from "@/schemas/sale-schema";
 import {
 	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
@@ -92,6 +97,12 @@ interface SaleCommissionCardProps {
 	partnerOptions: SelectOption[];
 	supervisorOptions: SelectOption[];
 	saleTotalAmountInCents: number;
+	baseCommissionOptions: Array<{
+		index: number;
+		label: string;
+	}>;
+	effectiveTotalPercentage?: number;
+	effectiveInstallmentPercentages?: number[];
 }
 
 export function SaleCommissionCard({
@@ -107,6 +118,9 @@ export function SaleCommissionCard({
 	partnerOptions,
 	supervisorOptions,
 	saleTotalAmountInCents,
+	baseCommissionOptions,
+	effectiveTotalPercentage,
+	effectiveInstallmentPercentages,
 }: SaleCommissionCardProps) {
 	const commissionPath = `commissions.${index}` as const;
 	const recipientType = useWatch({
@@ -121,6 +135,18 @@ export function SaleCommissionCard({
 		control,
 		name: `${commissionPath}.totalPercentage`,
 	}) as number;
+	const calculationBase = useWatch({
+		control,
+		name: `${commissionPath}.calculationBase`,
+	}) as SaleCommissionFormData["calculationBase"];
+	const baseCommissionIndex = useWatch({
+		control,
+		name: `${commissionPath}.baseCommissionIndex`,
+	}) as SaleCommissionFormData["baseCommissionIndex"];
+	const { fieldState: baseCommissionIndexFieldState } = useController({
+		control,
+		name: `${commissionPath}.baseCommissionIndex` as const,
+	});
 	const watchedInstallments = useWatch({
 		control,
 		name: `${commissionPath}.installments`,
@@ -129,19 +155,41 @@ export function SaleCommissionCard({
 		() => watchedInstallments ?? [],
 		[watchedInstallments],
 	);
+	const installmentsForEstimation = useMemo(
+		() =>
+			installments.map((installment, installmentIndex) => ({
+				...installment,
+				percentage:
+					effectiveInstallmentPercentages?.[installmentIndex] ??
+					installment.percentage,
+			})),
+		[effectiveInstallmentPercentages, installments],
+	);
+	const totalPercentageForEstimation =
+		effectiveTotalPercentage ?? Number(totalPercentage ?? 0);
 	const installmentEstimatedAmounts = useMemo(
 		() =>
 			calculateSaleCommissionInstallmentAmounts({
 				totalAmountInCents: saleTotalAmountInCents,
-				totalPercentage: Number(totalPercentage ?? 0),
-				installments,
+				totalPercentage: totalPercentageForEstimation,
+				installments: installmentsForEstimation,
 			}),
-		[installments, saleTotalAmountInCents, totalPercentage],
+		[
+			installmentsForEstimation,
+			saleTotalAmountInCents,
+			totalPercentageForEstimation,
+		],
 	);
 	const estimatedTotalAmount = installmentEstimatedAmounts.reduce(
 		(sum, amount) => sum + amount,
 		0,
 	);
+	const normalizedCalculationBase = calculationBase ?? "SALE_TOTAL";
+	const linkedCommissionSelectValue =
+		normalizedCalculationBase === "COMMISSION" &&
+		typeof baseCommissionIndex === "number"
+			? `COMMISSION:${baseCommissionIndex}`
+			: "SALE_TOTAL";
 
 	useEffect(() => {
 		if (installments.length !== 1) {
@@ -204,7 +252,7 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-			<div className="grid gap-2 md:grid-cols-[180px_170px_1fr_150px_120px_120px] md:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_1fr_260px_120px_120px_120px] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
@@ -254,7 +302,11 @@ export function SaleCommissionCard({
 											))}
 										</SelectContent>
 									</Select>
-									<FormFieldError error={fieldState.error} />
+									<FormFieldError
+										error={
+											fieldState.error ?? baseCommissionIndexFieldState.error
+										}
+									/>
 								</>
 							)}
 						/>
@@ -284,6 +336,93 @@ export function SaleCommissionCard({
 													{option.label}
 												</SelectItem>
 											))}
+										</SelectContent>
+									</Select>
+									<FormFieldError error={fieldState.error} />
+								</>
+							)}
+						/>
+					</Field>
+				</FieldGroup>
+
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel className="font-normal">Base de cálculo</FieldLabel>
+						<Controller
+							name={`${commissionPath}.calculationBase`}
+							control={control}
+							render={({ fieldState }) => (
+								<>
+									<Select
+										value={linkedCommissionSelectValue}
+										onValueChange={(value) => {
+											if (value === "SALE_TOTAL") {
+												setValue(
+													`${commissionPath}.calculationBase`,
+													"SALE_TOTAL",
+													{
+														shouldDirty: true,
+														shouldValidate: true,
+													},
+												);
+												setValue(
+													`${commissionPath}.baseCommissionIndex`,
+													undefined,
+													{
+														shouldDirty: true,
+														shouldValidate: true,
+													},
+												);
+												return;
+											}
+
+											const resolvedBaseCommissionIndex = Number(
+												value.replace("COMMISSION:", ""),
+											);
+											if (!Number.isInteger(resolvedBaseCommissionIndex)) {
+												return;
+											}
+
+											setValue(
+												`${commissionPath}.calculationBase`,
+												"COMMISSION",
+												{
+													shouldDirty: true,
+													shouldValidate: true,
+												},
+											);
+											setValue(
+												`${commissionPath}.baseCommissionIndex`,
+												resolvedBaseCommissionIndex,
+												{
+													shouldDirty: true,
+													shouldValidate: true,
+												},
+											);
+										}}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Selecione" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="SALE_TOTAL">Valor da venda</SelectItem>
+											{baseCommissionOptions.map((option) => (
+												<SelectItem
+													key={`${commissionPath}-base-${option.index}`}
+													value={`COMMISSION:${option.index}`}
+												>
+													{option.label}
+												</SelectItem>
+											))}
+											{normalizedCalculationBase === "COMMISSION" &&
+											typeof baseCommissionIndex === "number" &&
+											!baseCommissionOptions.some(
+												(option) => option.index === baseCommissionIndex,
+											) ? (
+												<SelectItem value={`COMMISSION:${baseCommissionIndex}`}>
+													Comissão {baseCommissionIndex + 1}
+												</SelectItem>
+											) : null}
 										</SelectContent>
 									</Select>
 									<FormFieldError error={fieldState.error} />

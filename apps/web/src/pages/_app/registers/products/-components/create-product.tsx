@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { type ReactElement, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ProductForm } from "./product-form";
 
 interface CreateProductProps {
@@ -16,21 +16,26 @@ export function CreateProduct({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger asChild>
 				{trigger ?? (
 					<Button>
 						<Plus />
 						Adicionar Produto
 					</Button>
 				)}
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-4xl">
-				<ProductForm
-					fixedParentId={fixedParentId}
-					onSuccess={() => setOpen(false)}
-				/>
-			</DialogContent>
-		</Dialog>
+			</SheetTrigger>
+			<SheetContent
+				side="right"
+				className="w-full sm:max-w-5xl overflow-y-auto"
+			>
+				<div className="px-4 pb-6 sm:px-6">
+					<ProductForm
+						fixedParentId={fixedParentId}
+						onSuccess={() => setOpen(false)}
+					/>
+				</div>
+			</SheetContent>
+		</Sheet>
 	);
 }
