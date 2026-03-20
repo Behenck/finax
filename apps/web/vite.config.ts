@@ -53,6 +53,12 @@ export default defineConfig(({ mode }) => {
 				);
 
 	return {
+		build: {
+			target: "esnext"
+		},
+		optimizeDeps: {
+			include: ["react", "react-dom"]
+		},
 		plugins: [
 			tanstackRouter({
 				target: "react",
