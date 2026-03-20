@@ -1,10 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import {
+	buildCustomersVisibilityWhere,
+	loadMemberDataVisibilityContext,
+} from "@/permissions/data-visibility";
+import type { Prisma } from "generated/prisma/client";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { BadRequestError } from "../_errors/bad-request-error";
-import { CustomerDocumentType, CustomerPersonType, CustomerStatus } from "generated/prisma/enums";
+import {
+	CustomerDocumentType,
+	CustomerPersonType,
+	CustomerStatus,
+	MemberDataScope,
+} from "generated/prisma/enums";
 import { customerResponsibleTypeValues, loadCustomersResponsible } from "./customer-responsible";
 
 export async function getCustomers(app: FastifyInstance) {
@@ -61,23 +70,40 @@ export async function getCustomers(app: FastifyInstance) {
       async (request) => {
         const { slug } = request.params
 
-        const organization = await prisma.organization.findUnique({
-          where: {
-            slug,
-          },
-          select: {
-            id: true,
-          },
+        const { organization, membership } = await request.getUserMembership(slug)
+        const canViewAllCustomers = await request.hasPermission(
+          slug,
+          "registers.customers.view.all",
+        )
+        const visibilityContext = await loadMemberDataVisibilityContext({
+          organizationId: organization.id,
+          memberId: membership.id,
+          userId: membership.userId,
+          customersScope: canViewAllCustomers
+            ? MemberDataScope.ORGANIZATION_ALL
+            : MemberDataScope.LINKED_ONLY,
+          salesScope: membership.salesScope,
+          commissionsScope: membership.commissionsScope,
         })
-
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
+        const customersVisibilityWhere = buildCustomersVisibilityWhere({
+          organizationId: organization.id,
+          context: visibilityContext,
+        })
+        const customersWhere: Prisma.CustomerWhereInput = customersVisibilityWhere
+          ? {
+            AND: [
+              {
+                organizationId: organization.id,
+              },
+              customersVisibilityWhere,
+            ],
+          }
+          : {
+            organizationId: organization.id,
+          }
 
         const customers = await prisma.customer.findMany({
-          where: {
-            organizationId: organization.id
-          },
+          where: customersWhere,
           select: {
             id: true,
             name: true,

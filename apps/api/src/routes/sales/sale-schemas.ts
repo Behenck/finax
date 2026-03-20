@@ -279,6 +279,8 @@ export const GetOrganizationCommissionInstallmentsQuerySchema = z
 		page: z.coerce.number().int().min(1).default(1),
 		pageSize: z.coerce.number().int().min(1).max(100).default(20),
 		q: z.string().trim().default(""),
+		companyId: z.uuid().optional(),
+		unitId: z.uuid().optional(),
 		productId: z.uuid().optional(),
 		direction: SaleCommissionDirectionSchema.optional(),
 		status: SaleCommissionInstallmentStatusFilterSchema.default("ALL"),

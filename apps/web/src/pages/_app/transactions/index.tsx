@@ -37,6 +37,7 @@ import { usePatchTransactionsPaymentBulk } from "@/hooks/transactions/use-patch-
 import { useRestoreTransactionsPending } from "@/hooks/transactions/use-restore-transactions-pending";
 import { useTransactions } from "@/hooks/transactions/use-transactions";
 import { useGetOrganizationsSlugCompanies } from "@/http/generated";
+import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format, parseISO } from "date-fns";
 import { CheckCheck, Copy, EllipsisVertical, Plus, RefreshCcw } from "lucide-react";
@@ -76,7 +77,12 @@ export const Route = createFileRoute("/_app/transactions/")({
 });
 
 function TransactionsPage() {
+	const ability = useAbility();
 	const { organization } = useApp();
+	const canViewTransactions = ability.can("access", "transactions.view");
+	const canCreateTransactions = ability.can("access", "transactions.create");
+	const canUpdateTransactions = ability.can("access", "transactions.update");
+	const canManagePayments = ability.can("access", "transactions.payment.manage");
 	const slug = organization?.slug ?? "";
 	const [q, setQ] = useQueryState("q", textFilterParser);
 	const [status, setStatus] = useQueryState("status", transactionStatusFilterParser);
@@ -452,6 +458,16 @@ function TransactionsPage() {
 		}
 	}
 
+	if (!canViewTransactions) {
+		return (
+			<Card className="p-6">
+				<span className="text-muted-foreground">
+					Você não possui permissão para visualizar transações.
+				</span>
+			</Card>
+		);
+	}
+
 	if (transactionsQuery.isLoading) {
 		return (
 			<Card className="p-6">
@@ -478,12 +494,14 @@ function TransactionsPage() {
 				title="Gerenciar Transações"
 				description="Acompanhe e opere receitas e despesas com filtros, paginação e ações em lote."
 				actions={
-					<Button asChild className="w-full sm:w-auto">
-						<Link to="/transactions/create">
-							<Plus className="size-4" />
-							Nova Transação
-						</Link>
-					</Button>
+					canCreateTransactions ? (
+						<Button asChild className="w-full sm:w-auto">
+							<Link to="/transactions/create">
+								<Plus className="size-4" />
+								Nova Transação
+							</Link>
+						</Button>
+					) : null
 				}
 			/>
 
@@ -703,7 +721,7 @@ function TransactionsPage() {
 				</div>
 			</FilterPanel>
 
-			{selectedTransactions.length > 0 ? (
+			{selectedTransactions.length > 0 && canManagePayments ? (
 				<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
 					<p className="text-sm text-emerald-900">
 						{selectedTransactions.length} transação(ões) selecionada(s)
@@ -730,33 +748,36 @@ function TransactionsPage() {
 					</Card>
 				) : (
 					<>
-						<Card className="p-3">
-							<div className="flex items-center justify-between gap-3">
-								<label className="flex items-center gap-2 text-sm">
-									<Checkbox
-										checked={
-											allPageSelected
-												? true
-												: somePageSelected
-													? "indeterminate"
-													: false
-										}
-										onCheckedChange={(checked) =>
-											togglePageSelection(Boolean(checked))
-										}
-										disabled={eligibleTransactions.length === 0}
-										aria-label="Selecionar pendentes da página"
-									/>
-									<span>Selecionar pendentes da página</span>
-								</label>
-								<span className="text-xs text-muted-foreground">
-									{eligibleTransactions.length} elegível(is)
-								</span>
-							</div>
-						</Card>
+						{canManagePayments ? (
+							<Card className="p-3">
+								<div className="flex items-center justify-between gap-3">
+									<label className="flex items-center gap-2 text-sm">
+										<Checkbox
+											checked={
+												allPageSelected
+													? true
+													: somePageSelected
+														? "indeterminate"
+														: false
+											}
+											onCheckedChange={(checked) =>
+												togglePageSelection(Boolean(checked))
+											}
+											disabled={eligibleTransactions.length === 0}
+											aria-label="Selecionar pendentes da página"
+										/>
+										<span>Selecionar pendentes da página</span>
+									</label>
+									<span className="text-xs text-muted-foreground">
+										{eligibleTransactions.length} elegível(is)
+									</span>
+								</div>
+							</Card>
+						) : null}
 
 						{transactions.map((transaction) => {
-							const isSelectable = transaction.status === "PENDING";
+							const isSelectable =
+								canManagePayments && transaction.status === "PENDING";
 							const isSelected = selectedTransactionsById.has(transaction.id);
 							const dueDate = format(parseISO(transaction.dueDate), "dd/MM/yyyy");
 							const expectedPaymentDate = format(
@@ -824,7 +845,7 @@ function TransactionsPage() {
 									</div>
 
 									<div className="flex flex-wrap gap-2">
-										{transaction.status === "PENDING" ? (
+										{canManagePayments && transaction.status === "PENDING" ? (
 											<Button
 												type="button"
 												size="sm"
@@ -836,26 +857,30 @@ function TransactionsPage() {
 												Pagar hoje
 											</Button>
 										) : null}
-										<Button size="sm" variant="outline" asChild className="flex-1">
-											<Link
-												to="/transactions/create"
-												search={{
-													duplicateTransactionId: transaction.id,
-												}}
-											>
-												<Copy className="size-4" />
-												Duplicar
-											</Link>
-										</Button>
-										<Button size="sm" variant="ghost" asChild className="flex-1">
-											<Link
-												to="/transactions/update/$transactionId"
-												params={{ transactionId: transaction.id }}
-											>
-												<EllipsisVertical className="size-4" />
-												Editar
-											</Link>
-										</Button>
+										{canCreateTransactions ? (
+											<Button size="sm" variant="outline" asChild className="flex-1">
+												<Link
+													to="/transactions/create"
+													search={{
+														duplicateTransactionId: transaction.id,
+													}}
+												>
+													<Copy className="size-4" />
+													Duplicar
+												</Link>
+											</Button>
+										) : null}
+										{canUpdateTransactions ? (
+											<Button size="sm" variant="ghost" asChild className="flex-1">
+												<Link
+													to="/transactions/update/$transactionId"
+													params={{ transactionId: transaction.id }}
+												>
+													<EllipsisVertical className="size-4" />
+													Editar
+												</Link>
+											</Button>
+										) : null}
 									</div>
 								</Card>
 							);
@@ -871,12 +896,18 @@ function TransactionsPage() {
 								<TableHead className="w-[42px]">
 									<Checkbox
 										checked={
-											allPageSelected ? true : somePageSelected ? "indeterminate" : false
+											canManagePayments
+												? allPageSelected
+													? true
+													: somePageSelected
+														? "indeterminate"
+														: false
+												: false
 										}
 										onCheckedChange={(checked) =>
 											togglePageSelection(Boolean(checked))
 										}
-										disabled={eligibleTransactions.length === 0}
+										disabled={!canManagePayments || eligibleTransactions.length === 0}
 										aria-label="Selecionar página atual"
 									/>
 								</TableHead>
@@ -900,7 +931,8 @@ function TransactionsPage() {
 								</TableRow>
 							) : (
 								transactions.map((transaction) => {
-									const isSelectable = transaction.status === "PENDING";
+									const isSelectable =
+										canManagePayments && transaction.status === "PENDING";
 									const isSelected = selectedTransactionsById.has(transaction.id);
 									const dueDate = format(parseISO(transaction.dueDate), "dd/MM/yyyy");
 									const expectedPaymentDate = format(
@@ -975,7 +1007,7 @@ function TransactionsPage() {
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center justify-end gap-1">
-													{transaction.status === "PENDING" ? (
+													{canManagePayments && transaction.status === "PENDING" ? (
 														<Button
 															type="button"
 															size="sm"
@@ -988,24 +1020,28 @@ function TransactionsPage() {
 															Pagar hoje
 														</Button>
 													) : null}
-													<Button variant="ghost" size="icon" asChild>
-														<Link
-															to="/transactions/create"
-															search={{
-																duplicateTransactionId: transaction.id,
-															}}
-														>
-															<Copy className="size-4" />
-														</Link>
-													</Button>
-													<Button variant="ghost" size="icon" asChild>
-														<Link
-															to="/transactions/update/$transactionId"
-															params={{ transactionId: transaction.id }}
-														>
-															<EllipsisVertical className="size-4" />
-														</Link>
-													</Button>
+													{canCreateTransactions ? (
+														<Button variant="ghost" size="icon" asChild>
+															<Link
+																to="/transactions/create"
+																search={{
+																	duplicateTransactionId: transaction.id,
+																}}
+															>
+																<Copy className="size-4" />
+															</Link>
+														</Button>
+													) : null}
+													{canUpdateTransactions ? (
+														<Button variant="ghost" size="icon" asChild>
+															<Link
+																to="/transactions/update/$transactionId"
+																params={{ transactionId: transaction.id }}
+															>
+																<EllipsisVertical className="size-4" />
+															</Link>
+														</Button>
+													) : null}
 												</div>
 											</TableCell>
 										</TableRow>

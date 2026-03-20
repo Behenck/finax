@@ -23,6 +23,7 @@ export const getMe200Schema = z.object({
     ownerId: z.uuid(),
     enableSalesTransactionsSync: z.boolean(),
   }),
+  effectivePermissions: z.array(z.string()),
 });
 
 export const getMeQueryResponseSchema = z.lazy(() => getMe200Schema);

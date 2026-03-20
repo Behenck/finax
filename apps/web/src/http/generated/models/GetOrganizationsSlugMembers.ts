@@ -21,6 +21,33 @@ export const membersRoleEnum = {
 export type MembersRoleEnumKey =
   (typeof membersRoleEnum)[keyof typeof membersRoleEnum];
 
+export const membersCustomersScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type MembersCustomersScopeEnumKey =
+  (typeof membersCustomersScopeEnum)[keyof typeof membersCustomersScopeEnum];
+
+export const membersSalesScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type MembersSalesScopeEnumKey =
+  (typeof membersSalesScopeEnum)[keyof typeof membersSalesScopeEnum];
+
+export const membersCommissionsScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type MembersCommissionsScopeEnumKey =
+  (typeof membersCommissionsScopeEnum)[keyof typeof membersCommissionsScopeEnum];
+
 /**
  * @description Default Response
  */
@@ -41,6 +68,18 @@ export type GetOrganizationsSlugMembers200 = {
      * @type string
      */
     role: MembersRoleEnumKey;
+    /**
+     * @type string
+     */
+    customersScope: MembersCustomersScopeEnumKey;
+    /**
+     * @type string
+     */
+    salesScope: MembersSalesScopeEnumKey;
+    /**
+     * @type string
+     */
+    commissionsScope: MembersCommissionsScopeEnumKey;
     /**
      * @type string
      */

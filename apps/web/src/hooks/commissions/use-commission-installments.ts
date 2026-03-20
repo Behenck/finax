@@ -8,15 +8,24 @@ interface UseCommissionInstallmentsOptions {
 	enabled?: boolean;
 }
 
+export type CommissionInstallmentsFilters =
+	GetOrganizationsSlugCommissionsInstallmentsQueryParams & {
+		companyId?: string;
+		unitId?: string;
+	};
+
 export function useCommissionInstallments(
-	params: GetOrganizationsSlugCommissionsInstallmentsQueryParams,
+	params: CommissionInstallmentsFilters,
 	options?: UseCommissionInstallmentsOptions,
 ) {
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 
 	return useGetOrganizationsSlugCommissionsInstallments(
-		{ slug, params },
+		{
+			slug,
+			params,
+		},
 		{
 			query: {
 				enabled: Boolean(organization?.slug && (options?.enabled ?? true)),

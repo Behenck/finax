@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import { resolveEffectivePermissions } from "@/permissions/service";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
@@ -33,6 +34,7 @@ export async function getMe(app: FastifyInstance) {
 								ownerId: z.uuid(),
 								enableSalesTransactionsSync: z.boolean(),
 							}),
+							effectivePermissions: z.array(z.string()),
 						}),
 					},
 				},
@@ -59,6 +61,8 @@ export async function getMe(app: FastifyInstance) {
 				const membership = await prisma.member.findFirst({
 					where: { userId },
 					select: {
+						id: true,
+						userId: true,
 						role: true,
 						organization: {
 							select: {
@@ -76,6 +80,14 @@ export async function getMe(app: FastifyInstance) {
 					throw new BadRequestError("Organization in User not found.");
 				}
 
+				const effectivePermissions = await resolveEffectivePermissions({
+					organizationId: membership.organization.id,
+					memberId: membership.id,
+					role: membership.role,
+					userId: membership.userId,
+					ownerId: membership.organization.ownerId,
+				});
+
 				return reply.send({
 					user,
 					organization: {
@@ -87,6 +99,7 @@ export async function getMe(app: FastifyInstance) {
 							membership.organization.enableSalesTransactionsSync,
 						role: membership.role,
 					},
+					effectivePermissions,
 				});
 			},
 		);

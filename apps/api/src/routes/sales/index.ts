@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { registerModulePermissionGuard } from "@/permissions/route-guard";
 import { createSale } from "./create-sale";
 import { createSaleImportTemplate } from "./create-sale-import-template";
 import { deleteSale } from "./delete-sale";
@@ -20,7 +21,89 @@ import { postSalesImport } from "./post-sales-import";
 import { updateSale } from "./update-sale";
 import { updateSaleImportTemplate } from "./update-sale-import-template";
 
+function resolveSalesPermission(params: { method: string; routeUrl: string }) {
+	const { method, routeUrl } = params;
+
+	if (
+		routeUrl === "/organizations/:slug/sales/import-templates" ||
+		routeUrl === "/organizations/:slug/sales/import-templates/:templateId" ||
+		routeUrl === "/organizations/:slug/sales/imports"
+	) {
+		return "sales.import.manage" as const;
+	}
+
+	if (
+		routeUrl === "/organizations/:slug/sales/:saleId/commission-installments"
+	) {
+		return "sales.view" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/status" &&
+		method === "PATCH"
+	) {
+		return "sales.commissions.installments.status.change" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId" &&
+		method === "PATCH"
+	) {
+		return "sales.commissions.installments.update" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId" &&
+		method === "DELETE"
+	) {
+		return "sales.commissions.installments.delete" as const;
+	}
+
+	if (
+		routeUrl === "/organizations/:slug/sales/:saleId/status" ||
+		routeUrl === "/organizations/:slug/sales/status/bulk"
+	) {
+		return "sales.status.change" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/delete/bulk") {
+		return "sales.delete" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/dashboard") {
+		return "sales.dashboard.view" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales" && method === "POST") {
+		return "sales.create" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/:saleId" && method === "PUT") {
+		return "sales.update" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/:saleId" && method === "DELETE") {
+		return "sales.delete" as const;
+	}
+
+	if (
+		routeUrl === "/organizations/:slug/sales" ||
+		routeUrl === "/organizations/:slug/sales/:saleId" ||
+		routeUrl === "/organizations/:slug/sales/:saleId/history" ||
+		routeUrl === "/organizations/:slug/commissions/installments"
+	) {
+		return "sales.view" as const;
+	}
+
+	return null;
+}
+
 export async function saleRoutes(app: FastifyInstance) {
+	registerModulePermissionGuard(app, resolveSalesPermission);
+
 	await app.register(createSale);
 	await app.register(updateSale);
 	await app.register(deleteSale);

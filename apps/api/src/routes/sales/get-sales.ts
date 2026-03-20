@@ -1,10 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
-import { SaleCommissionInstallmentStatus } from "generated/prisma/enums";
+import {
+	buildSalesVisibilityWhere,
+	loadMemberDataVisibilityContext,
+} from "@/permissions/data-visibility";
+import type { Prisma } from "generated/prisma/client";
+import {
+	MemberDataScope,
+	SaleCommissionInstallmentStatus,
+} from "generated/prisma/enums";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { BadRequestError } from "../_errors/bad-request-error";
 import { SaleSummarySchema } from "./sale-schemas";
 import { loadSalesResponsible } from "./sale-responsible";
 
@@ -32,23 +39,37 @@ export async function getSales(app: FastifyInstance) {
 			async (request) => {
 				const { slug } = request.params;
 
-				const organization = await prisma.organization.findUnique({
-					where: {
-						slug,
-					},
-					select: {
-						id: true,
-					},
+				const { organization, membership } = await request.getUserMembership(slug);
+				const canViewAllSales = await request.hasPermission(
+					slug,
+					"sales.view.all",
+				);
+				const visibilityContext = await loadMemberDataVisibilityContext({
+					organizationId: organization.id,
+					memberId: membership.id,
+					userId: membership.userId,
+					customersScope: membership.customersScope,
+					salesScope: canViewAllSales
+						? MemberDataScope.ORGANIZATION_ALL
+						: MemberDataScope.LINKED_ONLY,
+					commissionsScope: membership.commissionsScope,
 				});
-
-				if (!organization) {
-					throw new BadRequestError("Organization not found");
-				}
+				const salesVisibilityWhere = buildSalesVisibilityWhere(visibilityContext);
+				const salesWhere: Prisma.SaleWhereInput = salesVisibilityWhere
+					? {
+							AND: [
+								{
+									organizationId: organization.id,
+								},
+								salesVisibilityWhere,
+							],
+					  }
+					: {
+							organizationId: organization.id,
+					  };
 
 				const sales = await prisma.sale.findMany({
-					where: {
-						organizationId: organization.id,
-					},
+					where: salesWhere,
 					orderBy: [{ saleDate: "desc" }, { createdAt: "desc" }],
 					select: {
 						id: true,

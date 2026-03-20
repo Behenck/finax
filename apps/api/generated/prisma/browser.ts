@@ -58,6 +58,26 @@ export type MemberCompanyAccess = Prisma.MemberCompanyAccessModel
  */
 export type Organization = Prisma.OrganizationModel
 /**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model OrganizationRolePermission
+ * 
+ */
+export type OrganizationRolePermission = Prisma.OrganizationRolePermissionModel
+/**
+ * Model MemberPermissionOverride
+ * 
+ */
+export type MemberPermissionOverride = Prisma.MemberPermissionOverrideModel
+/**
+ * Model PermissionAuditLog
+ * 
+ */
+export type PermissionAuditLog = Prisma.PermissionAuditLogModel
+/**
  * Model Company
  * 
  */

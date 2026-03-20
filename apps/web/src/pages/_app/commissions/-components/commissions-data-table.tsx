@@ -67,6 +67,7 @@ import {
 	commissionDirectionParser,
 	commissionInstallmentStatusParser,
 	dateFilterParser,
+	entityFilterParser,
 	pageParser,
 	pageSizeParser,
 	productFilterParser,
@@ -81,6 +82,7 @@ import {
 	type GetOrganizationsSlugCommissionsInstallments200,
 	type GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey,
 	type GetOrganizationsSlugCommissionsInstallmentsQueryParamsStatusEnumKey,
+	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugProducts,
 } from "@/http/generated";
 import {
@@ -95,6 +97,7 @@ import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
 } from "@/utils/format-amount";
+import { useAbility } from "@/permissions/access";
 
 const COMMISSIONS_FILTERS_STORAGE_KEY = "finax:commissions:list:filters";
 
@@ -267,6 +270,7 @@ function buildProductOptions(
 
 export function CommissionsDataTable() {
 	const { organization } = useApp();
+	const ability = useAbility();
 	const slug = organization?.slug ?? "";
 	const monthDateRange = useMemo(() => getCurrentMonthDateRange(), []);
 	const [directionFilter, setDirectionFilter] = useQueryState(
@@ -278,6 +282,14 @@ export function CommissionsDataTable() {
 		commissionInstallmentStatusParser,
 	);
 	const [searchFilter, setSearchFilter] = useQueryState("q", textFilterParser);
+	const [companyIdFilter, setCompanyIdFilter] = useQueryState(
+		"companyId",
+		entityFilterParser,
+	);
+	const [unitIdFilter, setUnitIdFilter] = useQueryState(
+		"unitId",
+		entityFilterParser,
+	);
 	const [productIdFilter, setProductIdFilter] = useQueryState(
 		"productId",
 		productFilterParser,
@@ -312,6 +324,27 @@ export function CommissionsDataTable() {
 	const currentPageSize = Math.min(100, Math.max(1, pageSize));
 	const effectiveExpectedFrom = expectedFromFilter || monthDateRange.from;
 	const effectiveExpectedTo = expectedToFilter || monthDateRange.to;
+	const canViewAllCommissions = ability.can(
+		"access",
+		"sales.commissions.view.all",
+	);
+	const effectiveDirectionFilter = canViewAllCommissions
+		? directionFilter
+		: "OUTCOME";
+	const canChangeInstallmentStatus = ability.can(
+		"access",
+		"sales.commissions.installments.status.change",
+	);
+	const canEditInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.update",
+	);
+	const canDeleteInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.delete",
+	);
+	const canPerformInstallmentActions =
+		canChangeInstallmentStatus || canEditInstallment || canDeleteInstallment;
 
 	useEffect(() => {
 		if (hasRestoredFilters) {
@@ -323,6 +356,8 @@ export function CommissionsDataTable() {
 			direction?: GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey;
 			status?: GetOrganizationsSlugCommissionsInstallmentsQueryParamsStatusEnumKey;
 			q?: string;
+			companyId?: string;
+			unitId?: string;
 			productId?: string;
 			expectedFrom?: string;
 			expectedTo?: string;
@@ -330,7 +365,11 @@ export function CommissionsDataTable() {
 			pageSize?: number;
 		}>(COMMISSIONS_FILTERS_STORAGE_KEY, {});
 
-		if (directionFilter === "OUTCOME" && storedFilters.direction) {
+		if (
+			canViewAllCommissions &&
+			directionFilter === "OUTCOME" &&
+			storedFilters.direction
+		) {
 			void setDirectionFilter(storedFilters.direction);
 		}
 
@@ -340,6 +379,14 @@ export function CommissionsDataTable() {
 
 		if (!searchFilter && storedFilters.q) {
 			void setSearchFilter(storedFilters.q);
+		}
+
+		if (!companyIdFilter && storedFilters.companyId) {
+			void setCompanyIdFilter(storedFilters.companyId);
+		}
+
+		if (!unitIdFilter && storedFilters.unitId) {
+			void setUnitIdFilter(storedFilters.unitId);
 		}
 
 		if (!productIdFilter && storedFilters.productId) {
@@ -366,11 +413,14 @@ export function CommissionsDataTable() {
 		expectedFromFilter,
 		expectedToFilter,
 		hasRestoredFilters,
+		canViewAllCommissions,
 		page,
 		pageSize,
+		companyIdFilter,
 		productIdFilter,
 		searchFilter,
 		setDirectionFilter,
+		setCompanyIdFilter,
 		setExpectedFromFilter,
 		setExpectedToFilter,
 		setPage,
@@ -378,7 +428,9 @@ export function CommissionsDataTable() {
 		setProductIdFilter,
 		setSearchFilter,
 		setStatusFilter,
+		setUnitIdFilter,
 		statusFilter,
+		unitIdFilter,
 	]);
 
 	useEffect(() => {
@@ -389,9 +441,11 @@ export function CommissionsDataTable() {
 		window.localStorage.setItem(
 			COMMISSIONS_FILTERS_STORAGE_KEY,
 			JSON.stringify({
-				direction: directionFilter,
+				direction: effectiveDirectionFilter,
 				status: statusFilter,
 				q: searchFilter,
+				companyId: companyIdFilter,
+				unitId: unitIdFilter,
 				productId: productIdFilter,
 				expectedFrom: effectiveExpectedFrom,
 				expectedTo: effectiveExpectedTo,
@@ -402,20 +456,24 @@ export function CommissionsDataTable() {
 	}, [
 		currentPage,
 		currentPageSize,
-		directionFilter,
+		effectiveDirectionFilter,
 		effectiveExpectedFrom,
 		effectiveExpectedTo,
+		companyIdFilter,
 		productIdFilter,
 		searchFilter,
 		statusFilter,
+		unitIdFilter,
 	]);
 
 	const { data, isLoading, isError, refetch } = useCommissionInstallments({
 		page: currentPage,
 		pageSize: currentPageSize,
 		q: searchFilter,
+		companyId: companyIdFilter || undefined,
+		unitId: unitIdFilter || undefined,
 		productId: productIdFilter || undefined,
-		direction: directionFilter,
+		direction: effectiveDirectionFilter,
 		status: statusFilter,
 		expectedFrom: effectiveExpectedFrom,
 		expectedTo: effectiveExpectedTo,
@@ -429,6 +487,25 @@ export function CommissionsDataTable() {
 			},
 		},
 	);
+	const companiesQuery = useGetOrganizationsSlugCompanies(
+		{ slug },
+		{
+			query: {
+				enabled: Boolean(organization?.slug),
+			},
+		},
+	);
+	const companies = useMemo(
+		() => companiesQuery.data?.companies ?? [],
+		[companiesQuery.data?.companies],
+	);
+	const unitsBySelectedCompany = useMemo(() => {
+		if (!companyIdFilter) {
+			return [];
+		}
+
+		return companies.find((company) => company.id === companyIdFilter)?.units ?? [];
+	}, [companies, companyIdFilter]);
 
 	const { mutateAsync: patchInstallmentStatus, isPending: isPatchingStatus } =
 		usePatchSaleCommissionInstallmentStatus();
@@ -437,6 +514,19 @@ export function CommissionsDataTable() {
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
 	const isPaymentActionPending = isBulkPaying || isUndoingPayments;
+
+	useEffect(() => {
+		if (!unitIdFilter || !companyIdFilter) {
+			return;
+		}
+
+		const unitExistsInSelectedCompany = unitsBySelectedCompany.some(
+			(unit) => unit.id === unitIdFilter,
+		);
+		if (!unitExistsInSelectedCompany) {
+			void setUnitIdFilter("");
+		}
+	}, [companyIdFilter, setUnitIdFilter, unitIdFilter, unitsBySelectedCompany]);
 
 	useEffect(() => {
 		if (expectedFromFilter || expectedToFilter) {
@@ -470,6 +560,11 @@ export function CommissionsDataTable() {
 	const summaryByDirection = data?.summaryByDirection;
 	const paySummary = resolveDirectionSummary(summaryByDirection, "OUTCOME");
 	const receiveSummary = resolveDirectionSummary(summaryByDirection, "INCOME");
+	const summaryForCurrentUser = canViewAllCommissions
+		? receiveSummary
+		: paySummary;
+	const pendingSummaryForCurrentUser = summaryForCurrentUser.pending;
+	const paidSummaryForCurrentUser = summaryForCurrentUser.paid;
 	const pagination = data?.pagination;
 	const productPathById = useMemo(
 		() =>
@@ -487,8 +582,9 @@ export function CommissionsDataTable() {
 	);
 
 	const eligibleInstallmentsOnPage = useMemo(
-		() => installments.filter(canPayInstallment),
-		[installments],
+		() =>
+			canChangeInstallmentStatus ? installments.filter(canPayInstallment) : [],
+		[canChangeInstallmentStatus, installments],
 	);
 	const allPageSelected =
 		eligibleInstallmentsOnPage.length > 0 &&
@@ -539,6 +635,19 @@ export function CommissionsDataTable() {
 		setPage(1);
 	}
 
+	function handleCompanyIdChange(value: string) {
+		clearSelectedInstallments();
+		setCompanyIdFilter(value);
+		setUnitIdFilter("");
+		setPage(1);
+	}
+
+	function handleUnitIdChange(value: string) {
+		clearSelectedInstallments();
+		setUnitIdFilter(value);
+		setPage(1);
+	}
+
 	function handleProductIdChange(value: string) {
 		clearSelectedInstallments();
 		setProductIdFilter(value);
@@ -564,7 +673,10 @@ export function CommissionsDataTable() {
 
 	function clearFilters() {
 		clearSelectedInstallments();
+		setDirectionFilter("OUTCOME");
 		setSearchFilter("");
+		setCompanyIdFilter("");
+		setUnitIdFilter("");
 		setProductIdFilter("");
 		setStatusFilter("ALL");
 		setExpectedFromFilter(monthDateRange.from);
@@ -574,6 +686,10 @@ export function CommissionsDataTable() {
 	}
 
 	function requestInstallmentPayment(installment: CommissionInstallmentRow) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
 		setPayAction({
 			installment,
 			paymentDate:
@@ -583,6 +699,10 @@ export function CommissionsDataTable() {
 	}
 
 	function requestInstallmentEdition(installment: CommissionInstallmentRow) {
+		if (!canEditInstallment) {
+			return;
+		}
+
 		setEditingInstallment({
 			installment,
 			percentage: String(installment.percentage),
@@ -597,6 +717,10 @@ export function CommissionsDataTable() {
 		installment: CommissionInstallmentRow,
 		checked: boolean,
 	) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
 		setSelectedInstallmentsById((current) => {
 			const next = new Map(current);
 
@@ -615,6 +739,10 @@ export function CommissionsDataTable() {
 	}
 
 	function togglePageSelection(checked: boolean) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
 		setSelectedInstallmentsById((current) => {
 			const next = new Map(current);
 
@@ -677,7 +805,7 @@ export function CommissionsDataTable() {
 	}
 
 	async function handleConfirmInstallmentPayment() {
-		if (!payAction) {
+		if (!payAction || !canChangeInstallmentStatus) {
 			return;
 		}
 
@@ -721,6 +849,10 @@ export function CommissionsDataTable() {
 	}
 
 	async function handlePayInstallmentToday(installment: CommissionInstallmentRow) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
 		try {
 			await patchInstallmentStatus({
 				saleId: installment.saleId,
@@ -763,6 +895,10 @@ export function CommissionsDataTable() {
 		paymentDate: string,
 		closeDialogOnSuccess: boolean,
 	) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
 		if (!paymentDate) {
 			toast.error("Informe a data de pagamento.");
 			return;
@@ -845,7 +981,7 @@ export function CommissionsDataTable() {
 	}
 
 	async function handleConfirmInstallmentEdition() {
-		if (!editingInstallment) {
+		if (!editingInstallment || !canEditInstallment) {
 			return;
 		}
 
@@ -885,7 +1021,7 @@ export function CommissionsDataTable() {
 	}
 
 	async function handleConfirmInstallmentDelete() {
-		if (!installmentToDelete) {
+		if (!installmentToDelete || !canDeleteInstallment) {
 			return;
 		}
 
@@ -912,45 +1048,73 @@ export function CommissionsDataTable() {
 	return (
 		<>
 			<div className="space-y-4">
-				<Tabs
-					value={directionFilter}
-					onValueChange={(value) =>
-						handleDirectionChange(
-							value as GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey,
-						)
-					}
-				>
-					<TabsList className="w-fit rounded-sm">
-						<TabsTrigger value="OUTCOME">A pagar</TabsTrigger>
-						<TabsTrigger value="INCOME">A receber</TabsTrigger>
-					</TabsList>
-				</Tabs>
+				{canViewAllCommissions ? (
+					<Tabs
+						value={directionFilter}
+						onValueChange={(value) =>
+							handleDirectionChange(
+								value as GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey,
+							)
+						}
+					>
+						<TabsList className="w-fit rounded-sm">
+							<TabsTrigger value="OUTCOME">A pagar</TabsTrigger>
+							<TabsTrigger value="INCOME">A receber</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				) : null}
 
 				<div className="grid gap-3 md:grid-cols-2">
-					<Card className="p-4">
-						<p className="text-sm text-muted-foreground">A pagar</p>
-						<p className="text-xl font-semibold">
-							{formatCurrencyBRL(paySummary.total.amount / 100)}
-						</p>
-						<p className="text-xs text-muted-foreground">
-							Pendente: {formatCurrencyBRL(paySummary.pending.amount / 100)} ·{" "}
-							{paySummary.pending.count}/{paySummary.total.count} parcelas
-						</p>
-					</Card>
+					{canViewAllCommissions ? (
+						<>
+							<Card className="p-4">
+								<p className="text-sm text-muted-foreground">A pagar</p>
+								<p className="text-xl font-semibold">
+									{formatCurrencyBRL(paySummary.total.amount / 100)}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									Pendente: {formatCurrencyBRL(paySummary.pending.amount / 100)} ·{" "}
+									{paySummary.pending.count}/{paySummary.total.count} parcelas
+								</p>
+							</Card>
 
-					<Card className="p-4">
-						<p className="text-sm text-muted-foreground">A receber</p>
-						<p className="text-xl font-semibold">
-							{formatCurrencyBRL(receiveSummary.total.amount / 100)}
-						</p>
-						<p className="text-xs text-muted-foreground">
-							Pendente: {formatCurrencyBRL(receiveSummary.pending.amount / 100)} ·{" "}
-							{receiveSummary.pending.count}/{receiveSummary.total.count} parcelas
-						</p>
-					</Card>
+							<Card className="p-4">
+								<p className="text-sm text-muted-foreground">A receber</p>
+								<p className="text-xl font-semibold">
+									{formatCurrencyBRL(receiveSummary.total.amount / 100)}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									Pendente: {formatCurrencyBRL(receiveSummary.pending.amount / 100)} ·{" "}
+									{receiveSummary.pending.count}/{receiveSummary.total.count} parcelas
+								</p>
+							</Card>
+						</>
+					) : (
+						<>
+							<Card className="p-4">
+								<p className="text-sm text-muted-foreground">A receber</p>
+								<p className="text-xl font-semibold">
+									{formatCurrencyBRL(pendingSummaryForCurrentUser.amount / 100)}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									{pendingSummaryForCurrentUser.count} parcela(s) pendente(s)
+								</p>
+							</Card>
+
+							<Card className="p-4">
+								<p className="text-sm text-muted-foreground">Recebido</p>
+								<p className="text-xl font-semibold">
+									{formatCurrencyBRL(paidSummaryForCurrentUser.amount / 100)}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									{paidSummaryForCurrentUser.count} parcela(s) recebida(s)
+								</p>
+							</Card>
+						</>
+					)}
 				</div>
 
-				<FilterPanel className="xl:grid-cols-7">
+				<FilterPanel className="xl:grid-cols-10 xl:items-end">
 					<div className="space-y-1 xl:col-span-2">
 						<p className="text-xs text-muted-foreground">Busca</p>
 						<Input
@@ -961,6 +1125,51 @@ export function CommissionsDataTable() {
 					</div>
 
 					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Empresa</p>
+						<Select
+							value={companyIdFilter || "ALL"}
+							onValueChange={(value) =>
+								handleCompanyIdChange(value === "ALL" ? "" : value)
+							}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Todas as empresas" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todas as empresas</SelectItem>
+								{companies.map((company) => (
+									<SelectItem key={company.id} value={company.id}>
+										{company.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Unidade</p>
+						<Select
+							value={unitIdFilter || "ALL"}
+							onValueChange={(value) =>
+								handleUnitIdChange(value === "ALL" ? "" : value)
+							}
+							disabled={!companyIdFilter}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Todas as unidades" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todas as unidades</SelectItem>
+								{unitsBySelectedCompany.map((unit) => (
+									<SelectItem key={unit.id} value={unit.id}>
+										{unit.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Produto</p>
 						<Select
 							value={productIdFilter || "ALL"}
@@ -968,7 +1177,7 @@ export function CommissionsDataTable() {
 								handleProductIdChange(value === "ALL" ? "" : value)
 							}
 						>
-							<SelectTrigger>
+							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Todos os produtos" />
 							</SelectTrigger>
 							<SelectContent>
@@ -992,7 +1201,7 @@ export function CommissionsDataTable() {
 								)
 							}
 						>
-							<SelectTrigger>
+							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Status" />
 							</SelectTrigger>
 							<SelectContent>
@@ -1026,7 +1235,7 @@ export function CommissionsDataTable() {
 							value={String(currentPageSize)}
 							onValueChange={handlePageSizeChange}
 						>
-							<SelectTrigger>
+							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Tamanho" />
 							</SelectTrigger>
 							<SelectContent>
@@ -1040,7 +1249,7 @@ export function CommissionsDataTable() {
 					<Button
 						type="button"
 						variant="outline"
-						className="w-full xl:w-auto xl:justify-self-end"
+						className="w-full xl:justify-self-stretch"
 						onClick={clearFilters}
 					>
 						<RefreshCcw className="size-4" />
@@ -1048,7 +1257,7 @@ export function CommissionsDataTable() {
 					</Button>
 				</FilterPanel>
 
-					{selectedInstallments.length > 0 ? (
+					{canChangeInstallmentStatus && selectedInstallments.length > 0 ? (
 						<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
 							<p className="text-sm text-emerald-900">
 								{selectedInstallments.length} parcela(s) selecionada(s) · total{" "}
@@ -1094,30 +1303,32 @@ export function CommissionsDataTable() {
 						<ResponsiveDataView
 							mobile={
 								<div className="space-y-3">
-									<Card className="p-3">
-										<div className="flex items-center justify-between gap-3">
-											<label className="flex items-center gap-2 text-sm">
-												<Checkbox
-													checked={
-														allPageSelected
-															? true
-															: somePageSelected
-																? "indeterminate"
-																: false
-													}
-													onCheckedChange={(checked) =>
-														togglePageSelection(Boolean(checked))
-													}
-													disabled={eligibleInstallmentsOnPage.length === 0}
-													aria-label="Selecionar página atual"
-												/>
-												<span>Selecionar parcelas da página</span>
-											</label>
-											<span className="text-xs text-muted-foreground">
-												{eligibleInstallmentsOnPage.length} elegível(is)
-											</span>
-										</div>
-									</Card>
+									{canChangeInstallmentStatus ? (
+										<Card className="p-3">
+											<div className="flex items-center justify-between gap-3">
+												<label className="flex items-center gap-2 text-sm">
+													<Checkbox
+														checked={
+															allPageSelected
+																? true
+																: somePageSelected
+																	? "indeterminate"
+																	: false
+														}
+														onCheckedChange={(checked) =>
+															togglePageSelection(Boolean(checked))
+														}
+														disabled={eligibleInstallmentsOnPage.length === 0}
+														aria-label="Selecionar página atual"
+													/>
+													<span>Selecionar parcelas da página</span>
+												</label>
+												<span className="text-xs text-muted-foreground">
+													{eligibleInstallmentsOnPage.length} elegível(is)
+												</span>
+											</div>
+										</Card>
+									) : null}
 
 									{installments.length === 0 ? (
 										<Card className="p-6 text-center text-sm text-muted-foreground">
@@ -1129,6 +1340,16 @@ export function CommissionsDataTable() {
 												installment.saleStatus as SaleStatus,
 											);
 											const canPayRow = canPayInstallment(installment);
+											const canChangeStatusRow =
+												canPayRow && canChangeInstallmentStatus;
+											const canEditRowAction =
+												canEditRow && canEditInstallment;
+											const canDeleteRowAction =
+												canEditRow && canDeleteInstallment;
+											const canOpenRowActions =
+												canChangeStatusRow ||
+												canEditRowAction ||
+												canDeleteRowAction;
 											const isSelected = selectedInstallmentsById.has(
 												installment.id,
 											);
@@ -1155,7 +1376,7 @@ export function CommissionsDataTable() {
 																	Boolean(checked),
 																)
 															}
-															disabled={!canPayRow}
+															disabled={!canChangeStatusRow}
 															aria-label={`Selecionar parcela ${installment.installmentNumber}`}
 														/>
 													</div>
@@ -1226,7 +1447,7 @@ export function CommissionsDataTable() {
 															variant="outline"
 															size="sm"
 															className="!min-h-8"
-															disabled={!canPayRow}
+															disabled={!canChangeStatusRow}
 															onClick={() =>
 																void handlePayInstallmentToday(installment)
 															}
@@ -1236,67 +1457,70 @@ export function CommissionsDataTable() {
 														</Button>
 													</div>
 
-													<DropdownMenu>
-														<DropdownMenuTrigger asChild>
-															<Button
-																type="button"
-																variant="outline"
-																size="sm"
-																className="w-full"
+													{canPerformInstallmentActions ? (
+														<DropdownMenu>
+															<DropdownMenuTrigger asChild>
+																<Button
+																	type="button"
+																	variant="outline"
+																	size="sm"
+																	className="w-full"
 																disabled={
 																	isPatchingStatus ||
 																	isUpdatingInstallment ||
 																	isDeletingInstallment ||
-																	isPaymentActionPending
+																	isPaymentActionPending ||
+																	!canOpenRowActions
 																}
-															>
-																<MoreHorizontal className="size-4" />
-																Mais ações
-															</Button>
-														</DropdownMenuTrigger>
-														<DropdownMenuContent align="end">
-															<DropdownMenuItem
-																disabled={!canEditRow}
-																onSelect={(event) => {
-																	event.preventDefault();
-																	if (!canEditRow) {
-																		return;
-																	}
-																	requestInstallmentEdition(installment);
-																}}
-															>
-																<Pencil className="size-4" />
-																Editar parcela
-															</DropdownMenuItem>
-															<DropdownMenuItem
-																disabled={!canPayRow}
-																onSelect={(event) => {
-																	event.preventDefault();
-																	if (!canPayRow) {
-																		return;
-																	}
-																	requestInstallmentPayment(installment);
-																}}
-															>
-																<CheckCircle2 className="size-4" />
-																Pagar parcela
-															</DropdownMenuItem>
-															<DropdownMenuItem
-																variant="destructive"
-																disabled={!canEditRow}
-																onSelect={(event) => {
-																	event.preventDefault();
-																	if (!canEditRow) {
-																		return;
-																	}
-																	setInstallmentToDelete(installment);
-																}}
-															>
-																<Trash2 className="size-4" />
-																Excluir parcela
-															</DropdownMenuItem>
-														</DropdownMenuContent>
-													</DropdownMenu>
+																>
+																	<MoreHorizontal className="size-4" />
+																	Mais ações
+																</Button>
+															</DropdownMenuTrigger>
+															<DropdownMenuContent align="end">
+																<DropdownMenuItem
+																	disabled={!canEditRowAction}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canEditRowAction) {
+																			return;
+																		}
+																		requestInstallmentEdition(installment);
+																	}}
+																>
+																	<Pencil className="size-4" />
+																	Editar parcela
+																</DropdownMenuItem>
+																<DropdownMenuItem
+																	disabled={!canChangeStatusRow}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canChangeStatusRow) {
+																			return;
+																		}
+																		requestInstallmentPayment(installment);
+																	}}
+																>
+																	<CheckCircle2 className="size-4" />
+																	Pagar parcela
+																</DropdownMenuItem>
+																<DropdownMenuItem
+																	variant="destructive"
+																	disabled={!canDeleteRowAction}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canDeleteRowAction) {
+																			return;
+																		}
+																		setInstallmentToDelete(installment);
+																	}}
+																>
+																	<Trash2 className="size-4" />
+																	Excluir parcela
+																</DropdownMenuItem>
+															</DropdownMenuContent>
+														</DropdownMenu>
+													) : null}
 												</Card>
 											);
 										})
@@ -1332,13 +1556,18 @@ export function CommissionsDataTable() {
 												<TableHead>Valor</TableHead>
 												<TableHead>%</TableHead>
 												<TableHead>Origem</TableHead>
-												<TableHead className="w-[92px] text-right">Ações</TableHead>
+												{canPerformInstallmentActions ? (
+													<TableHead className="w-[92px] text-right">Ações</TableHead>
+												) : null}
 											</TableRow>
 										</TableHeader>
 										<TableBody>
 											{installments.length === 0 ? (
 												<TableRow>
-													<TableCell colSpan={10} className="h-20 text-center">
+													<TableCell
+														colSpan={canPerformInstallmentActions ? 10 : 9}
+														className="h-20 text-center"
+													>
 														Nenhuma parcela encontrada para os filtros atuais.
 													</TableCell>
 												</TableRow>
@@ -1348,6 +1577,16 @@ export function CommissionsDataTable() {
 														installment.saleStatus as SaleStatus,
 													);
 													const canPayRow = canPayInstallment(installment);
+													const canChangeStatusRow =
+														canPayRow && canChangeInstallmentStatus;
+													const canEditRowAction =
+														canEditRow && canEditInstallment;
+													const canDeleteRowAction =
+														canEditRow && canDeleteInstallment;
+													const canOpenRowActions =
+														canChangeStatusRow ||
+														canEditRowAction ||
+														canDeleteRowAction;
 													const isSelected = selectedInstallmentsById.has(
 														installment.id,
 													);
@@ -1366,7 +1605,7 @@ export function CommissionsDataTable() {
 																			Boolean(checked),
 																		)
 																	}
-																	disabled={!canPayRow}
+																	disabled={!canChangeStatusRow}
 																	aria-label={`Selecionar parcela ${installment.installmentNumber}`}
 																/>
 															</TableCell>
@@ -1426,87 +1665,90 @@ export function CommissionsDataTable() {
 																	]
 																}
 															</TableCell>
-															<TableCell className="text-right">
-																<DropdownMenu>
-																	<DropdownMenuTrigger asChild>
-																		<Button
-																			type="button"
-																			variant="ghost"
-																			size="icon"
-																			disabled={
-																				isPatchingStatus ||
-																				isUpdatingInstallment ||
-																				isDeletingInstallment ||
-																				isPaymentActionPending
-																			}
-																		>
-																			<MoreHorizontal className="size-4" />
-																		</Button>
-																	</DropdownMenuTrigger>
-																	<DropdownMenuContent align="end">
-																		<DropdownMenuItem asChild>
-																			<Link to="/sales/$saleId" params={{ saleId: installment.saleId }}>
-																				<Eye className="size-4" />
-																				Ver venda
-																			</Link>
-																		</DropdownMenuItem>
-																		<DropdownMenuSeparator />
-																		<DropdownMenuItem
-																			disabled={!canEditRow}
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				if (!canEditRow) {
-																					return;
-																				}
-																				requestInstallmentEdition(installment);
-																			}}
-																		>
-																			<Pencil className="size-4" />
-																			Editar parcela
-																		</DropdownMenuItem>
-																		<DropdownMenuItem
-																			disabled={!canPayRow}
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				if (!canPayRow) {
-																					return;
-																				}
-																				requestInstallmentPayment(installment);
-																			}}
-																		>
-																			<CheckCircle2 className="size-4" />
-																			Pagar parcela
-																		</DropdownMenuItem>
-																		<DropdownMenuItem
-																			disabled={!canPayRow}
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				if (!canPayRow) {
-																					return;
-																				}
-																				void handlePayInstallmentToday(installment);
-																			}}
-																		>
-																			<CheckCheck className="size-4" />
-																			Pagar hoje
-																		</DropdownMenuItem>
-																		<DropdownMenuItem
-																			variant="destructive"
-																			disabled={!canEditRow}
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				if (!canEditRow) {
-																					return;
-																				}
-																				setInstallmentToDelete(installment);
-																			}}
-																		>
-																			<Trash2 className="size-4" />
-																			Excluir parcela
-																		</DropdownMenuItem>
-																	</DropdownMenuContent>
-																</DropdownMenu>
-															</TableCell>
+																{canPerformInstallmentActions ? (
+																	<TableCell className="text-right">
+																		<DropdownMenu>
+																			<DropdownMenuTrigger asChild>
+																				<Button
+																					type="button"
+																					variant="ghost"
+																					size="icon"
+																					disabled={
+																						isPatchingStatus ||
+																						isUpdatingInstallment ||
+																						isDeletingInstallment ||
+																						isPaymentActionPending ||
+																						!canOpenRowActions
+																					}
+																				>
+																					<MoreHorizontal className="size-4" />
+																				</Button>
+																			</DropdownMenuTrigger>
+																			<DropdownMenuContent align="end">
+																				<DropdownMenuItem asChild>
+																					<Link to="/sales/$saleId" params={{ saleId: installment.saleId }}>
+																						<Eye className="size-4" />
+																						Ver venda
+																					</Link>
+																				</DropdownMenuItem>
+																				<DropdownMenuSeparator />
+																				<DropdownMenuItem
+																					disabled={!canEditRowAction}
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						if (!canEditRowAction) {
+																							return;
+																						}
+																						requestInstallmentEdition(installment);
+																					}}
+																				>
+																					<Pencil className="size-4" />
+																					Editar parcela
+																				</DropdownMenuItem>
+																				<DropdownMenuItem
+																					disabled={!canChangeStatusRow}
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						if (!canChangeStatusRow) {
+																							return;
+																						}
+																						requestInstallmentPayment(installment);
+																					}}
+																				>
+																					<CheckCircle2 className="size-4" />
+																					Pagar parcela
+																				</DropdownMenuItem>
+																				<DropdownMenuItem
+																					disabled={!canChangeStatusRow}
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						if (!canChangeStatusRow) {
+																							return;
+																						}
+																						void handlePayInstallmentToday(installment);
+																					}}
+																				>
+																					<CheckCheck className="size-4" />
+																					Pagar hoje
+																				</DropdownMenuItem>
+																				<DropdownMenuItem
+																					variant="destructive"
+																					disabled={!canDeleteRowAction}
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						if (!canDeleteRowAction) {
+																							return;
+																						}
+																						setInstallmentToDelete(installment);
+																					}}
+																				>
+																					<Trash2 className="size-4" />
+																					Excluir parcela
+																				</DropdownMenuItem>
+																			</DropdownMenuContent>
+																		</DropdownMenu>
+																	</TableCell>
+																) : null}
 														</TableRow>
 													);
 												})
@@ -1591,7 +1833,8 @@ export function CommissionsDataTable() {
 							onClick={handleConfirmBulkPayment}
 							disabled={
 								isPaymentActionPending ||
-								selectedInstallments.length === 0
+								selectedInstallments.length === 0 ||
+								!canChangeInstallmentStatus
 							}
 						>
 							{isPaymentActionPending ? "Pagando..." : "Confirmar pagamento"}
@@ -1661,7 +1904,11 @@ export function CommissionsDataTable() {
 						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmInstallmentPayment}
-							disabled={isPatchingStatus || isPaymentActionPending}
+							disabled={
+								isPatchingStatus ||
+								isPaymentActionPending ||
+								!canChangeInstallmentStatus
+							}
 						>
 							{isPatchingStatus ? "Salvando..." : "Confirmar"}
 						</AlertDialogAction>
@@ -1802,7 +2049,7 @@ export function CommissionsDataTable() {
 						<Button
 							type="button"
 							onClick={handleConfirmInstallmentEdition}
-							disabled={isUpdatingInstallment}
+							disabled={isUpdatingInstallment || !canEditInstallment}
 						>
 							{isUpdatingInstallment ? "Salvando..." : "Salvar alterações"}
 						</Button>
@@ -1836,7 +2083,7 @@ export function CommissionsDataTable() {
 						<AlertDialogAction
 							variant="destructive"
 							onClick={handleConfirmInstallmentDelete}
-							disabled={isDeletingInstallment}
+							disabled={isDeletingInstallment || !canDeleteInstallment}
 						>
 							{isDeletingInstallment ? "Excluindo..." : "Excluir parcela"}
 						</AlertDialogAction>

@@ -20,12 +20,14 @@ type AppContextType = {
 	auth: User | null;
 	organization: Organization | null;
 	membership: OrganizationRoleEnumKey | null;
+	effectivePermissions: string[];
 };
 
 export const AppContext = createContext<AppContextType>({
 	auth: null,
 	organization: null,
 	membership: null,
+	effectivePermissions: [],
 });
 
 export const useApp = () => useContext(AppContext);

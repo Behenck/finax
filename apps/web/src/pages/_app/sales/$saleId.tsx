@@ -27,6 +27,7 @@ import { Card } from "@/components/ui/card";
 import { useApp } from "@/context/app-context";
 import { useDeleteSale, useSale, useSaleHistory } from "@/hooks/sales";
 import { useGetOrganizationsSlugProducts } from "@/http/generated";
+import { useAbility } from "@/permissions/access";
 import {
 	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
@@ -124,6 +125,11 @@ function getActorInitials(name: string | null) {
 }
 
 function SaleDetailsPage() {
+	const ability = useAbility();
+	const canViewSale = ability.can("access", "sales.view");
+	const canUpdateSale = ability.can("access", "sales.update");
+	const canChangeSaleStatus = ability.can("access", "sales.status.change");
+	const canDeleteSalePermission = ability.can("access", "sales.delete");
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { saleId } = Route.useParams();
 	const { organization } = useApp();
@@ -156,6 +162,16 @@ function SaleDetailsPage() {
 			),
 		[productsQuery.data?.products],
 	);
+
+	if (!canViewSale) {
+		return (
+			<Card className="p-6">
+				<span className="text-muted-foreground">
+					Você não possui permissão para visualizar esta venda.
+				</span>
+			</Card>
+		);
+	}
 
 	async function handleDeleteSale() {
 		try {
@@ -218,25 +234,31 @@ function SaleDetailsPage() {
 							Voltar
 						</Link>
 					</Button>
-					<Button variant="outline" className="w-full md:w-auto" asChild>
-						<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
-							<Pencil className="size-4" />
-							Editar
-						</Link>
-					</Button>
-					<SaleStatusAction
-						saleId={sale.id}
-						currentStatus={sale.status as SaleStatus}
-					/>
-					<Button
-						variant="destructive"
-						className="w-full md:w-auto"
-						onClick={() => setDeleteDialogOpen(true)}
-						disabled={isDeletingSale}
-					>
-						<Trash2 className="size-4" />
-						Excluir
-					</Button>
+					{canUpdateSale ? (
+						<Button variant="outline" className="w-full md:w-auto" asChild>
+							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+								<Pencil className="size-4" />
+								Editar
+							</Link>
+						</Button>
+					) : null}
+					{canChangeSaleStatus ? (
+						<SaleStatusAction
+							saleId={sale.id}
+							currentStatus={sale.status as SaleStatus}
+						/>
+					) : null}
+					{canDeleteSalePermission ? (
+						<Button
+							variant="destructive"
+							className="w-full md:w-auto"
+							onClick={() => setDeleteDialogOpen(true)}
+							disabled={isDeletingSale}
+						>
+							<Trash2 className="size-4" />
+							Excluir
+						</Button>
+					) : null}
 				</div>
 			</header>
 

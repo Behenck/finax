@@ -1,8 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import {
+	buildCommissionInstallmentsVisibilityWhere,
+	loadMemberDataVisibilityContext,
+} from "@/permissions/data-visibility";
+import { MemberDataScope } from "generated/prisma/enums";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { loadOrganizationCommissionInstallments } from "./sale-commissions";
 import {
@@ -39,6 +43,8 @@ export async function getOrganizationCommissionInstallments(
 					page,
 					pageSize,
 					q,
+					companyId,
+					unitId,
 					productId,
 					direction,
 					status,
@@ -46,18 +52,23 @@ export async function getOrganizationCommissionInstallments(
 					expectedTo,
 				} = request.query;
 
-				const organization = await prisma.organization.findUnique({
-					where: {
-						slug,
-					},
-					select: {
-						id: true,
-					},
+				const { organization, membership } = await request.getUserMembership(slug);
+				const canViewAllCommissions = await request.hasPermission(
+					slug,
+					"sales.commissions.view.all",
+				);
+				const visibilityContext = await loadMemberDataVisibilityContext({
+					organizationId: organization.id,
+					memberId: membership.id,
+					userId: membership.userId,
+					customersScope: membership.customersScope,
+					salesScope: membership.salesScope,
+					commissionsScope: canViewAllCommissions
+						? MemberDataScope.ORGANIZATION_ALL
+						: MemberDataScope.LINKED_ONLY,
 				});
-
-				if (!organization) {
-					throw new BadRequestError("Organization not found");
-				}
+				const visibilityWhere =
+					buildCommissionInstallmentsVisibilityWhere(visibilityContext);
 
 				const expectedFromDate = expectedFrom
 					? parseSaleDateInput(expectedFrom)
@@ -81,11 +92,14 @@ export async function getOrganizationCommissionInstallments(
 					page,
 					pageSize,
 					q,
+					companyId,
+					unitId,
 					productId,
 					direction,
 					status,
 					expectedFrom: expectedFromDate,
 					expectedTo: expectedToDate,
+					visibilityWhere,
 				});
 			},
 		);

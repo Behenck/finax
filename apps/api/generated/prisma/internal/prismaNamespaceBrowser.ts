@@ -59,6 +59,10 @@ export const ModelName = {
   Member: 'Member',
   MemberCompanyAccess: 'MemberCompanyAccess',
   Organization: 'Organization',
+  Permission: 'Permission',
+  OrganizationRolePermission: 'OrganizationRolePermission',
+  MemberPermissionOverride: 'MemberPermissionOverride',
+  PermissionAuditLog: 'PermissionAuditLog',
   Company: 'Company',
   Unit: 'Unit',
   Category: 'Category',
@@ -168,6 +172,9 @@ export type InviteScalarFieldEnum = (typeof InviteScalarFieldEnum)[keyof typeof 
 export const MemberScalarFieldEnum = {
   id: 'id',
   role: 'role',
+  customersScope: 'customersScope',
+  salesScope: 'salesScope',
+  commissionsScope: 'commissionsScope',
   organizationId: 'organizationId',
   userId: 'userId'
 } as const
@@ -201,6 +208,61 @@ export const OrganizationScalarFieldEnum = {
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  module: 'module',
+  action: 'action',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const OrganizationRolePermissionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  role: 'role',
+  permissionId: 'permissionId',
+  allowed: 'allowed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationRolePermissionScalarFieldEnum = (typeof OrganizationRolePermissionScalarFieldEnum)[keyof typeof OrganizationRolePermissionScalarFieldEnum]
+
+
+export const MemberPermissionOverrideScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  organizationId: 'organizationId',
+  permissionId: 'permissionId',
+  effect: 'effect',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemberPermissionOverrideScalarFieldEnum = (typeof MemberPermissionOverrideScalarFieldEnum)[keyof typeof MemberPermissionOverrideScalarFieldEnum]
+
+
+export const PermissionAuditLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  actorUserId: 'actorUserId',
+  targetMemberId: 'targetMemberId',
+  targetRole: 'targetRole',
+  changeType: 'changeType',
+  before: 'before',
+  after: 'after',
+  createdAt: 'createdAt'
+} as const
+
+export type PermissionAuditLogScalarFieldEnum = (typeof PermissionAuditLogScalarFieldEnum)[keyof typeof PermissionAuditLogScalarFieldEnum]
 
 
 export const CompanyScalarFieldEnum = {

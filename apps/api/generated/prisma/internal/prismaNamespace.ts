@@ -392,6 +392,10 @@ export const ModelName = {
   Member: 'Member',
   MemberCompanyAccess: 'MemberCompanyAccess',
   Organization: 'Organization',
+  Permission: 'Permission',
+  OrganizationRolePermission: 'OrganizationRolePermission',
+  MemberPermissionOverride: 'MemberPermissionOverride',
+  PermissionAuditLog: 'PermissionAuditLog',
   Company: 'Company',
   Unit: 'Unit',
   Category: 'Category',
@@ -433,7 +437,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1026,6 +1030,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OrganizationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OrganizationCountAggregateOutputType> | number
+        }
+      }
+    }
+    Permission: {
+      payload: Prisma.$PermissionPayload<ExtArgs>
+      fields: Prisma.PermissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PermissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PermissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        findFirst: {
+          args: Prisma.PermissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PermissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        findMany: {
+          args: Prisma.PermissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[]
+        }
+        create: {
+          args: Prisma.PermissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        createMany: {
+          args: Prisma.PermissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PermissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[]
+        }
+        delete: {
+          args: Prisma.PermissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        update: {
+          args: Prisma.PermissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PermissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PermissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PermissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PermissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>
+        }
+        aggregate: {
+          args: Prisma.PermissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePermission>
+        }
+        groupBy: {
+          args: Prisma.PermissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PermissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    OrganizationRolePermission: {
+      payload: Prisma.$OrganizationRolePermissionPayload<ExtArgs>
+      fields: Prisma.OrganizationRolePermissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrganizationRolePermissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrganizationRolePermissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        findFirst: {
+          args: Prisma.OrganizationRolePermissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrganizationRolePermissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        findMany: {
+          args: Prisma.OrganizationRolePermissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>[]
+        }
+        create: {
+          args: Prisma.OrganizationRolePermissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        createMany: {
+          args: Prisma.OrganizationRolePermissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrganizationRolePermissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>[]
+        }
+        delete: {
+          args: Prisma.OrganizationRolePermissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        update: {
+          args: Prisma.OrganizationRolePermissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrganizationRolePermissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrganizationRolePermissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrganizationRolePermissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrganizationRolePermissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationRolePermissionPayload>
+        }
+        aggregate: {
+          args: Prisma.OrganizationRolePermissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrganizationRolePermission>
+        }
+        groupBy: {
+          args: Prisma.OrganizationRolePermissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationRolePermissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrganizationRolePermissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationRolePermissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    MemberPermissionOverride: {
+      payload: Prisma.$MemberPermissionOverridePayload<ExtArgs>
+      fields: Prisma.MemberPermissionOverrideFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemberPermissionOverrideFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemberPermissionOverrideFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        findFirst: {
+          args: Prisma.MemberPermissionOverrideFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemberPermissionOverrideFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        findMany: {
+          args: Prisma.MemberPermissionOverrideFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>[]
+        }
+        create: {
+          args: Prisma.MemberPermissionOverrideCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        createMany: {
+          args: Prisma.MemberPermissionOverrideCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemberPermissionOverrideCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>[]
+        }
+        delete: {
+          args: Prisma.MemberPermissionOverrideDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        update: {
+          args: Prisma.MemberPermissionOverrideUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        deleteMany: {
+          args: Prisma.MemberPermissionOverrideDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemberPermissionOverrideUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemberPermissionOverrideUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>[]
+        }
+        upsert: {
+          args: Prisma.MemberPermissionOverrideUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberPermissionOverridePayload>
+        }
+        aggregate: {
+          args: Prisma.MemberPermissionOverrideAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemberPermissionOverride>
+        }
+        groupBy: {
+          args: Prisma.MemberPermissionOverrideGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberPermissionOverrideGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemberPermissionOverrideCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberPermissionOverrideCountAggregateOutputType> | number
+        }
+      }
+    }
+    PermissionAuditLog: {
+      payload: Prisma.$PermissionAuditLogPayload<ExtArgs>
+      fields: Prisma.PermissionAuditLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PermissionAuditLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PermissionAuditLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        findFirst: {
+          args: Prisma.PermissionAuditLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PermissionAuditLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        findMany: {
+          args: Prisma.PermissionAuditLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>[]
+        }
+        create: {
+          args: Prisma.PermissionAuditLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        createMany: {
+          args: Prisma.PermissionAuditLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PermissionAuditLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>[]
+        }
+        delete: {
+          args: Prisma.PermissionAuditLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        update: {
+          args: Prisma.PermissionAuditLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.PermissionAuditLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PermissionAuditLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PermissionAuditLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.PermissionAuditLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+        }
+        aggregate: {
+          args: Prisma.PermissionAuditLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePermissionAuditLog>
+        }
+        groupBy: {
+          args: Prisma.PermissionAuditLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionAuditLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PermissionAuditLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionAuditLogCountAggregateOutputType> | number
         }
       }
     }
@@ -3057,6 +3357,9 @@ export type InviteScalarFieldEnum = (typeof InviteScalarFieldEnum)[keyof typeof 
 export const MemberScalarFieldEnum = {
   id: 'id',
   role: 'role',
+  customersScope: 'customersScope',
+  salesScope: 'salesScope',
+  commissionsScope: 'commissionsScope',
   organizationId: 'organizationId',
   userId: 'userId'
 } as const
@@ -3090,6 +3393,61 @@ export const OrganizationScalarFieldEnum = {
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  module: 'module',
+  action: 'action',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const OrganizationRolePermissionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  role: 'role',
+  permissionId: 'permissionId',
+  allowed: 'allowed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationRolePermissionScalarFieldEnum = (typeof OrganizationRolePermissionScalarFieldEnum)[keyof typeof OrganizationRolePermissionScalarFieldEnum]
+
+
+export const MemberPermissionOverrideScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  organizationId: 'organizationId',
+  permissionId: 'permissionId',
+  effect: 'effect',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemberPermissionOverrideScalarFieldEnum = (typeof MemberPermissionOverrideScalarFieldEnum)[keyof typeof MemberPermissionOverrideScalarFieldEnum]
+
+
+export const PermissionAuditLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  actorUserId: 'actorUserId',
+  targetMemberId: 'targetMemberId',
+  targetRole: 'targetRole',
+  changeType: 'changeType',
+  before: 'before',
+  after: 'after',
+  createdAt: 'createdAt'
+} as const
+
+export type PermissionAuditLogScalarFieldEnum = (typeof PermissionAuditLogScalarFieldEnum)[keyof typeof PermissionAuditLogScalarFieldEnum]
 
 
 export const CompanyScalarFieldEnum = {
@@ -3692,6 +4050,62 @@ export type ListEnumInviteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
+ * Reference to a field of type 'MemberDataScope'
+ */
+export type EnumMemberDataScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberDataScope'>
+    
+
+
+/**
+ * Reference to a field of type 'MemberDataScope[]'
+ */
+export type ListEnumMemberDataScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberDataScope[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PermissionOverrideEffect'
+ */
+export type EnumPermissionOverrideEffectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionOverrideEffect'>
+    
+
+
+/**
+ * Reference to a field of type 'PermissionOverrideEffect[]'
+ */
+export type ListEnumPermissionOverrideEffectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionOverrideEffect[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PermissionAuditChangeType'
+ */
+export type EnumPermissionAuditChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionAuditChangeType'>
+    
+
+
+/**
+ * Reference to a field of type 'PermissionAuditChangeType[]'
+ */
+export type ListEnumPermissionAuditChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionAuditChangeType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'TransactionType'
  */
 export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType'>
@@ -3926,20 +4340,6 @@ export type EnumSaleResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'SaleResponsibleType[]'
  */
 export type ListEnumSaleResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleResponsibleType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -4213,6 +4613,10 @@ export type GlobalOmitConfig = {
   member?: Prisma.MemberOmit
   memberCompanyAccess?: Prisma.MemberCompanyAccessOmit
   organization?: Prisma.OrganizationOmit
+  permission?: Prisma.PermissionOmit
+  organizationRolePermission?: Prisma.OrganizationRolePermissionOmit
+  memberPermissionOverride?: Prisma.MemberPermissionOverrideOmit
+  permissionAuditLog?: Prisma.PermissionAuditLogOmit
   company?: Prisma.CompanyOmit
   unit?: Prisma.UnitOmit
   category?: Prisma.CategoryOmit

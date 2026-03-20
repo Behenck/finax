@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { useSale } from "@/hooks/sales";
 import { PageHeader } from "@/components/page-header";
+import { Card } from "@/components/ui/card";
+import { useAbility } from "@/permissions/access";
 import { SaleForm } from "./-components/sale-form";
 
 const createSaleSearchSchema = z.object({
@@ -15,8 +17,20 @@ export const Route = createFileRoute("/_app/sales/create")({
 });
 
 function CreateSalePage() {
+	const ability = useAbility();
+	const canCreateSale = ability.can("access", "sales.create");
 	const { customerId, duplicateSaleId } = Route.useSearch();
 	const duplicateSaleQuery = useSale(duplicateSaleId ?? "");
+
+	if (!canCreateSale) {
+		return (
+			<Card className="p-6">
+				<span className="text-muted-foreground">
+					Você não possui permissão para cadastrar vendas.
+				</span>
+			</Card>
+		);
+	}
 
 	if (duplicateSaleId && duplicateSaleQuery.isLoading) {
 		return (

@@ -8,6 +8,8 @@ import {
 	useGetOrganizationsSlugProducts,
 	useGetOrganizationsSlugSellers,
 } from "@/http/generated";
+import { isAxiosError } from "@/lib/axios";
+import { useAbility } from "@/permissions/access";
 
 export interface SaleProductOption {
 	id: string;
@@ -84,37 +86,44 @@ function flattenActiveProductOptions(
 
 export function useSaleFormOptions() {
 	const { organization } = useApp();
+	const ability = useAbility();
 	const slug = organization?.slug ?? "";
 	const enabled = Boolean(organization?.slug);
+	const canViewCompanies = ability.can("access", "registers.companies.view");
+	const canViewCustomers = ability.can("access", "registers.customers.view");
+	const canViewProducts = ability.can("access", "registers.products.view");
+	const canViewSellers = ability.can("access", "registers.sellers.view");
+	const canViewPartners = ability.can("access", "registers.partners.view");
+	const canViewSupervisors = ability.can("access", "settings.members.view");
 
 	const companiesQuery = useGetOrganizationsSlugCompanies(
 		{ slug },
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewCompanies },
 		},
 	);
 	const customersQuery = useGetOrganizationsSlugCustomers(
 		{ slug },
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewCustomers },
 		},
 	);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewProducts },
 		},
 	);
 	const sellersQuery = useGetOrganizationsSlugSellers(
 		{ slug },
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewSellers },
 		},
 	);
 	const partnersQuery = useGetOrganizationsSlugPartners(
 		{ slug },
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewPartners },
 		},
 	);
 	const supervisorsQuery = useGetOrganizationsSlugMembersRole(
@@ -123,7 +132,7 @@ export function useSaleFormOptions() {
 			role: "SUPERVISOR",
 		},
 		{
-			query: { enabled },
+			query: { enabled: enabled && canViewSupervisors },
 		},
 	);
 
@@ -181,12 +190,30 @@ export function useSaleFormOptions() {
 	);
 
 	const queries = [
-		companiesQuery,
-		customersQuery,
-		productsQuery,
-		sellersQuery,
-		partnersQuery,
-		supervisorsQuery,
+		{
+			query: companiesQuery,
+			enabled: enabled && canViewCompanies,
+		},
+		{
+			query: customersQuery,
+			enabled: enabled && canViewCustomers,
+		},
+		{
+			query: productsQuery,
+			enabled: enabled && canViewProducts,
+		},
+		{
+			query: sellersQuery,
+			enabled: enabled && canViewSellers,
+		},
+		{
+			query: partnersQuery,
+			enabled: enabled && canViewPartners,
+		},
+		{
+			query: supervisorsQuery,
+			enabled: enabled && canViewSupervisors,
+		},
 	];
 
 	return {
@@ -198,10 +225,26 @@ export function useSaleFormOptions() {
 		sellers,
 		partners,
 		supervisors,
-		isLoading: queries.some((query) => query.isLoading),
-		isError: queries.some((query) => query.isError),
+		isLoading: queries.some(({ query, enabled: isEnabled }) => {
+			if (!isEnabled) {
+				return false;
+			}
+
+			return query.isLoading;
+		}),
+		isError: queries.some(({ query, enabled: isEnabled }) => {
+			if (!isEnabled || !query.isError) {
+				return false;
+			}
+
+			return !isAxiosError(query.error) || query.error.response?.status !== 403;
+		}),
 		refetch: async () => {
-			await Promise.all(queries.map((query) => query.refetch()));
+			await Promise.all(
+				queries
+					.filter(({ enabled: isEnabled }) => isEnabled)
+					.map(({ query }) => query.refetch()),
+			);
 		},
 	};
 }

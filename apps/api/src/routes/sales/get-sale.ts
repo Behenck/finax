@@ -3,6 +3,13 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import {
+	buildSaleCommissionsBeneficiaryVisibilityWhere,
+	buildSalesVisibilityWhere,
+	loadMemberDataVisibilityContext,
+} from "@/permissions/data-visibility";
+import type { Prisma } from "generated/prisma/client";
+import { MemberDataScope } from "generated/prisma/enums";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { loadSaleCommissions } from "./sale-commissions";
 import {
@@ -36,25 +43,43 @@ export async function getSale(app: FastifyInstance) {
 			},
 			async (request) => {
 				const { slug, saleId } = request.params;
-
-				const organization = await prisma.organization.findUnique({
-					where: {
-						slug,
-					},
-					select: {
-						id: true,
-					},
-				});
-
-				if (!organization) {
-					throw new BadRequestError("Organization not found");
-				}
+				const { organization, membership } = await request.getUserMembership(slug);
+				const canViewAllSales = await request.hasPermission(
+					slug,
+					"sales.view.all",
+				);
+				const visibilityContext = await loadMemberDataVisibilityContext({
+					organizationId: organization.id,
+					memberId: membership.id,
+					userId: membership.userId,
+					customersScope: membership.customersScope,
+					salesScope: canViewAllSales
+						? MemberDataScope.ORGANIZATION_ALL
+						: MemberDataScope.LINKED_ONLY,
+						commissionsScope: membership.commissionsScope,
+					});
+				const canViewAllCommissions = await request.hasPermission(
+					slug,
+					"sales.commissions.view.all",
+				);
+				const salesVisibilityWhere = buildSalesVisibilityWhere(visibilityContext);
+				const saleWhere: Prisma.SaleWhereInput = salesVisibilityWhere
+					? {
+							AND: [
+								{
+									id: saleId,
+									organizationId: organization.id,
+								},
+								salesVisibilityWhere,
+							],
+					  }
+					: {
+							id: saleId,
+							organizationId: organization.id,
+					  };
 
 				const sale = await prisma.sale.findFirst({
-					where: {
-						id: saleId,
-						organizationId: organization.id,
-					},
+					where: saleWhere,
 					select: {
 						id: true,
 						organizationId: true,
@@ -115,7 +140,13 @@ export async function getSale(app: FastifyInstance) {
 					responsibleType: sale.responsibleType,
 					responsibleId: sale.responsibleId,
 				});
-				const commissions = await loadSaleCommissions(sale.id, organization.id);
+				const commissions = await loadSaleCommissions(
+					sale.id,
+					organization.id,
+					canViewAllCommissions
+						? undefined
+						: buildSaleCommissionsBeneficiaryVisibilityWhere(visibilityContext),
+				);
 				const dynamicFieldSchema = parseSaleDynamicFieldSchemaJson(
 					sale.dynamicFieldSchema,
 				);

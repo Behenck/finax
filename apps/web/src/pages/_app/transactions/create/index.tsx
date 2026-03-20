@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
+import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -17,8 +19,20 @@ export const Route = createFileRoute("/_app/transactions/create/")({
 });
 
 function CreateTransaction() {
+	const ability = useAbility();
+	const canCreateTransactions = ability.can("access", "transactions.create");
 	const { duplicateTransactionId } = Route.useSearch();
 	const duplicateTransactionQuery = useTransaction(duplicateTransactionId ?? "");
+
+	if (!canCreateTransactions) {
+		return (
+			<Card className="p-6">
+				<span className="text-muted-foreground">
+					Você não possui permissão para cadastrar transações.
+				</span>
+			</Card>
+		);
+	}
 
 	if (duplicateTransactionId && duplicateTransactionQuery.isLoading) {
 		return (

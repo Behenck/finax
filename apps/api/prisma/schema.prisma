@@ -35,6 +35,7 @@ model User {
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
   linkedPartners      Partner[]      @relation("PartnerUser")
   linkedSellers       Seller[]       @relation("SellerUser")
+  permissionAuditLogs PermissionAuditLog[] @relation("PermissionAuditActor")
 
   @@map("users")
 }
@@ -100,6 +101,22 @@ enum Role {
   PARTNER
 }
 
+enum MemberDataScope {
+  LINKED_ONLY
+  COMPANY_ONLY
+  ORGANIZATION_ALL
+}
+
+enum PermissionOverrideEffect {
+  ALLOW
+  DENY
+}
+
+enum PermissionAuditChangeType {
+  ROLE_PRESET_REPLACED
+  MEMBER_OVERRIDE_REPLACED
+}
+
 enum InviteType {
   EMAIL
   LINK
@@ -125,6 +142,9 @@ model Invite {
 model Member {
   id                    String                @id @default(uuid())
   role                  Role                  @default(MEMBER)
+  customersScope        MemberDataScope       @default(ORGANIZATION_ALL) @map("customers_scope")
+  salesScope            MemberDataScope       @default(ORGANIZATION_ALL) @map("sales_scope")
+  commissionsScope      MemberDataScope       @default(ORGANIZATION_ALL) @map("commissions_scope")
   organization          Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId        String                @map("organization_id")
   user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -132,6 +152,8 @@ model Member {
   memberCompanyAccesses MemberCompanyAccess[]
   productCommissions    ProductCommission[]   @relation("ProductCommissionRecipientSupervisor")
   saleCommissions       SaleCommission[]      @relation("SaleCommissionBeneficiarySupervisor")
+  permissionOverrides   MemberPermissionOverride[]
+  permissionAuditTargets PermissionAuditLog[] @relation("PermissionAuditTargetMember")
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -189,9 +211,92 @@ model Organization {
   saleImportTemplates   SaleImportTemplate[]
   saleImportAudits      SaleImportAudit[]
   memberCompanyAccesses MemberCompanyAccess[]
+  rolePermissions       OrganizationRolePermission[]
+  memberPermissionOverrides MemberPermissionOverride[]
+  permissionAuditLogs   PermissionAuditLog[]
 
   @@index([slug])
   @@map("organizations")
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  key         String  @unique
+  module      String
+  action      String
+  description String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rolePermissions   OrganizationRolePermission[]
+  memberOverrides   MemberPermissionOverride[]
+
+  @@index([module])
+  @@index([isActive])
+  @@map("permissions")
+}
+
+model OrganizationRolePermission {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+  role           Role
+  permissionId   String @map("permission_id")
+  allowed        Boolean @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  permission   Permission   @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, role, permissionId])
+  @@index([organizationId, role])
+  @@index([permissionId])
+  @@map("organization_role_permissions")
+}
+
+model MemberPermissionOverride {
+  id             String @id @default(uuid())
+  memberId       String @map("member_id")
+  organizationId String @map("organization_id")
+  permissionId   String @map("permission_id")
+  effect         PermissionOverrideEffect
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  member       Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  permission   Permission   @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, permissionId])
+  @@index([organizationId, memberId])
+  @@index([permissionId])
+  @@map("member_permission_overrides")
+}
+
+model PermissionAuditLog {
+  id             String                    @id @default(uuid())
+  organizationId String                    @map("organization_id")
+  actorUserId    String                    @map("actor_user_id")
+  targetMemberId String?                   @map("target_member_id")
+  targetRole     Role?                     @map("target_role")
+  changeType     PermissionAuditChangeType @map("change_type")
+  before         Json
+  after          Json
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actorUser    User         @relation("PermissionAuditActor", fields: [actorUserId], references: [id], onDelete: Cascade)
+  targetMember Member?      @relation("PermissionAuditTargetMember", fields: [targetMemberId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([actorUserId])
+  @@index([targetMemberId])
+  @@map("permission_audit_logs")
 }
 
 model Company {

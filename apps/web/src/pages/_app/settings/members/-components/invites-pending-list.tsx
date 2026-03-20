@@ -11,6 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useMemo } from 'react'
 import { useQueryState } from 'nuqs'
 
+const ROLE_FILTER_OPTIONS = [
+  { value: 'ADMIN', label: 'Admin' },
+  { value: 'MEMBER', label: 'Membro' },
+  { value: 'SUPERVISOR', label: 'Supervisor' },
+  { value: 'SELLER', label: 'Vendedor' },
+  { value: 'PARTNER', label: 'Parceiro' },
+] as const
+
 export function InvitesPendingList() {
   const { organization } = useApp()
   const [search, setSearch] = useQueryState("invitesQ", textFilterParser)
@@ -46,15 +54,28 @@ export function InvitesPendingList() {
         />
         <Select
           value={roleFilter}
-          onValueChange={(value) => setRoleFilter(value as "ALL" | "ADMIN" | "MEMBER")}
+          onValueChange={(value) =>
+            setRoleFilter(
+              value as
+                | "ALL"
+                | "ADMIN"
+                | "MEMBER"
+                | "SUPERVISOR"
+                | "SELLER"
+                | "PARTNER",
+            )
+          }
         >
           <SelectTrigger className='w-full'>
             <SelectValue placeholder="Permissão" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">Todas permissões</SelectItem>
-            <SelectItem value="ADMIN">Admin</SelectItem>
-            <SelectItem value="MEMBER">Membro</SelectItem>
+            {ROLE_FILTER_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

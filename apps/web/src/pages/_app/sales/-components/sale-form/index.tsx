@@ -47,6 +47,37 @@ import { SaleDataSection } from "./sections/sale-data-section";
 import { SubmitActions } from "./sections/submit-actions";
 import type { SaleFormProps } from "./types";
 
+type SelectOption = {
+	id: string;
+	label: string;
+};
+
+type SaleCommissionBeneficiaryType =
+	| "COMPANY"
+	| "UNIT"
+	| "SELLER"
+	| "PARTNER"
+	| "SUPERVISOR";
+
+function mergeSelectOptionsById(
+	baseOptions: SelectOption[],
+	fallbackOptions: SelectOption[],
+) {
+	const optionsById = new Map<string, SelectOption>();
+
+	for (const option of baseOptions) {
+		optionsById.set(option.id, option);
+	}
+
+	for (const option of fallbackOptions) {
+		if (!optionsById.has(option.id)) {
+			optionsById.set(option.id, option);
+		}
+	}
+
+	return Array.from(optionsById.values());
+}
+
 export function SaleForm({
 	mode = "CREATE",
 	initialSale,
@@ -62,7 +93,6 @@ export function SaleForm({
 	const {
 		companies,
 		customers,
-		rootProducts,
 		hierarchicalProducts,
 		sellers,
 		partners,
@@ -225,78 +255,322 @@ export function SaleForm({
 		},
 	});
 
-	const customersForSelect = useMemo(() => {
-		if (!quickCreatedCustomer) {
+	const hierarchicalProductsForSelect = useMemo(() => {
+		if (!initialSale?.productId) {
+			return hierarchicalProducts;
+		}
+
+		const hasInitialSaleProduct = hierarchicalProducts.some(
+			(product) => product.id === initialSale.productId,
+		);
+		if (hasInitialSaleProduct) {
+			return hierarchicalProducts;
+		}
+
+		return [
+			{
+				id: initialSale.productId,
+				name: initialSale.product.name,
+				path: [initialSale.product.name],
+				label: initialSale.product.name,
+				rootId: initialSale.productId,
+				rootName: initialSale.product.name,
+				depth: 0,
+				relativeLabel: initialSale.product.name,
+				fullLabel: initialSale.product.name,
+			},
+			...hierarchicalProducts,
+		];
+	}, [hierarchicalProducts, initialSale]);
+
+	const rootProductsForSelect = useMemo(
+		() =>
+			hierarchicalProductsForSelect
+				.filter((product) => product.depth === 0)
+				.map((product) => ({
+					id: product.id,
+					name: product.name,
+					label: product.name,
+				})),
+		[hierarchicalProductsForSelect],
+	);
+
+	const companiesForSelect = useMemo(() => {
+		if (!initialSale) {
+			return companies;
+		}
+
+		const fallbackUnit =
+			initialSale.unitId && initialSale.unit
+				? { id: initialSale.unitId, name: initialSale.unit.name }
+				: null;
+
+		const hasInitialCompany = companies.some(
+			(company) => company.id === initialSale.companyId,
+		);
+		if (!hasInitialCompany) {
+			return [
+				{
+					id: initialSale.companyId,
+					name: initialSale.company.name,
+					units: fallbackUnit ? [fallbackUnit] : [],
+					employees: [],
+				},
+				...companies,
+			];
+		}
+
+		if (!fallbackUnit) {
+			return companies;
+		}
+
+		return companies.map((company) => {
+			if (company.id !== initialSale.companyId) {
+				return company;
+			}
+
+			const hasInitialUnit = (company.units ?? []).some(
+				(unit) => unit.id === fallbackUnit.id,
+			);
+			if (hasInitialUnit) {
+				return company;
+			}
+
+			return {
+				...company,
+				units: [...(company.units ?? []), fallbackUnit],
+			};
+		});
+	}, [companies, initialSale]);
+
+	const customersWithFallback = useMemo(() => {
+		if (!initialSale?.customerId) {
 			return customers;
 		}
 
-		const hasQuickCustomerInQuery = customers.some(
+		const hasInitialCustomer = customers.some(
+			(customer) => customer.id === initialSale.customerId,
+		);
+		if (hasInitialCustomer) {
+			return customers;
+		}
+
+		const fallbackCustomer: (typeof customers)[number] = {
+			id: initialSale.customerId,
+			name: initialSale.customer.name,
+			personType: "PF",
+			phone: null,
+			email: null,
+			documentType: "OTHER",
+			documentNumber: "Não informado",
+			status: "ACTIVE",
+			responsible: null,
+			pf: null,
+			pj: null,
+		};
+
+		return [
+			fallbackCustomer,
+			...customers,
+		];
+	}, [customers, initialSale]);
+
+	const customersForSelect = useMemo(() => {
+		if (!quickCreatedCustomer) {
+			return customersWithFallback;
+		}
+
+		const hasQuickCustomerInQuery = customersWithFallback.some(
 			(customer) => customer.id === quickCreatedCustomer.id,
 		);
 		if (hasQuickCustomerInQuery) {
-			return customers;
+			return customersWithFallback;
 		}
 
-		return [quickCreatedCustomer, ...customers];
-	}, [customers, quickCreatedCustomer]);
+		return [quickCreatedCustomer, ...customersWithFallback];
+	}, [customersWithFallback, quickCreatedCustomer]);
 
 	const selectedCustomer = useMemo(
 		() =>
 			customersForSelect.find((customer) => customer.id === selectedCustomerId),
 		[customersForSelect, selectedCustomerId],
 	);
+
 	const selectedCompany = useMemo(
-		() => companies.find((company) => company.id === selectedCompanyId),
-		[companies, selectedCompanyId],
+		() => companiesForSelect.find((company) => company.id === selectedCompanyId),
+		[companiesForSelect, selectedCompanyId],
 	);
+
 	const companyUnits = useMemo(
 		() => selectedCompany?.units ?? [],
 		[selectedCompany?.units],
 	);
 
-	const responsibles = useMemo(
-		() =>
-			selectedResponsibleType === "PARTNER"
-				? partners.map((partner) => ({
-						id: partner.id,
-						name: partner.name,
-					}))
-				: sellers.map((seller) => ({
-						id: seller.id,
-						name: seller.name,
-					})),
-		[partners, sellers, selectedResponsibleType],
-	);
-
-	const allUnits = useMemo(
-		() =>
-			companies.flatMap((company) =>
-				(company.units ?? []).map((unit) => ({
-					id: unit.id,
-					label: `${company.name} -> ${unit.name}`,
-				})),
-			),
-		[companies],
-	);
-	const companyOptions = useMemo(
-		() => companies.map((company) => ({ id: company.id, label: company.name })),
-		[companies],
-	);
-	const sellerOptions = useMemo(
+	const sellerOptions = useMemo<SelectOption[]>(
 		() => sellers.map((seller) => ({ id: seller.id, label: seller.name })),
 		[sellers],
 	);
-	const partnerOptions = useMemo(
+	const partnerOptions = useMemo<SelectOption[]>(
 		() => partners.map((partner) => ({ id: partner.id, label: partner.name })),
 		[partners],
 	);
-	const supervisorOptions = useMemo(
+	const supervisorOptions = useMemo<SelectOption[]>(
 		() =>
 			supervisors.map((supervisor) => ({
 				id: supervisor.id,
 				label: supervisor.name,
 			})),
 		[supervisors],
+	);
+
+	const fallbackResponsibleOption = useMemo<SelectOption | null>(() => {
+		if (!initialSale?.responsibleId || !initialSale.responsible) {
+			return null;
+		}
+
+		return {
+			id: initialSale.responsibleId,
+			label: initialSale.responsible.name,
+		};
+	}, [initialSale?.responsible, initialSale?.responsibleId]);
+
+	const sellerOptionsForSelect = useMemo(() => {
+		if (
+			initialSale?.responsibleType !== "SELLER" ||
+			!fallbackResponsibleOption
+		) {
+			return sellerOptions;
+		}
+
+		return mergeSelectOptionsById(sellerOptions, [fallbackResponsibleOption]);
+	}, [
+		fallbackResponsibleOption,
+		initialSale?.responsibleType,
+		sellerOptions,
+	]);
+
+	const partnerOptionsForSelect = useMemo(() => {
+		if (
+			initialSale?.responsibleType !== "PARTNER" ||
+			!fallbackResponsibleOption
+		) {
+			return partnerOptions;
+		}
+
+		return mergeSelectOptionsById(partnerOptions, [fallbackResponsibleOption]);
+	}, [
+		fallbackResponsibleOption,
+		initialSale?.responsibleType,
+		partnerOptions,
+	]);
+
+	const commissionFallbackOptionsByType = useMemo(
+		() =>
+			(initialSale?.commissions ?? []).reduce(
+				(accumulator, commission) => {
+					if (
+						commission.recipientType === "OTHER" ||
+						!commission.beneficiaryId
+					) {
+						return accumulator;
+					}
+
+					const commissionType =
+						commission.recipientType as SaleCommissionBeneficiaryType;
+					const fallbackOption = {
+						id: commission.beneficiaryId,
+						label: commission.beneficiaryLabel?.trim() || "Selecionado",
+					};
+
+					if (
+						!accumulator[commissionType].some(
+							(option) => option.id === fallbackOption.id,
+						)
+					) {
+						accumulator[commissionType].push(fallbackOption);
+					}
+
+					return accumulator;
+				},
+				{
+					COMPANY: [] as SelectOption[],
+					UNIT: [] as SelectOption[],
+					SELLER: [] as SelectOption[],
+					PARTNER: [] as SelectOption[],
+					SUPERVISOR: [] as SelectOption[],
+				},
+			),
+		[initialSale?.commissions],
+	);
+
+	const responsibles = useMemo(
+		() =>
+			selectedResponsibleType === "PARTNER"
+				? partnerOptionsForSelect.map((partner) => ({
+						id: partner.id,
+						name: partner.label,
+					}))
+				: sellerOptionsForSelect.map((seller) => ({
+						id: seller.id,
+						name: seller.label,
+					})),
+		[partnerOptionsForSelect, selectedResponsibleType, sellerOptionsForSelect],
+	);
+
+	const allUnits = useMemo(
+		() =>
+			companiesForSelect.flatMap((company) =>
+				(company.units ?? []).map((unit) => ({
+					id: unit.id,
+					label: `${company.name} -> ${unit.name}`,
+				})),
+			),
+		[companiesForSelect],
+	);
+
+	const companyOptions = useMemo(
+		() =>
+			mergeSelectOptionsById(
+				companiesForSelect.map((company) => ({
+					id: company.id,
+					label: company.name,
+				})),
+				commissionFallbackOptionsByType.COMPANY,
+			),
+		[commissionFallbackOptionsByType.COMPANY, companiesForSelect],
+	);
+
+	const unitOptions = useMemo(
+		() =>
+			mergeSelectOptionsById(allUnits, commissionFallbackOptionsByType.UNIT),
+		[allUnits, commissionFallbackOptionsByType.UNIT],
+	);
+
+	const sellerOptionsForCommissions = useMemo(
+		() =>
+			mergeSelectOptionsById(
+				sellerOptionsForSelect,
+				commissionFallbackOptionsByType.SELLER,
+			),
+		[commissionFallbackOptionsByType.SELLER, sellerOptionsForSelect],
+	);
+
+	const partnerOptionsForCommissions = useMemo(
+		() =>
+			mergeSelectOptionsById(
+				partnerOptionsForSelect,
+				commissionFallbackOptionsByType.PARTNER,
+			),
+		[commissionFallbackOptionsByType.PARTNER, partnerOptionsForSelect],
+	);
+
+	const supervisorOptionsForCommissions = useMemo(
+		() =>
+			mergeSelectOptionsById(
+				supervisorOptions,
+				commissionFallbackOptionsByType.SUPERVISOR,
+			),
+		[commissionFallbackOptionsByType.SUPERVISOR, supervisorOptions],
 	);
 
 	useEffect(() => {
@@ -441,8 +715,8 @@ export function SaleForm({
 		<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 			<ProductSection
 				control={control}
-				rootProducts={rootProducts}
-				hierarchicalProducts={hierarchicalProducts}
+				rootProducts={rootProductsForSelect}
+				hierarchicalProducts={hierarchicalProductsForSelect}
 				isLoadingOptions={isLoadingOptions}
 			/>
 			<SaleDataSection control={control} />
@@ -458,7 +732,7 @@ export function SaleForm({
 			/>
 			<ClassificationSection
 				control={control}
-				companies={companies}
+				companies={companiesForSelect}
 				companyUnits={companyUnits}
 				responsibles={responsibles}
 				selectedCompanyId={selectedCompanyId}
@@ -500,10 +774,10 @@ export function SaleForm({
 				onInstallmentCountChange={handleInstallmentCountChange}
 				pulledCommissionsCount={pulledCommissionsCount}
 				companyOptions={companyOptions}
-				unitOptions={allUnits}
-				sellerOptions={sellerOptions}
-				partnerOptions={partnerOptions}
-				supervisorOptions={supervisorOptions}
+				unitOptions={unitOptions}
+				sellerOptions={sellerOptionsForCommissions}
+				partnerOptions={partnerOptionsForCommissions}
+				supervisorOptions={supervisorOptionsForCommissions}
 				saleTotalAmountInCents={saleTotalAmountInCents}
 				commissionsError={errors.commissions}
 			/>

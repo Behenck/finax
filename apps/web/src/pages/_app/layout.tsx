@@ -2,6 +2,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
+import { PermissionsProvider } from "@/permissions/provider";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import Cookies from "js-cookie";
 import { AppTopHeader } from "./-components/app-top-header";
@@ -27,18 +28,27 @@ function AppLayout() {
 		return <Navigate to="/sign-in" replace />;
 	}
 	return (
-		<AppContext.Provider value={{ auth: data.user, membership: data.organization.role, organization: data.organization }}>
-			<SidebarProvider>
-				<AppSidebar />
-				<QuickActionsCommand />
+		<PermissionsProvider effectivePermissions={data.effectivePermissions}>
+			<AppContext.Provider
+				value={{
+					auth: data.user,
+					membership: data.organization.role,
+					organization: data.organization,
+					effectivePermissions: data.effectivePermissions,
+				}}
+			>
+				<SidebarProvider>
+					<AppSidebar />
+					<QuickActionsCommand />
 
-				<main className="flex-1 bg-gray-50">
-					<AppTopHeader />
-					<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-10 lg:py-10">
-						<Outlet />
-					</div>
-				</main>
-			</SidebarProvider>
-		</AppContext.Provider>
+					<main className="flex-1 bg-gray-50">
+						<AppTopHeader />
+						<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-10 lg:py-10">
+							<Outlet />
+						</div>
+					</main>
+				</SidebarProvider>
+			</AppContext.Provider>
+		</PermissionsProvider>
 	);
 }

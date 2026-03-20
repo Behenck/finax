@@ -44,6 +44,31 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role]
 
 
+export const MemberDataScope = {
+  LINKED_ONLY: 'LINKED_ONLY',
+  COMPANY_ONLY: 'COMPANY_ONLY',
+  ORGANIZATION_ALL: 'ORGANIZATION_ALL'
+} as const
+
+export type MemberDataScope = (typeof MemberDataScope)[keyof typeof MemberDataScope]
+
+
+export const PermissionOverrideEffect = {
+  ALLOW: 'ALLOW',
+  DENY: 'DENY'
+} as const
+
+export type PermissionOverrideEffect = (typeof PermissionOverrideEffect)[keyof typeof PermissionOverrideEffect]
+
+
+export const PermissionAuditChangeType = {
+  ROLE_PRESET_REPLACED: 'ROLE_PRESET_REPLACED',
+  MEMBER_OVERRIDE_REPLACED: 'MEMBER_OVERRIDE_REPLACED'
+} as const
+
+export type PermissionAuditChangeType = (typeof PermissionAuditChangeType)[keyof typeof PermissionAuditChangeType]
+
+
 export const InviteType = {
   EMAIL: 'EMAIL',
   LINK: 'LINK'

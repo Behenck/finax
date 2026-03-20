@@ -5,7 +5,14 @@ import {
 	parseAsStringLiteral,
 } from "nuqs";
 
-const ROLE_FILTER_VALUES = ["ALL", "ADMIN", "MEMBER"] as const;
+const ROLE_FILTER_VALUES = [
+	"ALL",
+	"ADMIN",
+	"MEMBER",
+	"SUPERVISOR",
+	"SELLER",
+	"PARTNER",
+] as const;
 const COMMISSION_DIRECTION_VALUES = ["INCOME", "OUTCOME"] as const;
 const COMMISSION_INSTALLMENT_STATUS_FILTER_VALUES = [
 	"ALL",

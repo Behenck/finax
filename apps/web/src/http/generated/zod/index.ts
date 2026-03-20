@@ -160,6 +160,11 @@ export {
   getOrganizationsSlugMembershipQueryResponseSchema,
 } from "./getOrganizationsSlugMembershipSchema.ts";
 export {
+  getOrganizationsSlugMembersMemberidPermissionsPathParamsSchema,
+  getOrganizationsSlugMembersMemberidPermissions200Schema,
+  getOrganizationsSlugMembersMemberidPermissionsQueryResponseSchema,
+} from "./getOrganizationsSlugMembersMemberidPermissionsSchema.ts";
+export {
   getOrganizationsSlugMembersRolePathParamsSchema,
   getOrganizationsSlugMembersRole200Schema,
   getOrganizationsSlugMembersRoleQueryResponseSchema,
@@ -179,6 +184,11 @@ export {
   getOrganizationsSlugPartners200Schema,
   getOrganizationsSlugPartnersQueryResponseSchema,
 } from "./getOrganizationsSlugPartnersSchema.ts";
+export {
+  getOrganizationsSlugPermissionsCatalogPathParamsSchema,
+  getOrganizationsSlugPermissionsCatalog200Schema,
+  getOrganizationsSlugPermissionsCatalogQueryResponseSchema,
+} from "./getOrganizationsSlugPermissionsCatalogSchema.ts";
 export {
   getOrganizationsSlugProductsIdCommissionScenariosPathParamsSchema,
   getOrganizationsSlugProductsIdCommissionScenarios200Schema,
@@ -546,6 +556,12 @@ export {
   putOrganizationsSlugEmployeesEmployeeidMutationRequestSchema,
   putOrganizationsSlugEmployeesEmployeeidMutationResponseSchema,
 } from "./putOrganizationsSlugEmployeesEmployeeidSchema.ts";
+export {
+  putOrganizationsSlugMembersMemberidPermissionsPathParamsSchema,
+  putOrganizationsSlugMembersMemberidPermissions204Schema,
+  putOrganizationsSlugMembersMemberidPermissionsMutationRequestSchema,
+  putOrganizationsSlugMembersMemberidPermissionsMutationResponseSchema,
+} from "./putOrganizationsSlugMembersMemberidPermissionsSchema.ts";
 export {
   putOrganizationsSlugMembersMemberidPathParamsSchema,
   putOrganizationsSlugMembersMemberid204Schema,

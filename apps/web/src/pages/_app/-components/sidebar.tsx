@@ -41,11 +41,14 @@ import LogoBranco from "@/assets/logo-finax-branco.png";
 import { Separator } from "@/components/ui/separator";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useApp } from "@/context/app-context";
+import { useAbility } from "@/permissions/access";
 
 interface SidebarChildItem {
 	title: string;
 	url: string;
 	icon: LucideIcon;
+	requiredPermission?: string;
+	requiredAnyPermissions?: string[];
 }
 
 interface SidebarLeafItem {
@@ -54,6 +57,8 @@ interface SidebarLeafItem {
 	url: string;
 	icon: LucideIcon;
 	match?: "exact" | "prefix";
+	requiredPermission?: string;
+	requiredAnyPermissions?: string[];
 }
 
 interface SidebarGroupItem {
@@ -61,12 +66,15 @@ interface SidebarGroupItem {
 	title: string;
 	icon: LucideIcon;
 	children: SidebarChildItem[];
+	requiredPermission?: string;
+	requiredAnyPermissions?: string[];
 }
 
 type SidebarItem = SidebarLeafItem | SidebarGroupItem;
 
 export function AppSidebar() {
 	const { organization } = useApp();
+	const ability = useAbility();
 	const { state, isMobile, setOpenMobile } = useSidebar();
 	const location = useLocation();
 	const pathname = location.pathname;
@@ -82,24 +90,6 @@ export function AppSidebar() {
 			match: "exact",
 		},
 		{
-			type: "leaf",
-			title: "Vendas",
-			url: "/sales",
-			icon: ShoppingCart,
-		},
-		{
-			type: "leaf",
-			title: "Comissões",
-			url: "/commissions",
-			icon: Wallet,
-		},
-		{
-			type: "leaf",
-			title: "Transações",
-			url: "/transactions",
-			icon: ArrowLeftRight,
-		},
-		{
 			type: "group",
 			title: "Cadastros",
 			icon: Building,
@@ -108,51 +98,138 @@ export function AppSidebar() {
 					icon: Users,
 					title: "Clientes",
 					url: "/registers/customers",
+					requiredPermission: "registers.customers.view",
 				},
 				{
 					icon: UserRoundCheck,
 					title: "Vendedores",
 					url: "/registers/sellers",
+					requiredPermission: "registers.sellers.view",
 				},
 				{
 					icon: UserRound,
 					title: "Parceiros",
 					url: "/registers/partners",
+					requiredPermission: "registers.partners.view",
 				},
 				{
 					icon: Package,
 					title: "Produtos",
 					url: "/registers/products",
+					requiredPermission: "registers.products.view",
 				},
 				{
 					icon: Building2,
 					title: "Empresas",
 					url: "/registers/companies",
+					requiredPermission: "registers.companies.view",
 				},
 				{
 					icon: Landmark,
 					title: "Centro de Custos",
 					url: "/registers/cost-centers",
+					requiredPermission: "registers.cost-centers.view",
 				},
 				{
 					icon: Tags,
 					title: "Categorias",
 					url: "/registers/categories",
+					requiredPermission: "registers.categories.view",
 				},
 				{
 					icon: Briefcase,
 					title: "Funcionários",
 					url: "/registers/employees",
+					requiredPermission: "registers.employees.view",
 				},
 			],
+		},
+		{
+			type: "leaf",
+			title: "Vendas",
+			url: "/sales",
+			icon: ShoppingCart,
+			requiredPermission: "sales.view",
+		},
+		{
+			type: "leaf",
+			title: "Comissões",
+			url: "/commissions",
+			icon: Wallet,
+			requiredPermission: "sales.view",
+		},
+		{
+			type: "leaf",
+			title: "Transações",
+			url: "/transactions",
+			icon: ArrowLeftRight,
+			requiredPermission: "transactions.view",
 		},
 		{
 			type: "leaf",
 			title: "Configurações",
 			url: "/settings",
 			icon: Settings2,
+			requiredAnyPermissions: [
+				"settings.organization.view",
+				"settings.members.view",
+				"settings.permissions.manage",
+			],
 		},
 	];
+
+	const canAccessItem = (params: {
+		requiredPermission?: string;
+		requiredAnyPermissions?: string[];
+	}) => {
+		const { requiredPermission, requiredAnyPermissions } = params;
+		const hasRequiredPermission = requiredPermission
+			? ability.can("access", requiredPermission)
+			: true;
+		const hasAnyRequiredPermission =
+			requiredAnyPermissions && requiredAnyPermissions.length > 0
+				? requiredAnyPermissions.some((permissionKey) =>
+						ability.can("access", permissionKey),
+					)
+				: true;
+
+		return hasRequiredPermission && hasAnyRequiredPermission;
+	};
+
+	const visibleItems = items
+		.map((item) => {
+			if (item.type === "leaf") {
+				return canAccessItem({
+					requiredPermission: item.requiredPermission,
+					requiredAnyPermissions: item.requiredAnyPermissions,
+				})
+					? item
+					: null;
+			}
+
+			const visibleChildren = item.children.filter((child) =>
+				canAccessItem({
+					requiredPermission: child.requiredPermission,
+					requiredAnyPermissions: child.requiredAnyPermissions,
+				}),
+			);
+
+			if (
+				visibleChildren.length === 0 ||
+				!canAccessItem({
+					requiredPermission: item.requiredPermission,
+					requiredAnyPermissions: item.requiredAnyPermissions,
+				})
+			) {
+				return null;
+			}
+
+			return {
+				...item,
+				children: visibleChildren,
+			};
+		})
+		.filter((item): item is SidebarItem => item !== null);
 
 	const companyName = organization?.name ?? "Sem organização";
 
@@ -167,7 +244,7 @@ export function AppSidebar() {
 		[pathname],
 	);
 
-	const registersItem = items.find(
+	const registersItem = visibleItems.find(
 		(item): item is SidebarGroupItem =>
 			item.type === "group" && item.title === "Cadastros",
 	);
@@ -230,7 +307,7 @@ export function AppSidebar() {
 			<SidebarContent className="px-2 py-2">
 				<SidebarGroup>
 					<SidebarMenu className="gap-1">
-						{items.map((item) => {
+						{visibleItems.map((item) => {
 							if (item.type === "leaf") {
 								const isActive = isPathActive(item.url, item.match);
 								return (

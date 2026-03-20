@@ -143,6 +143,14 @@ export function SaleCommissionCard({
 		control,
 		name: `${commissionPath}.baseCommissionIndex`,
 	}) as SaleCommissionFormData["baseCommissionIndex"];
+	const beneficiaryId = useWatch({
+		control,
+		name: `${commissionPath}.beneficiaryId`,
+	}) as string | undefined;
+	const beneficiaryLabel = useWatch({
+		control,
+		name: `${commissionPath}.beneficiaryLabel`,
+	}) as string | undefined;
 	const { fieldState: baseCommissionIndexFieldState } = useController({
 		control,
 		name: `${commissionPath}.baseCommissionIndex` as const,
@@ -234,6 +242,22 @@ export function SaleCommissionCard({
 						: recipientType === "SUPERVISOR"
 							? supervisorOptions
 							: [];
+	const beneficiaryOptionsWithFallback = useMemo(() => {
+		if (
+			!beneficiaryId ||
+			beneficiaryOptions.some((option) => option.id === beneficiaryId)
+		) {
+			return beneficiaryOptions;
+		}
+
+		return [
+			...beneficiaryOptions,
+			{
+				id: beneficiaryId,
+				label: beneficiaryLabel?.trim() || "Selecionado",
+			},
+		];
+	}, [beneficiaryId, beneficiaryLabel, beneficiaryOptions]);
 
 	return (
 		<Card className="space-y-4 p-4">
@@ -461,8 +485,8 @@ export function SaleCommissionCard({
 								control={control}
 								render={({ field, fieldState }) => (
 									<>
-										<Select
-											value={field.value ?? OPTIONAL_NONE_VALUE}
+									<Select
+										value={field.value ?? OPTIONAL_NONE_VALUE}
 											onValueChange={(value) =>
 												field.onChange(
 													value === OPTIONAL_NONE_VALUE ? undefined : value,
@@ -476,7 +500,7 @@ export function SaleCommissionCard({
 												<SelectItem value={OPTIONAL_NONE_VALUE}>
 													Selecione
 												</SelectItem>
-												{beneficiaryOptions.map((option) => (
+												{beneficiaryOptionsWithFallback.map((option) => (
 													<SelectItem key={option.id} value={option.id}>
 														{option.label}
 													</SelectItem>

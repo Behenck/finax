@@ -6,7 +6,29 @@ import { auth } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
-import { Role } from 'generated/prisma/enums'
+import { MemberDataScope, Role } from 'generated/prisma/enums'
+
+function isMissingMemberDataScopeColumnError(error: unknown) {
+	if (!error || typeof error !== 'object') {
+		return false
+	}
+
+	const code = 'code' in error ? (error as { code?: unknown }).code : undefined
+	if (code === 'P2022') {
+		return true
+	}
+
+	const message =
+		'message' in error ? (error as { message?: unknown }).message : undefined
+	if (typeof message !== 'string') {
+		return false
+	}
+
+	return (
+		message.includes('does not exist in the current database') ||
+		/type\s+"(?:public\.)?MemberDataScope"\s+does not exist/i.test(message)
+	)
+}
 
 const memberAccessScopeSchema = z.object({
   mode: z.enum(['ALL', 'RESTRICTED']),
@@ -18,6 +40,12 @@ const memberAccessScopeSchema = z.object({
       }),
     )
     .default([]),
+})
+
+const memberDataScopesSchema = z.object({
+  customersScope: z.enum(MemberDataScope),
+  salesScope: z.enum(MemberDataScope),
+  commissionsScope: z.enum(MemberDataScope),
 })
 
 export async function updateMember(app: FastifyInstance) {
@@ -38,6 +66,7 @@ export async function updateMember(app: FastifyInstance) {
           body: z.object({
             role: z.enum(Role),
             accessScope: memberAccessScopeSchema.optional(),
+            dataScopes: memberDataScopesSchema.optional(),
           }),
           response: {
             204: z.null(),
@@ -50,18 +79,47 @@ export async function updateMember(app: FastifyInstance) {
         const { membership, organization } =
           await request.getUserMembership(slug)
 
-        const { role, accessScope } = request.body
+        const { role, accessScope, dataScopes } = request.body
+        const dataScopesData = dataScopes
+          ? {
+              customersScope: dataScopes.customersScope,
+              salesScope: dataScopes.salesScope,
+              commissionsScope: dataScopes.commissionsScope,
+            }
+          : null
+        const buildMemberUpdateData = (includeDataScopes: boolean) => ({
+          role,
+          ...(includeDataScopes && dataScopesData ? dataScopesData : {}),
+        })
 
         if (!accessScope) {
-          await prisma.member.update({
-            where: {
-              id: memberId,
-              organizationId: organization.id,
-            },
-            data: {
-              role,
-            },
-          })
+          try {
+            await prisma.member.update({
+              where: {
+                id: memberId,
+                organizationId: organization.id,
+              },
+              data: buildMemberUpdateData(true),
+              select: {
+                id: true,
+              },
+            })
+          } catch (error) {
+            if (!isMissingMemberDataScopeColumnError(error)) {
+              throw error
+            }
+
+            await prisma.member.update({
+              where: {
+                id: memberId,
+                organizationId: organization.id,
+              },
+              data: buildMemberUpdateData(false),
+              select: {
+                id: true,
+              },
+            })
+          }
 
           return reply.status(204).send()
         }
@@ -137,33 +195,48 @@ export async function updateMember(app: FastifyInstance) {
           }
         }
 
-        await prisma.$transaction(async (tx) => {
-          await tx.member.update({
-            where: {
-              id: memberId,
-              organizationId: organization.id,
-            },
-            data: { role },
-          })
+        const runMemberAccessUpdate = async (includeDataScopes: boolean) => {
+          await prisma.$transaction(async (tx) => {
+            await tx.member.update({
+              where: {
+                id: memberId,
+                organizationId: organization.id,
+              },
+              data: buildMemberUpdateData(includeDataScopes),
+              select: {
+                id: true,
+              },
+            })
 
-          await tx.memberCompanyAccess.deleteMany({
-            where: {
-              memberId,
-              organizationId: organization.id,
-            },
-          })
-
-          if (accessScope.mode === 'RESTRICTED' && normalizedAccesses.length > 0) {
-            await tx.memberCompanyAccess.createMany({
-              data: normalizedAccesses.map((access) => ({
+            await tx.memberCompanyAccess.deleteMany({
+              where: {
                 memberId,
                 organizationId: organization.id,
-                companyId: access.companyId,
-                unitId: access.unitId,
-              })),
+              },
             })
+
+            if (accessScope.mode === 'RESTRICTED' && normalizedAccesses.length > 0) {
+              await tx.memberCompanyAccess.createMany({
+                data: normalizedAccesses.map((access) => ({
+                  memberId,
+                  organizationId: organization.id,
+                  companyId: access.companyId,
+                  unitId: access.unitId,
+                })),
+              })
+            }
+          })
+        }
+
+        try {
+          await runMemberAccessUpdate(true)
+        } catch (error) {
+          if (!isMissingMemberDataScopeColumnError(error)) {
+            throw error
           }
-        })
+
+          await runMemberAccessUpdate(false)
+        }
 
         return reply.status(204).send()
       },

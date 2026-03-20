@@ -5,6 +5,10 @@ import z from "zod";
 import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import {
+	buildSaleCommissionsBeneficiaryVisibilityWhere,
+	loadMemberDataVisibilityContext,
+} from "@/permissions/data-visibility";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
 	createSaleDiffHistoryEvent,
@@ -50,19 +54,22 @@ export async function patchSaleCommissionInstallmentStatus(
 				const { slug, saleId, installmentId } = request.params;
 				const { status, paymentDate, amount } = request.body;
 				const actorId = await request.getCurrentUserId();
-
-				const organization = await prisma.organization.findUnique({
-					where: {
-						slug,
-					},
-					select: {
-						id: true,
-					},
+				const { organization, membership } = await request.getUserMembership(slug);
+				const canViewAllCommissions = await request.hasPermission(
+					slug,
+					"sales.commissions.view.all",
+				);
+				const visibilityContext = await loadMemberDataVisibilityContext({
+					organizationId: organization.id,
+					memberId: membership.id,
+					userId: membership.userId,
+					customersScope: membership.customersScope,
+					salesScope: membership.salesScope,
+					commissionsScope: membership.commissionsScope,
 				});
-
-				if (!organization) {
-					throw new BadRequestError("Organization not found");
-				}
+				const saleCommissionsVisibilityWhere = canViewAllCommissions
+					? undefined
+					: buildSaleCommissionsBeneficiaryVisibilityWhere(visibilityContext);
 
 				const sale = await prisma.sale.findFirst({
 					where: {
@@ -109,6 +116,7 @@ export async function patchSaleCommissionInstallmentStatus(
 							sale: {
 								organizationId: organization.id,
 							},
+							...(saleCommissionsVisibilityWhere ?? {}),
 						},
 					},
 					select: {

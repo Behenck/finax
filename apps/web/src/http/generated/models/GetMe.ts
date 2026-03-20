@@ -68,6 +68,10 @@ export type GetMe200 = {
      */
     enableSalesTransactionsSync: boolean;
   };
+  /**
+   * @type array
+   */
+  effectivePermissions: string[];
 };
 
 export type GetMeQueryResponse = GetMe200;

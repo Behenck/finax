@@ -1,4 +1,8 @@
-import type { MemberListItem, RoleFilter } from './types'
+import type {
+  MemberDataScopeValue,
+  MemberListItem,
+  RoleFilter,
+} from './types'
 import type { MemberAccessScopeValue } from '../../member-access-scope-picker'
 import { MEMBER_ROLE_BADGE_CLASSNAME, MEMBER_ROLE_OPTIONS } from './constants'
 
@@ -11,6 +15,18 @@ export function getMemberScope(member: MemberListItem): MemberAccessScopeValue {
   return {
     mode: accesses.length > 0 ? 'RESTRICTED' : 'ALL',
     accesses,
+  }
+}
+
+export function getMemberDataScopes(member: MemberListItem): {
+  customersScope: MemberDataScopeValue
+  salesScope: MemberDataScopeValue
+  commissionsScope: MemberDataScopeValue
+} {
+  return {
+    customersScope: member.customersScope ?? 'ORGANIZATION_ALL',
+    salesScope: member.salesScope ?? 'ORGANIZATION_ALL',
+    commissionsScope: member.commissionsScope ?? 'ORGANIZATION_ALL',
   }
 }
 

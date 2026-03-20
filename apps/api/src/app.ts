@@ -21,6 +21,7 @@ import { partnerRoutes } from "./routes/partners"
 import { sellerRoutes } from "./routes/sellers"
 import { productRoutes } from "./routes/products"
 import { saleRoutes } from "./routes/sales"
+import { permissionRoutes } from "./routes/permissions"
 
 export function buildApp() {
   const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -91,6 +92,7 @@ export function buildApp() {
   app.register(authRoutes)
   app.register(inviteRoutes)
   app.register(memberRoutes)
+  app.register(permissionRoutes)
   app.register(organizationRoutes)
 
   app.register(companyRoutes)

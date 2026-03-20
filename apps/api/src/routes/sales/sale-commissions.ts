@@ -868,14 +868,29 @@ function resolveSaleCommissionBeneficiaryLabel(commission: {
 export async function loadSaleCommissions(
 	saleId: string,
 	organizationId: string,
+	visibilityWhere?: Prisma.SaleCommissionWhereInput,
 ) {
+	const where: Prisma.SaleCommissionWhereInput = visibilityWhere
+		? {
+				AND: [
+					{
+						saleId,
+						sale: {
+							organizationId,
+						},
+					},
+					visibilityWhere,
+				],
+		  }
+		: {
+				saleId,
+				sale: {
+					organizationId,
+				},
+		  };
+
 	const commissions = await prisma.saleCommission.findMany({
-		where: {
-			saleId,
-			sale: {
-				organizationId,
-			},
-		},
+		where,
 		orderBy: {
 			sortOrder: "asc",
 		},
@@ -988,16 +1003,33 @@ export async function loadSaleCommissions(
 export async function loadSaleCommissionInstallments(
 	saleId: string,
 	organizationId: string,
+	visibilityWhere?: Prisma.SaleCommissionInstallmentWhereInput,
 ) {
-	const installments = await prisma.saleCommissionInstallment.findMany({
-		where: {
-			saleCommission: {
-				saleId,
-				sale: {
-					organizationId,
+	const where: Prisma.SaleCommissionInstallmentWhereInput = visibilityWhere
+		? {
+				AND: [
+					{
+						saleCommission: {
+							saleId,
+							sale: {
+								organizationId,
+							},
+						},
+					},
+					visibilityWhere,
+				],
+		  }
+		: {
+				saleCommission: {
+					saleId,
+					sale: {
+						organizationId,
+					},
 				},
-			},
-		},
+		  };
+
+	const installments = await prisma.saleCommissionInstallment.findMany({
+		where,
 		orderBy: [
 			{
 				saleCommission: {
@@ -1115,11 +1147,14 @@ export async function loadSaleCommissionInstallments(
 type OrganizationCommissionInstallmentsFilters = {
 	organizationId: string;
 	q: string;
+	companyId?: string;
+	unitId?: string;
 	productId?: string;
 	status: SaleCommissionInstallmentStatusFilter;
 	expectedFrom?: Date;
 	expectedTo?: Date;
 	direction?: SaleCommissionDirection;
+	visibilityWhere?: Prisma.SaleCommissionInstallmentWhereInput;
 };
 
 const saleCommissionDirections = ["INCOME", "OUTCOME"] as const;
@@ -1127,11 +1162,14 @@ const saleCommissionDirections = ["INCOME", "OUTCOME"] as const;
 function buildOrganizationCommissionInstallmentsWhere({
 	organizationId,
 	q,
+	companyId,
+	unitId,
 	productId,
 	status,
 	expectedFrom,
 	expectedTo,
 	direction,
+	visibilityWhere,
 	statusOverride,
 }: OrganizationCommissionInstallmentsFilters & {
 	statusOverride?: SaleCommissionInstallmentStatus;
@@ -1148,6 +1186,10 @@ function buildOrganizationCommissionInstallmentsWhere({
 		},
 	];
 
+	if (visibilityWhere) {
+		andConditions.push(visibilityWhere);
+	}
+
 	if (direction) {
 		andConditions.push({
 			saleCommission: {
@@ -1161,6 +1203,26 @@ function buildOrganizationCommissionInstallmentsWhere({
 			saleCommission: {
 				sale: {
 					productId,
+				},
+			},
+		});
+	}
+
+	if (companyId) {
+		andConditions.push({
+			saleCommission: {
+				sale: {
+					companyId,
+				},
+			},
+		});
+	}
+
+	if (unitId) {
+		andConditions.push({
+			saleCommission: {
+				sale: {
+					unitId,
 				},
 			},
 		});
@@ -1435,11 +1497,14 @@ export async function loadOrganizationCommissionInstallments({
 	page,
 	pageSize,
 	q,
+	companyId,
+	unitId,
 	productId,
 	direction,
 	status,
 	expectedFrom,
 	expectedTo,
+	visibilityWhere,
 }: OrganizationCommissionInstallmentsFilters & {
 	page: number;
 	pageSize: number;
@@ -1447,11 +1512,14 @@ export async function loadOrganizationCommissionInstallments({
 	const where = buildOrganizationCommissionInstallmentsWhere({
 		organizationId,
 		q,
+		companyId,
+		unitId,
 		productId,
 		status,
 		expectedFrom,
 		expectedTo,
 		direction,
+		visibilityWhere,
 	});
 	const skip = (page - 1) * pageSize;
 
@@ -1558,16 +1626,19 @@ export async function loadOrganizationCommissionInstallments({
 					},
 				},
 			},
-		}),
-		loadOrganizationInstallmentsSummaryByDirection({
-			organizationId,
-			q,
-			productId,
-			status,
-			expectedFrom,
-			expectedTo,
-		}),
-	]);
+			}),
+			loadOrganizationInstallmentsSummaryByDirection({
+				organizationId,
+				q,
+				companyId,
+				unitId,
+				productId,
+				status,
+				expectedFrom,
+				expectedTo,
+				visibilityWhere,
+			}),
+		]);
 
 	return {
 		items: installments.map((installment) => {

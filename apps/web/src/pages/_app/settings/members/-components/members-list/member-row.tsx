@@ -18,6 +18,7 @@ type Props = {
   companies: CompanyOption[]
   isLoadingCompanies: boolean
   isHighlighted?: boolean
+  showSelection?: boolean
 }
 
 export function MemberRow({
@@ -28,6 +29,7 @@ export function MemberRow({
   companies,
   isLoadingCompanies,
   isHighlighted = false,
+  showSelection = true,
 }: Props) {
   const userLogged = authUserId === member.userId
   const owner = member.userId === ownerId
@@ -42,7 +44,7 @@ export function MemberRow({
       >
         <div className='flex items-start justify-between gap-3'>
           <div className='flex min-w-0 items-center gap-2'>
-            <Checkbox />
+            {showSelection ? <Checkbox /> : null}
             <Avatar>
               <AvatarImage src={member.avatarUrl ?? ''} />
               <AvatarFallback>{getInitials(member.name ?? '')}</AvatarFallback>
@@ -88,7 +90,7 @@ export function MemberRow({
       >
         <TableCell className='px-3 py-3'>
           <div className='flex min-w-0 items-center gap-2'>
-            <Checkbox />
+            {showSelection ? <Checkbox /> : null}
             <Avatar>
               <AvatarImage src={member.avatarUrl ?? ''} />
               <AvatarFallback>{getInitials(member.name ?? '')}</AvatarFallback>

@@ -42,10 +42,12 @@ export async function updateMemberRole(app: FastifyInstance) {
           data: {
             role,
           },
+          select: {
+            id: true,
+          },
         })
 
         return reply.status(204).send()
       },
     )
 }
-

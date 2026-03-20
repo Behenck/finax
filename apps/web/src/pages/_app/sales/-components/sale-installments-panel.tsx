@@ -56,6 +56,7 @@ import {
 } from "@/hooks/sales";
 import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import type { GetOrganizationsSlugSalesSaleidCommissionInstallments200 } from "@/http/generated";
+import { useAbility } from "@/permissions/access";
 import {
 	SALE_COMMISSION_DIRECTION_LABEL,
 	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL,
@@ -121,6 +122,7 @@ export function SaleInstallmentsPanel({
 	saleStatus,
 	enabled = true,
 }: SaleInstallmentsPanelProps) {
+	const ability = useAbility();
 	const [showZeroValueInstallments, setShowZeroValueInstallments] =
 		useQueryState("showZeroInstallments", showZeroInstallmentsParser);
 	const [activeBeneficiaryTab, setActiveBeneficiaryTab] = useState("");
@@ -142,8 +144,23 @@ export function SaleInstallmentsPanel({
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
 
-	const canUpdateInstallments =
+	const canChangeInstallmentStatus = ability.can(
+		"access",
+		"sales.commissions.installments.status.change",
+	);
+	const canEditInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.update",
+	);
+	const canDeleteInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.delete",
+	);
+	const canUpdateInstallmentsBySaleStatus =
 		saleStatus === "APPROVED" || saleStatus === "COMPLETED";
+	const canOpenInstallmentActions =
+		canUpdateInstallmentsBySaleStatus &&
+		(canChangeInstallmentStatus || canEditInstallment || canDeleteInstallment);
 	const installments = useMemo(
 		() => data?.installments ?? [],
 		[data?.installments],
@@ -400,7 +417,9 @@ export function SaleInstallmentsPanel({
 										</TableHeader>
 										<TableBody>
 											{group.installments.map((installment) => {
-												const statusActions = canUpdateInstallments
+												const statusActions =
+													canUpdateInstallmentsBySaleStatus &&
+													canChangeInstallmentStatus
 													? (["PAID", "CANCELED"] as const).filter(
 														(status) => status !== installment.status,
 													)
@@ -455,7 +474,7 @@ export function SaleInstallmentsPanel({
 															}
 														</TableCell>
 														<TableCell className="text-right">
-															{canUpdateInstallments ? (
+															{canOpenInstallmentActions ? (
 																<DropdownMenu>
 																	<DropdownMenuTrigger asChild>
 																		<Button
@@ -491,26 +510,34 @@ export function SaleInstallmentsPanel({
 																				}
 																			</DropdownMenuItem>
 																		))}
-																		<DropdownMenuSeparator />
-																		<DropdownMenuItem
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				requestInstallmentEdition(installment);
-																			}}
-																		>
-																			<Pencil className="size-4" />
-																			Editar parcela
-																		</DropdownMenuItem>
-																		<DropdownMenuItem
-																			variant="destructive"
-																			onSelect={(event) => {
-																				event.preventDefault();
-																				setInstallmentToDelete(installment);
-																			}}
-																		>
-																			<Trash2 className="size-4" />
-																			Excluir parcela
-																		</DropdownMenuItem>
+																		{(statusActions.length > 0 &&
+																			(canEditInstallment ||
+																				canDeleteInstallment)) ? (
+																			<DropdownMenuSeparator />
+																		) : null}
+																		{canEditInstallment ? (
+																			<DropdownMenuItem
+																				onSelect={(event) => {
+																					event.preventDefault();
+																					requestInstallmentEdition(installment);
+																				}}
+																			>
+																				<Pencil className="size-4" />
+																				Editar parcela
+																			</DropdownMenuItem>
+																		) : null}
+																		{canDeleteInstallment ? (
+																			<DropdownMenuItem
+																				variant="destructive"
+																				onSelect={(event) => {
+																					event.preventDefault();
+																					setInstallmentToDelete(installment);
+																				}}
+																			>
+																				<Trash2 className="size-4" />
+																				Excluir parcela
+																			</DropdownMenuItem>
+																		) : null}
 																	</DropdownMenuContent>
 																</DropdownMenu>
 															) : (

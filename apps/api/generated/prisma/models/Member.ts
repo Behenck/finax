@@ -27,6 +27,9 @@ export type AggregateMember = {
 export type MemberMinAggregateOutputType = {
   id: string | null
   role: $Enums.Role | null
+  customersScope: $Enums.MemberDataScope | null
+  salesScope: $Enums.MemberDataScope | null
+  commissionsScope: $Enums.MemberDataScope | null
   organizationId: string | null
   userId: string | null
 }
@@ -34,6 +37,9 @@ export type MemberMinAggregateOutputType = {
 export type MemberMaxAggregateOutputType = {
   id: string | null
   role: $Enums.Role | null
+  customersScope: $Enums.MemberDataScope | null
+  salesScope: $Enums.MemberDataScope | null
+  commissionsScope: $Enums.MemberDataScope | null
   organizationId: string | null
   userId: string | null
 }
@@ -41,6 +47,9 @@ export type MemberMaxAggregateOutputType = {
 export type MemberCountAggregateOutputType = {
   id: number
   role: number
+  customersScope: number
+  salesScope: number
+  commissionsScope: number
   organizationId: number
   userId: number
   _all: number
@@ -50,6 +59,9 @@ export type MemberCountAggregateOutputType = {
 export type MemberMinAggregateInputType = {
   id?: true
   role?: true
+  customersScope?: true
+  salesScope?: true
+  commissionsScope?: true
   organizationId?: true
   userId?: true
 }
@@ -57,6 +69,9 @@ export type MemberMinAggregateInputType = {
 export type MemberMaxAggregateInputType = {
   id?: true
   role?: true
+  customersScope?: true
+  salesScope?: true
+  commissionsScope?: true
   organizationId?: true
   userId?: true
 }
@@ -64,6 +79,9 @@ export type MemberMaxAggregateInputType = {
 export type MemberCountAggregateInputType = {
   id?: true
   role?: true
+  customersScope?: true
+  salesScope?: true
+  commissionsScope?: true
   organizationId?: true
   userId?: true
   _all?: true
@@ -144,6 +162,9 @@ export type MemberGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type MemberGroupByOutputType = {
   id: string
   role: $Enums.Role
+  customersScope: $Enums.MemberDataScope
+  salesScope: $Enums.MemberDataScope
+  commissionsScope: $Enums.MemberDataScope
   organizationId: string
   userId: string
   _count: MemberCountAggregateOutputType | null
@@ -172,6 +193,9 @@ export type MemberWhereInput = {
   NOT?: Prisma.MemberWhereInput | Prisma.MemberWhereInput[]
   id?: Prisma.StringFilter<"Member"> | string
   role?: Prisma.EnumRoleFilter<"Member"> | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -179,11 +203,16 @@ export type MemberWhereInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
+  permissionOverrides?: Prisma.MemberPermissionOverrideListRelationFilter
+  permissionAuditTargets?: Prisma.PermissionAuditLogListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  customersScope?: Prisma.SortOrder
+  salesScope?: Prisma.SortOrder
+  commissionsScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -191,6 +220,8 @@ export type MemberOrderByWithRelationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessOrderByRelationAggregateInput
   productCommissions?: Prisma.ProductCommissionOrderByRelationAggregateInput
   saleCommissions?: Prisma.SaleCommissionOrderByRelationAggregateInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideOrderByRelationAggregateInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -200,6 +231,9 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MemberWhereInput[]
   NOT?: Prisma.MemberWhereInput | Prisma.MemberWhereInput[]
   role?: Prisma.EnumRoleFilter<"Member"> | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -207,11 +241,16 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
+  permissionOverrides?: Prisma.MemberPermissionOverrideListRelationFilter
+  permissionAuditTargets?: Prisma.PermissionAuditLogListRelationFilter
 }, "id" | "organizationId_userId">
 
 export type MemberOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  customersScope?: Prisma.SortOrder
+  salesScope?: Prisma.SortOrder
+  commissionsScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.MemberCountOrderByAggregateInput
@@ -225,6 +264,9 @@ export type MemberScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MemberScalarWhereWithAggregatesInput | Prisma.MemberScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Member"> | string
   role?: Prisma.EnumRoleWithAggregatesFilter<"Member"> | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringWithAggregatesFilter<"Member"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Member"> | string
 }
@@ -232,46 +274,69 @@ export type MemberScalarWhereWithAggregatesInput = {
 export type MemberCreateInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberCreateManyInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
 }
@@ -279,11 +344,17 @@ export type MemberCreateManyInput = {
 export type MemberUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
 }
 
 export type MemberUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -306,6 +377,9 @@ export type MemberOrganizationIdUserIdCompoundUniqueInput = {
 export type MemberCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  customersScope?: Prisma.SortOrder
+  salesScope?: Prisma.SortOrder
+  commissionsScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -313,6 +387,9 @@ export type MemberCountOrderByAggregateInput = {
 export type MemberMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  customersScope?: Prisma.SortOrder
+  salesScope?: Prisma.SortOrder
+  commissionsScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -320,6 +397,9 @@ export type MemberMaxOrderByAggregateInput = {
 export type MemberMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  customersScope?: Prisma.SortOrder
+  salesScope?: Prisma.SortOrder
+  commissionsScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -374,6 +454,10 @@ export type MemberUncheckedUpdateManyWithoutUserNestedInput = {
   update?: Prisma.MemberUpdateWithWhereUniqueWithoutUserInput | Prisma.MemberUpdateWithWhereUniqueWithoutUserInput[]
   updateMany?: Prisma.MemberUpdateManyWithWhereWithoutUserInput | Prisma.MemberUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
+}
+
+export type EnumMemberDataScopeFieldUpdateOperationsInput = {
+  set?: $Enums.MemberDataScope
 }
 
 export type MemberCreateNestedOneWithoutMemberCompanyAccessesInput = {
@@ -432,6 +516,36 @@ export type MemberUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
 }
 
+export type MemberCreateNestedOneWithoutPermissionOverridesInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPermissionOverridesInput, Prisma.MemberUncheckedCreateWithoutPermissionOverridesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPermissionOverridesInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneRequiredWithoutPermissionOverridesNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPermissionOverridesInput, Prisma.MemberUncheckedCreateWithoutPermissionOverridesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPermissionOverridesInput
+  upsert?: Prisma.MemberUpsertWithoutPermissionOverridesInput
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutPermissionOverridesInput, Prisma.MemberUpdateWithoutPermissionOverridesInput>, Prisma.MemberUncheckedUpdateWithoutPermissionOverridesInput>
+}
+
+export type MemberCreateNestedOneWithoutPermissionAuditTargetsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedCreateWithoutPermissionAuditTargetsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPermissionAuditTargetsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutPermissionAuditTargetsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedCreateWithoutPermissionAuditTargetsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPermissionAuditTargetsInput
+  upsert?: Prisma.MemberUpsertWithoutPermissionAuditTargetsInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutPermissionAuditTargetsInput, Prisma.MemberUpdateWithoutPermissionAuditTargetsInput>, Prisma.MemberUncheckedUpdateWithoutPermissionAuditTargetsInput>
+}
+
 export type MemberCreateNestedOneWithoutProductCommissionsInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutProductCommissionsInput, Prisma.MemberUncheckedCreateWithoutProductCommissionsInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProductCommissionsInput
@@ -467,19 +581,29 @@ export type MemberUpdateOneWithoutSaleCommissionsNestedInput = {
 export type MemberCreateWithoutUserInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -514,6 +638,9 @@ export type MemberScalarWhereInput = {
   NOT?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
   id?: Prisma.StringFilter<"Member"> | string
   role?: Prisma.EnumRoleFilter<"Member"> | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
 }
@@ -521,19 +648,29 @@ export type MemberScalarWhereInput = {
 export type MemberCreateWithoutMemberCompanyAccessesInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberCreateOrConnectWithoutMemberCompanyAccessesInput = {
@@ -555,37 +692,57 @@ export type MemberUpdateToOneWithWhereWithoutMemberCompanyAccessesInput = {
 export type MemberUpdateWithoutMemberCompanyAccessesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberCreateWithoutOrganizationInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateWithoutOrganizationInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberCreateOrConnectWithoutOrganizationInput = {
@@ -614,22 +771,176 @@ export type MemberUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.MemberUpdateManyMutationInput, Prisma.MemberUncheckedUpdateManyWithoutOrganizationInput>
 }
 
+export type MemberCreateWithoutPermissionOverridesInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+}
+
+export type MemberUncheckedCreateWithoutPermissionOverridesInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+}
+
+export type MemberCreateOrConnectWithoutPermissionOverridesInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPermissionOverridesInput, Prisma.MemberUncheckedCreateWithoutPermissionOverridesInput>
+}
+
+export type MemberUpsertWithoutPermissionOverridesInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutPermissionOverridesInput, Prisma.MemberUncheckedUpdateWithoutPermissionOverridesInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPermissionOverridesInput, Prisma.MemberUncheckedCreateWithoutPermissionOverridesInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutPermissionOverridesInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutPermissionOverridesInput, Prisma.MemberUncheckedUpdateWithoutPermissionOverridesInput>
+}
+
+export type MemberUpdateWithoutPermissionOverridesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutPermissionOverridesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+}
+
+export type MemberCreateWithoutPermissionAuditTargetsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+}
+
+export type MemberUncheckedCreateWithoutPermissionAuditTargetsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+}
+
+export type MemberCreateOrConnectWithoutPermissionAuditTargetsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedCreateWithoutPermissionAuditTargetsInput>
+}
+
+export type MemberUpsertWithoutPermissionAuditTargetsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedUpdateWithoutPermissionAuditTargetsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedCreateWithoutPermissionAuditTargetsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutPermissionAuditTargetsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutPermissionAuditTargetsInput, Prisma.MemberUncheckedUpdateWithoutPermissionAuditTargetsInput>
+}
+
+export type MemberUpdateWithoutPermissionAuditTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutPermissionAuditTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+}
+
 export type MemberCreateWithoutProductCommissionsInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateWithoutProductCommissionsInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberCreateOrConnectWithoutProductCommissionsInput = {
@@ -651,37 +962,57 @@ export type MemberUpdateToOneWithWhereWithoutProductCommissionsInput = {
 export type MemberUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberCreateWithoutSaleCommissionsInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberUncheckedCreateWithoutSaleCommissionsInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
 }
 
 export type MemberCreateOrConnectWithoutSaleCommissionsInput = {
@@ -703,78 +1034,120 @@ export type MemberUpdateToOneWithWhereWithoutSaleCommissionsInput = {
 export type MemberUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberCreateManyUserInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   organizationId: string
 }
 
 export type MemberUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type MemberCreateManyOrganizationInput = {
   id?: string
   role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
   userId: string
 }
 
 export type MemberUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -787,12 +1160,16 @@ export type MemberCountOutputType = {
   memberCompanyAccesses: number
   productCommissions: number
   saleCommissions: number
+  permissionOverrides: number
+  permissionAuditTargets: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberCompanyAccesses?: boolean | MemberCountOutputTypeCountMemberCompanyAccessesArgs
   productCommissions?: boolean | MemberCountOutputTypeCountProductCommissionsArgs
   saleCommissions?: boolean | MemberCountOutputTypeCountSaleCommissionsArgs
+  permissionOverrides?: boolean | MemberCountOutputTypeCountPermissionOverridesArgs
+  permissionAuditTargets?: boolean | MemberCountOutputTypeCountPermissionAuditTargetsArgs
 }
 
 /**
@@ -826,10 +1203,27 @@ export type MemberCountOutputTypeCountSaleCommissionsArgs<ExtArgs extends runtim
   where?: Prisma.SaleCommissionWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountPermissionOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MemberPermissionOverrideWhereInput
+}
+
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountPermissionAuditTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PermissionAuditLogWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   role?: boolean
+  customersScope?: boolean
+  salesScope?: boolean
+  commissionsScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -837,12 +1231,17 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   memberCompanyAccesses?: boolean | Prisma.Member$memberCompanyAccessesArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Member$productCommissionsArgs<ExtArgs>
   saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
+  permissionOverrides?: boolean | Prisma.Member$permissionOverridesArgs<ExtArgs>
+  permissionAuditTargets?: boolean | Prisma.Member$permissionAuditTargetsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
 export type MemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   role?: boolean
+  customersScope?: boolean
+  salesScope?: boolean
+  commissionsScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -852,6 +1251,9 @@ export type MemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type MemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   role?: boolean
+  customersScope?: boolean
+  salesScope?: boolean
+  commissionsScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -861,17 +1263,22 @@ export type MemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type MemberSelectScalar = {
   id?: boolean
   role?: boolean
+  customersScope?: boolean
+  salesScope?: boolean
+  commissionsScope?: boolean
   organizationId?: boolean
   userId?: boolean
 }
 
-export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "organizationId" | "userId", ExtArgs["result"]["member"]>
+export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "customersScope" | "salesScope" | "commissionsScope" | "organizationId" | "userId", ExtArgs["result"]["member"]>
 export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   memberCompanyAccesses?: boolean | Prisma.Member$memberCompanyAccessesArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Member$productCommissionsArgs<ExtArgs>
   saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
+  permissionOverrides?: boolean | Prisma.Member$permissionOverridesArgs<ExtArgs>
+  permissionAuditTargets?: boolean | Prisma.Member$permissionAuditTargetsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -891,10 +1298,15 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     memberCompanyAccesses: Prisma.$MemberCompanyAccessPayload<ExtArgs>[]
     productCommissions: Prisma.$ProductCommissionPayload<ExtArgs>[]
     saleCommissions: Prisma.$SaleCommissionPayload<ExtArgs>[]
+    permissionOverrides: Prisma.$MemberPermissionOverridePayload<ExtArgs>[]
+    permissionAuditTargets: Prisma.$PermissionAuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     role: $Enums.Role
+    customersScope: $Enums.MemberDataScope
+    salesScope: $Enums.MemberDataScope
+    commissionsScope: $Enums.MemberDataScope
     organizationId: string
     userId: string
   }, ExtArgs["result"]["member"]>
@@ -1296,6 +1708,8 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   memberCompanyAccesses<T extends Prisma.Member$memberCompanyAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$memberCompanyAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberCompanyAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissions<T extends Prisma.Member$productCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$productCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleCommissions<T extends Prisma.Member$saleCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$saleCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  permissionOverrides<T extends Prisma.Member$permissionOverridesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$permissionOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPermissionOverridePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  permissionAuditTargets<T extends Prisma.Member$permissionAuditTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$permissionAuditTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1327,6 +1741,9 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
 export interface MemberFieldRefs {
   readonly id: Prisma.FieldRef<"Member", 'String'>
   readonly role: Prisma.FieldRef<"Member", 'Role'>
+  readonly customersScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
+  readonly salesScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
+  readonly commissionsScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
   readonly organizationId: Prisma.FieldRef<"Member", 'String'>
   readonly userId: Prisma.FieldRef<"Member", 'String'>
 }
@@ -1794,6 +2211,54 @@ export type Member$saleCommissionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.SaleCommissionScalarFieldEnum | Prisma.SaleCommissionScalarFieldEnum[]
+}
+
+/**
+ * Member.permissionOverrides
+ */
+export type Member$permissionOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MemberPermissionOverride
+   */
+  select?: Prisma.MemberPermissionOverrideSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MemberPermissionOverride
+   */
+  omit?: Prisma.MemberPermissionOverrideOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemberPermissionOverrideInclude<ExtArgs> | null
+  where?: Prisma.MemberPermissionOverrideWhereInput
+  orderBy?: Prisma.MemberPermissionOverrideOrderByWithRelationInput | Prisma.MemberPermissionOverrideOrderByWithRelationInput[]
+  cursor?: Prisma.MemberPermissionOverrideWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MemberPermissionOverrideScalarFieldEnum | Prisma.MemberPermissionOverrideScalarFieldEnum[]
+}
+
+/**
+ * Member.permissionAuditTargets
+ */
+export type Member$permissionAuditTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PermissionAuditLog
+   */
+  select?: Prisma.PermissionAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PermissionAuditLog
+   */
+  omit?: Prisma.PermissionAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PermissionAuditLogInclude<ExtArgs> | null
+  where?: Prisma.PermissionAuditLogWhereInput
+  orderBy?: Prisma.PermissionAuditLogOrderByWithRelationInput | Prisma.PermissionAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.PermissionAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PermissionAuditLogScalarFieldEnum | Prisma.PermissionAuditLogScalarFieldEnum[]
 }
 
 /**

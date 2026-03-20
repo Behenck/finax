@@ -69,7 +69,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
-import { textFilterParser } from "@/hooks/filters/parsers";
+import { entityFilterParser, textFilterParser } from "@/hooks/filters/parsers";
 import {
 	useDeleteSale,
 	useDeleteSalesBulk,
@@ -77,8 +77,10 @@ import {
 } from "@/hooks/sales";
 import {
 	type GetOrganizationsSlugSales200,
+	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugProducts,
 } from "@/http/generated";
+import { useAbility } from "@/permissions/access";
 import {
 	SALE_STATUS_LABEL,
 	SALE_STATUS_TRANSITIONS,
@@ -212,6 +214,29 @@ function SaleTableRowActions({
 	sale,
 	onOpenInstallments,
 }: SaleTableRowActionsProps) {
+	const ability = useAbility();
+	const canUpdateSale = ability.can("access", "sales.update");
+	const canDuplicateSale = ability.can("access", "sales.create");
+	const canChangeSaleStatus = ability.can("access", "sales.status.change");
+	const canDeleteSalePermission = ability.can("access", "sales.delete");
+	const canManageCommissions = ability.can("access", "sales.commissions.manage");
+	const canChangeCommissionInstallmentStatus = ability.can(
+		"access",
+		"sales.commissions.installments.status.change",
+	);
+	const canUpdateCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.update",
+	);
+	const canDeleteCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.delete",
+	);
+	const canAccessCommissionInstallments =
+		canManageCommissions ||
+		canChangeCommissionInstallmentStatus ||
+		canUpdateCommissionInstallment ||
+		canDeleteCommissionInstallment;
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { mutateAsync: deleteSale, isPending } = useDeleteSale();
 
@@ -243,50 +268,64 @@ function SaleTableRowActions({
 							Ver detalhes
 						</Link>
 					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
-							<Pencil className="size-4" />
-							Editar
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link
-							to="/sales/create"
-							search={{
-								duplicateSaleId: sale.id,
+					{canUpdateSale ? (
+						<DropdownMenuItem asChild>
+							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+								<Pencil className="size-4" />
+								Editar
+							</Link>
+						</DropdownMenuItem>
+					) : null}
+					{canDuplicateSale ? (
+						<DropdownMenuItem asChild>
+							<Link
+								to="/sales/create"
+								search={{
+									duplicateSaleId: sale.id,
+								}}
+							>
+								<Copy className="size-4" />
+								Duplicar
+							</Link>
+						</DropdownMenuItem>
+					) : null}
+					{canAccessCommissionInstallments ? (
+						<DropdownMenuItem
+							onSelect={(event) => {
+								event.preventDefault();
+								onOpenInstallments(sale);
 							}}
 						>
-							<Copy className="size-4" />
-							Duplicar
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem
-						onSelect={(event) => {
-							event.preventDefault();
-							onOpenInstallments(sale);
-						}}
-					>
-						<ListTree className="size-4" />
-						Ver parcelas
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<SaleStatusAction
-						saleId={sale.id}
-						currentStatus={sale.status as SaleStatus}
-						trigger="dropdown-item"
-					/>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem
-						variant="destructive"
-						disabled={isPending}
-						onSelect={(event) => {
-							event.preventDefault();
-							setDeleteDialogOpen(true);
-						}}
-					>
-						<Trash2 className="size-4" />
-						Excluir
-					</DropdownMenuItem>
+							<ListTree className="size-4" />
+							Ver parcelas
+						</DropdownMenuItem>
+					) : null}
+					{canChangeSaleStatus ? (
+						<>
+							<DropdownMenuSeparator />
+							<SaleStatusAction
+								saleId={sale.id}
+								currentStatus={sale.status as SaleStatus}
+								trigger="dropdown-item"
+							/>
+						</>
+					) : null}
+					{canDeleteSalePermission ? (
+						<>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								variant="destructive"
+								disabled={isPending}
+								onSelect={(event) => {
+									event.preventDefault();
+									setDeleteDialogOpen(true);
+								}}
+							>
+								<Trash2 className="size-4" />
+								Excluir
+							</DropdownMenuItem>
+						</>
+					) : null}
 				</DropdownMenuContent>
 			</DropdownMenu>
 
@@ -322,6 +361,30 @@ export function SalesDataTable({
 	isError,
 	onRetry,
 }: SalesDataTableProps) {
+	const ability = useAbility();
+	const canCreateSale = ability.can("access", "sales.create");
+	const canUpdateSale = ability.can("access", "sales.update");
+	const canChangeSaleStatus = ability.can("access", "sales.status.change");
+	const canDeleteSale = ability.can("access", "sales.delete");
+	const canManageCommissions = ability.can("access", "sales.commissions.manage");
+	const canChangeCommissionInstallmentStatus = ability.can(
+		"access",
+		"sales.commissions.installments.status.change",
+	);
+	const canUpdateCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.update",
+	);
+	const canDeleteCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.delete",
+	);
+	const canAccessCommissionInstallments =
+		canManageCommissions ||
+		canChangeCommissionInstallmentStatus ||
+		canUpdateCommissionInstallment ||
+		canDeleteCommissionInstallment;
+	const canUseBulkActions = canChangeSaleStatus || canDeleteSale;
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -333,6 +396,14 @@ export function SalesDataTable({
 	const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 	const restoredFiltersRef = useRef(false);
 	const [globalFilter, setGlobalFilter] = useQueryState("q", textFilterParser);
+	const [companyIdFilter, setCompanyIdFilter] = useQueryState(
+		"companyId",
+		entityFilterParser,
+	);
+	const [unitIdFilter, setUnitIdFilter] = useQueryState(
+		"unitId",
+		entityFilterParser,
+	);
 	const [statusFilter, setStatusFilter] = useQueryState(
 		"status",
 		saleStatusFilterParser,
@@ -369,6 +440,8 @@ export function SalesDataTable({
 		const storedFilters = readStorageJson<{
 			q?: string;
 			status?: SaleStatusFilter;
+			companyId?: string;
+			unitId?: string;
 		}>(SALES_FILTERS_STORAGE_KEY, {});
 
 		if (!globalFilter && storedFilters.q) {
@@ -382,7 +455,24 @@ export function SalesDataTable({
 		) {
 			void setStatusFilter(storedFilters.status);
 		}
-	}, [globalFilter, setGlobalFilter, setStatusFilter, statusFilter]);
+
+		if (!companyIdFilter && storedFilters.companyId) {
+			void setCompanyIdFilter(storedFilters.companyId);
+		}
+
+		if (!unitIdFilter && storedFilters.unitId) {
+			void setUnitIdFilter(storedFilters.unitId);
+		}
+	}, [
+		companyIdFilter,
+		globalFilter,
+		setCompanyIdFilter,
+		setGlobalFilter,
+		setStatusFilter,
+		setUnitIdFilter,
+		statusFilter,
+		unitIdFilter,
+	]);
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
@@ -394,9 +484,11 @@ export function SalesDataTable({
 			JSON.stringify({
 				q: globalFilter,
 				status: statusFilter,
+				companyId: companyIdFilter,
+				unitId: unitIdFilter,
 			}),
 		);
-	}, [globalFilter, statusFilter]);
+	}, [companyIdFilter, globalFilter, statusFilter, unitIdFilter]);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
@@ -405,6 +497,38 @@ export function SalesDataTable({
 			},
 		},
 	);
+	const companiesQuery = useGetOrganizationsSlugCompanies(
+		{ slug },
+		{
+			query: {
+				enabled: Boolean(organization?.slug),
+			},
+		},
+	);
+	const companies = useMemo(
+		() => companiesQuery.data?.companies ?? [],
+		[companiesQuery.data?.companies],
+	);
+	const unitsBySelectedCompany = useMemo(() => {
+		if (!companyIdFilter) {
+			return [];
+		}
+
+		return companies.find((company) => company.id === companyIdFilter)?.units ?? [];
+	}, [companies, companyIdFilter]);
+
+	useEffect(() => {
+		if (!unitIdFilter || !companyIdFilter) {
+			return;
+		}
+
+		const unitExistsInSelectedCompany = unitsBySelectedCompany.some(
+			(unit) => unit.id === unitIdFilter,
+		);
+		if (!unitExistsInSelectedCompany) {
+			void setUnitIdFilter("");
+		}
+	}, [companyIdFilter, setUnitIdFilter, unitIdFilter, unitsBySelectedCompany]);
 	const productPathById = useMemo(
 		() =>
 			buildProductPathMap(
@@ -412,9 +536,19 @@ export function SalesDataTable({
 			),
 		[productsQuery.data?.products],
 	);
+	const filteredSales = useMemo(
+		() =>
+			sales.filter((sale) => {
+				const matchesCompany =
+					!companyIdFilter || sale.company.id === companyIdFilter;
+				const matchesUnit = !unitIdFilter || sale.unit?.id === unitIdFilter;
+				return matchesCompany && matchesUnit;
+			}),
+		[companyIdFilter, sales, unitIdFilter],
+	);
 	const tableData = useMemo<SaleTableRow[]>(
 		() =>
-			sales
+			filteredSales
 				.map((sale) => ({
 					...sale,
 					productLabel:
@@ -433,7 +567,7 @@ export function SalesDataTable({
 
 					return saleB.createdAt.localeCompare(saleA.createdAt);
 				}),
-		[sales, productPathById],
+		[filteredSales, productPathById],
 	);
 
 	const columns = useMemo<ColumnDef<SaleTableRow>[]>(
@@ -444,22 +578,34 @@ export function SalesDataTable({
 				header: ({ table }) => (
 					<Checkbox
 						checked={
-							table.getIsAllPageRowsSelected()
-								? true
-								: table.getIsSomePageRowsSelected()
-									? "indeterminate"
-									: false
+							canUseBulkActions
+								? table.getIsAllPageRowsSelected()
+									? true
+									: table.getIsSomePageRowsSelected()
+										? "indeterminate"
+										: false
+								: false
 						}
-						onCheckedChange={(value) =>
-							table.toggleAllPageRowsSelected(Boolean(value))
-						}
+						onCheckedChange={(value) => {
+							if (!canUseBulkActions) {
+								return;
+							}
+							table.toggleAllPageRowsSelected(Boolean(value));
+						}}
+						disabled={!canUseBulkActions}
 						aria-label="Selecionar página atual"
 					/>
 				),
 				cell: ({ row }) => (
 					<Checkbox
 						checked={row.getIsSelected()}
-						onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+						onCheckedChange={(value) => {
+							if (!canUseBulkActions) {
+								return;
+							}
+							row.toggleSelected(Boolean(value));
+						}}
+						disabled={!canUseBulkActions}
 						aria-label={`Selecionar venda ${row.original.id}`}
 					/>
 				),
@@ -539,6 +685,15 @@ export function SalesDataTable({
 				header: "Parcelas",
 				cell: ({ row }) => {
 					const summary = row.original.commissionInstallmentsSummary;
+					if (!canAccessCommissionInstallments) {
+						return (
+							<span className="text-sm text-muted-foreground">
+								{summary.total === 0
+									? "Sem parcelas"
+									: `${summary.paid}/${summary.total} pagas`}
+							</span>
+						);
+					}
 					return (
 						<Button
 							type="button"
@@ -595,7 +750,7 @@ export function SalesDataTable({
 				),
 			},
 		],
-		[],
+		[canAccessCommissionInstallments, canUseBulkActions],
 	);
 
 	const table = useReactTable({
@@ -698,6 +853,14 @@ export function SalesDataTable({
 		}
 	}
 
+	function clearFilters() {
+		setRowSelection({});
+		void setGlobalFilter("");
+		void setStatusFilter("ALL");
+		void setCompanyIdFilter("");
+		void setUnitIdFilter("");
+	}
+
 	if (isLoading) {
 		return (
 			<Card className="p-6">
@@ -727,20 +890,22 @@ export function SalesDataTable({
 						Cadastre sua primeira venda para começar a acompanhar o pipeline.
 					</p>
 				</div>
-				<Button asChild className="w-fit">
-					<Link to="/sales/create">
-						<Plus className="size-4" />
-						Nova Venda
-					</Link>
-				</Button>
+				{canCreateSale ? (
+					<Button asChild className="w-fit">
+						<Link to="/sales/create">
+							<Plus className="size-4" />
+							Nova Venda
+						</Link>
+					</Button>
+				) : null}
 			</Card>
 		);
 	}
 
 	return (
 		<div className="space-y-4">
-			<FilterPanel className="lg:grid-cols-3">
-				<div className="space-y-1 lg:col-span-2">
+			<FilterPanel className="lg:grid-cols-4 xl:grid-cols-6 xl:items-end">
+				<div className="space-y-1 xl:col-span-2">
 					<p className="text-xs text-muted-foreground">Busca</p>
 					<Input
 						placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
@@ -748,6 +913,52 @@ export function SalesDataTable({
 						onChange={(event) => setGlobalFilter(event.target.value)}
 						className="w-full"
 					/>
+				</div>
+
+				<div className="space-y-1">
+					<p className="text-xs text-muted-foreground">Empresa</p>
+					<Select
+						value={companyIdFilter || "ALL"}
+						onValueChange={(value) => {
+							void setCompanyIdFilter(value === "ALL" ? "" : value);
+							void setUnitIdFilter("");
+						}}
+					>
+						<SelectTrigger className="w-full">
+							<SelectValue placeholder="Todas as empresas" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="ALL">Todas as empresas</SelectItem>
+							{companies.map((company) => (
+								<SelectItem key={company.id} value={company.id}>
+									{company.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+
+				<div className="space-y-1">
+					<p className="text-xs text-muted-foreground">Unidade</p>
+					<Select
+						value={unitIdFilter || "ALL"}
+						onValueChange={(value) => {
+							void setUnitIdFilter(value === "ALL" ? "" : value);
+						}}
+						disabled={!companyIdFilter}
+					>
+						<SelectTrigger className="w-full">
+							<SelectValue placeholder="Todas as unidades" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="ALL">Todas as unidades</SelectItem>
+							{unitsBySelectedCompany.map((unit) => (
+								<SelectItem key={unit.id} value={unit.id}>
+									{unit.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 
 				<div className="space-y-1">
@@ -771,6 +982,16 @@ export function SalesDataTable({
 						</SelectContent>
 					</Select>
 				</div>
+
+				<Button
+					type="button"
+					variant="outline"
+					className="w-full xl:justify-self-stretch"
+					onClick={clearFilters}
+				>
+					<RefreshCcw className="size-4" />
+					Limpar
+				</Button>
 			</FilterPanel>
 
 			<div className="flex justify-end">
@@ -817,107 +1038,119 @@ export function SalesDataTable({
 				</DropdownMenu>
 			</div>
 
-			{selectedSaleIds.length > 0 ? (
+			{selectedSaleIds.length > 0 && canUseBulkActions ? (
 				<div className="flex flex-col gap-3 rounded-md border border-blue-300 bg-blue-50 p-4 md:flex-row md:items-center md:justify-between">
 					<p className="text-sm text-blue-900">
 						{selectedSaleIds.length} venda(s) selecionada(s)
 					</p>
 					<div className="flex flex-col gap-2 md:flex-row md:items-center">
-						<Select
-							value={bulkStatus || undefined}
-							onValueChange={(value) => setBulkStatus(value as SaleStatus)}
-							disabled={availableBulkStatuses.length === 0}
-						>
-							<SelectTrigger className="w-full md:w-52">
-								<SelectValue
-									placeholder={
-										availableBulkStatuses.length === 0
-											? "Sem transição disponível"
-											: "Novo status"
-									}
-								/>
-							</SelectTrigger>
-							<SelectContent>
-								{availableBulkStatuses.map((status) => (
-									<SelectItem key={status} value={status}>
-										{SALE_STATUS_LABEL[status]}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-						<Button
-							type="button"
-							onClick={() => void handleApplyBulkStatus()}
-							disabled={!bulkStatus || isBulkStatusPending}
-						>
-							{isBulkStatusPending ? "Aplicando..." : "Alterar status em lote"}
-						</Button>
-						<Button
-							type="button"
-							variant="destructive"
-							onClick={() => setBulkDeleteDialogOpen(true)}
-							disabled={isBulkDeletePending}
-						>
-							{isBulkDeletePending ? "Excluindo..." : "Excluir em lote"}
-						</Button>
+						{canChangeSaleStatus ? (
+							<>
+								<Select
+									value={bulkStatus || undefined}
+									onValueChange={(value) => setBulkStatus(value as SaleStatus)}
+									disabled={availableBulkStatuses.length === 0}
+								>
+									<SelectTrigger className="w-full md:w-52">
+										<SelectValue
+											placeholder={
+												availableBulkStatuses.length === 0
+													? "Sem transição disponível"
+													: "Novo status"
+											}
+										/>
+									</SelectTrigger>
+									<SelectContent>
+										{availableBulkStatuses.map((status) => (
+											<SelectItem key={status} value={status}>
+												{SALE_STATUS_LABEL[status]}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<Button
+									type="button"
+									onClick={() => void handleApplyBulkStatus()}
+									disabled={!bulkStatus || isBulkStatusPending}
+								>
+									{isBulkStatusPending
+										? "Aplicando..."
+										: "Alterar status em lote"}
+								</Button>
+							</>
+						) : null}
+						{canDeleteSale ? (
+							<Button
+								type="button"
+								variant="destructive"
+								onClick={() => setBulkDeleteDialogOpen(true)}
+								disabled={isBulkDeletePending}
+							>
+								{isBulkDeletePending ? "Excluindo..." : "Excluir em lote"}
+							</Button>
+						) : null}
 					</div>
 				</div>
 			) : null}
 
-			<AlertDialog
-				open={bulkDeleteDialogOpen}
-				onOpenChange={setBulkDeleteDialogOpen}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Excluir vendas em lote</AlertDialogTitle>
-						<AlertDialogDescription>
-							Tem certeza que deseja excluir{" "}
-							<strong>{selectedSaleIds.length}</strong> venda(s) selecionada(s)?
-							Esta ação não pode ser desfeita.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isBulkDeletePending}>
-							Cancelar
-						</AlertDialogCancel>
-						<AlertDialogAction
-							variant="destructive"
-							onClick={() => void handleConfirmBulkDelete()}
-							disabled={isBulkDeletePending}
-						>
-							{isBulkDeletePending ? "Excluindo..." : "Confirmar exclusão"}
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			{canDeleteSale ? (
+				<AlertDialog
+					open={bulkDeleteDialogOpen}
+					onOpenChange={setBulkDeleteDialogOpen}
+				>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Excluir vendas em lote</AlertDialogTitle>
+							<AlertDialogDescription>
+								Tem certeza que deseja excluir{" "}
+								<strong>{selectedSaleIds.length}</strong> venda(s) selecionada(s)?
+								Esta ação não pode ser desfeita.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel disabled={isBulkDeletePending}>
+								Cancelar
+							</AlertDialogCancel>
+							<AlertDialogAction
+								variant="destructive"
+								onClick={() => void handleConfirmBulkDelete()}
+								disabled={isBulkDeletePending}
+							>
+								{isBulkDeletePending ? "Excluindo..." : "Confirmar exclusão"}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+			) : null}
 
 			<ResponsiveDataView
 				mobile={
 					<div className="space-y-3">
-						<Card className="p-3">
-							<div className="flex items-center justify-between gap-3">
-								<div className="flex items-center gap-2 text-sm">
-									<Checkbox
-										checked={
-											table.getIsAllPageRowsSelected()
-												? true
-												: table.getIsSomePageRowsSelected()
-													? "indeterminate"
-													: false
-										}
-										onCheckedChange={(value) =>
-											table.toggleAllPageRowsSelected(Boolean(value))
-										}
-										aria-label="Selecionar página atual"
-									/>
-									<span>Selecionar vendas da página</span>
+						{canUseBulkActions ? (
+							<Card className="p-3">
+								<div className="flex items-center justify-between gap-3">
+									<div className="flex items-center gap-2 text-sm">
+										<Checkbox
+											checked={
+												table.getIsAllPageRowsSelected()
+													? true
+													: table.getIsSomePageRowsSelected()
+														? "indeterminate"
+														: false
+											}
+											onCheckedChange={(value) =>
+												table.toggleAllPageRowsSelected(Boolean(value))
+											}
+											aria-label="Selecionar página atual"
+										/>
+										<span>Selecionar vendas da página</span>
+									</div>
+									<span className="text-xs text-muted-foreground">
+										{table.getRowModel().rows.length} registro(s)
+									</span>
 								</div>
-								<span className="text-xs text-muted-foreground">
-									{table.getRowModel().rows.length} registro(s)
-								</span>
-							</div>
-						</Card>
+							</Card>
+						) : null}
 
 						{table.getRowModel().rows.length === 0 ? (
 							<Card className="p-6 text-center text-sm text-muted-foreground">
@@ -944,6 +1177,7 @@ export function SalesDataTable({
 												onCheckedChange={(value) =>
 													row.toggleSelected(Boolean(value))
 												}
+												disabled={!canUseBulkActions}
 												aria-label={`Selecionar venda ${sale.id}`}
 											/>
 										</div>
@@ -988,41 +1222,49 @@ export function SalesDataTable({
 													Detalhes
 												</Link>
 											</Button>
-											<Button variant="outline" size="sm" asChild>
-												<Link
-													to="/sales/update/$saleId"
-													params={{ saleId: sale.id }}
+											{canUpdateSale ? (
+												<Button variant="outline" size="sm" asChild>
+													<Link
+														to="/sales/update/$saleId"
+														params={{ saleId: sale.id }}
+													>
+														<Pencil className="size-4" />
+														Editar
+													</Link>
+												</Button>
+											) : null}
+											{canCreateSale ? (
+												<Button variant="outline" size="sm" asChild>
+													<Link
+														to="/sales/create"
+														search={{ duplicateSaleId: sale.id }}
+													>
+														<Copy className="size-4" />
+														Duplicar
+													</Link>
+												</Button>
+											) : null}
+											{canAccessCommissionInstallments ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													className="!min-h-8"
+													disabled={summary.total === 0}
+													onClick={() => setInstallmentsDrawerSale(sale)}
 												>
-													<Pencil className="size-4" />
-													Editar
-												</Link>
-											</Button>
-											<Button variant="outline" size="sm" asChild>
-												<Link
-													to="/sales/create"
-													search={{ duplicateSaleId: sale.id }}
-												>
-													<Copy className="size-4" />
-													Duplicar
-												</Link>
-											</Button>
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												className="!min-h-8"
-												disabled={summary.total === 0}
-												onClick={() => setInstallmentsDrawerSale(sale)}
-											>
-												<ListTree className="size-4" />
-												Parcelas
-											</Button>
+													<ListTree className="size-4" />
+													Parcelas
+												</Button>
+											) : null}
 										</div>
 
-										<SaleStatusAction
-											saleId={sale.id}
-											currentStatus={sale.status as SaleStatus}
-										/>
+										{canChangeSaleStatus ? (
+											<SaleStatusAction
+												saleId={sale.id}
+												currentStatus={sale.status as SaleStatus}
+											/>
+										) : null}
 									</Card>
 								);
 							})
