@@ -145,6 +145,7 @@ model Member {
   customersScope        MemberDataScope       @default(ORGANIZATION_ALL) @map("customers_scope")
   salesScope            MemberDataScope       @default(ORGANIZATION_ALL) @map("sales_scope")
   commissionsScope      MemberDataScope       @default(ORGANIZATION_ALL) @map("commissions_scope")
+  partnersScope         MemberDataScope       @default(ORGANIZATION_ALL) @map("partners_scope")
   organization          Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId        String                @map("organization_id")
   user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)

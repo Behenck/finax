@@ -14,6 +14,7 @@ export type MemberListItem = {
 	customersScope?: MemberDataScopeValue;
 	salesScope?: MemberDataScopeValue;
 	commissionsScope?: MemberDataScopeValue;
+	partnersScope?: MemberDataScopeValue;
 	name: string | null;
 	avatarUrl: string | null;
 	email: string;

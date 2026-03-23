@@ -392,6 +392,7 @@ export type {
   MembersCustomersScopeEnumKey,
   MembersSalesScopeEnumKey,
   MembersCommissionsScopeEnumKey,
+  MembersPartnersScopeEnumKey,
   GetOrganizationsSlugMembers200,
   GetOrganizationsSlugMembersQueryResponse,
   GetOrganizationsSlugMembersQuery,
@@ -988,6 +989,7 @@ export type {
   DataScopesCustomersScopeEnumKey,
   DataScopesSalesScopeEnumKey,
   DataScopesCommissionsScopeEnumKey,
+  DataScopesPartnersScopeEnumKey,
   PutOrganizationsSlugMembersMemberidMutationRequest,
   PutOrganizationsSlugMembersMemberidMutationResponse,
   PutOrganizationsSlugMembersMemberidMutation,
@@ -1663,6 +1665,7 @@ export { membersRoleEnum } from "./models/GetOrganizationsSlugMembers.ts";
 export { membersCustomersScopeEnum } from "./models/GetOrganizationsSlugMembers.ts";
 export { membersSalesScopeEnum } from "./models/GetOrganizationsSlugMembers.ts";
 export { membersCommissionsScopeEnum } from "./models/GetOrganizationsSlugMembers.ts";
+export { membersPartnersScopeEnum } from "./models/GetOrganizationsSlugMembers.ts";
 export { membershipRoleEnum } from "./models/GetOrganizationsSlugMembership.ts";
 export { memberRoleEnum } from "./models/GetOrganizationsSlugMembersMemberidPermissions.ts";
 export { overridesEffectEnum } from "./models/GetOrganizationsSlugMembersMemberidPermissions.ts";
@@ -1784,6 +1787,7 @@ export { accessScopeModeEnum } from "./models/PutOrganizationsSlugMembersMemberi
 export { dataScopesCustomersScopeEnum } from "./models/PutOrganizationsSlugMembersMemberid.ts";
 export { dataScopesSalesScopeEnum } from "./models/PutOrganizationsSlugMembersMemberid.ts";
 export { dataScopesCommissionsScopeEnum } from "./models/PutOrganizationsSlugMembersMemberid.ts";
+export { dataScopesPartnersScopeEnum } from "./models/PutOrganizationsSlugMembersMemberid.ts";
 export { putOrganizationsSlugMembersMemberidPermissions204Enum } from "./models/PutOrganizationsSlugMembersMemberidPermissions.ts";
 export { overridesEffectEnum2 } from "./models/PutOrganizationsSlugMembersMemberidPermissions.ts";
 export { putOrganizationsSlugPartnersPartnerid204Enum } from "./models/PutOrganizationsSlugPartnersPartnerid.ts";

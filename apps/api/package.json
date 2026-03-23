@@ -17,6 +17,9 @@
   "keywords": [],
   "author": "",
   "type": "module",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "license": "ISC",
   "packageManager": "pnpm@10.25.0",
   "dependencies": {

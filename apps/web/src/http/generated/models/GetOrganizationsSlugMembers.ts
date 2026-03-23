@@ -48,6 +48,15 @@ export const membersCommissionsScopeEnum = {
 export type MembersCommissionsScopeEnumKey =
   (typeof membersCommissionsScopeEnum)[keyof typeof membersCommissionsScopeEnum];
 
+export const membersPartnersScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type MembersPartnersScopeEnumKey =
+  (typeof membersPartnersScopeEnum)[keyof typeof membersPartnersScopeEnum];
+
 /**
  * @description Default Response
  */
@@ -80,6 +89,10 @@ export type GetOrganizationsSlugMembers200 = {
      * @type string
      */
     commissionsScope: MembersCommissionsScopeEnumKey;
+    /**
+     * @type string
+     */
+    partnersScope: MembersPartnersScopeEnumKey;
     /**
      * @type string
      */

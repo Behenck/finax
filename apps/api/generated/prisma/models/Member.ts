@@ -30,6 +30,7 @@ export type MemberMinAggregateOutputType = {
   customersScope: $Enums.MemberDataScope | null
   salesScope: $Enums.MemberDataScope | null
   commissionsScope: $Enums.MemberDataScope | null
+  partnersScope: $Enums.MemberDataScope | null
   organizationId: string | null
   userId: string | null
 }
@@ -40,6 +41,7 @@ export type MemberMaxAggregateOutputType = {
   customersScope: $Enums.MemberDataScope | null
   salesScope: $Enums.MemberDataScope | null
   commissionsScope: $Enums.MemberDataScope | null
+  partnersScope: $Enums.MemberDataScope | null
   organizationId: string | null
   userId: string | null
 }
@@ -50,6 +52,7 @@ export type MemberCountAggregateOutputType = {
   customersScope: number
   salesScope: number
   commissionsScope: number
+  partnersScope: number
   organizationId: number
   userId: number
   _all: number
@@ -62,6 +65,7 @@ export type MemberMinAggregateInputType = {
   customersScope?: true
   salesScope?: true
   commissionsScope?: true
+  partnersScope?: true
   organizationId?: true
   userId?: true
 }
@@ -72,6 +76,7 @@ export type MemberMaxAggregateInputType = {
   customersScope?: true
   salesScope?: true
   commissionsScope?: true
+  partnersScope?: true
   organizationId?: true
   userId?: true
 }
@@ -82,6 +87,7 @@ export type MemberCountAggregateInputType = {
   customersScope?: true
   salesScope?: true
   commissionsScope?: true
+  partnersScope?: true
   organizationId?: true
   userId?: true
   _all?: true
@@ -165,6 +171,7 @@ export type MemberGroupByOutputType = {
   customersScope: $Enums.MemberDataScope
   salesScope: $Enums.MemberDataScope
   commissionsScope: $Enums.MemberDataScope
+  partnersScope: $Enums.MemberDataScope
   organizationId: string
   userId: string
   _count: MemberCountAggregateOutputType | null
@@ -196,6 +203,7 @@ export type MemberWhereInput = {
   customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -213,6 +221,7 @@ export type MemberOrderByWithRelationInput = {
   customersScope?: Prisma.SortOrder
   salesScope?: Prisma.SortOrder
   commissionsScope?: Prisma.SortOrder
+  partnersScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -234,6 +243,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -251,6 +261,7 @@ export type MemberOrderByWithAggregationInput = {
   customersScope?: Prisma.SortOrder
   salesScope?: Prisma.SortOrder
   commissionsScope?: Prisma.SortOrder
+  partnersScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.MemberCountOrderByAggregateInput
@@ -267,6 +278,7 @@ export type MemberScalarWhereWithAggregatesInput = {
   customersScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeWithAggregatesFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringWithAggregatesFilter<"Member"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Member"> | string
 }
@@ -277,6 +289,7 @@ export type MemberCreateInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
@@ -292,6 +305,7 @@ export type MemberUncheckedCreateInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
@@ -307,6 +321,7 @@ export type MemberUpdateInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
@@ -322,6 +337,7 @@ export type MemberUncheckedUpdateInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
@@ -337,6 +353,7 @@ export type MemberCreateManyInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
 }
@@ -347,6 +364,7 @@ export type MemberUpdateManyMutationInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
 }
 
 export type MemberUncheckedUpdateManyInput = {
@@ -355,6 +373,7 @@ export type MemberUncheckedUpdateManyInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -380,6 +399,7 @@ export type MemberCountOrderByAggregateInput = {
   customersScope?: Prisma.SortOrder
   salesScope?: Prisma.SortOrder
   commissionsScope?: Prisma.SortOrder
+  partnersScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -390,6 +410,7 @@ export type MemberMaxOrderByAggregateInput = {
   customersScope?: Prisma.SortOrder
   salesScope?: Prisma.SortOrder
   commissionsScope?: Prisma.SortOrder
+  partnersScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -400,6 +421,7 @@ export type MemberMinOrderByAggregateInput = {
   customersScope?: Prisma.SortOrder
   salesScope?: Prisma.SortOrder
   commissionsScope?: Prisma.SortOrder
+  partnersScope?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
@@ -584,6 +606,7 @@ export type MemberCreateWithoutUserInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
@@ -598,6 +621,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
@@ -641,6 +665,7 @@ export type MemberScalarWhereInput = {
   customersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFilter<"Member"> | $Enums.MemberDataScope
   organizationId?: Prisma.StringFilter<"Member"> | string
   userId?: Prisma.StringFilter<"Member"> | string
 }
@@ -651,6 +676,7 @@ export type MemberCreateWithoutMemberCompanyAccessesInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
@@ -665,6 +691,7 @@ export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
@@ -695,6 +722,7 @@ export type MemberUpdateWithoutMemberCompanyAccessesInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
@@ -709,6 +737,7 @@ export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
@@ -723,6 +752,7 @@ export type MemberCreateWithoutOrganizationInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
@@ -737,6 +767,7 @@ export type MemberUncheckedCreateWithoutOrganizationInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
@@ -777,6 +808,7 @@ export type MemberCreateWithoutPermissionOverridesInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
@@ -791,6 +823,7 @@ export type MemberUncheckedCreateWithoutPermissionOverridesInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
@@ -821,6 +854,7 @@ export type MemberUpdateWithoutPermissionOverridesInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
@@ -835,6 +869,7 @@ export type MemberUncheckedUpdateWithoutPermissionOverridesInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
@@ -849,6 +884,7 @@ export type MemberCreateWithoutPermissionAuditTargetsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
@@ -863,6 +899,7 @@ export type MemberUncheckedCreateWithoutPermissionAuditTargetsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
@@ -893,6 +930,7 @@ export type MemberUpdateWithoutPermissionAuditTargetsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
@@ -907,6 +945,7 @@ export type MemberUncheckedUpdateWithoutPermissionAuditTargetsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
@@ -921,6 +960,7 @@ export type MemberCreateWithoutProductCommissionsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
@@ -935,6 +975,7 @@ export type MemberUncheckedCreateWithoutProductCommissionsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
@@ -965,6 +1006,7 @@ export type MemberUpdateWithoutProductCommissionsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
@@ -979,6 +1021,7 @@ export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
@@ -993,6 +1036,7 @@ export type MemberCreateWithoutSaleCommissionsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMember_onInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
@@ -1007,6 +1051,7 @@ export type MemberUncheckedCreateWithoutSaleCommissionsInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
   userId: string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
@@ -1037,6 +1082,7 @@ export type MemberUpdateWithoutSaleCommissionsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
@@ -1051,6 +1097,7 @@ export type MemberUncheckedUpdateWithoutSaleCommissionsInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
@@ -1065,6 +1112,7 @@ export type MemberCreateManyUserInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   organizationId: string
 }
 
@@ -1074,6 +1122,7 @@ export type MemberUpdateWithoutUserInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
@@ -1088,6 +1137,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
@@ -1102,6 +1152,7 @@ export type MemberUncheckedUpdateManyWithoutUserInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -1111,6 +1162,7 @@ export type MemberCreateManyOrganizationInput = {
   customersScope?: $Enums.MemberDataScope
   salesScope?: $Enums.MemberDataScope
   commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
   userId: string
 }
 
@@ -1120,6 +1172,7 @@ export type MemberUpdateWithoutOrganizationInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
@@ -1134,6 +1187,7 @@ export type MemberUncheckedUpdateWithoutOrganizationInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
@@ -1148,6 +1202,7 @@ export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
   customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -1224,6 +1279,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   customersScope?: boolean
   salesScope?: boolean
   commissionsScope?: boolean
+  partnersScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1242,6 +1298,7 @@ export type MemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   customersScope?: boolean
   salesScope?: boolean
   commissionsScope?: boolean
+  partnersScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1254,6 +1311,7 @@ export type MemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   customersScope?: boolean
   salesScope?: boolean
   commissionsScope?: boolean
+  partnersScope?: boolean
   organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1266,11 +1324,12 @@ export type MemberSelectScalar = {
   customersScope?: boolean
   salesScope?: boolean
   commissionsScope?: boolean
+  partnersScope?: boolean
   organizationId?: boolean
   userId?: boolean
 }
 
-export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "customersScope" | "salesScope" | "commissionsScope" | "organizationId" | "userId", ExtArgs["result"]["member"]>
+export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "customersScope" | "salesScope" | "commissionsScope" | "partnersScope" | "organizationId" | "userId", ExtArgs["result"]["member"]>
 export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1307,6 +1366,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     customersScope: $Enums.MemberDataScope
     salesScope: $Enums.MemberDataScope
     commissionsScope: $Enums.MemberDataScope
+    partnersScope: $Enums.MemberDataScope
     organizationId: string
     userId: string
   }, ExtArgs["result"]["member"]>
@@ -1744,6 +1804,7 @@ export interface MemberFieldRefs {
   readonly customersScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
   readonly salesScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
   readonly commissionsScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
+  readonly partnersScope: Prisma.FieldRef<"Member", 'MemberDataScope'>
   readonly organizationId: Prisma.FieldRef<"Member", 'String'>
   readonly userId: Prisma.FieldRef<"Member", 'String'>
 }

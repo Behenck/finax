@@ -53,6 +53,14 @@ export type GetOrganizationsSlugCommissionsInstallmentsQueryParams = {
   /**
    * @type string | undefined, uuid
    */
+  companyId?: string;
+  /**
+   * @type string | undefined, uuid
+   */
+  unitId?: string;
+  /**
+   * @type string | undefined, uuid
+   */
   productId?: string;
   /**
    * @type string | undefined

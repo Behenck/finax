@@ -46,6 +46,11 @@ export const putOrganizationsSlugMembersMemberidMutationRequestSchema =
           "COMPANY_ONLY",
           "ORGANIZATION_ALL",
         ]),
+        partnersScope: z.enum([
+          "LINKED_ONLY",
+          "COMPANY_ONLY",
+          "ORGANIZATION_ALL",
+        ]),
       }),
     ),
   });

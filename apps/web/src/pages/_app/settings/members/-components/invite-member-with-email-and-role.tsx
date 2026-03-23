@@ -3,9 +3,10 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useApp } from '@/context/app-context';
-import { getOrganizationsSlugMembersRolePathParamsRoleEnum, usePostOrganizationsSlugInvites } from '@/http/generated';
+import { getOrganizationsSlugInvitesQueryKey, getOrganizationsSlugMembersRolePathParamsRoleEnum, usePostOrganizationsSlugInvites } from '@/http/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -22,6 +23,7 @@ export type InviteMemberType = z.infer<typeof InviteMemberSchema>;
 export function InviteMemberWithEmailAndRole() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { organization } = useApp()
+  const queryClient = useQueryClient()
   const { mutateAsync: sendInvite } = usePostOrganizationsSlugInvites()
 
   const {
@@ -43,6 +45,13 @@ export function InviteMemberWithEmailAndRole() {
         slug: organization.slug,
         data
       })
+
+      await queryClient.invalidateQueries({
+        queryKey: getOrganizationsSlugInvitesQueryKey({
+          slug: organization.slug,
+        }),
+      })
+
       reset({ email: "", role: data.role });
 
       toast.success("Convite enviado com sucesso!")

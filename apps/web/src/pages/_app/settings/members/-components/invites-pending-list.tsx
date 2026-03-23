@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useDeleteInvite } from '@/hooks/invites/use-delete-invite'
 import { UseInvites } from '@/hooks/invites/use-invites'
 import { roleFilterParser, textFilterParser } from '@/hooks/filters/parsers'
 import { useApp } from '@/context/app-context'
@@ -25,6 +26,7 @@ export function InvitesPendingList() {
   const [roleFilter, setRoleFilter] = useQueryState("invitesRole", roleFilterParser)
 
   const { data: invites } = UseInvites(organization?.slug ?? "")
+  const deleteInviteMutation = useDeleteInvite()
 
   const filteredInvites = useMemo(() => {
     const items = invites ?? []
@@ -100,7 +102,12 @@ export function InvitesPendingList() {
                 </div>
               </div>
               <div className='flex items-center justify-end gap-2'>
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => deleteInviteMutation.mutate({ inviteId: invite.id })}
+                  disabled={deleteInviteMutation.isPending}
+                >
                   <X className='text-red-500' />
                 </Button>
               </div>

@@ -33,3 +33,4 @@ BEGIN
     ALTER TYPE "ProductCommissionScenarioConditionType" ADD VALUE 'SALE_HAS_UNIT';
   END IF;
 END $$;
+

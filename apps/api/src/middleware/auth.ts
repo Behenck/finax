@@ -66,6 +66,7 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
 						customersScope: true,
 						salesScope: true,
 						commissionsScope: true,
+						partnersScope: true,
 						organization: true,
 					},
 				});
@@ -107,6 +108,7 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
 						customersScope: MemberDataScope.ORGANIZATION_ALL,
 						salesScope: MemberDataScope.ORGANIZATION_ALL,
 						commissionsScope: MemberDataScope.ORGANIZATION_ALL,
+						partnersScope: MemberDataScope.ORGANIZATION_ALL,
 					},
 				};
 			}

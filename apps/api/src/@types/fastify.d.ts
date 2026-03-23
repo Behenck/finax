@@ -12,6 +12,7 @@ type AuthMembership = {
 	customersScope: (typeof MemberDataScope)[keyof typeof MemberDataScope];
 	salesScope: (typeof MemberDataScope)[keyof typeof MemberDataScope];
 	commissionsScope: (typeof MemberDataScope)[keyof typeof MemberDataScope];
+	partnersScope: (typeof MemberDataScope)[keyof typeof MemberDataScope];
 };
 
 declare module "fastify" {

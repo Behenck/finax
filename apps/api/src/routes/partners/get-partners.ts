@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
+import { buildPartnersVisibilityWhere } from "@/permissions/data-visibility";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { BadRequestError } from "../_errors/bad-request-error";
-import { PartnerDocumentType, PartnerStatus } from "generated/prisma/enums";
+import {
+	MemberDataScope,
+	PartnerDocumentType,
+	PartnerStatus,
+} from "generated/prisma/enums";
 
 export async function getPartners(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -56,23 +60,22 @@ export async function getPartners(app: FastifyInstance) {
     },
       async (request) => {
         const { slug } = request.params
-
-        const organization = await prisma.organization.findUnique({
-          where: {
-            slug,
-          },
-          select: {
-            id: true,
-          },
+        const { organization, membership } = await request.getUserMembership(slug)
+        const canViewAllPartners = await request.hasPermission(
+          slug,
+          "registers.partners.view.all",
+        )
+        const partnersVisibilityWhere = buildPartnersVisibilityWhere({
+          userId: membership.userId,
+          partnersScope: canViewAllPartners
+            ? MemberDataScope.ORGANIZATION_ALL
+            : MemberDataScope.LINKED_ONLY,
         })
-
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
 
         const partners = await prisma.partner.findMany({
           where: {
-            organizationId: organization.id
+            organizationId: organization.id,
+            ...partnersVisibilityWhere,
           },
           select: {
             id: true,

@@ -20,17 +20,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import {
 	getOrganizationsSlugMembersMemberidPermissionsQueryKey,
 	getOrganizationsSlugMembersQueryKey,
 	type GetOrganizationsSlugPermissionsCatalog200,
@@ -40,6 +29,10 @@ import {
 	usePutOrganizationsSlugMembersMemberid,
 	usePutOrganizationsSlugMembersMemberidPermissions,
 } from "@/http/generated";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 
 import {
 	MemberAccessScopePicker,
@@ -48,10 +41,9 @@ import {
 import { MemberAccessSummary } from "./member-access-summary";
 import type {
 	CompanyOption,
-	MemberDataScopeValue,
 	MemberListItem,
 } from "./utils/types";
-import { getMemberDataScopes, getMemberScope } from "./utils";
+import { getMemberScope } from "./utils";
 
 const MODULE_SECTION_LABELS: Record<string, string> = {
 	registers: "Cadastros",
@@ -96,59 +88,8 @@ const ACTION_LABELS: Record<string, string> = {
 	"status.change": "Alterar status",
 	update: "Editar",
 	view: "Visualizar",
-	"view.all": "Visualizar tudo",
+	"view.all": "Visualizar todos",
 	"commissions.manage": "Comissões",
-};
-
-const DATA_SCOPE_OPTIONS: Array<{
-	value: MemberDataScopeValue;
-	label: string;
-	description: string;
-}> = [
-	{
-		value: "LINKED_ONLY",
-		label: "Somente vinculados",
-		description: "Mostra apenas dados vinculados diretamente ao membro.",
-	},
-	{
-		value: "COMPANY_ONLY",
-		label: "Todos da empresa",
-		description: "Mostra dados das empresas/unidades liberadas no acesso.",
-	},
-	{
-		value: "ORGANIZATION_ALL",
-		label: "Todos da organização",
-		description: "Mostra todos os dados da organização.",
-	},
-];
-
-const DATA_SCOPE_FIELDS: Array<{
-	key: keyof MemberDataScopesState;
-	title: string;
-	description: string;
-}> = [
-	{
-		key: "customersScope",
-		title: "Clientes",
-		description: "Controle o que o membro pode visualizar na listagem de clientes.",
-	},
-	{
-		key: "salesScope",
-		title: "Vendas",
-		description: "Controle o que o membro pode visualizar na listagem de vendas.",
-	},
-	{
-		key: "commissionsScope",
-		title: "Comissões",
-		description:
-			"Controle o que o membro pode visualizar na listagem de comissões.",
-	},
-];
-
-type MemberDataScopesState = {
-	customersScope: MemberDataScopeValue;
-	salesScope: MemberDataScopeValue;
-	commissionsScope: MemberDataScopeValue;
 };
 
 type MemberAccessManagerTab = "access" | "permissions";
@@ -305,9 +246,6 @@ export function MemberAccessManager({
 	const [scope, setScope] = useState<MemberAccessScopeValue>(() =>
 		getMemberScope(member),
 	);
-	const [dataScopes, setDataScopes] = useState<MemberDataScopesState>(() =>
-		getMemberDataScopes(member),
-	);
 	const [activeTab, setActiveTab] = useState<MemberAccessManagerTab>("access");
 	const [permissionStates, setPermissionStates] = useState<
 		Record<string, boolean>
@@ -356,7 +294,6 @@ export function MemberAccessManager({
 
 	useEffect(() => {
 		setScope(getMemberScope(member));
-		setDataScopes(getMemberDataScopes(member));
 	}, [member, open]);
 
 	useEffect(() => {
@@ -420,107 +357,105 @@ export function MemberAccessManager({
 
 	const isSaving = isSavingAccess || isSavingPermissions;
 
-	const handleSaveAccess = async () => {
-		try {
-			const data: PutOrganizationsSlugMembersMemberidMutationRequest = {
-				role: member.role,
-				accessScope: scope,
-				dataScopes: {
-					customersScope: dataScopes.customersScope,
-					salesScope: dataScopes.salesScope,
-					commissionsScope: dataScopes.commissionsScope,
-				},
-			};
+	const saveAccessChanges = async () => {
+		const data: PutOrganizationsSlugMembersMemberidMutationRequest = {
+			role: member.role,
+			accessScope: scope,
+		};
 
-			await updateMemberAccess({
+		await updateMemberAccess({
+			slug: organizationSlug,
+			memberId: member.id,
+			data,
+		});
+
+		await queryClient.invalidateQueries({
+			queryKey: getOrganizationsSlugMembersQueryKey({
 				slug: organizationSlug,
-				memberId: member.id,
-				data,
-			});
-
-			await queryClient.invalidateQueries({
-				queryKey: getOrganizationsSlugMembersQueryKey({
-					slug: organizationSlug,
-				}),
-			});
-
-			toast.success("Acessos do membro atualizados com sucesso.");
-			onOpenChange(false);
-		} catch (error) {
-			toast.error(
-				getErrorMessage(error, "Erro ao atualizar acessos do membro."),
-			);
-		}
+			}),
+		});
 	};
 
-	const handleSavePermissions = async () => {
+	const savePermissionChanges = async () => {
 		if (!canManagePermissions || !memberPermissionsData) {
 			return;
 		}
 
-		try {
-			const overrides = catalogPermissions
-				.map((permission) => {
-					const desiredAllowed =
-						permissionStates[permission.key] ??
-						effectivePermissionSet.has(permission.key);
-					const presetAllowed = presetPermissionSet.has(permission.key);
+		const overrides = catalogPermissions
+			.map((permission) => {
+				const desiredAllowed =
+					permissionStates[permission.key] ??
+					effectivePermissionSet.has(permission.key);
+				const presetAllowed = presetPermissionSet.has(permission.key);
 
-					if (desiredAllowed === presetAllowed) {
-						return null;
-					}
+				if (desiredAllowed === presetAllowed) {
+					return null;
+				}
 
-					return {
-						permissionKey: permission.key,
-						effect: desiredAllowed ? "ALLOW" : "DENY",
-					} as const;
-				})
-				.filter(
-					(
-						override,
-					): override is { permissionKey: string; effect: "ALLOW" | "DENY" } =>
-						Boolean(override),
-				)
-				.sort((first, second) =>
-					first.permissionKey.localeCompare(second.permissionKey),
-				);
-
-			await updateMemberPermissions({
-				slug: organizationSlug,
-				memberId: member.id,
-				data: {
-					overrides,
-				},
-			});
-
-			await Promise.all([
-				queryClient.invalidateQueries({
-					queryKey: getOrganizationsSlugMembersMemberidPermissionsQueryKey({
-						slug: organizationSlug,
-						memberId: member.id,
-					}),
-				}),
-				queryClient.invalidateQueries({
-					queryKey: ["session"],
-				}),
-			]);
-
-			toast.success("Permissões do membro atualizadas com sucesso.");
-			onOpenChange(false);
-		} catch (error) {
-			toast.error(
-				getErrorMessage(error, "Erro ao atualizar permissões do membro."),
+				return {
+					permissionKey: permission.key,
+					effect: desiredAllowed ? "ALLOW" : "DENY",
+				} as const;
+			})
+			.filter(
+				(
+					override,
+				): override is { permissionKey: string; effect: "ALLOW" | "DENY" } =>
+					Boolean(override),
+			)
+			.sort((first, second) =>
+				first.permissionKey.localeCompare(second.permissionKey),
 			);
-		}
+
+		await updateMemberPermissions({
+			slug: organizationSlug,
+			memberId: member.id,
+			data: {
+				overrides,
+			},
+		});
+
+		await Promise.all([
+			queryClient.invalidateQueries({
+				queryKey: getOrganizationsSlugMembersMemberidPermissionsQueryKey({
+					slug: organizationSlug,
+					memberId: member.id,
+				}),
+			}),
+			queryClient.invalidateQueries({
+				queryKey: ["session"],
+			}),
+		]);
 	};
 
 	const handleSave = async () => {
-		if (activeTab === "permissions") {
-			await handleSavePermissions();
-			return;
-		}
+		try {
+			if (activeTab === "permissions") {
+				if (hasPermissionChanges) {
+					await savePermissionChanges();
+				}
 
-		await handleSaveAccess();
+				if (hasPermissionChanges) {
+					toast.success("Permissões atualizadas com sucesso.");
+					onOpenChange(false);
+				}
+
+				return;
+			}
+
+			await saveAccessChanges();
+			toast.success("Acessos do membro atualizados com sucesso.");
+			onOpenChange(false);
+		} catch (error) {
+			toast.error(
+				getErrorMessage(
+					error,
+					activeTab === "permissions"
+						? "Erro ao atualizar permissões do membro."
+						: "Erro ao atualizar acessos do membro.",
+				),
+			);
+		}
 	};
 
 	const saveButtonLabel =
@@ -539,7 +474,7 @@ export function MemberAccessManager({
 				<DialogHeader className="px-6 pt-6">
 					<DialogTitle>Gerenciar acessos</DialogTitle>
 					<DialogDescription>
-						Defina as empresas/unidades e permissões de{" "}
+						Defina empresas/unidades e permissões de{" "}
 						<strong>{member.name ?? member.email}</strong>.
 					</DialogDescription>
 				</DialogHeader>
@@ -610,60 +545,6 @@ export function MemberAccessManager({
 									onChange={setScope}
 								/>
 							)}
-
-							<Card className="space-y-4 p-4">
-								<div className="space-y-1">
-									<p className="text-sm font-semibold">Visibilidade de dados</p>
-									<p className="text-xs text-muted-foreground">
-										Defina o escopo de visualização para clientes, vendas e
-										comissões deste membro.
-									</p>
-								</div>
-
-								<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-									{DATA_SCOPE_FIELDS.map((field) => (
-										<div
-											key={field.key}
-											className="space-y-2 rounded-lg border p-3"
-										>
-											<div className="space-y-1">
-												<p className="text-sm font-medium">{field.title}</p>
-												<p className="text-xs text-muted-foreground">
-													{field.description}
-												</p>
-											</div>
-											<Select
-												value={dataScopes[field.key]}
-												onValueChange={(value) =>
-													setDataScopes((previousState) => ({
-														...previousState,
-														[field.key]: value as MemberDataScopeValue,
-													}))
-												}
-											>
-												<SelectTrigger>
-													<SelectValue placeholder="Selecione o escopo" />
-												</SelectTrigger>
-												<SelectContent>
-													{DATA_SCOPE_OPTIONS.map((option) => (
-														<SelectItem key={option.value} value={option.value}>
-															{option.label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											<p className="text-xs text-muted-foreground">
-												{
-													DATA_SCOPE_OPTIONS.find(
-														(option) =>
-															option.value === dataScopes[field.key],
-													)?.description
-												}
-											</p>
-										</div>
-									))}
-								</div>
-							</Card>
 						</TabsPanel>
 
 						{canManagePermissions ? (

@@ -252,7 +252,14 @@ export const PERMISSION_CATALOG = [
 		key: "registers.partners.view",
 		module: "registers.partners",
 		action: "view",
-		description: "Visualizar parceiros.",
+		description: "Visualizar apenas parceiros vinculados.",
+	},
+	{
+		key: "registers.partners.view.all",
+		module: "registers.partners",
+		action: "view.all",
+		description:
+			"Visualizar todos os parceiros da organização, além dos vinculados ao membro.",
 	},
 	{
 		key: "registers.partners.create",

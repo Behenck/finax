@@ -52,6 +52,7 @@ export async function getMembers(app: FastifyInstance) {
                   customersScope: z.enum(MemberDataScope),
                   salesScope: z.enum(MemberDataScope),
                   commissionsScope: z.enum(MemberDataScope),
+                  partnersScope: z.enum(MemberDataScope),
                   name: z.string().nullable(),
                   avatarUrl: z.url().nullable(),
                   email: z.email(),
@@ -113,6 +114,7 @@ export async function getMembers(app: FastifyInstance) {
           customersScope: (typeof MemberDataScope)[keyof typeof MemberDataScope]
           salesScope: (typeof MemberDataScope)[keyof typeof MemberDataScope]
           commissionsScope: (typeof MemberDataScope)[keyof typeof MemberDataScope]
+          partnersScope: (typeof MemberDataScope)[keyof typeof MemberDataScope]
           user: {
             id: string
             name: string | null
@@ -138,6 +140,7 @@ export async function getMembers(app: FastifyInstance) {
               customersScope: true,
               salesScope: true,
               commissionsScope: true,
+              partnersScope: true,
             },
             where,
             orderBy,
@@ -160,6 +163,7 @@ export async function getMembers(app: FastifyInstance) {
             customersScope: MemberDataScope.ORGANIZATION_ALL,
             salesScope: MemberDataScope.ORGANIZATION_ALL,
             commissionsScope: MemberDataScope.ORGANIZATION_ALL,
+            partnersScope: MemberDataScope.ORGANIZATION_ALL,
           }))
         }
 

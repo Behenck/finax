@@ -3360,6 +3360,7 @@ export const MemberScalarFieldEnum = {
   customersScope: 'customersScope',
   salesScope: 'salesScope',
   commissionsScope: 'commissionsScope',
+  partnersScope: 'partnersScope',
   organizationId: 'organizationId',
   userId: 'userId'
 } as const

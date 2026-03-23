@@ -3,6 +3,7 @@
   "_version": "22.0.0",
   "include": [
     "src/**/*",
+    "prisma/**/*.ts",
     "@types/**/*.d.ts",
     "generated/**/*.ts"
   ],

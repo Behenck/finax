@@ -71,6 +71,15 @@ export const dataScopesCommissionsScopeEnum = {
 export type DataScopesCommissionsScopeEnumKey =
   (typeof dataScopesCommissionsScopeEnum)[keyof typeof dataScopesCommissionsScopeEnum];
 
+export const dataScopesPartnersScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type DataScopesPartnersScopeEnumKey =
+  (typeof dataScopesPartnersScopeEnum)[keyof typeof dataScopesPartnersScopeEnum];
+
 export type PutOrganizationsSlugMembersMemberidMutationRequest = {
   /**
    * @type string
@@ -114,6 +123,10 @@ export type PutOrganizationsSlugMembersMemberidMutationRequest = {
      * @type string
      */
     commissionsScope: DataScopesCommissionsScopeEnumKey;
+    /**
+     * @type string
+     */
+    partnersScope: DataScopesPartnersScopeEnumKey;
   };
 };
 

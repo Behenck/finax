@@ -22,11 +22,13 @@ export function getMemberDataScopes(member: MemberListItem): {
   customersScope: MemberDataScopeValue
   salesScope: MemberDataScopeValue
   commissionsScope: MemberDataScopeValue
+  partnersScope: MemberDataScopeValue
 } {
   return {
     customersScope: member.customersScope ?? 'ORGANIZATION_ALL',
     salesScope: member.salesScope ?? 'ORGANIZATION_ALL',
     commissionsScope: member.commissionsScope ?? 'ORGANIZATION_ALL',
+    partnersScope: member.partnersScope ?? 'ORGANIZATION_ALL',
   }
 }
 

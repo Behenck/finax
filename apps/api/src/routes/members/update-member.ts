@@ -46,6 +46,7 @@ const memberDataScopesSchema = z.object({
   customersScope: z.enum(MemberDataScope),
   salesScope: z.enum(MemberDataScope),
   commissionsScope: z.enum(MemberDataScope),
+  partnersScope: z.enum(MemberDataScope),
 })
 
 export async function updateMember(app: FastifyInstance) {
@@ -85,6 +86,7 @@ export async function updateMember(app: FastifyInstance) {
               customersScope: dataScopes.customersScope,
               salesScope: dataScopes.salesScope,
               commissionsScope: dataScopes.commissionsScope,
+              partnersScope: dataScopes.partnersScope,
             }
           : null
         const buildMemberUpdateData = (includeDataScopes: boolean) => ({

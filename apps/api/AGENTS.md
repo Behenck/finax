@@ -20,6 +20,7 @@ Aplica-se a tudo dentro de `apps/api`.
 - `src/server.ts`: sobe o servidor HTTP (`0.0.0.0:3333`)
 - `src/app.ts`: monta a app Fastify, plugins, docs, healthcheck e registro central de rotas
 - `src/lib/prisma.ts`: client Prisma (usando adapter PostgreSQL)
+- `prisma/seed.ts`: seed oficial para dados iniciais locais do backend
 - `src/middleware/auth.ts`: plugin de autenticacao e helpers de request
 - `prisma/schema.prisma`: fonte da modelagem de dados
 - `generated/prisma/*`: client Prisma gerado (nao editar manualmente)
@@ -65,6 +66,8 @@ Aplica-se a tudo dentro de `apps/api`.
 ## Prisma e dados
 - A fonte de verdade do modelo de dados e `prisma/schema.prisma`.
 - O client Prisma gerado fica em `generated/prisma` e nao deve ser editado manualmente.
+- Seeds de ambiente local devem ficar em `prisma/seed.ts` e ser executadas via `pnpm db:seed` (ou `prisma db seed`).
+- A seed atual foi desenhada para banco vazio: ela falha se encontrar dados em `users`, `organizations` ou `permissions`.
 - Nao executar comandos destrutivos em banco (ex.: `prisma migrate reset`, `DROP`, `TRUNCATE`) sem permissao explicita do usuario na conversa atual.
 - Mudancas de schema/modelo devem considerar:
 - migracao (`pnpm db:migrate`) quando houver alteracao estrutural no banco
@@ -110,6 +113,12 @@ Aplica-se a tudo dentro de `apps/api`.
 - Ajustar queries Prisma nas rotas/servicos afetados.
 - Revisar impacto no contrato da API e nos testes.
 - Nao editar `generated/prisma/*` manualmente.
+
+### 3.1) Mudanca em seed
+- Centralizar seed oficial em `prisma/seed.ts`.
+- Preferir fluxo seguro e nao destrutivo; a seed nao deve apagar dados existentes sem permissao explicita.
+- Se a seed passar a criar novos dados estruturais obrigatorios, manter consistencia com enums/catalogos em codigo.
+- Quando a estrategia operacional da seed mudar, atualizar este `AGENTS.md` no mesmo ciclo.
 
 ### 4) Mudanca com impacto no frontend (contrato OpenAPI/Kubb)
 - Confirmar que os schemas Zod da rota refletem o contrato esperado.

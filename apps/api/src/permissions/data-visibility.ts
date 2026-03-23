@@ -17,6 +17,7 @@ export type MemberDataVisibilityContext = {
 	customersScope: MemberDataScope;
 	salesScope: MemberDataScope;
 	commissionsScope: MemberDataScope;
+	partnersScope: MemberDataScope;
 	memberCompanyAccesses: MemberCompanyAccess[];
 	linkedSellerIds: string[];
 	linkedPartnerIds: string[];
@@ -29,6 +30,7 @@ export async function loadMemberDataVisibilityContext(params: {
 	customersScope: MemberDataScope;
 	salesScope: MemberDataScope;
 	commissionsScope: MemberDataScope;
+	partnersScope?: MemberDataScope;
 }) {
 	const [memberCompanyAccesses, linkedSellers, linkedPartners] = await Promise.all(
 		[
@@ -69,6 +71,7 @@ export async function loadMemberDataVisibilityContext(params: {
 		customersScope: params.customersScope,
 		salesScope: params.salesScope,
 		commissionsScope: params.commissionsScope,
+		partnersScope: params.partnersScope ?? MemberDataScope.ORGANIZATION_ALL,
 		memberCompanyAccesses,
 		linkedSellerIds: linkedSellers.map((seller) => seller.id),
 		linkedPartnerIds: linkedPartners.map((partner) => partner.id),
@@ -454,4 +457,16 @@ export function buildCommissionInstallmentsVisibilityWhere(
 	}
 
 	return linkedInstallmentsFilter;
+}
+
+export function buildPartnersVisibilityWhere(
+	context: Pick<MemberDataVisibilityContext, "partnersScope" | "userId">,
+): Prisma.PartnerWhereInput | undefined {
+	if (context.partnersScope === MemberDataScope.ORGANIZATION_ALL) {
+		return undefined;
+	}
+
+	return {
+		supervisorId: context.userId,
+	};
 }

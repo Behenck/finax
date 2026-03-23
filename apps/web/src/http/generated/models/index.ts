@@ -238,6 +238,7 @@ export type {
   MembersCustomersScopeEnumKey,
   MembersSalesScopeEnumKey,
   MembersCommissionsScopeEnumKey,
+  MembersPartnersScopeEnumKey,
   GetOrganizationsSlugMembers200,
   GetOrganizationsSlugMembersQueryResponse,
   GetOrganizationsSlugMembersQuery,
@@ -834,6 +835,7 @@ export type {
   DataScopesCustomersScopeEnumKey,
   DataScopesSalesScopeEnumKey,
   DataScopesCommissionsScopeEnumKey,
+  DataScopesPartnersScopeEnumKey,
   PutOrganizationsSlugMembersMemberidMutationRequest,
   PutOrganizationsSlugMembersMemberidMutationResponse,
   PutOrganizationsSlugMembersMemberidMutation,
@@ -990,6 +992,7 @@ export { membersRoleEnum } from "./GetOrganizationsSlugMembers.ts";
 export { membersCustomersScopeEnum } from "./GetOrganizationsSlugMembers.ts";
 export { membersSalesScopeEnum } from "./GetOrganizationsSlugMembers.ts";
 export { membersCommissionsScopeEnum } from "./GetOrganizationsSlugMembers.ts";
+export { membersPartnersScopeEnum } from "./GetOrganizationsSlugMembers.ts";
 export { membershipRoleEnum } from "./GetOrganizationsSlugMembership.ts";
 export { memberRoleEnum } from "./GetOrganizationsSlugMembersMemberidPermissions.ts";
 export { overridesEffectEnum } from "./GetOrganizationsSlugMembersMemberidPermissions.ts";
@@ -1111,6 +1114,7 @@ export { accessScopeModeEnum } from "./PutOrganizationsSlugMembersMemberid.ts";
 export { dataScopesCustomersScopeEnum } from "./PutOrganizationsSlugMembersMemberid.ts";
 export { dataScopesSalesScopeEnum } from "./PutOrganizationsSlugMembersMemberid.ts";
 export { dataScopesCommissionsScopeEnum } from "./PutOrganizationsSlugMembersMemberid.ts";
+export { dataScopesPartnersScopeEnum } from "./PutOrganizationsSlugMembersMemberid.ts";
 export { putOrganizationsSlugMembersMemberidPermissions204Enum } from "./PutOrganizationsSlugMembersMemberidPermissions.ts";
 export { overridesEffectEnum2 } from "./PutOrganizationsSlugMembersMemberidPermissions.ts";
 export { putOrganizationsSlugPartnersPartnerid204Enum } from "./PutOrganizationsSlugPartnersPartnerid.ts";
