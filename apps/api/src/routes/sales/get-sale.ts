@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { Prisma } from "generated/prisma/client";
+import { MemberDataScope } from "generated/prisma/enums";
 import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
@@ -8,8 +10,6 @@ import {
 	buildSalesVisibilityWhere,
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
-import type { Prisma } from "generated/prisma/client";
-import { MemberDataScope } from "generated/prisma/enums";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { loadSaleCommissions } from "./sale-commissions";
 import {
@@ -43,7 +43,8 @@ export async function getSale(app: FastifyInstance) {
 			},
 			async (request) => {
 				const { slug, saleId } = request.params;
-				const { organization, membership } = await request.getUserMembership(slug);
+				const { organization, membership } =
+					await request.getUserMembership(slug);
 				const canViewAllSales = await request.hasPermission(
 					slug,
 					"sales.view.all",
@@ -52,17 +53,19 @@ export async function getSale(app: FastifyInstance) {
 					organizationId: organization.id,
 					memberId: membership.id,
 					userId: membership.userId,
+					role: membership.role,
 					customersScope: membership.customersScope,
 					salesScope: canViewAllSales
 						? MemberDataScope.ORGANIZATION_ALL
 						: MemberDataScope.LINKED_ONLY,
-						commissionsScope: membership.commissionsScope,
-					});
+					commissionsScope: membership.commissionsScope,
+				});
 				const canViewAllCommissions = await request.hasPermission(
 					slug,
 					"sales.commissions.view.all",
 				);
-				const salesVisibilityWhere = buildSalesVisibilityWhere(visibilityContext);
+				const salesVisibilityWhere =
+					buildSalesVisibilityWhere(visibilityContext);
 				const saleWhere: Prisma.SaleWhereInput = salesVisibilityWhere
 					? {
 							AND: [
@@ -72,11 +75,11 @@ export async function getSale(app: FastifyInstance) {
 								},
 								salesVisibilityWhere,
 							],
-					  }
+						}
 					: {
 							id: saleId,
 							organizationId: organization.id,
-					  };
+						};
 
 				const sale = await prisma.sale.findFirst({
 					where: saleWhere,

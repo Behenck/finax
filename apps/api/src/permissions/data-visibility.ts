@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import type { Prisma } from "generated/prisma/client";
 import {
 	CustomerResponsibleType,
 	MemberDataScope,
+	Role,
 	SaleResponsibleType,
 } from "generated/prisma/enums";
+import { prisma } from "@/lib/prisma";
 
 type MemberCompanyAccess = {
 	companyId: string;
@@ -21,49 +22,66 @@ export type MemberDataVisibilityContext = {
 	memberCompanyAccesses: MemberCompanyAccess[];
 	linkedSellerIds: string[];
 	linkedPartnerIds: string[];
+	supervisedPartnerIds: string[];
 };
 
 export async function loadMemberDataVisibilityContext(params: {
 	organizationId: string;
 	memberId: string;
 	userId: string;
+	role?: (typeof Role)[keyof typeof Role];
 	customersScope: MemberDataScope;
 	salesScope: MemberDataScope;
 	commissionsScope: MemberDataScope;
 	partnersScope?: MemberDataScope;
 }) {
-	const [memberCompanyAccesses, linkedSellers, linkedPartners] = await Promise.all(
-		[
-			prisma.memberCompanyAccess.findMany({
-				where: {
-					memberId: params.memberId,
-					organizationId: params.organizationId,
-				},
-				select: {
-					companyId: true,
-					unitId: true,
-				},
-			}),
-			prisma.seller.findMany({
-				where: {
-					organizationId: params.organizationId,
-					userId: params.userId,
-				},
-				select: {
-					id: true,
-				},
-			}),
-			prisma.partner.findMany({
-				where: {
-					organizationId: params.organizationId,
-					userId: params.userId,
-				},
-				select: {
-					id: true,
-				},
-			}),
-		],
-	);
+	const shouldLoadSupervisedPartners = params.role === Role.SUPERVISOR;
+	const [
+		memberCompanyAccesses,
+		linkedSellers,
+		linkedPartners,
+		supervisedPartners,
+	] = await Promise.all([
+		prisma.memberCompanyAccess.findMany({
+			where: {
+				memberId: params.memberId,
+				organizationId: params.organizationId,
+			},
+			select: {
+				companyId: true,
+				unitId: true,
+			},
+		}),
+		prisma.seller.findMany({
+			where: {
+				organizationId: params.organizationId,
+				userId: params.userId,
+			},
+			select: {
+				id: true,
+			},
+		}),
+		prisma.partner.findMany({
+			where: {
+				organizationId: params.organizationId,
+				userId: params.userId,
+			},
+			select: {
+				id: true,
+			},
+		}),
+		shouldLoadSupervisedPartners
+			? prisma.partner.findMany({
+					where: {
+						organizationId: params.organizationId,
+						supervisorId: params.userId,
+					},
+					select: {
+						id: true,
+					},
+				})
+			: Promise.resolve([]),
+	]);
 
 	return {
 		memberId: params.memberId,
@@ -75,6 +93,7 @@ export async function loadMemberDataVisibilityContext(params: {
 		memberCompanyAccesses,
 		linkedSellerIds: linkedSellers.map((seller) => seller.id),
 		linkedPartnerIds: linkedPartners.map((partner) => partner.id),
+		supervisedPartnerIds: supervisedPartners.map((partner) => partner.id),
 	} satisfies MemberDataVisibilityContext;
 }
 
@@ -152,7 +171,13 @@ function buildSaleCompanyAccessWhere(
 }
 
 function buildLinkedSaleResponsibleConditions(
-	context: Pick<MemberDataVisibilityContext, "linkedSellerIds" | "linkedPartnerIds">,
+	context: Pick<
+		MemberDataVisibilityContext,
+		"linkedSellerIds" | "linkedPartnerIds" | "supervisedPartnerIds"
+	>,
+	params?: {
+		includeSupervisedPartners?: boolean;
+	},
 ) {
 	const conditions: Prisma.SaleWhereInput[] = [];
 
@@ -165,16 +190,31 @@ function buildLinkedSaleResponsibleConditions(
 		});
 	}
 
-	if (context.linkedPartnerIds.length > 0) {
+	const partnerIds = params?.includeSupervisedPartners
+		? getPartnerIdsForSalesAndCustomers(context)
+		: context.linkedPartnerIds;
+
+	if (partnerIds.length > 0) {
 		conditions.push({
 			responsibleType: SaleResponsibleType.PARTNER,
 			responsibleId: {
-				in: context.linkedPartnerIds,
+				in: partnerIds,
 			},
 		});
 	}
 
 	return conditions;
+}
+
+function getPartnerIdsForSalesAndCustomers(
+	context: Pick<
+		MemberDataVisibilityContext,
+		"linkedPartnerIds" | "supervisedPartnerIds"
+	>,
+) {
+	return Array.from(
+		new Set([...context.linkedPartnerIds, ...context.supervisedPartnerIds]),
+	);
 }
 
 function buildCommissionBeneficiaryMatchConditions(
@@ -302,8 +342,14 @@ export function buildCustomersVisibilityWhere(params: {
 	}
 
 	const customerLinkConditions: Prisma.CustomerWhereInput[] = [];
-	const linkedSaleResponsibleConditions =
-		buildLinkedSaleResponsibleConditions(context);
+	const linkedSaleResponsibleConditions = buildLinkedSaleResponsibleConditions(
+		context,
+		{
+			includeSupervisedPartners: true,
+		},
+	);
+	const partnerIdsForSalesAndCustomers =
+		getPartnerIdsForSalesAndCustomers(context);
 	const linkedSalesFilter = toOrSaleWhere(linkedSaleResponsibleConditions);
 
 	if (context.linkedSellerIds.length > 0) {
@@ -315,11 +361,11 @@ export function buildCustomersVisibilityWhere(params: {
 		});
 	}
 
-	if (context.linkedPartnerIds.length > 0) {
+	if (partnerIdsForSalesAndCustomers.length > 0) {
 		customerLinkConditions.push({
 			responsibleType: CustomerResponsibleType.PARTNER,
 			responsibleId: {
-				in: context.linkedPartnerIds,
+				in: partnerIdsForSalesAndCustomers,
 			},
 		});
 	}
@@ -360,7 +406,9 @@ export function buildSalesVisibilityWhere(
 		);
 	}
 
-	const linkedConditions = buildLinkedSaleResponsibleConditions(context);
+	const linkedConditions = buildLinkedSaleResponsibleConditions(context, {
+		includeSupervisedPartners: true,
+	});
 	const commissionBeneficiaryFilter = toOrSaleCommissionWhere(
 		buildCommissionBeneficiaryMatchConditions(context),
 	);
@@ -392,7 +440,9 @@ export function buildSaleCommissionsBeneficiaryVisibilityWhere(
 	>,
 ): Prisma.SaleCommissionWhereInput {
 	return (
-		toOrSaleCommissionWhere(buildCommissionBeneficiaryMatchConditions(context)) ?? {
+		toOrSaleCommissionWhere(
+			buildCommissionBeneficiaryMatchConditions(context),
+		) ?? {
 			id: {
 				in: [] as string[],
 			},
@@ -425,7 +475,8 @@ export function buildCommissionInstallmentsVisibilityWhere(
 
 	const linkedSaleResponsibleConditions =
 		buildLinkedSaleResponsibleConditions(context);
-	const installmentLinkedConditions: Prisma.SaleCommissionInstallmentWhereInput[] = [];
+	const installmentLinkedConditions: Prisma.SaleCommissionInstallmentWhereInput[] =
+		[];
 
 	const beneficiaryFilter = toOrSaleCommissionWhere(
 		buildCommissionBeneficiaryMatchConditions(context),
