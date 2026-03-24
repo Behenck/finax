@@ -27,6 +27,7 @@ Aplica-se a tudo dentro de `apps/web`.
 - `src/route-tree.gen.ts`: arvore de rotas gerada (nao editar manualmente)
 - `kubb.config.ts`: configuracao de geracao de client baseado no OpenAPI da API
 - `src/lib/axios.ts`: instancia Axios com `VITE_API_URL`, cookies e header `Authorization`
+- `vercel.json`: configuracao de deploy na Vercel (output `dist` + fallback SPA para `index.html`)
 
 ## Estrutura de pastas (mapa pratico)
 - `src/pages`: rotas/telas (padrao file-based)
