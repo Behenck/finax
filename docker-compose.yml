@@ -67,7 +67,6 @@ services:
 
   web-e2e:
     container_name: finax-web-e2e
-    profiles: ["e2e"]
     environment:
       CI: "true"
     build:
