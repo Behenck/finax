@@ -1,11 +1,65 @@
-version: "3.7"
-
 services:
-  pg:
-    image: bitnami/postgresql:latest
-    ports:
-      - "5437:5432"
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      - POSTGRESQL_USER=finax
-      - POSTGRESQL_PASSWORD=finax
-      - POSTGRESQL_DB=finax
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - finax_pg_data:/var/lib/postgresql/data
+    networks:
+      - finax_net
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      DATABASE_URL: postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:?POSTGRES_DB is required}?schema=public
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      APP_WEB_URL: ${APP_WEB_URL:?APP_WEB_URL is required}
+      VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-}
+      APP_WEB_URLS: ${APP_WEB_URLS:-}
+    ports:
+      - "3333:3333"
+    networks:
+      - finax_net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "80:80"
+    networks:
+      - finax_net
+
+volumes:
+  finax_pg_data:
+
+networks:
+  finax_net:
+    driver: bridge
