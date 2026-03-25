@@ -28,8 +28,7 @@ services:
       PORT: 3333
       DATABASE_URL: postgresql://${POSTGRES_USER:-finax}:${POSTGRES_PASSWORD:-finax}@db:5432/${POSTGRES_DB:-finax}?schema=public
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     healthcheck:
       test:
         [
@@ -56,8 +55,7 @@ services:
     env_file:
       - ./apps/web/.env
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health >/dev/null 2>&1 || exit 1"]
       start_period: 10s
@@ -81,8 +79,7 @@ services:
     env_file:
       - ./apps/web/.env
     depends_on:
-      web:
-        condition: service_healthy
+      - web
 
 volumes:
   finax_pg_data:
