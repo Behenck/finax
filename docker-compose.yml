@@ -1,7 +1,8 @@
+version: "3.8"
+
 services:
   db:
     image: postgres:16-alpine
-    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
@@ -16,14 +17,12 @@ services:
       - finax_pg_data:/var/lib/postgresql/data
     networks:
       - finax_net
+    deploy:
+      restart_policy:
+        condition: any
 
   api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    restart: unless-stopped
-    depends_on:
-      - db
+    image: ${API_IMAGE:?API_IMAGE is required}
     environment:
       NODE_ENV: production
       PORT: 3333
@@ -40,24 +39,23 @@ services:
       - "3333:3333"
     networks:
       - finax_net
+    deploy:
+      restart_policy:
+        condition: any
 
   web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
-    restart: unless-stopped
-    depends_on:
-      - api
+    image: ${WEB_IMAGE:?WEB_IMAGE is required}
     ports:
       - "80:80"
     networks:
       - finax_net
+    deploy:
+      restart_policy:
+        condition: any
 
 volumes:
   finax_pg_data:
 
 networks:
   finax_net:
-    driver: bridge
+    driver: overlay
