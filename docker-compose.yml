@@ -20,7 +20,7 @@ services:
         condition: any
 
   api:
-    image: ${API_IMAGE:-ghcr.io/behenck/finax-api:latest}
+    image: ${API_IMAGE:-ghcr.io/behenck/finax:latest}
     environment:
       NODE_ENV: production
       PORT: 3333
