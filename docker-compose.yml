@@ -23,8 +23,7 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       NODE_ENV: production
       PORT: 3333
@@ -50,8 +49,7 @@ services:
         VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
     restart: unless-stopped
     depends_on:
-      api:
-        condition: service_started
+      - api
     ports:
       - "80:80"
     networks:
