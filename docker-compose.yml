@@ -44,7 +44,7 @@ services:
   web:
     image: ${WEB_IMAGE:-ghcr.io/seu-usuario/finax-web:latest}
     ports:
-      - "80:80"
+      - "${WEB_PORT:-8080}:80"
     networks:
       - finax_net
     deploy:
