@@ -29,7 +29,7 @@ services:
       PORT: ${API_PORT:-3333}
       DATABASE_URL: ${DATABASE_URL:-postgresql://finax:finax@db:5432/finax?schema=public}
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      APP_WEB_URL: ${APP_WEB_URL:-http://localhost:3000}
+      APP_WEB_URL: ${APP_WEB_URL:-http://localhost:3001}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
@@ -73,7 +73,7 @@ services:
       timeout: 3s
       retries: 10
     ports:
-      - "${WEB_PORT:-3000}:80"
+      - "${WEB_PORT:-3001}:80"
 
   web-e2e:
     container_name: finax-web-e2e
