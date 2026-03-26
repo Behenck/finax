@@ -40,7 +40,7 @@ services:
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
     ports:
-      - "${WEB_PORT:-3000}:80"
+      - "${WEB_PORT:-3001}:80"
 
 volumes:
   finax_pg_data:
