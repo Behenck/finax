@@ -17,6 +17,7 @@ services:
 
   api:
     container_name: finax-api
+    image: ${API_IMAGE:-finax-api:latest}
     env_file:
       - ./apps/api/.env.example
     build:
@@ -52,6 +53,7 @@ services:
 
   web:
     container_name: finax-web
+    image: ${WEB_IMAGE:-finax-web:latest}
     env_file:
       - ./apps/web/.env.example
     build:
@@ -75,6 +77,7 @@ services:
 
   web-e2e:
     container_name: finax-web-e2e
+    image: ${WEB_E2E_IMAGE:-finax-web:latest}
     env_file:
       - ./apps/web/.env.example
     environment:
