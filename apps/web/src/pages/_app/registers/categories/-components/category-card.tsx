@@ -86,7 +86,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
 							<div className="min-w-0 flex flex-col text-left">
 								<span className="truncate font-medium">{category.name}</span>
-								<span className="text-gray-500 text-xs">{category.code}</span>
+								<span className="text-muted-foreground text-xs">{category.code}</span>
 							</div>
 						</div>
 					</CollapsibleTrigger>

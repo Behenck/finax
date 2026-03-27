@@ -45,6 +45,14 @@ export type GetOrganizationsSlugProducts200 = {
      */
     sortOrder: number;
     /**
+     * @type string, uuid
+     */
+    salesTransactionCategoryId: string | null;
+    /**
+     * @type string, uuid
+     */
+    salesTransactionCostCenterId: string | null;
+    /**
      * @type array
      */
     children: any[];

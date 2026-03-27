@@ -41,7 +41,7 @@ function AppLayout() {
 					<AppSidebar />
 					<QuickActionsCommand />
 
-					<main className="flex-1 bg-gray-50">
+					<main className="flex-1 bg-background">
 						<AppTopHeader />
 						<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-10 lg:py-10">
 							<Outlet />

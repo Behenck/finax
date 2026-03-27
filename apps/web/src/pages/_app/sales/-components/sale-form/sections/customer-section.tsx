@@ -15,6 +15,7 @@ import {
 	normalizeCustomerSearchValue,
 } from "../customer-search";
 import type { SaleCustomerOption } from "../types";
+import { Plus } from "lucide-react";
 
 interface CustomerSectionProps {
 	control: Control<SaleFormInput, unknown, SaleFormData>;
@@ -75,7 +76,8 @@ export function CustomerSection({
 					onClick={onOpenQuickCustomerDialog}
 					disabled={isCreatingQuickCustomer}
 				>
-					Cadastrar cliente rápido
+					<Plus />
+					<span>Adicionar cliente</span>
 				</Button>
 			</div>
 

@@ -21,6 +21,8 @@ export const putOrganizationsSlugProductsIdMutationRequestSchema = z.object({
   parentId: z.nullable(z.uuid()),
   isActive: z.boolean(),
   sortOrder: z.int().min(0).max(9007199254740991),
+  salesTransactionCategoryId: z.uuid().nullish(),
+  salesTransactionCostCenterId: z.uuid().nullish(),
 });
 
 export const putOrganizationsSlugProductsIdMutationResponseSchema = z.lazy(

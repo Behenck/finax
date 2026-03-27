@@ -60,7 +60,7 @@ function Members() {
         <Tabs defaultValue="members" className="space-y-2">
           <TabsList
             variant="underline"
-            className="h-auto w-full justify-start overflow-x-auto rounded-none border-b border-gray-200 p-0 whitespace-nowrap"
+            className="h-auto w-full justify-start overflow-x-auto rounded-none border-b border-border p-0 whitespace-nowrap"
           >
             {canViewMembers ? (
               <TabsTab

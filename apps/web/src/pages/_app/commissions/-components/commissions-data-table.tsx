@@ -171,9 +171,9 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	SaleCommissionInstallmentStatus,
 	string
 > = {
-	PENDING: "bg-yellow-500/15 text-yellow-700 border-yellow-500/30",
-	PAID: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
-	CANCELED: "bg-red-500/15 text-red-700 border-red-500/30",
+	PENDING: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
+	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
 };
 
 function formatDate(value: string) {
@@ -1258,8 +1258,8 @@ export function CommissionsDataTable() {
 				</FilterPanel>
 
 					{canChangeInstallmentStatus && selectedInstallments.length > 0 ? (
-						<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
-							<p className="text-sm text-emerald-900">
+						<div className="flex flex-col gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4 md:flex-row md:items-center md:justify-between">
+							<p className="text-sm text-emerald-700 dark:text-emerald-300">
 								{selectedInstallments.length} parcela(s) selecionada(s) · total{" "}
 								{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
 							</p>

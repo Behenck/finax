@@ -9,14 +9,14 @@ export function ValidatingInvite() {
 
       <div className="text-center">
         <h1 className="text-3xl font-bold">Validando Convite</h1>
-        <span className="text-gray-400 text-sm">
+        <span className="text-muted-foreground text-sm">
           Aguarde enquanto validamos seu convite...
         </span>
       </div>
 
       <div className="space-y-2 mt-10 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin w-6 h-6" />
-        <span className="text-gray-400">Validando convite...</span>
+        <span className="text-muted-foreground">Validando convite...</span>
       </div>
     </div>
   )

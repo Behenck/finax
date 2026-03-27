@@ -30,6 +30,38 @@ export type GetOrganizationsSlugCompaniesCompanyidUnits200 = {
      * @type string
      */
     name: string;
+    /**
+     * @type string
+     */
+    country: string | null;
+    /**
+     * @type string
+     */
+    state: string | null;
+    /**
+     * @type string
+     */
+    city: string | null;
+    /**
+     * @type string
+     */
+    street: string | null;
+    /**
+     * @type string
+     */
+    zipCode: string | null;
+    /**
+     * @type string
+     */
+    neighborhood: string | null;
+    /**
+     * @type string
+     */
+    number: string | null;
+    /**
+     * @type string
+     */
+    complement: string | null;
   }[];
 };
 

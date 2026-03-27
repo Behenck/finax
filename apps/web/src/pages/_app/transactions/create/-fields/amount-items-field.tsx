@@ -205,8 +205,8 @@ export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
           </Button>
 
           {fields.length > 0 && (
-            <div className="flex items-end justify-end flex-1 bg-green-50 gap-1 p-3 rounded-sm">
-              <span className="text-xs text-gray-500 font-light">Total:</span>
+            <div className="flex items-end justify-end flex-1 bg-green-500/10 gap-1 p-3 rounded-sm">
+              <span className="text-xs text-muted-foreground font-light">Total:</span>
               <span className="font-bold">
                 {formatCurrencyBRL(totalFromItems)}
               </span>

@@ -3464,6 +3464,14 @@ export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeo
 export const UnitScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  country: 'country',
+  state: 'state',
+  city: 'city',
+  street: 'street',
+  zipCode: 'zipCode',
+  neighborhood: 'neighborhood',
+  number: 'number',
+  complement: 'complement',
   companyId: 'companyId',
   createdAt: 'createdAt'
 } as const

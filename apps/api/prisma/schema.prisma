@@ -324,9 +324,17 @@ model Company {
 }
 
 model Unit {
-  id        String @id @default(uuid())
-  name      String
-  companyId String @map("company_id")
+  id           String @id @default(uuid())
+  name         String
+  country      String?
+  state        String?
+  city         String?
+  street       String?
+  zipCode      String?
+  neighborhood String?
+  number       String?
+  complement   String?
+  companyId    String @map("company_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 

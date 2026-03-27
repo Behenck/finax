@@ -101,14 +101,14 @@ const SALE_HISTORY_ACTION_ICON_CLASS: Record<
 	SaleHistoryEvent["action"],
 	string
 > = {
-	CREATED: "bg-emerald-50 text-emerald-600 border-emerald-200",
-	UPDATED: "bg-blue-50 text-blue-600 border-blue-200",
-	STATUS_CHANGED: "bg-amber-50 text-amber-600 border-amber-200",
+	CREATED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30",
+	UPDATED: "bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30",
+	STATUS_CHANGED: "bg-amber-500/10 text-amber-600 border-amber-500/30",
 	COMMISSION_INSTALLMENT_UPDATED:
-		"bg-indigo-50 text-indigo-600 border-indigo-200",
+		"bg-indigo-500/10 text-indigo-600 border-indigo-500/30",
 	COMMISSION_INSTALLMENT_STATUS_UPDATED:
-		"bg-orange-50 text-orange-600 border-orange-200",
-	COMMISSION_INSTALLMENT_DELETED: "bg-rose-50 text-rose-600 border-rose-200",
+		"bg-orange-500/10 text-orange-600 border-orange-500/30",
+	COMMISSION_INSTALLMENT_DELETED: "bg-rose-500/10 text-rose-600 border-rose-500/30",
 };
 
 function getActorInitials(name: string | null) {
@@ -279,7 +279,13 @@ function SaleDetailsPage() {
 					</div>
 					<div className="space-y-1">
 						<p className="text-muted-foreground text-sm">Valor total</p>
-						<p className="font-semibold">
+						<p
+							className={
+								sale.totalAmount === 0
+									? "font-semibold text-muted-foreground"
+									: "font-semibold"
+							}
+						>
 							{formatCurrencyBRL(sale.totalAmount / 100)}
 						</p>
 					</div>

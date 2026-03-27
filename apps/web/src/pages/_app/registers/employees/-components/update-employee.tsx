@@ -21,7 +21,7 @@ export function UpdateEmployee({ employee }: UpdateEmployeeProps) {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="ghost" size="icon">
-					<Pencil className="text-gray-500" />
+					<Pencil className="text-muted-foreground" />
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">

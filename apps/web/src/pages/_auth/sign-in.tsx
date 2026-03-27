@@ -147,7 +147,7 @@ function SignIn() {
 							<Field data-invalid={fieldState.invalid} className="gap-1">
 								<FieldLabel htmlFor="mail">E-mail</FieldLabel>
 								<div className="relative">
-									<Mail className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
+									<Mail className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
 									<Input
 										{...field}
 										id="email"
@@ -178,7 +178,7 @@ function SignIn() {
 							<Field data-invalid={fieldState.invalid} className="gap-1">
 								<FieldLabel htmlFor="password">Senha</FieldLabel>
 								<div className="relative">
-									<Lock className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
+									<Lock className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
 									<Input
 										{...field}
 										id="password"

@@ -39,10 +39,21 @@ function PasswordForgot() {
 
       toast.success("Email de redefinição de senha enviado com sucesso!")
     } catch (error) {
-      toast.error(
-        (error as any)?.response?.data?.message ??
-        "Erro ao enviar email. Tente novamente.",
-      );
+      const errorMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof error.response === "object" &&
+        error.response !== null &&
+        "data" in error.response &&
+        typeof error.response.data === "object" &&
+        error.response.data !== null &&
+        "message" in error.response.data &&
+        typeof error.response.data.message === "string"
+          ? error.response.data.message
+          : undefined;
+
+      toast.error(errorMessage ?? "Erro ao enviar email. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +78,7 @@ function PasswordForgot() {
         </div>
       </div>
 
-      <div className="space-y-2 text-center text-sm p-4 bg-muted rounded-lg text-zinc-400 mt-10">
+      <div className="space-y-2 text-center text-sm p-4 bg-muted rounded-lg text-muted-foreground mt-10">
         <p>Não recebeu o email?</p>
         <div className="flex flex-col">
           <span>• Verifique sua caixa de spam</span>
@@ -91,7 +102,7 @@ function PasswordForgot() {
           "Reenviar email"
         )}
       </Button>
-      <Button asChild className="cursor-pointer w-full text-green-600 hover:text-green-700 hover:underline" variant="link">
+      <Button asChild className="cursor-pointer w-full text-green-600 hover:text-green-700 dark:text-green-300 hover:underline" variant="link">
         <Link to="/sign-in">
           <ArrowLeft />
           Voltar para o login

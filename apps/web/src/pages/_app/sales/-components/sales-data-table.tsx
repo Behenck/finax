@@ -662,8 +662,8 @@ export function SalesDataTable({
 					</div>
 				),
 			},
-			{
-				accessorKey: "totalAmount",
+				{
+					accessorKey: "totalAmount",
 				header: ({ column }) => (
 					<Button
 						variant="ghost"
@@ -674,12 +674,18 @@ export function SalesDataTable({
 						<ArrowUpDown className="ml-2 size-4" />
 					</Button>
 				),
-				cell: ({ row }) => (
-					<span className="font-semibold">
-						{formatCurrencyBRL(row.original.totalAmount / 100)}
-					</span>
-				),
-			},
+					cell: ({ row }) => (
+						<span
+							className={
+								row.original.totalAmount === 0
+									? "font-semibold text-muted-foreground"
+									: "font-semibold"
+							}
+						>
+							{formatCurrencyBRL(row.original.totalAmount / 100)}
+						</span>
+					),
+				},
 			{
 				id: "commissionInstallments",
 				header: "Parcelas",
@@ -1039,8 +1045,8 @@ export function SalesDataTable({
 			</div>
 
 			{selectedSaleIds.length > 0 && canUseBulkActions ? (
-				<div className="flex flex-col gap-3 rounded-md border border-blue-300 bg-blue-50 p-4 md:flex-row md:items-center md:justify-between">
-					<p className="text-sm text-blue-900">
+				<div className="flex flex-col gap-3 rounded-md border border-blue-500/30 bg-blue-500/10 p-4 md:flex-row md:items-center md:justify-between">
+					<p className="text-sm text-blue-700 dark:text-blue-300">
 						{selectedSaleIds.length} venda(s) selecionada(s)
 					</p>
 					<div className="flex flex-col gap-2 md:flex-row md:items-center">
@@ -1201,12 +1207,18 @@ export function SalesDataTable({
 											</div>
 										</div>
 
-										<div className="flex items-center justify-between gap-3">
-											<SaleStatusBadge status={sale.status as SaleStatus} />
-											<p className="text-sm font-semibold">
-												{formatCurrencyBRL(sale.totalAmount / 100)}
-											</p>
-										</div>
+											<div className="flex items-center justify-between gap-3">
+												<SaleStatusBadge status={sale.status as SaleStatus} />
+												<p
+													className={
+														sale.totalAmount === 0
+															? "text-sm font-semibold text-muted-foreground"
+															: "text-sm font-semibold"
+													}
+												>
+													{formatCurrencyBRL(sale.totalAmount / 100)}
+												</p>
+											</div>
 
 										<div className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
 											Parcelas:{" "}

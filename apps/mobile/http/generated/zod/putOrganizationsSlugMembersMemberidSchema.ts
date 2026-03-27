@@ -33,6 +33,26 @@ export const putOrganizationsSlugMembersMemberidMutationRequestSchema =
         ),
       }),
     ),
+    dataScopes: z.optional(
+      z.object({
+        customersScope: z.enum([
+          "LINKED_ONLY",
+          "COMPANY_ONLY",
+          "ORGANIZATION_ALL",
+        ]),
+        salesScope: z.enum(["LINKED_ONLY", "COMPANY_ONLY", "ORGANIZATION_ALL"]),
+        commissionsScope: z.enum([
+          "LINKED_ONLY",
+          "COMPANY_ONLY",
+          "ORGANIZATION_ALL",
+        ]),
+        partnersScope: z.enum([
+          "LINKED_ONLY",
+          "COMPANY_ONLY",
+          "ORGANIZATION_ALL",
+        ]),
+      }),
+    ),
   });
 
 export const putOrganizationsSlugMembersMemberidMutationResponseSchema = z.lazy(

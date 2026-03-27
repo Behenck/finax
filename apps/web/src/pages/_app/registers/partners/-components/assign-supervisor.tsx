@@ -91,8 +91,8 @@ export function AssignSupervisor({
           <Card
             onClick={() => setSelectedSupervisorId(null)}
             className={cn(
-              "p-3 cursor-pointer flex-row items-center justify-between transition-all hover:bg-gray-200",
-              isSelected(null) && "border-green-500 bg-green-50"
+              "p-3 cursor-pointer flex-row items-center justify-between transition-all hover:bg-muted",
+              isSelected(null) && "border-green-500 bg-green-500/10"
             )}
           >
             <span className="text-sm">Sem supervisor</span>
@@ -109,8 +109,8 @@ export function AssignSupervisor({
                 key={supervisor.userId}
                 onClick={() => setSelectedSupervisorId(supervisor.userId)}
                 className={cn(
-                  "p-4 flex-row items-center justify-between cursor-pointer transition-all hover:bg-gray-200",
-                  isSelected(supervisor.userId) && "border-green-500 bg-green-50"
+                  "p-4 flex-row items-center justify-between cursor-pointer transition-all hover:bg-muted",
+                  isSelected(supervisor.userId) && "border-green-500 bg-green-500/10"
                 )}
               >
                 <div className="flex gap-4">

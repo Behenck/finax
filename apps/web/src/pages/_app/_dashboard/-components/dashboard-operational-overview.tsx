@@ -194,10 +194,10 @@ export function DashboardOperationalOverview() {
 			</section>
 
 			<section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.65fr_1fr]">
-				<Card className="overflow-hidden border-slate-200/70 p-0">
+				<Card className="overflow-hidden border-border/70 p-0">
 					<CardHeader className="border-b bg-linear-to-r from-slate-50 to-emerald-50/60 px-6 py-0 pt-6">
 						<CardTitle className="flex items-center gap-2">
-							<ChartNoAxesColumn className="size-4 text-emerald-700" />
+							<ChartNoAxesColumn className="size-4 text-emerald-700 dark:text-emerald-300" />
 							Status por cadastro
 						</CardTitle>
 						<CardDescription>
@@ -219,10 +219,10 @@ export function DashboardOperationalOverview() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<Activity className="size-4 text-slate-700" />
+							<Activity className="size-4 text-muted-foreground" />
 							Qualidade do cadastro
 						</CardTitle>
 						<CardDescription>
@@ -230,7 +230,7 @@ export function DashboardOperationalOverview() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-5">
-						<div className="rounded-xl border bg-muted/30 p-4">
+						<div className="rounded-xl border bg-muted/20 p-4">
 							<div className="flex items-center justify-between text-sm">
 								<span className="text-muted-foreground">Cobertura de contato</span>
 								<span className="font-semibold">{contactCoverage}%</span>
@@ -252,13 +252,13 @@ export function DashboardOperationalOverview() {
 								label="Pessoa Física"
 								value={customersPf}
 								icon={UserRound}
-								className="border-emerald-200 bg-emerald-50 text-emerald-900"
+								className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
 							/>
 							<MiniStat
 								label="Pessoa Jurídica"
 								value={customersPj}
 								icon={Building2}
-								className="border-blue-200 bg-blue-50 text-blue-900"
+								className="border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
 							/>
 						</div>
 
@@ -273,7 +273,7 @@ export function DashboardOperationalOverview() {
 			</section>
 
 			<section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_1.2fr_1fr]">
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle>Estrutura empresarial</CardTitle>
 						<CardDescription>
@@ -310,7 +310,7 @@ export function DashboardOperationalOverview() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle>Departamentos da equipe</CardTitle>
 						<CardDescription>
@@ -345,7 +345,7 @@ export function DashboardOperationalOverview() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle>Categorias financeiras</CardTitle>
 						<CardDescription>
@@ -383,11 +383,11 @@ export function DashboardOperationalOverview() {
 						</div>
 
 						<div className="grid grid-cols-2 gap-3 text-sm">
-							<div className="rounded-lg border bg-muted/30 p-3">
+							<div className="rounded-lg border bg-muted/20 p-3">
 								<div className="text-muted-foreground">Categorias</div>
 								<div className="mt-1 text-lg font-semibold">{summary.categoriesTotal}</div>
 							</div>
-							<div className="rounded-lg border bg-muted/30 p-3">
+							<div className="rounded-lg border bg-muted/20 p-3">
 								<div className="text-muted-foreground">Subcategorias</div>
 								<div className="mt-1 text-lg font-semibold">
 									{summary.categoryChildrenTotal}
@@ -399,7 +399,7 @@ export function DashboardOperationalOverview() {
 			</section>
 
 			<section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.5fr_1fr]">
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle>Clientes (amostra)</CardTitle>
 						<CardDescription>
@@ -412,7 +412,7 @@ export function DashboardOperationalOverview() {
 								topCustomers.map((customer) => (
 									<div
 										key={customer.id}
-										className="rounded-xl border bg-gradient-to-br from-white to-slate-50 p-4"
+										className="rounded-xl border bg-gradient-to-br from-background to-slate-50 p-4"
 									>
 										<div className="flex items-start justify-between gap-3">
 											<div>
@@ -426,7 +426,7 @@ export function DashboardOperationalOverview() {
 												className={cn(
 													customer.status === "ACTIVE"
 														? "bg-emerald-600 text-white"
-														: "bg-slate-200 text-slate-800",
+														: "bg-muted text-foreground",
 												)}
 											>
 												{customer.status === "ACTIVE" ? "Ativo" : "Inativo"}
@@ -447,7 +447,7 @@ export function DashboardOperationalOverview() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-200/70">
+				<Card className="border-border/70">
 					<CardHeader>
 						<CardTitle>Atalhos</CardTitle>
 						<CardDescription>
@@ -492,17 +492,17 @@ type SummaryCardProps = {
 
 function SummaryCard({ title, value, subtitle, icon: Icon, tone }: SummaryCardProps) {
 	const toneClass = {
-		emerald: "from-emerald-50 to-white border-emerald-100",
-		blue: "from-blue-50 to-white border-blue-100",
-		amber: "from-amber-50 to-white border-amber-100",
-		rose: "from-rose-50 to-white border-rose-100",
+		emerald: "from-emerald-50 to-background border-emerald-100",
+		blue: "from-blue-50 to-background border-blue-100",
+		amber: "from-amber-50 to-background border-amber-100",
+		rose: "from-rose-50 to-background border-rose-100",
 	}[tone];
 
 	const iconClass = {
-		emerald: "bg-emerald-100 text-emerald-700",
-		blue: "bg-blue-100 text-blue-700",
-		amber: "bg-amber-100 text-amber-700",
-		rose: "bg-rose-100 text-rose-700",
+		emerald: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+		blue: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
+		amber: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+		rose: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
 	}[tone];
 
 	return (

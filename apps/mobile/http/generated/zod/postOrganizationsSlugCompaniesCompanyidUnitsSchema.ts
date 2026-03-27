@@ -21,6 +21,14 @@ export const postOrganizationsSlugCompaniesCompanyidUnits201Schema = z.object({
 export const postOrganizationsSlugCompaniesCompanyidUnitsMutationRequestSchema =
   z.object({
     name: z.string(),
+    country: z.optional(z.string()),
+    state: z.optional(z.string()),
+    city: z.optional(z.string()),
+    street: z.optional(z.string()),
+    zipCode: z.optional(z.string()),
+    neighborhood: z.optional(z.string()),
+    number: z.optional(z.string()),
+    complement: z.optional(z.string()),
   });
 
 export const postOrganizationsSlugCompaniesCompanyidUnitsMutationResponseSchema =

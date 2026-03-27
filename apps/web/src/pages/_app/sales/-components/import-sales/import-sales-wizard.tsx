@@ -2123,7 +2123,7 @@ export function ImportSalesWizard() {
 						) : null}
 
 						{parsedFile ? (
-							<div className="rounded-md border bg-muted/30 p-3 text-sm">
+							<div className="rounded-md border bg-muted/20 p-3 text-sm">
 								<p className="font-medium">Arquivo analisado com sucesso</p>
 								<p className="text-muted-foreground">
 									{parsedFile.name} | {parsedFile.rows.length} linhas |{" "}
@@ -2544,15 +2544,15 @@ export function ImportSalesWizard() {
 										<p className="text-muted-foreground text-xs">Total</p>
 										<p className="font-semibold text-lg">{finalizationTotalRows}</p>
 									</div>
-									<div className="rounded-md border border-emerald-300/40 bg-emerald-500/10 p-3">
-										<p className="text-emerald-800 text-xs">Válidas localmente</p>
-										<p className="font-semibold text-emerald-800 text-lg">
+									<div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
+										<p className="text-emerald-700 dark:text-emerald-300 text-xs">Válidas localmente</p>
+										<p className="font-semibold text-emerald-700 dark:text-emerald-300 text-lg">
 											{finalizationValidRowsCount}
 										</p>
 									</div>
-									<div className="rounded-md border border-amber-300/40 bg-amber-500/10 p-3">
-										<p className="text-amber-800 text-xs">Com alerta</p>
-										<p className="font-semibold text-amber-800 text-lg">
+									<div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
+										<p className="text-amber-700 dark:text-amber-300 text-xs">Com alerta</p>
+										<p className="font-semibold text-amber-700 dark:text-amber-300 text-lg">
 											{finalizationRowsWithWarningsCount}
 										</p>
 									</div>
@@ -2627,7 +2627,7 @@ export function ImportSalesWizard() {
 													<div
 														key={`finalization-mobile-row-${rowDraft.rowNumber}`}
 														className={`space-y-3 rounded-md border p-3 ${
-															hasAlerts ? "border-amber-300/40 bg-amber-500/5" : ""
+															hasAlerts ? "border-amber-500/30 bg-amber-500/5" : ""
 														}`}
 													>
 														<div className="flex items-start justify-between gap-3">
@@ -2636,8 +2636,8 @@ export function ImportSalesWizard() {
 																<p
 																	className={`text-xs ${
 																		hasAlerts
-																			? "text-amber-800"
-																			: "text-emerald-700"
+																			? "text-amber-700 dark:text-amber-300"
+																			: "text-emerald-700 dark:text-emerald-300"
 																	}`}
 																>
 																	{hasAlerts ? "Com alerta" : "Pronta"}
@@ -2664,8 +2664,8 @@ export function ImportSalesWizard() {
 														<div
 															className={`rounded-md border px-2.5 py-2 text-xs ${
 																hasAlerts
-																	? "border-amber-300/40 bg-amber-500/10 text-amber-900"
-																	: "border-emerald-300/40 bg-emerald-500/10 text-emerald-900"
+																	? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+																	: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
 															}`}
 														>
 															{hasAlerts
@@ -2873,9 +2873,9 @@ export function ImportSalesWizard() {
 									</p>
 									<p className="font-semibold text-lg">{totalRowsCount}</p>
 								</div>
-								<div className="rounded-md border border-emerald-300/40 bg-emerald-500/10 p-3">
-									<p className="text-xs text-emerald-800">Importadas</p>
-									<p className="font-semibold text-lg text-emerald-800">
+								<div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
+									<p className="text-xs text-emerald-700 dark:text-emerald-300">Importadas</p>
+									<p className="font-semibold text-lg text-emerald-700 dark:text-emerald-300">
 										{importedRowsCount}
 									</p>
 								</div>
@@ -2885,16 +2885,16 @@ export function ImportSalesWizard() {
 										{failedRowsCount}
 									</p>
 								</div>
-								<div className="rounded-md border border-amber-300/40 bg-amber-500/10 p-3">
-									<p className="text-amber-800 text-xs">Ignoradas</p>
-									<p className="font-semibold text-amber-800 text-lg">
+								<div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
+									<p className="text-amber-700 dark:text-amber-300 text-xs">Ignoradas</p>
+									<p className="font-semibold text-amber-700 dark:text-amber-300 text-lg">
 										{ignoredRowsCount}
 									</p>
 								</div>
 							</div>
 
 							{failedRowsCount === 0 ? (
-								<div className="flex items-center gap-2 rounded-md border border-emerald-300/40 bg-emerald-500/10 p-3 text-emerald-800 text-sm">
+								<div className="flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-emerald-700 dark:text-emerald-300 text-sm">
 									<CheckCircle2 className="size-4" />
 									Importação concluída sem falhas.
 								</div>
@@ -3077,7 +3077,7 @@ export function ImportSalesWizard() {
 																		Campo: {failureField}
 																	</p>
 																{selectedProductSuggestion ? (
-																	<p className="text-xs text-emerald-700">
+																	<p className="text-xs text-emerald-700 dark:text-emerald-300">
 																		Sugestão automática:{" "}
 																		{selectedProductSuggestion.label}
 																	</p>

@@ -10,7 +10,8 @@ import type { PostOrganizationsSlugCompaniesMutationRequest } from "@/http/gener
 import type { PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest } from "@/http/generated/models/PostOrganizationsSlugCompaniesCompanyidUnits";
 import type { PutOrganizationsSlugCompaniesCompanyidMutationRequest } from "@/http/generated/models/PutOrganizationsSlugCompaniesCompanyid";
 import type { PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest } from "@/http/generated/models/PutOrganizationsSlugCompaniesCompanyidUnitsUnitid";
-import type { Company, Unit } from "@/types/registers";
+import type { Company, Unit, UnitInput } from "@/types/registers";
+import { undefinedIfEmpty } from "./utils";
 
 export async function listCompanies(slug: string): Promise<Company[]> {
   const data = await getOrganizationsSlugCompanies({ slug });
@@ -25,6 +26,20 @@ export async function createCompany(slug: string, name: string): Promise<string>
     } as PostOrganizationsSlugCompaniesMutationRequest,
   });
   return data.companyId;
+}
+
+function normalizeUnitPayload(input: UnitInput): UnitInput {
+  return {
+    name: input.name.trim(),
+    country: undefinedIfEmpty(input.country),
+    state: undefinedIfEmpty(input.state),
+    city: undefinedIfEmpty(input.city),
+    street: undefinedIfEmpty(input.street),
+    zipCode: undefinedIfEmpty(input.zipCode),
+    neighborhood: undefinedIfEmpty(input.neighborhood),
+    number: undefinedIfEmpty(input.number),
+    complement: undefinedIfEmpty(input.complement),
+  };
 }
 
 export async function updateCompany(slug: string, companyId: string, name: string): Promise<void> {
@@ -49,14 +64,12 @@ export async function listUnits(slug: string, companyId: string): Promise<Unit[]
 export async function createUnit(
   slug: string,
   companyId: string,
-  name: string,
+  payload: UnitInput,
 ): Promise<string> {
   const data = await postOrganizationsSlugCompaniesCompanyidUnits({
     slug,
     companyId,
-    data: {
-      name: name.trim(),
-    } as PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest,
+    data: normalizeUnitPayload(payload) as PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest,
   });
   return data.unitId;
 }
@@ -65,15 +78,13 @@ export async function updateUnit(
   slug: string,
   companyId: string,
   unitId: string,
-  name: string,
+  payload: UnitInput,
 ): Promise<void> {
   await putOrganizationsSlugCompaniesCompanyidUnitsUnitid({
     slug,
     companyId,
     unitId,
-    data: {
-      name: name.trim(),
-    } as PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest,
+    data: normalizeUnitPayload(payload) as PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest,
   });
 }
 

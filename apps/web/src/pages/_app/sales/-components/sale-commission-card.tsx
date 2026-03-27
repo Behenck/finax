@@ -260,7 +260,7 @@ export function SaleCommissionCard({
 	}, [beneficiaryId, beneficiaryLabel, beneficiaryOptions]);
 
 	return (
-		<Card className="space-y-4 p-4">
+		<Card className="space-y-4 p-4 md:space-y-0 md:gap-3">
 			<div className="flex items-center justify-between">
 				<Badge variant={sourceType === "PULLED" ? "secondary" : "outline"}>
 					{SALE_COMMISSION_SOURCE_TYPE_LABEL[sourceType]}

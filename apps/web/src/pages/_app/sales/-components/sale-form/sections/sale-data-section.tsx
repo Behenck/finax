@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { FieldError } from "@/components/field-error";
 import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
-import { formatCurrencyBRL } from "@/utils/format-amount";
+import { formatCurrencyBRL, parseBRLCurrencyToCents } from "@/utils/format-amount";
 import { parseDateInputValue, toDateInputValue } from "../date-utils";
 
 interface SaleDataSectionProps {
@@ -46,19 +46,26 @@ export function SaleDataSection({ control }: SaleDataSectionProps) {
 						<Controller
 							control={control}
 							name="totalAmount"
-							render={({ field, fieldState }) => (
-								<>
-									<Input
-										placeholder="R$ 0,00"
-										value={field.value ?? ""}
-										onChange={(event) =>
-											field.onChange(formatCurrencyBRL(event.target.value))
-										}
-										aria-invalid={fieldState.invalid}
-									/>
-									<FieldError error={fieldState.error} />
-								</>
-							)}
+							render={({ field, fieldState }) => {
+								const totalAmountInCents = parseBRLCurrencyToCents(field.value);
+
+								return (
+									<>
+										<Input
+											placeholder="R$ 0,00"
+											value={field.value ?? ""}
+											onChange={(event) =>
+												field.onChange(formatCurrencyBRL(event.target.value))
+											}
+											aria-invalid={fieldState.invalid}
+											className={
+												totalAmountInCents === 0 ? "text-muted-foreground" : undefined
+											}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								);
+							}}
 						/>
 					</Field>
 				</FieldGroup>

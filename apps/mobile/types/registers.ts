@@ -203,17 +203,37 @@ export type ProductInput = {
 export type Unit = {
   id: string;
   name: string;
+  country: string | null;
+  state: string | null;
+  city: string | null;
+  street: string | null;
+  zipCode: string | null;
+  neighborhood: string | null;
+  number: string | null;
+  complement: string | null;
+};
+
+export type UnitInput = {
+  name: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  street?: string;
+  zipCode?: string;
+  neighborhood?: string;
+  number?: string;
+  complement?: string;
 };
 
 export type Company = {
   id: string;
   name: string;
   units: Unit[];
-  employees: Array<{
+  employees: {
     id: string;
     name: string;
     department: string | null;
-  }>;
+  }[];
 };
 
 export type CategoryType = "INCOME" | "OUTCOME";

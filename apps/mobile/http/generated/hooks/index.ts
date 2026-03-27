@@ -46,6 +46,8 @@ export type { GetOrganizationsSlugInvitesSuspenseQueryKey } from "./useGetOrgani
 export type { GetOrganizationsSlugMembersQueryKey } from "./useGetOrganizationsSlugMembers.ts";
 export type { GetOrganizationsSlugMembershipQueryKey } from "./useGetOrganizationsSlugMembership.ts";
 export type { GetOrganizationsSlugMembershipSuspenseQueryKey } from "./useGetOrganizationsSlugMembershipSuspense.ts";
+export type { GetOrganizationsSlugMembersMemberidPermissionsQueryKey } from "./useGetOrganizationsSlugMembersMemberidPermissions.ts";
+export type { GetOrganizationsSlugMembersMemberidPermissionsSuspenseQueryKey } from "./useGetOrganizationsSlugMembersMemberidPermissionsSuspense.ts";
 export type { GetOrganizationsSlugMembersRoleQueryKey } from "./useGetOrganizationsSlugMembersRole.ts";
 export type { GetOrganizationsSlugMembersRoleSuspenseQueryKey } from "./useGetOrganizationsSlugMembersRoleSuspense.ts";
 export type { GetOrganizationsSlugMembersSuspenseQueryKey } from "./useGetOrganizationsSlugMembersSuspense.ts";
@@ -53,6 +55,8 @@ export type { GetOrganizationsSlugPartnersQueryKey } from "./useGetOrganizations
 export type { GetOrganizationsSlugPartnersPartneridQueryKey } from "./useGetOrganizationsSlugPartnersPartnerid.ts";
 export type { GetOrganizationsSlugPartnersPartneridSuspenseQueryKey } from "./useGetOrganizationsSlugPartnersPartneridSuspense.ts";
 export type { GetOrganizationsSlugPartnersSuspenseQueryKey } from "./useGetOrganizationsSlugPartnersSuspense.ts";
+export type { GetOrganizationsSlugPermissionsCatalogQueryKey } from "./useGetOrganizationsSlugPermissionsCatalog.ts";
+export type { GetOrganizationsSlugPermissionsCatalogSuspenseQueryKey } from "./useGetOrganizationsSlugPermissionsCatalogSuspense.ts";
 export type { GetOrganizationsSlugProductsQueryKey } from "./useGetOrganizationsSlugProducts.ts";
 export type { GetOrganizationsSlugProductsIdQueryKey } from "./useGetOrganizationsSlugProductsId.ts";
 export type { GetOrganizationsSlugProductsIdCommissionScenariosQueryKey } from "./useGetOrganizationsSlugProductsIdCommissionScenarios.ts";
@@ -138,6 +142,7 @@ export type { PutOrganizationsSlugCostcentersCostcenteridMutationKey } from "./u
 export type { PutOrganizationsSlugCustomersCustomeridMutationKey } from "./usePutOrganizationsSlugCustomersCustomerid.ts";
 export type { PutOrganizationsSlugEmployeesEmployeeidMutationKey } from "./usePutOrganizationsSlugEmployeesEmployeeid.ts";
 export type { PutOrganizationsSlugMembersMemberidMutationKey } from "./usePutOrganizationsSlugMembersMemberid.ts";
+export type { PutOrganizationsSlugMembersMemberidPermissionsMutationKey } from "./usePutOrganizationsSlugMembersMemberidPermissions.ts";
 export type { PutOrganizationsSlugPartnersPartneridMutationKey } from "./usePutOrganizationsSlugPartnersPartnerid.ts";
 export type { PutOrganizationsSlugProductsIdMutationKey } from "./usePutOrganizationsSlugProductsId.ts";
 export type { PutOrganizationsSlugProductsIdCommissionScenariosMutationKey } from "./usePutOrganizationsSlugProductsIdCommissionScenarios.ts";
@@ -291,6 +296,12 @@ export { useGetOrganizationsSlugMembership } from "./useGetOrganizationsSlugMemb
 export { getOrganizationsSlugMembershipSuspenseQueryKey } from "./useGetOrganizationsSlugMembershipSuspense.ts";
 export { getOrganizationsSlugMembershipSuspenseQueryOptions } from "./useGetOrganizationsSlugMembershipSuspense.ts";
 export { useGetOrganizationsSlugMembershipSuspense } from "./useGetOrganizationsSlugMembershipSuspense.ts";
+export { getOrganizationsSlugMembersMemberidPermissionsQueryKey } from "./useGetOrganizationsSlugMembersMemberidPermissions.ts";
+export { getOrganizationsSlugMembersMemberidPermissionsQueryOptions } from "./useGetOrganizationsSlugMembersMemberidPermissions.ts";
+export { useGetOrganizationsSlugMembersMemberidPermissions } from "./useGetOrganizationsSlugMembersMemberidPermissions.ts";
+export { getOrganizationsSlugMembersMemberidPermissionsSuspenseQueryKey } from "./useGetOrganizationsSlugMembersMemberidPermissionsSuspense.ts";
+export { getOrganizationsSlugMembersMemberidPermissionsSuspenseQueryOptions } from "./useGetOrganizationsSlugMembersMemberidPermissionsSuspense.ts";
+export { useGetOrganizationsSlugMembersMemberidPermissionsSuspense } from "./useGetOrganizationsSlugMembersMemberidPermissionsSuspense.ts";
 export { getOrganizationsSlugMembersRoleQueryKey } from "./useGetOrganizationsSlugMembersRole.ts";
 export { getOrganizationsSlugMembersRoleQueryOptions } from "./useGetOrganizationsSlugMembersRole.ts";
 export { useGetOrganizationsSlugMembersRole } from "./useGetOrganizationsSlugMembersRole.ts";
@@ -312,6 +323,12 @@ export { useGetOrganizationsSlugPartnersPartneridSuspense } from "./useGetOrgani
 export { getOrganizationsSlugPartnersSuspenseQueryKey } from "./useGetOrganizationsSlugPartnersSuspense.ts";
 export { getOrganizationsSlugPartnersSuspenseQueryOptions } from "./useGetOrganizationsSlugPartnersSuspense.ts";
 export { useGetOrganizationsSlugPartnersSuspense } from "./useGetOrganizationsSlugPartnersSuspense.ts";
+export { getOrganizationsSlugPermissionsCatalogQueryKey } from "./useGetOrganizationsSlugPermissionsCatalog.ts";
+export { getOrganizationsSlugPermissionsCatalogQueryOptions } from "./useGetOrganizationsSlugPermissionsCatalog.ts";
+export { useGetOrganizationsSlugPermissionsCatalog } from "./useGetOrganizationsSlugPermissionsCatalog.ts";
+export { getOrganizationsSlugPermissionsCatalogSuspenseQueryKey } from "./useGetOrganizationsSlugPermissionsCatalogSuspense.ts";
+export { getOrganizationsSlugPermissionsCatalogSuspenseQueryOptions } from "./useGetOrganizationsSlugPermissionsCatalogSuspense.ts";
+export { useGetOrganizationsSlugPermissionsCatalogSuspense } from "./useGetOrganizationsSlugPermissionsCatalogSuspense.ts";
 export { getOrganizationsSlugProductsQueryKey } from "./useGetOrganizationsSlugProducts.ts";
 export { getOrganizationsSlugProductsQueryOptions } from "./useGetOrganizationsSlugProducts.ts";
 export { useGetOrganizationsSlugProducts } from "./useGetOrganizationsSlugProducts.ts";
@@ -567,6 +584,9 @@ export { usePutOrganizationsSlugEmployeesEmployeeid } from "./usePutOrganization
 export { putOrganizationsSlugMembersMemberidMutationKey } from "./usePutOrganizationsSlugMembersMemberid.ts";
 export { putOrganizationsSlugMembersMemberidMutationOptions } from "./usePutOrganizationsSlugMembersMemberid.ts";
 export { usePutOrganizationsSlugMembersMemberid } from "./usePutOrganizationsSlugMembersMemberid.ts";
+export { putOrganizationsSlugMembersMemberidPermissionsMutationKey } from "./usePutOrganizationsSlugMembersMemberidPermissions.ts";
+export { putOrganizationsSlugMembersMemberidPermissionsMutationOptions } from "./usePutOrganizationsSlugMembersMemberidPermissions.ts";
+export { usePutOrganizationsSlugMembersMemberidPermissions } from "./usePutOrganizationsSlugMembersMemberidPermissions.ts";
 export { putOrganizationsSlugPartnersPartneridMutationKey } from "./usePutOrganizationsSlugPartnersPartnerid.ts";
 export { putOrganizationsSlugPartnersPartneridMutationOptions } from "./usePutOrganizationsSlugPartnersPartnerid.ts";
 export { usePutOrganizationsSlugPartnersPartnerid } from "./usePutOrganizationsSlugPartnersPartnerid.ts";

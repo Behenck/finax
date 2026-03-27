@@ -59,7 +59,7 @@ export function InvitePage({ inviteId }: InvitePageProps) {
 
         <div className="text-center">
           <h1 className="text-3xl font-bold">Validar Convite</h1>
-          <span className="text-gray-400 text-sm">
+          <span className="text-muted-foreground text-sm">
             Digite o token de convite que você recebeu
           </span>
         </div>

@@ -20,7 +20,7 @@ export function CategoryColumn({ title, categories }: CategoryColumnProps) {
 
 			{categories.length === 0 && (
 				<Card className="flex justify-center items-center gap-2 p-8">
-					<span className="text-gray-500 text-sm">
+					<span className="text-muted-foreground text-sm">
 						Nenhuma categoria de {title.toLowerCase()}
 					</span>
 					<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>

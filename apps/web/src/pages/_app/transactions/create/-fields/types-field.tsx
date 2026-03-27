@@ -27,9 +27,9 @@ export function TypesField({ control }: TypesFieldProps) {
 								variant="outline"
 								onClick={() => field.onChange("OUTCOME")}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1 p-10 flex-1 transition text-gray-600 hover:text-gray-600",
+									"flex flex-col items-center justify-center gap-1 p-10 flex-1 transition text-muted-foreground hover:text-muted-foreground",
 									field.value === "OUTCOME" &&
-									"bg-red-50 text-red-700 border-red-500 hover:bg-red-50 hover:text-red-700"
+									"bg-red-500/10 text-red-700 dark:text-red-300 border-red-500 hover:bg-red-500/10 hover:text-red-700 dark:text-red-300"
 								)}
 							>
 								<span>Despesa</span>
@@ -44,9 +44,9 @@ export function TypesField({ control }: TypesFieldProps) {
 								variant="outline"
 								onClick={() => field.onChange("INCOME")}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1 p-10 flex-1 transition text-gray-600 hover:text-gray-600",
+									"flex flex-col items-center justify-center gap-1 p-10 flex-1 transition text-muted-foreground hover:text-muted-foreground",
 									field.value === "INCOME" &&
-									"bg-green-50 text-green-700 border-green-500 hover:bg-green-50 hover:text-green-700"
+									"bg-green-500/10 text-green-700 dark:text-green-300 border-green-500 hover:bg-green-500/10 hover:text-green-700 dark:text-green-300"
 								)}
 							>
 								<span>Receita</span>
@@ -72,9 +72,9 @@ export function TypesField({ control }: TypesFieldProps) {
 								variant="outline"
 								onClick={() => field.onChange("FIXED")}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1 p-4 flex-1 transition text-gray-600 hover:text-gray-600",
+									"flex flex-col items-center justify-center gap-1 p-4 flex-1 transition text-muted-foreground hover:text-muted-foreground",
 									field.value === "FIXED" &&
-									"bg-green-50 text-green-700 border-green-500 hover:bg-green-50 hover:text-green-700"
+									"bg-green-500/10 text-green-700 dark:text-green-300 border-green-500 hover:bg-green-500/10 hover:text-green-700 dark:text-green-300"
 								)}
 							>
 								<span className="text-xs font-normal">Fixa</span>
@@ -86,9 +86,9 @@ export function TypesField({ control }: TypesFieldProps) {
 								variant="outline"
 								onClick={() => field.onChange("VARIABLE")}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1 p-4 flex-1 transition text-gray-600 hover:text-gray-600",
+									"flex flex-col items-center justify-center gap-1 p-4 flex-1 transition text-muted-foreground hover:text-muted-foreground",
 									field.value === "VARIABLE" &&
-									"bg-green-50 text-green-700 border-green-500 hover:bg-green-50 hover:text-green-700"
+									"bg-green-500/10 text-green-700 dark:text-green-300 border-green-500 hover:bg-green-500/10 hover:text-green-700 dark:text-green-300"
 								)}
 							>
 								<span className="text-xs font-normal">Variável</span>

@@ -102,7 +102,7 @@ export function SaleStatusAction({
 								void handleCompleteDirectly();
 							}}
 						>
-							<CheckCircle2 className="size-4 text-emerald-600" />
+							<CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-300" />
 							Concluir venda
 						</DropdownMenuItem>
 					) : null}

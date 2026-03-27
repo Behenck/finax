@@ -18,10 +18,10 @@ export function UpdateUnit({ companyId, unit }: UpdateUnitProps) {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="ghost" size="icon">
-					<Pencil className="text-gray-500" />
+					<Pencil className="text-muted-foreground" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
 				<DialogTitle>Atualizar Unidade</DialogTitle>
 				<UnitForm
 					onSuccess={() => setOpen(false)}

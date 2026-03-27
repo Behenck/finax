@@ -21,7 +21,9 @@ export const getMe200Schema = z.object({
     slug: z.string(),
     role: z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
     ownerId: z.uuid(),
+    enableSalesTransactionsSync: z.boolean(),
   }),
+  effectivePermissions: z.array(z.string()),
 });
 
 export const getMeQueryResponseSchema = z.lazy(() => getMe200Schema);

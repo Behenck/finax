@@ -28,9 +28,9 @@ export function DashboardMonthPicker({
 					type="button"
 					variant="outline"
 					disabled={disabled}
-					className="justify-start gap-2 rounded-full border-slate-300 bg-white/80 text-left capitalize"
+					className="justify-start gap-2 rounded-full border-border bg-background/80 text-left capitalize"
 				>
-					<CalendarDays className="size-4 text-slate-500" />
+					<CalendarDays className="size-4 text-muted-foreground" />
 					{formatMonthLabel(value)}
 				</Button>
 			</PopoverTrigger>

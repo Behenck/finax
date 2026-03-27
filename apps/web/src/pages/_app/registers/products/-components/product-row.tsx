@@ -66,8 +66,8 @@ export function ProductRow({
 							className={cn(
 								"rounded-md p-2",
 								isInactive
-									? "bg-gray-100 text-gray-400"
-									: "bg-blue-100 text-blue-600",
+									? "bg-muted text-muted-foreground"
+									: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
 							)}
 						>
 							<Package className="size-4" />
@@ -105,7 +105,7 @@ export function ProductRow({
 									aria-label="Adicionar produto filho"
 									title="Adicionar produto filho"
 								>
-									<CirclePlus className="text-gray-700" />
+									<CirclePlus className="text-foreground" />
 								</Button>
 							}
 						/>
@@ -130,7 +130,7 @@ export function ProductRow({
 							onClick={() => onToggleActive(product)}
 						>
 							<Power
-								className={cn("text-green-600", isInactive && "text-gray-400")}
+								className={cn("text-green-600", isInactive && "text-muted-foreground")}
 							/>
 						</Button>
 

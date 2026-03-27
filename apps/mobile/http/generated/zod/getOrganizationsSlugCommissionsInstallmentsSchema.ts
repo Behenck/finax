@@ -15,6 +15,8 @@ export const getOrganizationsSlugCommissionsInstallmentsQueryParamsSchema =
     page: z.coerce.number().int().min(1).max(9007199254740991).default(1),
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
     q: z.string().default(""),
+    companyId: z.optional(z.uuid()),
+    unitId: z.optional(z.uuid()),
     productId: z.optional(z.uuid()),
     direction: z.optional(z.enum(["INCOME", "OUTCOME"])),
     status: z.enum(["ALL", "PENDING", "PAID", "CANCELED"]).default("ALL"),

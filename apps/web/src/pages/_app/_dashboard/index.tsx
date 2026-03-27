@@ -24,7 +24,7 @@ function DashboardPage() {
 						void setDashboardView(value as "commercial" | "operational")
 					}
 				>
-					<TabsList className="rounded-full bg-slate-100 p-1">
+					<TabsList className="rounded-full bg-muted p-1">
 						<TabsTrigger value="commercial" className="rounded-full px-4">
 							Vendas e comissões do mês
 						</TabsTrigger>
@@ -40,7 +40,7 @@ function DashboardPage() {
 			) : (
 				<section className="space-y-5">
 					<div className="space-y-1">
-						<h2 className="text-xl font-semibold text-slate-950">
+						<h2 className="text-xl font-semibold text-foreground">
 							Base operacional
 						</h2>
 						<p className="text-sm text-muted-foreground">

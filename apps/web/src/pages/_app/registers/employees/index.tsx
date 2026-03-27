@@ -142,7 +142,7 @@ function Employees() {
 			<PageHeader title="Gerenciar Funcionários" actions={<CreateEmployee />} />
 
 			<div className="relative">
-				<Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
+				<Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
 				<Input
 					placeholder="Buscar por nome, e-mail, cargo ou telefone..."
 					className="h-10 w-full pl-10 sm:max-w-xl"
@@ -218,7 +218,7 @@ function Employees() {
 													: "Sem telefone cadastrado"
 											}
 										>
-											<MessageCircle className="size-4 text-emerald-600" />
+											<MessageCircle className="size-4 text-emerald-600 dark:text-emerald-300" />
 											WhatsApp
 										</Button>
 										<UpdateEmployee employee={employee} />
@@ -332,7 +332,7 @@ function Employees() {
 															: "Sem telefone cadastrado"
 													}
 												>
-													<MessageCircle className="size-4 text-emerald-600" />
+													<MessageCircle className="size-4 text-emerald-600 dark:text-emerald-300" />
 												</Button>
 												<UpdateEmployee employee={employee} />
 												<Button

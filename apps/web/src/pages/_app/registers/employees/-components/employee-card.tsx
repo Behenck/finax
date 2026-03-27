@@ -70,29 +70,29 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
 						<span className="font-medium ">{employee.name}</span>
 						<div className="flex items-center gap-4">
 							{employee.role && (
-								<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<div className="flex items-center gap-1 text-muted-foreground text-xs">
 									<Briefcase className="size-3" />
 									<span>{employee.role}</span>
 								</div>
 							)}
 							{employee.department && (
-								<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<div className="flex items-center gap-1 text-muted-foreground text-xs">
 									<Building2 className="size-3" />
 									<span>{employee.department}</span>
 								</div>
 							)}
-							<div className="flex items-center gap-1 text-gray-500 text-xs">
+							<div className="flex items-center gap-1 text-muted-foreground text-xs">
 								<Mail className="size-3" />
 								<span>{employee.email}</span>
 							</div>
 							{employee.cpf && (
-								<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<div className="flex items-center gap-1 text-muted-foreground text-xs">
 									<IdCard className="size-3" />
 									<span>CPF: {employee.cpf}</span>
 								</div>
 							)}
 							{employee.pixKey && (
-								<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<div className="flex items-center gap-1 text-muted-foreground text-xs">
 									<KeyRound className="size-3" />
 									<span>
 										PIX
@@ -103,12 +103,12 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
 									</span>
 								</div>
 							)}
-							<div className="flex items-center gap-1 text-gray-500 text-xs">
+							<div className="flex items-center gap-1 text-muted-foreground text-xs">
 								<Building2 className="size-3" />
 								<span>{employee.company.name}</span>
 							</div>
 							{employee.unit && (
-								<div className="flex items-center gap-1 text-gray-500 text-xs">
+								<div className="flex items-center gap-1 text-muted-foreground text-xs">
 									<Building className="size-3" />
 									<span>{employee.unit.name}</span>
 								</div>

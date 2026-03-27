@@ -143,6 +143,20 @@ export const simpleNameSchema = z.object({
 
 export type SimpleNameValues = z.input<typeof simpleNameSchema>;
 
+export const unitFormSchema = z.object({
+  name: z.string().trim().min(1, "Nome obrigatório"),
+  country: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  street: z.string().trim().optional(),
+  zipCode: z.string().trim().optional(),
+  neighborhood: z.string().trim().optional(),
+  number: z.string().trim().optional(),
+  complement: z.string().trim().optional(),
+});
+
+export type UnitFormValues = z.input<typeof unitFormSchema>;
+
 export const categoryFormSchema = z.object({
   name: z.string().trim().min(1, "Nome obrigatório"),
   code: z.string().trim().optional(),

@@ -1,9 +1,79 @@
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { useSidebar } from "@/components/ui/sidebar";
-import { PanelLeftIcon, Search } from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+	LaptopIcon,
+	MoonIcon,
+	PanelLeftIcon,
+	Search,
+	SunIcon,
+} from "lucide-react";
 import { AvatarDropDown } from "./avatar";
 import { openQuickActionsCommand } from "./quick-actions-command";
+
+type ThemeMode = "system" | "light" | "dark";
+
+function ThemeToggleButton() {
+	const { theme, setTheme } = useTheme();
+	const selectedTheme: ThemeMode =
+		theme === "light" || theme === "dark" || theme === "system"
+			? theme
+			: "system";
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon"
+					className="size-9"
+					aria-label="Alterar tema"
+					title="Alterar tema"
+				>
+					{selectedTheme === "dark" ? (
+						<MoonIcon className="size-4" />
+					) : selectedTheme === "light" ? (
+						<SunIcon className="size-4" />
+					) : (
+						<LaptopIcon className="size-4" />
+					)}
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-44">
+				<DropdownMenuLabel>Tema</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuRadioGroup
+					value={selectedTheme}
+					onValueChange={(value) => setTheme(value as ThemeMode)}
+				>
+					<DropdownMenuRadioItem value="system">
+						<LaptopIcon className="size-4" />
+						Sistema
+					</DropdownMenuRadioItem>
+					<DropdownMenuRadioItem value="light">
+						<SunIcon className="size-4" />
+						Claro
+					</DropdownMenuRadioItem>
+					<DropdownMenuRadioItem value="dark">
+						<MoonIcon className="size-4" />
+						Escuro
+					</DropdownMenuRadioItem>
+				</DropdownMenuRadioGroup>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
 
 export function AppTopHeader() {
 	const { isMobile, openMobile, setOpenMobile, toggleSidebar } = useSidebar();
@@ -55,7 +125,10 @@ export function AppTopHeader() {
 					</div>
 				</div>
 
-				<AvatarDropDown />
+				<div className="flex items-center gap-2">
+					<ThemeToggleButton />
+					<AvatarDropDown />
+				</div>
 			</div>
 		</header>
 	);

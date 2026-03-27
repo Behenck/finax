@@ -15,17 +15,17 @@ export const TRANSACTION_BADGE: Record<TransactionStatus, BadgeConfig> = {
   PENDING: {
     label: "Pendente",
     variant: "outline",
-    className: "bg-yellow-500/15 text-yellow-700 border-yellow-500/30",
+    className: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
   },
   PAID: {
     label: "Pago",
     variant: "outline",
-    className: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
+    className: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
   },
   CANCELED: {
     label: "Cancelado",
     variant: "outline",
-    className: "bg-red-500/15 text-red-700 border-red-500/30",
+    className: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
   },
 }
 
@@ -35,7 +35,7 @@ export const TRANSACTION_BADGE: Record<TransactionStatus, BadgeConfig> = {
 const OVERDUE_BADGE: BadgeConfig = {
   label: "Atrasado",
   variant: "outline",
-  className: "bg-red-600/20 text-red-700 border-red-600/40",
+  className: "bg-red-600/20 text-red-700 dark:text-red-300 border-red-600/40",
 }
 
 /**

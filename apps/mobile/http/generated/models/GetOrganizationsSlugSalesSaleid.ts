@@ -83,6 +83,14 @@ export const commissionsDirectionEnum3 = {
 export type CommissionsDirectionEnum3Key =
   (typeof commissionsDirectionEnum3)[keyof typeof commissionsDirectionEnum3];
 
+export const commissionsCalculationBaseEnum5 = {
+  SALE_TOTAL: "SALE_TOTAL",
+  COMMISSION: "COMMISSION",
+} as const;
+
+export type CommissionsCalculationBaseEnum5Key =
+  (typeof commissionsCalculationBaseEnum5)[keyof typeof commissionsCalculationBaseEnum5];
+
 export const installmentsStatusEnum = {
   PENDING: "PENDING",
   PAID: "PAID",
@@ -308,6 +316,16 @@ export type GetOrganizationsSlugSalesSaleid200 = {
        * @type string
        */
       direction: CommissionsDirectionEnum3Key;
+      /**
+       * @type string
+       */
+      calculationBase: CommissionsCalculationBaseEnum5Key;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer | undefined
+       */
+      baseCommissionIndex?: number;
       /**
        * @type string, uuid
        */

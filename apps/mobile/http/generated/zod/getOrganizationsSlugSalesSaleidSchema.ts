@@ -98,6 +98,8 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
           "OTHER",
         ]),
         direction: z.enum(["INCOME", "OUTCOME"]),
+        calculationBase: z.enum(["SALE_TOTAL", "COMMISSION"]),
+        baseCommissionIndex: z.optional(z.int().min(0).max(9007199254740991)),
         beneficiaryId: z.nullable(z.uuid()),
         beneficiaryLabel: z.nullable(z.string()),
         startDate: z.iso.datetime(),

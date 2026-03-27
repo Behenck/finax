@@ -21,7 +21,7 @@ export function DuplicateProduct({ product }: DuplicateProductProps) {
 					aria-label="Duplicar produto"
 					title="Duplicar produto"
 				>
-					<Copy className="text-gray-700" />
+					<Copy className="text-foreground" />
 				</Button>
 			</SheetTrigger>
 			<SheetContent

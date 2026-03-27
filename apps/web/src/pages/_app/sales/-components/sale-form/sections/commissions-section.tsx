@@ -1,4 +1,4 @@
-import { ArrowRight, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { useWatch } from "react-hook-form";
 import type {
@@ -119,10 +119,10 @@ export function CommissionsSection({
 
 	return (
 		<Card className="rounded-sm gap-4 p-5">
-			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-2">
 				<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
 
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-2 md:gap-1.5">
 					<Button type="button" variant="outline" onClick={onAddManualCommission}>
 						<Plus className="size-4" />
 						Adicionar comissão
@@ -137,7 +137,10 @@ export function CommissionsSection({
 							? "Carregando..."
 							: hasLoadedCommissionForCurrentProduct
 								? "Atualizar comissão"
-								: "Buscar comissão"}
+								: <>
+								<Search />
+								Buscar comissão
+								</>}
 					</Button>
 					<Button
 						type="button"
@@ -191,7 +194,7 @@ export function CommissionsSection({
 				</div>
 			)}
 
-			<div className="space-y-3">
+			<div className="space-y-3 md:space-y-2">
 				{commissionFields.length === 0 ? (
 					<p className="text-sm text-muted-foreground">
 						Nenhuma comissão adicionada.
@@ -204,7 +207,7 @@ export function CommissionsSection({
 						}
 
 						return (
-							<div key={parentCommissionField.id} className="space-y-3">
+							<div key={parentCommissionField.id} className="space-y-3 md:space-y-2">
 								<SaleCommissionCard
 									index={group.parentIndex}
 									control={control}
@@ -239,7 +242,7 @@ export function CommissionsSection({
 									return (
 										<div
 											key={childCommissionField.id}
-											className="ml-4 space-y-2 border-l border-dashed border-muted-foreground/40 pl-4"
+											className="ml-4 space-y-2 border-l border-dashed border-muted-foreground/40 pl-4 md:ml-3 md:space-y-1.5 md:pl-3"
 										>
 											<div className="flex items-center gap-2 text-muted-foreground text-xs">
 												<ArrowRight className="size-3.5" />

@@ -74,7 +74,7 @@ function Products() {
 			/>
 
 			<div className="relative">
-				<Search className="absolute left-5 top-1/2 size-4 -translate-1/2 text-gray-500" />
+				<Search className="absolute left-5 top-1/2 size-4 -translate-1/2 text-muted-foreground" />
 				<Input
 					placeholder="Buscar por nome ou descrição..."
 					className="h-10 w-full pl-10 sm:max-w-md"
@@ -85,7 +85,7 @@ function Products() {
 
 			{safeProducts.length === 0 ? (
 				<Card className="flex items-center justify-center gap-2 p-8">
-					<span className="text-sm text-gray-500">
+					<span className="text-sm text-muted-foreground">
 						Nenhum produto cadastrado
 					</span>
 					<CreateProduct

@@ -63,7 +63,15 @@ export type GetMe200 = {
      * @type string, uuid
      */
     ownerId: string;
+    /**
+     * @type boolean
+     */
+    enableSalesTransactionsSync: boolean;
   };
+  /**
+   * @type array
+   */
+  effectivePermissions: string[];
 };
 
 export type GetMeQueryResponse = GetMe200;

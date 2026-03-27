@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
 	const children = product.children ?? [];
 	const hasChildren = children.length > 0;
 	const isInactive = !product.isActive;
-	// const mutedIconClass = isInactive ? "text-gray-400" : "text-muted-foreground";
+	// const mutedIconClass = isInactive ? "text-muted-foreground" : "text-muted-foreground";
 
 	async function invalidateProducts() {
 		await queryClient.invalidateQueries({
@@ -131,8 +131,8 @@ export function ProductCard({ product }: ProductCardProps) {
 								className={cn(
 									"rounded-xl p-2",
 									isInactive
-										? "bg-gray-100 text-gray-400"
-										: "bg-blue-100 text-blue-600",
+										? "bg-muted text-muted-foreground"
+										: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
 								)}
 							>
 								<Package className="size-4" />
@@ -165,7 +165,7 @@ export function ProductCard({ product }: ProductCardProps) {
 							fixedParentId={product.id}
 							trigger={
 								<Button variant="ghost" size="icon">
-									<CirclePlus className="text-gray-700" />
+									<CirclePlus className="text-foreground" />
 								</Button>
 							}
 						/>
@@ -184,7 +184,7 @@ export function ProductCard({ product }: ProductCardProps) {
 							onClick={() => onToggleActive(product)}
 						>
 							<Power
-								className={cn("text-green-600", isInactive && "text-gray-400")}
+								className={cn("text-green-600", isInactive && "text-muted-foreground")}
 							/>
 						</Button>
 

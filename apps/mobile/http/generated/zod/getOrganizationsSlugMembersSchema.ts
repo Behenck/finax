@@ -18,6 +18,22 @@ export const getOrganizationsSlugMembers200Schema = z.object({
       id: z.uuid(),
       userId: z.uuid(),
       role: z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
+      customersScope: z.enum([
+        "LINKED_ONLY",
+        "COMPANY_ONLY",
+        "ORGANIZATION_ALL",
+      ]),
+      salesScope: z.enum(["LINKED_ONLY", "COMPANY_ONLY", "ORGANIZATION_ALL"]),
+      commissionsScope: z.enum([
+        "LINKED_ONLY",
+        "COMPANY_ONLY",
+        "ORGANIZATION_ALL",
+      ]),
+      partnersScope: z.enum([
+        "LINKED_ONLY",
+        "COMPANY_ONLY",
+        "ORGANIZATION_ALL",
+      ]),
       name: z.nullable(z.string()),
       avatarUrl: z.nullable(z.url()),
       email: z.email(),

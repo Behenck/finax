@@ -17,7 +17,7 @@ function OrganizationPage() {
 		<div className="mx-auto w-full max-w-4xl space-y-6">
 			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
 				<Card className="flex flex-row gap-4 p-4 sm:p-6">
-					<div className="p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+					<div className="p-3 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center">
 						<Building />
 					</div>
 					<div className="flex flex-col">
@@ -26,7 +26,7 @@ function OrganizationPage() {
 					</div>
 				</Card>
 				<Card className="flex flex-row gap-4 p-4 sm:p-6">
-					<div className="p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+					<div className="p-3 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center">
 						<MapPin />
 					</div>
 					<div className="flex flex-col">
@@ -35,7 +35,7 @@ function OrganizationPage() {
 					</div>
 				</Card>
 				<Card className="flex flex-row gap-4 p-4 sm:p-6 sm:col-span-2 xl:col-span-1">
-					<div className="p-3 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+					<div className="p-3 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center">
 						<Users />
 					</div>
 					<div className="flex flex-col">

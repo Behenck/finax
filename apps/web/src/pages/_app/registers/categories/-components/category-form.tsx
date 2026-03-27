@@ -304,13 +304,13 @@ export function CategoryForm({
 												key={iconName}
 												type="button"
 												onClick={() => field.onChange(iconName)}
-												className={cn(
-													"flex items-center justify-center p-2 rounded-md border-none bg-gray-50 transition-colors",
-													isSelected
-														? "bg-gray-200 text-primary-foreground"
-														: "hover:bg-gray-100 hover:text-gray-100 border-border",
-												)}
-											>
+													className={cn(
+														"flex items-center justify-center p-2 rounded-md border-none bg-muted/20 transition-colors",
+														isSelected
+															? "bg-primary/15 text-primary"
+															: "hover:bg-muted hover:text-foreground border-border",
+													)}
+												>
 												<Icon
 													className="size-5"
 													style={
@@ -346,12 +346,12 @@ export function CategoryForm({
 													key={color}
 													type="button"
 													onClick={() => field.onChange(color)}
-													className={cn(
-														"w-9 h-9 rounded-full border-2 transition-all",
-														isSelected
-															? "border-gray-900 scale-110 shadow-md"
-															: "border-gray-200 hover:border-gray-300 hover:scale-105",
-													)}
+														className={cn(
+															"w-9 h-9 rounded-full border-2 transition-all",
+															isSelected
+																? "border-foreground scale-110 shadow-md"
+																: "border-border hover:border-border hover:scale-105",
+														)}
 													style={{ backgroundColor: color }}
 													aria-label={`Cor ${color}`}
 												/>
@@ -361,7 +361,7 @@ export function CategoryForm({
 									<div className="relative flex items-center">
 										<label
 											htmlFor="custom-color-picker"
-											className="relative flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 cursor-pointer transition-all hover:scale-105 hover:border-gray-400"
+											className="relative flex items-center justify-center w-10 h-10 rounded-full border-2 border-border cursor-pointer transition-all hover:scale-105 hover:border-border"
 											style={{ backgroundColor: field.value || "#F3F4F6" }}
 											title="Escolher cor personalizada"
 										>
@@ -370,7 +370,7 @@ export function CategoryForm({
 													"size-5",
 													field.value
 														? "text-white drop-shadow-md"
-														: "text-gray-600",
+														: "text-muted-foreground",
 												)}
 											/>
 											<input

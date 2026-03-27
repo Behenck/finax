@@ -56,6 +56,14 @@ export const commissionsDirectionEnum = {
 export type CommissionsDirectionEnumKey =
   (typeof commissionsDirectionEnum)[keyof typeof commissionsDirectionEnum];
 
+export const commissionsCalculationBaseEnum3 = {
+  SALE_TOTAL: "SALE_TOTAL",
+  COMMISSION: "COMMISSION",
+} as const;
+
+export type CommissionsCalculationBaseEnum3Key =
+  (typeof commissionsCalculationBaseEnum3)[keyof typeof commissionsCalculationBaseEnum3];
+
 export type PostOrganizationsSlugSalesMutationRequest = {
   /**
    * @pattern ^\d{4}-\d{2}-\d{2}$
@@ -122,6 +130,16 @@ export type PostOrganizationsSlugSalesMutationRequest = {
      * @type string | undefined
      */
     direction?: CommissionsDirectionEnumKey;
+    /**
+     * @type string | undefined
+     */
+    calculationBase?: CommissionsCalculationBaseEnum3Key;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer | undefined
+     */
+    baseCommissionIndex?: number;
     /**
      * @type string | undefined, uuid
      */

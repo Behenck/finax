@@ -57,16 +57,16 @@ export function CompanyCard({ company }: CompanyCardProps) {
 					<CollapsibleTrigger className="flex min-w-0 items-center gap-4 cursor-pointer text-left">
 						{hasUnits ? (
 							isOpen ? (
-								<ChevronUp className="size-5 text-gray-500" />
+								<ChevronUp className="size-5 text-muted-foreground" />
 							) : (
-								<ChevronRight className="size-5 text-gray-500" />
+								<ChevronRight className="size-5 text-muted-foreground" />
 							)
 						) : (
 							<div className="size-5" />
 						)}
 
 						<div className="flex min-w-0 items-center gap-3">
-							<div className="p-2 rounded-md bg-green-100 text-green-500">
+							<div className="p-2 rounded-md bg-green-500/15 text-green-500">
 								<Building2 className="size-5" />
 							</div>
 
@@ -76,7 +76,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
 
 					<div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto">
 						{totalUnits > 0 && (
-							<div className="px-2 py-1 rounded-sm bg-gray-100 text-gray-500 text-xs">
+							<div className="px-2 py-1 rounded-sm bg-muted text-muted-foreground text-xs">
 								<span>
 									{totalUnits} {totalUnits === 1 ? "unidade" : "unidades"}
 								</span>

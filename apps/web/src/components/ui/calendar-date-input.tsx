@@ -67,13 +67,14 @@ export function CalendarDateInput({
 	}
 
 	return (
-		<div className="relative flex items-center w-full">
+		<div className="relative w-full">
 			<Input
 				ref={inputRef}
 				defaultValue={selectedDate ? format(selectedDate, "dd/MM/yyyy") : ""}
 				placeholder={placeholder}
 				disabled={disabled}
 				aria-invalid={ariaInvalid}
+				className="pr-11"
 				onChange={(event) => handleInputChange(event.target.value)}
 			/>
 
@@ -84,14 +85,17 @@ export function CalendarDateInput({
 						size="icon"
 						variant="ghost"
 						disabled={disabled}
-						className="absolute right-1 hover:bg-transparent"
+						className="absolute top-1 right-1 h-8 w-8 rounded-md text-muted-foreground/80 hover:bg-accent/70 hover:text-foreground"
 						onMouseDown={(event) => event.preventDefault()}
 					>
 						<CalendarIcon className="h-4 w-4" />
 					</Button>
 				</PopoverTrigger>
 
-				<PopoverContent align="end" className="w-auto p-0">
+				<PopoverContent
+					align="end"
+					className="w-auto rounded-lg border border-border/80 p-0 shadow-lg"
+				>
 					<Calendar
 						mode="single"
 						selected={selectedDate}

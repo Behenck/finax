@@ -143,6 +143,10 @@ export type GetOrganizationsSlugTransactions200 = {
      */
     id: string;
     /**
+     * @type string, uuid
+     */
+    saleId: string | null;
+    /**
      * @type string
      */
     code: string;

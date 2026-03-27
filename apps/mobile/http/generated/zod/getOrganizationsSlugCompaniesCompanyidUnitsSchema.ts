@@ -19,6 +19,14 @@ export const getOrganizationsSlugCompaniesCompanyidUnits200Schema = z.object({
     z.object({
       id: z.uuid(),
       name: z.string(),
+      country: z.nullable(z.string()),
+      state: z.nullable(z.string()),
+      city: z.nullable(z.string()),
+      street: z.nullable(z.string()),
+      zipCode: z.nullable(z.string()),
+      neighborhood: z.nullable(z.string()),
+      number: z.nullable(z.string()),
+      complement: z.nullable(z.string()),
     }),
   ),
 });

@@ -48,7 +48,7 @@ function Companies() {
 			<PageHeader title="Gerenciar Empresas" actions={<CreateCompany />} />
 
 			<div className="relative">
-				<Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-gray-500" />
+				<Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
 				<Input
 					placeholder="Buscar por nome ou CNPJ..."
 					className="h-10 w-full pl-10 sm:max-w-md"

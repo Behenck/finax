@@ -777,7 +777,7 @@ export function ProductForm({
 				onValueChange={setActiveProductConfigTab}
 				className="space-y-4"
 			>
-				<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-gray-200 p-1">
+				<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-muted p-1">
 					<TabsTrigger
 						value="commission-scenarios"
 						className="rounded-sm font-normal"
@@ -1109,7 +1109,7 @@ export function ProductForm({
 								value={resolvedActiveScenarioTab}
 								onValueChange={setActiveScenarioTab}
 							>
-								<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-gray-200 p-1">
+								<TabsList className="w-full justify-start rounded-sm **:data-[slot=tab-indicator]:rounded-sm bg-muted p-1">
 									{scenarioFields.map((scenarioField, scenarioIndex) => {
 										const tabName = scenarioValues[scenarioIndex]?.name?.trim();
 										const label = tabName || `Cenário ${scenarioIndex + 1}`;

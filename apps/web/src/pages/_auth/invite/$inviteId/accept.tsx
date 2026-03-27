@@ -108,7 +108,7 @@ function AcceptInvite() {
             <Building2 className="w-10 h-10" />
             <div className="flex flex-col">
               <p className="font-medium">{invite.organization.name}</p>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 Convidado por: {invite.author?.name}
               </span>
               <span className="text-sm text-green-400 font-medium">

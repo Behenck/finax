@@ -44,6 +44,42 @@ export const accessScopeModeEnum = {
 export type AccessScopeModeEnumKey =
   (typeof accessScopeModeEnum)[keyof typeof accessScopeModeEnum];
 
+export const dataScopesCustomersScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type DataScopesCustomersScopeEnumKey =
+  (typeof dataScopesCustomersScopeEnum)[keyof typeof dataScopesCustomersScopeEnum];
+
+export const dataScopesSalesScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type DataScopesSalesScopeEnumKey =
+  (typeof dataScopesSalesScopeEnum)[keyof typeof dataScopesSalesScopeEnum];
+
+export const dataScopesCommissionsScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type DataScopesCommissionsScopeEnumKey =
+  (typeof dataScopesCommissionsScopeEnum)[keyof typeof dataScopesCommissionsScopeEnum];
+
+export const dataScopesPartnersScopeEnum = {
+  LINKED_ONLY: "LINKED_ONLY",
+  COMPANY_ONLY: "COMPANY_ONLY",
+  ORGANIZATION_ALL: "ORGANIZATION_ALL",
+} as const;
+
+export type DataScopesPartnersScopeEnumKey =
+  (typeof dataScopesPartnersScopeEnum)[keyof typeof dataScopesPartnersScopeEnum];
+
 export type PutOrganizationsSlugMembersMemberidMutationRequest = {
   /**
    * @type string
@@ -70,6 +106,27 @@ export type PutOrganizationsSlugMembersMemberidMutationRequest = {
        */
       unitId?: string | null;
     }[];
+  };
+  /**
+   * @type object | undefined
+   */
+  dataScopes?: {
+    /**
+     * @type string
+     */
+    customersScope: DataScopesCustomersScopeEnumKey;
+    /**
+     * @type string
+     */
+    salesScope: DataScopesSalesScopeEnumKey;
+    /**
+     * @type string
+     */
+    commissionsScope: DataScopesCommissionsScopeEnumKey;
+    /**
+     * @type string
+     */
+    partnersScope: DataScopesPartnersScopeEnumKey;
   };
 };
 

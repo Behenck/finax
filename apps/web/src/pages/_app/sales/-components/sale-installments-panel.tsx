@@ -94,9 +94,9 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	SaleCommissionInstallmentStatus,
 	string
 > = {
-	PENDING: "bg-yellow-500/15 text-yellow-700 border-yellow-500/30",
-	PAID: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
-	CANCELED: "bg-red-500/15 text-red-700 border-red-500/30",
+	PENDING: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
+	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
 };
 
 function formatDate(value: string) {

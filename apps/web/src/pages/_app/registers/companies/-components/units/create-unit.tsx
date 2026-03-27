@@ -16,10 +16,10 @@ export function CreateUnit({ companyId }: CreateUnitProps) {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="ghost" size="icon">
-					<Plus className="text-gray-500" />
+					<Plus className="text-muted-foreground" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
 				<DialogTitle>Nova Unidade</DialogTitle>
 				<UnitForm onSuccess={() => setOpen(false)} companyId={companyId} />
 			</DialogContent>

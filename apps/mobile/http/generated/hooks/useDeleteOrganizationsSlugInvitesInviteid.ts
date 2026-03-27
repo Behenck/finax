@@ -48,7 +48,7 @@ export function deleteOrganizationsSlugInvitesInviteidMutationOptions<
 }
 
 /**
- * @summary Create a new invite
+ * @summary Revoke an organization invite
  * {@link /organizations/:slug/invites/:inviteId}
  */
 export function useDeleteOrganizationsSlugInvitesInviteid<TContext>(

@@ -722,8 +722,8 @@ function TransactionsPage() {
 			</FilterPanel>
 
 			{selectedTransactions.length > 0 && canManagePayments ? (
-				<div className="flex flex-col gap-3 rounded-md border border-emerald-300 bg-emerald-50 p-4 md:flex-row md:items-center md:justify-between">
-					<p className="text-sm text-emerald-900">
+				<div className="flex flex-col gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4 md:flex-row md:items-center md:justify-between">
+					<p className="text-sm text-emerald-700 dark:text-emerald-300">
 						{selectedTransactions.length} transação(ões) selecionada(s)
 					</p>
 					<Button

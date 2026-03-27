@@ -39,6 +39,10 @@ export type GetOrganizationSlug200 = {
      */
     shouldAttachUserByDomain: boolean;
     /**
+     * @type boolean
+     */
+    enableSalesTransactionsSync: boolean;
+    /**
      * @type string, uri
      */
     avatarUrl: string | null;

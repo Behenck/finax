@@ -29,6 +29,38 @@ export type PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest = {
    * @type string
    */
   name: string;
+  /**
+   * @type string | undefined
+   */
+  country?: string;
+  /**
+   * @type string | undefined
+   */
+  state?: string;
+  /**
+   * @type string | undefined
+   */
+  city?: string;
+  /**
+   * @type string | undefined
+   */
+  street?: string;
+  /**
+   * @type string | undefined
+   */
+  zipCode?: string;
+  /**
+   * @type string | undefined
+   */
+  neighborhood?: string;
+  /**
+   * @type string | undefined
+   */
+  number?: string;
+  /**
+   * @type string | undefined
+   */
+  complement?: string;
 };
 
 export type PostOrganizationsSlugCompaniesCompanyidUnitsMutationResponse =

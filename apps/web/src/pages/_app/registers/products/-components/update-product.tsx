@@ -18,7 +18,7 @@ export function UpdateProduct({
 		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTrigger asChild>
 				<Button variant="ghost" size="icon" aria-label="Editar produto">
-					<Settings2 className="text-gray-700" />
+					<Settings2 className="text-foreground" />
 				</Button>
 			</SheetTrigger>
 			<SheetContent
