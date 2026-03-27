@@ -26,7 +26,9 @@ import { toSaleDynamicFieldPayloadValues } from "../sale-dynamic-fields";
 import {
 	QUICK_CUSTOMER_DEFAULT_VALUES,
 } from "./constants";
+import { normalizeCustomerSearchValue } from "./customer-search";
 import { parseSaleDateFromApi } from "./date-utils";
+import { EditSelectedCustomerDialog } from "./dialogs/edit-selected-customer-dialog";
 import { QuickCustomerDialog } from "./dialogs/quick-customer-dialog";
 import { useQuickCustomer } from "./hooks/use-quick-customer";
 import { useSaleCommissions } from "./hooks/use-sale-commissions";
@@ -111,7 +113,14 @@ export function SaleForm({
 	const [isCustomerLocked, setIsCustomerLocked] = useState(
 		mode === "CREATE" && Boolean(prefilledCustomerId),
 	);
+	const [customerQueryInput, setCustomerQueryInput] = useState<string | null>(
+		null,
+	);
+	const [shouldValidateSelectedCustomerAfterRefresh, setShouldValidateSelectedCustomerAfterRefresh] =
+		useState(false);
 	const [isCreateCustomerDialogOpen, setIsCreateCustomerDialogOpen] =
+		useState(false);
+	const [isEditCustomerDialogOpen, setIsEditCustomerDialogOpen] =
 		useState(false);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
@@ -250,6 +259,7 @@ export function SaleForm({
 		},
 		onQuickCustomerCreated: () => {
 			setIsCustomerLocked(false);
+			setCustomerQueryInput(null);
 			quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
 			setIsCreateCustomerDialogOpen(false);
 		},
@@ -395,6 +405,8 @@ export function SaleForm({
 			customersForSelect.find((customer) => customer.id === selectedCustomerId),
 		[customersForSelect, selectedCustomerId],
 	);
+	const customerQuery = customerQueryInput ?? selectedCustomer?.name ?? "";
+	const isQueryingCustomers = customerQueryInput !== null;
 
 	const selectedCompany = useMemo(
 		() => companiesForSelect.find((company) => company.id === selectedCompanyId),
@@ -599,6 +611,92 @@ export function SaleForm({
 		}
 	}, [getValues, responsibles, setValue]);
 
+	useEffect(() => {
+		if (!shouldValidateSelectedCustomerAfterRefresh || isLoadingOptions) {
+			return;
+		}
+
+		setShouldValidateSelectedCustomerAfterRefresh(false);
+
+		if (!selectedCustomerId) {
+			return;
+		}
+
+		const hasSelectedCustomerInOptions = customers.some(
+			(customer) => customer.id === selectedCustomerId,
+		);
+		if (hasSelectedCustomerInOptions) {
+			return;
+		}
+
+		setCustomerQueryInput((currentValue) => currentValue ?? customerQuery);
+		setValue("customerId", "", {
+			shouldDirty: true,
+			shouldTouch: true,
+			shouldValidate: true,
+		});
+	}, [
+		customerQuery,
+		customers,
+		isLoadingOptions,
+		selectedCustomerId,
+		setValue,
+		shouldValidateSelectedCustomerAfterRefresh,
+	]);
+
+	function handleCustomerQueryChange(value: string) {
+		if (!selectedCustomer) {
+			setCustomerQueryInput(value);
+			return;
+		}
+
+		const normalizedInput = normalizeCustomerSearchValue(value);
+		const normalizedSelectedCustomerName = normalizeCustomerSearchValue(
+			selectedCustomer.name,
+		);
+		if (normalizedInput === normalizedSelectedCustomerName) {
+			setCustomerQueryInput(null);
+			return;
+		}
+
+		setCustomerQueryInput(value);
+		setValue("customerId", "", {
+			shouldDirty: true,
+			shouldTouch: true,
+		});
+	}
+
+	function handleSelectCustomer(customerId: string) {
+		setValue("customerId", customerId, {
+			shouldDirty: true,
+			shouldTouch: true,
+			shouldValidate: true,
+		});
+		setCustomerQueryInput(null);
+	}
+
+	function handleOpenSelectedCustomerEdit(customerId: string) {
+		if (customerId !== selectedCustomerId) {
+			setValue("customerId", customerId, {
+				shouldDirty: true,
+				shouldTouch: true,
+				shouldValidate: true,
+			});
+		}
+
+		setIsEditCustomerDialogOpen(true);
+	}
+
+	async function handleSelectedCustomerUpdated() {
+		try {
+			await refetch();
+		} finally {
+			setCustomerQueryInput(null);
+			setShouldValidateSelectedCustomerAfterRefresh(true);
+			setIsEditCustomerDialogOpen(false);
+		}
+	}
+
 	const isPending = isCreatingSale || isUpdatingSale;
 
 	async function onSubmit(data: SaleFormData) {
@@ -724,9 +822,14 @@ export function SaleForm({
 				control={control}
 				customersForSelect={customersForSelect}
 				selectedCustomer={selectedCustomer}
+				customerQuery={customerQuery}
+				isQueryingCustomers={isQueryingCustomers}
 				isLoadingOptions={isLoadingOptions}
 				isCustomerLocked={isCustomerLocked}
 				isCreatingQuickCustomer={isCreatingQuickCustomer}
+				onCustomerQueryChange={handleCustomerQueryChange}
+				onSelectCustomer={handleSelectCustomer}
+				onOpenEditSelectedCustomer={handleOpenSelectedCustomerEdit}
 				onUnlockCustomer={() => setIsCustomerLocked(false)}
 				onOpenQuickCustomerDialog={() => setIsCreateCustomerDialogOpen(true)}
 			/>
@@ -793,6 +896,12 @@ export function SaleForm({
 				form={quickCustomerForm}
 				isPending={isCreatingQuickCustomer}
 				onSubmit={handleQuickCustomerCreate}
+			/>
+			<EditSelectedCustomerDialog
+				open={isEditCustomerDialogOpen}
+				customerId={selectedCustomerId || undefined}
+				onOpenChange={setIsEditCustomerDialogOpen}
+				onUpdated={handleSelectedCustomerUpdated}
 			/>
 			<SubmitActions
 				mode={mode}

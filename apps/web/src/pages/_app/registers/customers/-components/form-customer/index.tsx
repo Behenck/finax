@@ -33,15 +33,26 @@ interface FormCustomerProps {
     } | null
   }
   type?: "CREATE" | "UPDATE"
+  variant?: "page" | "dialog"
+  onCancel?: () => void
+  onSuccess?: () => void | Promise<void>
 }
 
-export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
+export function FormCustomer({
+  customer,
+  type = "CREATE",
+  variant = "page",
+  onCancel,
+  onSuccess,
+}: FormCustomerProps) {
   const { organization } = useApp()
   const { form, personType, onSubmit } = useCustomerForm({
     customer,
     type,
+    onSuccess,
   })
   const responsibleType = form.watch("responsibleType")
+  const isDialogVariant = variant === "dialog"
 
   const { data: sellersData } = useGetOrganizationsSlugSellers(
     { slug: organization?.slug ?? "" },
@@ -183,26 +194,10 @@ export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
           </TabsContent>
         </Tabs>
 
-        <div className='hidden items-center justify-end gap-2 md:flex'>
-          <Button type='button' variant="outline" asChild>
-            <Link to="/registers/customers">
+        {isDialogVariant ? (
+          <div className="flex items-center justify-end gap-2">
+            <Button type='button' variant="outline" onClick={onCancel}>
               Cancelar
-            </Link>
-          </Button>
-          <Button type='submit'>
-            {type === "CREATE" ? (
-              "Cadastrar Cliente"
-            ) : (
-              "Atualizar Cliente"
-            )}
-          </Button>
-        </div>
-        <MobileBottomActionBar>
-          <div className="grid grid-cols-2 gap-2">
-            <Button type='button' variant="outline" asChild>
-              <Link to="/registers/customers">
-                Cancelar
-              </Link>
             </Button>
             <Button type='submit'>
               {type === "CREATE" ? (
@@ -212,8 +207,41 @@ export function FormCustomer({ customer, type = "CREATE" }: FormCustomerProps) {
               )}
             </Button>
           </div>
-        </MobileBottomActionBar>
-        <div className="h-20 md:hidden" />
+        ) : (
+          <>
+            <div className='hidden items-center justify-end gap-2 md:flex'>
+              <Button type='button' variant="outline" asChild>
+                <Link to="/registers/customers">
+                  Cancelar
+                </Link>
+              </Button>
+              <Button type='submit'>
+                {type === "CREATE" ? (
+                  "Cadastrar Cliente"
+                ) : (
+                  "Atualizar Cliente"
+                )}
+              </Button>
+            </div>
+            <MobileBottomActionBar>
+              <div className="grid grid-cols-2 gap-2">
+                <Button type='button' variant="outline" asChild>
+                  <Link to="/registers/customers">
+                    Cancelar
+                  </Link>
+                </Button>
+                <Button type='submit'>
+                  {type === "CREATE" ? (
+                    "Cadastrar Cliente"
+                  ) : (
+                    "Atualizar Cliente"
+                  )}
+                </Button>
+              </div>
+            </MobileBottomActionBar>
+            <div className="h-20 md:hidden" />
+          </>
+        )}
       </form>
     </FormProvider>
   )

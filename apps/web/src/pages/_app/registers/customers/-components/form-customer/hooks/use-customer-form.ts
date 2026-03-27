@@ -23,9 +23,10 @@ interface UseCustomerFormProps {
     } | null
   }
   type: "CREATE" | "UPDATE"
+  onSuccess?: () => void | Promise<void>
 }
 
-export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
+export function useCustomerForm({ customer, type, onSuccess }: UseCustomerFormProps) {
   const { organization } = useApp()
   const queryClient = useQueryClient()
 
@@ -35,7 +36,7 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
   const { mutateAsync: updateCustomer } =
     usePutOrganizationsSlugCustomersCustomerid()
 
-  const form = useForm<CustomerFormInput, any, CustomerFormOutput>({
+  const form = useForm<CustomerFormInput, unknown, CustomerFormOutput>({
     resolver: zodResolver(customerSchema),
     defaultValues: buildCustomerDefaultValues(customer),
   })
@@ -62,6 +63,11 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
 
         form.reset()
 
+        if (onSuccess) {
+          await onSuccess()
+          return
+        }
+
         router.navigate({
           to: "/registers/customers/update",
           search: { customerId: response.customerId },
@@ -85,6 +91,7 @@ export function useCustomerForm({ customer, type }: UseCustomerFormProps) {
       });
 
       toast.success("Cliente atualizado com sucesso")
+      await onSuccess?.()
     } catch (err) {
       console.log(err)
       toast.error("Erro ao salvar cliente")
