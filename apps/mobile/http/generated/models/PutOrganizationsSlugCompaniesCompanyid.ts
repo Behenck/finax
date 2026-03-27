@@ -30,6 +30,10 @@ export type PutOrganizationsSlugCompaniesCompanyidMutationRequest = {
    * @type string
    */
   name: string;
+  /**
+   * @type string | undefined
+   */
+  cnpj?: string;
 };
 
 export type PutOrganizationsSlugCompaniesCompanyidMutationResponse =

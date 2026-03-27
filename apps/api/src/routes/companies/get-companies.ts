@@ -26,6 +26,7 @@ export async function getCompanies(app: FastifyInstance) {
 								z.object({
 									id: z.uuid(),
 									name: z.string(),
+									cnpj: z.string().nullable(),
 									units: z.array(unitResponseSchema),
 									employees: z.array(
 										z.object({
@@ -63,10 +64,12 @@ export async function getCompanies(app: FastifyInstance) {
 					select: {
 						id: true,
 						name: true,
+						cnpj: true,
 						units: {
 							select: {
 								id: true,
 								name: true,
+								cnpj: true,
 								country: true,
 								state: true,
 								city: true,

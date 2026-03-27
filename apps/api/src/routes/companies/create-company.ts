@@ -5,6 +5,10 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
+import {
+	companyMutationBodySchema,
+	normalizeCompanyMutationBody,
+} from "./company-schemas";
 
 export async function createCompany(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
@@ -17,9 +21,7 @@ export async function createCompany(app: FastifyInstance) {
         params: z.object({
           slug: z.string()
         }),
-        body: z.object({
-          name: z.string(),
-        }),
+        body: companyMutationBodySchema,
         response: {
           201: z.object({
             companyId: z.uuid()
@@ -29,7 +31,7 @@ export async function createCompany(app: FastifyInstance) {
     },
       async (request, reply) => {
         const { slug } = request.params
-        const { name } = request.body
+        const data = normalizeCompanyMutationBody(request.body)
 
         const organization = await prisma.organization.findUnique({
           where: {
@@ -47,7 +49,8 @@ export async function createCompany(app: FastifyInstance) {
         const company = await db(() =>
           prisma.company.create({
             data: {
-              name,
+              name: data.name,
+              cnpj: data.cnpj,
               organizationId: organization.id,
             },
           })

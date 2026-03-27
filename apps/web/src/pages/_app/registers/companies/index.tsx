@@ -19,23 +19,32 @@ function Companies() {
 	const { organization } = useApp()
 	const { data, isLoading, isError } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
 
-	const safeCompanies = data?.companies ?? [];
-
 	const filteredCompanies = useMemo(() => {
-		if (!search.trim()) return safeCompanies;
+		const safeCompanies = data?.companies ?? [];
+		const normalizedSearch = search.trim().toLowerCase();
+		const digitsSearch = search.replace(/\D/g, "");
 
-		const query = search.toLowerCase();
+		if (!normalizedSearch) return safeCompanies;
 
 		return safeCompanies.filter((company) => {
-			const companyMatch = company.name.toLowerCase().includes(query);
+			const companyCnpj = company.cnpj ?? "";
+			const companyCnpjDigits = companyCnpj.replace(/\D/g, "");
+			const companyMatch =
+				company.name.toLowerCase().includes(normalizedSearch) ||
+				companyCnpj.includes(normalizedSearch) ||
+				(digitsSearch ? companyCnpjDigits.includes(digitsSearch) : false);
 
 			const unitMatch = company.units?.some((unit) =>
-				unit.name.toLowerCase().includes(query),
+				unit.name.toLowerCase().includes(normalizedSearch) ||
+				(unit.cnpj ?? "").includes(normalizedSearch) ||
+				(digitsSearch
+					? (unit.cnpj ?? "").replace(/\D/g, "").includes(digitsSearch)
+					: false),
 			);
 
 			return companyMatch || unitMatch;
 		});
-	}, [safeCompanies, search]);
+	}, [data?.companies, search]);
 
 	if (isLoading) return <h1>Carregando...</h1>;
 
@@ -59,7 +68,7 @@ function Companies() {
 
 			<section className="space-y-4">
 				{filteredCompanies?.map((company) => (
-					<CompanyCard company={company} />
+					<CompanyCard key={company.id} company={company} />
 				))}
 			</section>
 		</main>

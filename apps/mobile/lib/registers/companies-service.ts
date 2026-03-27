@@ -10,7 +10,7 @@ import type { PostOrganizationsSlugCompaniesMutationRequest } from "@/http/gener
 import type { PostOrganizationsSlugCompaniesCompanyidUnitsMutationRequest } from "@/http/generated/models/PostOrganizationsSlugCompaniesCompanyidUnits";
 import type { PutOrganizationsSlugCompaniesCompanyidMutationRequest } from "@/http/generated/models/PutOrganizationsSlugCompaniesCompanyid";
 import type { PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest } from "@/http/generated/models/PutOrganizationsSlugCompaniesCompanyidUnitsUnitid";
-import type { Company, Unit, UnitInput } from "@/types/registers";
+import type { Company, CompanyInput, Unit, UnitInput } from "@/types/registers";
 import { undefinedIfEmpty } from "./utils";
 
 export async function listCompanies(slug: string): Promise<Company[]> {
@@ -18,12 +18,27 @@ export async function listCompanies(slug: string): Promise<Company[]> {
   return data.companies as Company[];
 }
 
-export async function createCompany(slug: string, name: string): Promise<string> {
+function normalizeCnpj(value: string | undefined): string | undefined {
+  const normalized = undefinedIfEmpty(value);
+  if (!normalized) {
+    return undefined;
+  }
+
+  const digits = normalized.replace(/\D/g, "").slice(0, 14);
+  return digits || undefined;
+}
+
+function normalizeCompanyPayload(input: CompanyInput): CompanyInput {
+  return {
+    name: input.name.trim(),
+    cnpj: normalizeCnpj(input.cnpj),
+  };
+}
+
+export async function createCompany(slug: string, payload: CompanyInput): Promise<string> {
   const data = await postOrganizationsSlugCompanies({
     slug,
-    data: {
-      name: name.trim(),
-    } as PostOrganizationsSlugCompaniesMutationRequest,
+    data: normalizeCompanyPayload(payload) as PostOrganizationsSlugCompaniesMutationRequest,
   });
   return data.companyId;
 }
@@ -31,6 +46,7 @@ export async function createCompany(slug: string, name: string): Promise<string>
 function normalizeUnitPayload(input: UnitInput): UnitInput {
   return {
     name: input.name.trim(),
+    cnpj: normalizeCnpj(input.cnpj),
     country: undefinedIfEmpty(input.country),
     state: undefinedIfEmpty(input.state),
     city: undefinedIfEmpty(input.city),
@@ -42,13 +58,15 @@ function normalizeUnitPayload(input: UnitInput): UnitInput {
   };
 }
 
-export async function updateCompany(slug: string, companyId: string, name: string): Promise<void> {
+export async function updateCompany(
+  slug: string,
+  companyId: string,
+  payload: CompanyInput,
+): Promise<void> {
   await putOrganizationsSlugCompaniesCompanyid({
     slug,
     companyId,
-    data: {
-      name: name.trim(),
-    } as PutOrganizationsSlugCompaniesCompanyidMutationRequest,
+    data: normalizeCompanyPayload(payload) as PutOrganizationsSlugCompaniesCompanyidMutationRequest,
   });
 }
 

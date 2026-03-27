@@ -27,6 +27,10 @@ export type GetOrganizationsSlugCompanies200 = {
      */
     name: string;
     /**
+     * @type string
+     */
+    cnpj: string | null;
+    /**
      * @type array
      */
     units: {
@@ -38,6 +42,10 @@ export type GetOrganizationsSlugCompanies200 = {
        * @type string
        */
       name: string;
+      /**
+       * @type string
+       */
+      cnpj: string | null;
       /**
        * @type string
        */

@@ -68,6 +68,7 @@ export async function createUnit(app: FastifyInstance) {
 					prisma.unit.create({
 						data: {
 							name: data.name,
+							cnpj: data.cnpj,
 							country: data.country,
 							state: data.state,
 							city: data.city,

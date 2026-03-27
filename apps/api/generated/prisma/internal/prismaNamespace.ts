@@ -3454,6 +3454,7 @@ export type PermissionAuditLogScalarFieldEnum = (typeof PermissionAuditLogScalar
 export const CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  cnpj: 'cnpj',
   organizationId: 'organizationId',
   createdAt: 'createdAt'
 } as const
@@ -3464,6 +3465,7 @@ export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeo
 export const UnitScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  cnpj: 'cnpj',
   country: 'country',
   state: 'state',
   city: 'city',

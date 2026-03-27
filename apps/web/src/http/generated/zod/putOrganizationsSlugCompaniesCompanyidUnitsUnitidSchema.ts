@@ -22,6 +22,7 @@ export const putOrganizationsSlugCompaniesCompanyidUnitsUnitid204Schema = z
 export const putOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequestSchema =
   z.object({
     name: z.string(),
+    cnpj: z.optional(z.string()),
     country: z.optional(z.string()),
     state: z.optional(z.string()),
     city: z.optional(z.string()),

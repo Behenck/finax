@@ -20,6 +20,7 @@ export const putOrganizationsSlugCompaniesCompanyid204Schema = z
 export const putOrganizationsSlugCompaniesCompanyidMutationRequestSchema =
   z.object({
     name: z.string(),
+    cnpj: z.optional(z.string()),
   });
 
 export const putOrganizationsSlugCompaniesCompanyidMutationResponseSchema =

@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
+import { formatDocument } from "@/utils/format-document";
 import type { Unit } from "@/schemas/types/unit";
 import { unitSchema, type UnitFormData } from "@/schemas/unity-schema";
 import { useApp } from "@/context/app-context";
@@ -142,6 +143,7 @@ export function UnitForm({
 		resolver: zodResolver(unitSchema),
 		defaultValues: {
 			name: initialData?.name ?? "",
+			cnpj: initialData?.cnpj ?? "",
 			country: initialData?.country ?? "",
 			state: initialData?.state ?? "",
 			city: initialData?.city ?? "",
@@ -378,6 +380,40 @@ export function UnitForm({
 								/>
 								{fieldState.invalid && (
 									<FieldError id="name-error" errors={[fieldState.error]} />
+								)}
+							</Field>
+						)}
+					/>
+					<Controller
+						name="cnpj"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid} className="gap-1 w-full">
+								<FieldLabel htmlFor="cnpj">CNPJ</FieldLabel>
+								<Input
+									{...field}
+									id="cnpj"
+									value={field.value ?? ""}
+									type="text"
+									autoCapitalize="none"
+									autoCorrect="off"
+									aria-invalid={fieldState.invalid}
+									aria-describedby={
+										fieldState.invalid ? "cnpj-error" : undefined
+									}
+									className="w-full"
+									placeholder="00.000.000/0000-00"
+									onChange={(event) => {
+										field.onChange(
+											formatDocument({
+												type: "CNPJ",
+												value: event.target.value,
+											}),
+										);
+									}}
+								/>
+								{fieldState.invalid && (
+									<FieldError id="cnpj-error" errors={[fieldState.error]} />
 								)}
 							</Field>
 						)}

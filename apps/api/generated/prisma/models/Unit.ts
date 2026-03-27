@@ -27,6 +27,7 @@ export type AggregateUnit = {
 export type UnitMinAggregateOutputType = {
   id: string | null
   name: string | null
+  cnpj: string | null
   country: string | null
   state: string | null
   city: string | null
@@ -42,6 +43,7 @@ export type UnitMinAggregateOutputType = {
 export type UnitMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  cnpj: string | null
   country: string | null
   state: string | null
   city: string | null
@@ -57,6 +59,7 @@ export type UnitMaxAggregateOutputType = {
 export type UnitCountAggregateOutputType = {
   id: number
   name: number
+  cnpj: number
   country: number
   state: number
   city: number
@@ -74,6 +77,7 @@ export type UnitCountAggregateOutputType = {
 export type UnitMinAggregateInputType = {
   id?: true
   name?: true
+  cnpj?: true
   country?: true
   state?: true
   city?: true
@@ -89,6 +93,7 @@ export type UnitMinAggregateInputType = {
 export type UnitMaxAggregateInputType = {
   id?: true
   name?: true
+  cnpj?: true
   country?: true
   state?: true
   city?: true
@@ -104,6 +109,7 @@ export type UnitMaxAggregateInputType = {
 export type UnitCountAggregateInputType = {
   id?: true
   name?: true
+  cnpj?: true
   country?: true
   state?: true
   city?: true
@@ -192,6 +198,7 @@ export type UnitGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type UnitGroupByOutputType = {
   id: string
   name: string
+  cnpj: string | null
   country: string | null
   state: string | null
   city: string | null
@@ -228,6 +235,7 @@ export type UnitWhereInput = {
   NOT?: Prisma.UnitWhereInput | Prisma.UnitWhereInput[]
   id?: Prisma.StringFilter<"Unit"> | string
   name?: Prisma.StringFilter<"Unit"> | string
+  cnpj?: Prisma.StringNullableFilter<"Unit"> | string | null
   country?: Prisma.StringNullableFilter<"Unit"> | string | null
   state?: Prisma.StringNullableFilter<"Unit"> | string | null
   city?: Prisma.StringNullableFilter<"Unit"> | string | null
@@ -252,6 +260,7 @@ export type UnitWhereInput = {
 export type UnitOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -280,6 +289,7 @@ export type UnitWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UnitWhereInput[]
   NOT?: Prisma.UnitWhereInput | Prisma.UnitWhereInput[]
   name?: Prisma.StringFilter<"Unit"> | string
+  cnpj?: Prisma.StringNullableFilter<"Unit"> | string | null
   country?: Prisma.StringNullableFilter<"Unit"> | string | null
   state?: Prisma.StringNullableFilter<"Unit"> | string | null
   city?: Prisma.StringNullableFilter<"Unit"> | string | null
@@ -304,6 +314,7 @@ export type UnitWhereUniqueInput = Prisma.AtLeast<{
 export type UnitOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -325,6 +336,7 @@ export type UnitScalarWhereWithAggregatesInput = {
   NOT?: Prisma.UnitScalarWhereWithAggregatesInput | Prisma.UnitScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Unit"> | string
   name?: Prisma.StringWithAggregatesFilter<"Unit"> | string
+  cnpj?: Prisma.StringNullableWithAggregatesFilter<"Unit"> | string | null
   country?: Prisma.StringNullableWithAggregatesFilter<"Unit"> | string | null
   state?: Prisma.StringNullableWithAggregatesFilter<"Unit"> | string | null
   city?: Prisma.StringNullableWithAggregatesFilter<"Unit"> | string | null
@@ -340,6 +352,7 @@ export type UnitScalarWhereWithAggregatesInput = {
 export type UnitCreateInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -363,6 +376,7 @@ export type UnitCreateInput = {
 export type UnitUncheckedCreateInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -386,6 +400,7 @@ export type UnitUncheckedCreateInput = {
 export type UnitUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -409,6 +424,7 @@ export type UnitUpdateInput = {
 export type UnitUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -432,6 +448,7 @@ export type UnitUncheckedUpdateInput = {
 export type UnitCreateManyInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -447,6 +464,7 @@ export type UnitCreateManyInput = {
 export type UnitUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -461,6 +479,7 @@ export type UnitUpdateManyMutationInput = {
 export type UnitUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,6 +515,7 @@ export type UnitCompanyIdNameCompoundUniqueInput = {
 export type UnitCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  cnpj?: Prisma.SortOrder
   country?: Prisma.SortOrder
   state?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -511,6 +531,7 @@ export type UnitCountOrderByAggregateInput = {
 export type UnitMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  cnpj?: Prisma.SortOrder
   country?: Prisma.SortOrder
   state?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -526,6 +547,7 @@ export type UnitMaxOrderByAggregateInput = {
 export type UnitMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  cnpj?: Prisma.SortOrder
   country?: Prisma.SortOrder
   state?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -711,6 +733,7 @@ export type UnitUpdateOneWithoutRecurrencesNestedInput = {
 export type UnitCreateWithoutMemberCompanyAccessesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -733,6 +756,7 @@ export type UnitCreateWithoutMemberCompanyAccessesInput = {
 export type UnitUncheckedCreateWithoutMemberCompanyAccessesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -771,6 +795,7 @@ export type UnitUpdateToOneWithWhereWithoutMemberCompanyAccessesInput = {
 export type UnitUpdateWithoutMemberCompanyAccessesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -793,6 +818,7 @@ export type UnitUpdateWithoutMemberCompanyAccessesInput = {
 export type UnitUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -815,6 +841,7 @@ export type UnitUncheckedUpdateWithoutMemberCompanyAccessesInput = {
 export type UnitCreateWithoutCompanyInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -837,6 +864,7 @@ export type UnitCreateWithoutCompanyInput = {
 export type UnitUncheckedCreateWithoutCompanyInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -888,6 +916,7 @@ export type UnitScalarWhereInput = {
   NOT?: Prisma.UnitScalarWhereInput | Prisma.UnitScalarWhereInput[]
   id?: Prisma.StringFilter<"Unit"> | string
   name?: Prisma.StringFilter<"Unit"> | string
+  cnpj?: Prisma.StringNullableFilter<"Unit"> | string | null
   country?: Prisma.StringNullableFilter<"Unit"> | string | null
   state?: Prisma.StringNullableFilter<"Unit"> | string | null
   city?: Prisma.StringNullableFilter<"Unit"> | string | null
@@ -903,6 +932,7 @@ export type UnitScalarWhereInput = {
 export type UnitCreateWithoutEmployeesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -925,6 +955,7 @@ export type UnitCreateWithoutEmployeesInput = {
 export type UnitUncheckedCreateWithoutEmployeesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -963,6 +994,7 @@ export type UnitUpdateToOneWithWhereWithoutEmployeesInput = {
 export type UnitUpdateWithoutEmployeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -985,6 +1017,7 @@ export type UnitUpdateWithoutEmployeesInput = {
 export type UnitUncheckedUpdateWithoutEmployeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1007,6 +1040,7 @@ export type UnitUncheckedUpdateWithoutEmployeesInput = {
 export type UnitCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1029,6 +1063,7 @@ export type UnitCreateWithoutProductCommissionScenarioConditionsInput = {
 export type UnitUncheckedCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1067,6 +1102,7 @@ export type UnitUpdateToOneWithWhereWithoutProductCommissionScenarioConditionsIn
 export type UnitUpdateWithoutProductCommissionScenarioConditionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1089,6 +1125,7 @@ export type UnitUpdateWithoutProductCommissionScenarioConditionsInput = {
 export type UnitUncheckedUpdateWithoutProductCommissionScenarioConditionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1111,6 +1148,7 @@ export type UnitUncheckedUpdateWithoutProductCommissionScenarioConditionsInput =
 export type UnitCreateWithoutProductCommissionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1133,6 +1171,7 @@ export type UnitCreateWithoutProductCommissionsInput = {
 export type UnitUncheckedCreateWithoutProductCommissionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1171,6 +1210,7 @@ export type UnitUpdateToOneWithWhereWithoutProductCommissionsInput = {
 export type UnitUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1193,6 +1233,7 @@ export type UnitUpdateWithoutProductCommissionsInput = {
 export type UnitUncheckedUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1215,6 +1256,7 @@ export type UnitUncheckedUpdateWithoutProductCommissionsInput = {
 export type UnitCreateWithoutSalesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1237,6 +1279,7 @@ export type UnitCreateWithoutSalesInput = {
 export type UnitUncheckedCreateWithoutSalesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1275,6 +1318,7 @@ export type UnitUpdateToOneWithWhereWithoutSalesInput = {
 export type UnitUpdateWithoutSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1297,6 +1341,7 @@ export type UnitUpdateWithoutSalesInput = {
 export type UnitUncheckedUpdateWithoutSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1319,6 +1364,7 @@ export type UnitUncheckedUpdateWithoutSalesInput = {
 export type UnitCreateWithoutSaleCommissionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1341,6 +1387,7 @@ export type UnitCreateWithoutSaleCommissionsInput = {
 export type UnitUncheckedCreateWithoutSaleCommissionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1379,6 +1426,7 @@ export type UnitUpdateToOneWithWhereWithoutSaleCommissionsInput = {
 export type UnitUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1401,6 +1449,7 @@ export type UnitUpdateWithoutSaleCommissionsInput = {
 export type UnitUncheckedUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1423,6 +1472,7 @@ export type UnitUncheckedUpdateWithoutSaleCommissionsInput = {
 export type UnitCreateWithoutTransactionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1445,6 +1495,7 @@ export type UnitCreateWithoutTransactionsInput = {
 export type UnitUncheckedCreateWithoutTransactionsInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1483,6 +1534,7 @@ export type UnitUpdateToOneWithWhereWithoutTransactionsInput = {
 export type UnitUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1505,6 +1557,7 @@ export type UnitUpdateWithoutTransactionsInput = {
 export type UnitUncheckedUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1527,6 +1580,7 @@ export type UnitUncheckedUpdateWithoutTransactionsInput = {
 export type UnitCreateWithoutRecurrencesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1549,6 +1603,7 @@ export type UnitCreateWithoutRecurrencesInput = {
 export type UnitUncheckedCreateWithoutRecurrencesInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1587,6 +1642,7 @@ export type UnitUpdateToOneWithWhereWithoutRecurrencesInput = {
 export type UnitUpdateWithoutRecurrencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1609,6 +1665,7 @@ export type UnitUpdateWithoutRecurrencesInput = {
 export type UnitUncheckedUpdateWithoutRecurrencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1631,6 +1688,7 @@ export type UnitUncheckedUpdateWithoutRecurrencesInput = {
 export type UnitCreateManyCompanyInput = {
   id?: string
   name: string
+  cnpj?: string | null
   country?: string | null
   state?: string | null
   city?: string | null
@@ -1645,6 +1703,7 @@ export type UnitCreateManyCompanyInput = {
 export type UnitUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1667,6 +1726,7 @@ export type UnitUpdateWithoutCompanyInput = {
 export type UnitUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1689,6 +1749,7 @@ export type UnitUncheckedUpdateWithoutCompanyInput = {
 export type UnitUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1797,6 +1858,7 @@ export type UnitCountOutputTypeCountProductCommissionsArgs<ExtArgs extends runti
 export type UnitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  cnpj?: boolean
   country?: boolean
   state?: boolean
   city?: boolean
@@ -1822,6 +1884,7 @@ export type UnitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type UnitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  cnpj?: boolean
   country?: boolean
   state?: boolean
   city?: boolean
@@ -1838,6 +1901,7 @@ export type UnitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UnitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  cnpj?: boolean
   country?: boolean
   state?: boolean
   city?: boolean
@@ -1854,6 +1918,7 @@ export type UnitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UnitSelectScalar = {
   id?: boolean
   name?: boolean
+  cnpj?: boolean
   country?: boolean
   state?: boolean
   city?: boolean
@@ -1866,7 +1931,7 @@ export type UnitSelectScalar = {
   createdAt?: boolean
 }
 
-export type UnitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "country" | "state" | "city" | "street" | "zipCode" | "neighborhood" | "number" | "complement" | "companyId" | "createdAt", ExtArgs["result"]["unit"]>
+export type UnitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "cnpj" | "country" | "state" | "city" | "street" | "zipCode" | "neighborhood" | "number" | "complement" | "companyId" | "createdAt", ExtArgs["result"]["unit"]>
 export type UnitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.Unit$transactionsArgs<ExtArgs>
@@ -1902,6 +1967,7 @@ export type $UnitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    cnpj: string | null
     country: string | null
     state: string | null
     city: string | null
@@ -2346,6 +2412,7 @@ export interface Prisma__UnitClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface UnitFieldRefs {
   readonly id: Prisma.FieldRef<"Unit", 'String'>
   readonly name: Prisma.FieldRef<"Unit", 'String'>
+  readonly cnpj: Prisma.FieldRef<"Unit", 'String'>
   readonly country: Prisma.FieldRef<"Unit", 'String'>
   readonly state: Prisma.FieldRef<"Unit", 'String'>
   readonly city: Prisma.FieldRef<"Unit", 'String'>

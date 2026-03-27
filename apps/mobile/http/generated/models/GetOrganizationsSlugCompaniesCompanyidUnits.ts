@@ -33,6 +33,10 @@ export type GetOrganizationsSlugCompaniesCompanyidUnits200 = {
     /**
      * @type string
      */
+    cnpj: string | null;
+    /**
+     * @type string
+     */
     country: string | null;
     /**
      * @type string

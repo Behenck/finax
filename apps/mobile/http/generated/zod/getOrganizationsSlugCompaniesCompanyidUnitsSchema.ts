@@ -19,6 +19,7 @@ export const getOrganizationsSlugCompaniesCompanyidUnits200Schema = z.object({
     z.object({
       id: z.uuid(),
       name: z.string(),
+      cnpj: z.nullable(z.string()),
       country: z.nullable(z.string()),
       state: z.nullable(z.string()),
       city: z.nullable(z.string()),

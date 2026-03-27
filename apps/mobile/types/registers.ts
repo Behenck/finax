@@ -203,6 +203,7 @@ export type ProductInput = {
 export type Unit = {
   id: string;
   name: string;
+  cnpj: string | null;
   country: string | null;
   state: string | null;
   city: string | null;
@@ -215,6 +216,7 @@ export type Unit = {
 
 export type UnitInput = {
   name: string;
+  cnpj?: string;
   country?: string;
   state?: string;
   city?: string;
@@ -228,12 +230,18 @@ export type UnitInput = {
 export type Company = {
   id: string;
   name: string;
+  cnpj: string | null;
   units: Unit[];
   employees: {
     id: string;
     name: string;
     department: string | null;
   }[];
+};
+
+export type CompanyInput = {
+  name: string;
+  cnpj?: string;
 };
 
 export type CategoryType = "INCOME" | "OUTCOME";

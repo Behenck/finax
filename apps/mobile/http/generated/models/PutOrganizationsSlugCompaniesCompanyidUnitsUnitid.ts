@@ -38,6 +38,10 @@ export type PutOrganizationsSlugCompaniesCompanyidUnitsUnitidMutationRequest = {
   /**
    * @type string | undefined
    */
+  cnpj?: string;
+  /**
+   * @type string | undefined
+   */
   country?: string;
   /**
    * @type string | undefined

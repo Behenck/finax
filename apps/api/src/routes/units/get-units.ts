@@ -65,6 +65,7 @@ export async function getUnits(app: FastifyInstance) {
 					select: {
 						id: true,
 						name: true,
+						cnpj: true,
 						country: true,
 						state: true,
 						city: true,

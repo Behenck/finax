@@ -1,6 +1,7 @@
 export interface Unit {
 	id: string;
 	name: string;
+	cnpj: string | null;
 	country: string | null;
 	state: string | null;
 	city: string | null;

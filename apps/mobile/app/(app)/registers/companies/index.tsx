@@ -25,15 +25,15 @@ import {
   updateUnit,
 } from "@/lib/registers";
 import {
-  simpleNameSchema,
-  type SimpleNameValues,
+  companyFormSchema,
+  type CompanyFormValues,
   unitFormSchema,
   type UnitFormValues,
 } from "@/lib/registers/form-schemas";
 import { normalizeSearchValue } from "@/lib/registers/helpers";
 import { getApiErrorMessage } from "@/lib/errors";
-import { maskZipCode, unmask } from "@/lib/masks";
-import type { Company, Unit, UnitInput } from "@/types/registers";
+import { maskCnpj, maskZipCode, unmask } from "@/lib/masks";
+import type { Company, CompanyInput, Unit, UnitInput } from "@/types/registers";
 
 type ViaCepResponse = {
   cep?: string;
@@ -119,6 +119,7 @@ function resolveStateCode(rawState?: string, rawStateCode?: string) {
 function getUnitDefaultValues(unit?: Unit): UnitFormValues {
   return {
     name: unit?.name ?? "",
+    cnpj: unit?.cnpj ? maskCnpj(unit.cnpj) : "",
     country: unit?.country ?? "",
     state: unit?.state ?? "",
     city: unit?.city ?? "",
@@ -133,6 +134,7 @@ function getUnitDefaultValues(unit?: Unit): UnitFormValues {
 function normalizeUnitInput(values: UnitFormValues): UnitInput {
   return {
     name: values.name,
+    cnpj: values.cnpj ? unmask(values.cnpj) : undefined,
     country: values.country,
     state: values.state,
     city: values.city,
@@ -142,6 +144,28 @@ function normalizeUnitInput(values: UnitFormValues): UnitInput {
     number: values.number,
     complement: values.complement,
   };
+}
+
+function getCompanyDefaultValues(company?: Company): CompanyFormValues {
+  return {
+    name: company?.name ?? "",
+    cnpj: company?.cnpj ? maskCnpj(company.cnpj) : "",
+  };
+}
+
+function normalizeCompanyInput(values: CompanyFormValues): CompanyInput {
+  return {
+    name: values.name,
+    cnpj: values.cnpj ? unmask(values.cnpj) : undefined,
+  };
+}
+
+function formatCnpjPreview(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  return maskCnpj(value);
 }
 
 function buildUnitAddressPreview(unit: Unit) {
@@ -355,12 +379,21 @@ function EditableUnitRow({
     defaultValues: getUnitDefaultValues(unit),
   });
   const addressPreview = buildUnitAddressPreview(unit);
+  const cnpjPreview = formatCnpjPreview(unit.cnpj);
+  const hasDetails = Boolean(cnpjPreview || addressPreview);
 
   return (
-    <View className="mb-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+    <View className="mb-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
       {isEditing ? (
         <View>
           <FormTextField control={unitForm.control} name="name" label="Nome da Unidade" />
+          <FormTextField
+            control={unitForm.control}
+            name="cnpj"
+            label="CNPJ da Unidade"
+            keyboardType="numeric"
+            transform={maskCnpj}
+          />
           <UnitAddressFields form={unitForm} isPending={isPending} />
           <View className="mt-3 flex-row gap-2">
             <View className="flex-1">
@@ -387,16 +420,21 @@ function EditableUnitRow({
           </View>
         </View>
       ) : (
-        <View className="flex-row items-center justify-between gap-2">
+        <View
+          className={`flex-row justify-between gap-3 ${hasDetails ? "items-start" : "items-center"}`}
+        >
           <View className="flex-1 pr-2">
             <Text className="text-[14px] font-medium text-slate-900">{unit.name}</Text>
+            {cnpjPreview ? (
+              <Text className="mt-0.5 text-[12px] text-slate-500">CNPJ: {cnpjPreview}</Text>
+            ) : null}
             {addressPreview ? (
               <Text className="mt-0.5 text-[12px] text-slate-500" numberOfLines={1}>
                 {addressPreview}
               </Text>
             ) : null}
           </View>
-          <View className="flex-row gap-2">
+          <View className="shrink-0 flex-row gap-2">
             <AppButton label="Editar" variant="outline" onPress={() => setIsEditing(true)} />
             <AppButton
               label="Excluir"
@@ -424,7 +462,7 @@ function CompanyCard({
 }: {
   company: Company;
   isPending: boolean;
-  onUpdateCompany: (companyId: string, name: string) => Promise<void>;
+  onUpdateCompany: (companyId: string, payload: CompanyInput) => Promise<void>;
   onDeleteCompany: (companyId: string, name: string) => Promise<void>;
   onCreateUnit: (companyId: string, payload: UnitInput) => Promise<void>;
   onUpdateUnit: (companyId: string, unitId: string, payload: UnitInput) => Promise<void>;
@@ -432,10 +470,11 @@ function CompanyCard({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditingCompany, setIsEditingCompany] = useState(false);
+  const companyCnpjPreview = formatCnpjPreview(company.cnpj);
 
-  const companyForm = useForm<SimpleNameValues>({
-    resolver: zodResolver(simpleNameSchema),
-    defaultValues: { name: company.name },
+  const companyForm = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: getCompanyDefaultValues(company),
   });
 
   const unitForm = useForm<UnitFormValues>({
@@ -446,14 +485,19 @@ function CompanyCard({
   return (
     <Card>
       <Pressable
-        className="mb-2 flex-row items-center justify-between"
+        className="mb-3 flex-row items-center justify-between"
         onPress={() => setIsOpen((state) => !state)}
       >
         <View className="flex-1 pr-3">
           <Text className="text-[16px] font-semibold text-slate-900">{company.name}</Text>
-          <Text className="text-[12px] text-slate-500">
-            {company.units.length} unidade(s) • {company.employees.length} funcionário(s)
-          </Text>
+          {companyCnpjPreview ? (
+            <Text className="text-[12px] text-slate-500">CNPJ: {companyCnpjPreview}</Text>
+          ) : null}
+          {company.units.length > 0 ? (
+            <Text className="text-[12px] text-slate-500">
+              {company.units.length} unidade(s) • {company.employees.length} funcionário(s)
+            </Text>
+          ) : null}
         </View>
         <Text className="text-[12px] font-semibold text-brand-700">
           {isOpen ? "Fechar" : "Abrir"}
@@ -461,17 +505,24 @@ function CompanyCard({
       </Pressable>
 
       {isOpen ? (
-        <View className="border-t border-slate-200 pt-3">
+        <View className="border-t border-slate-200 pt-4">
           {isEditingCompany ? (
-            <View className="mb-3">
+            <View className="mb-4">
               <FormTextField control={companyForm.control} name="name" label="Nome da Empresa" />
+              <FormTextField
+                control={companyForm.control}
+                name="cnpj"
+                label="CNPJ da Empresa"
+                keyboardType="numeric"
+                transform={maskCnpj}
+              />
               <View className="flex-row gap-2">
                 <View className="flex-1">
                   <AppButton
                     label="Cancelar"
                     variant="outline"
                     onPress={() => {
-                      companyForm.reset({ name: company.name });
+                      companyForm.reset(getCompanyDefaultValues(company));
                       setIsEditingCompany(false);
                     }}
                     disabled={isPending}
@@ -482,7 +533,7 @@ function CompanyCard({
                     label="Salvar"
                     loading={isPending}
                     onPress={companyForm.handleSubmit(async (values) => {
-                      await onUpdateCompany(company.id, values.name);
+                      await onUpdateCompany(company.id, normalizeCompanyInput(values));
                       setIsEditingCompany(false);
                     })}
                   />
@@ -490,7 +541,7 @@ function CompanyCard({
               </View>
             </View>
           ) : (
-            <View className="mb-3 flex-row gap-2">
+            <View className="mb-4 flex-row gap-2">
               <View className="flex-1">
                 <AppButton
                   label="Editar Empresa"
@@ -511,24 +562,33 @@ function CompanyCard({
             </View>
           )}
 
-          <Text className="mb-2 text-[14px] font-semibold text-slate-900">Unidades</Text>
+          <Text className="mb-2.5 text-[14px] font-semibold text-slate-900">Unidades</Text>
           {company.units.length === 0 ? (
             <Text className="mb-3 text-[13px] text-slate-500">Nenhuma unidade cadastrada.</Text>
           ) : null}
 
-          {company.units.map((unit) => (
-            <EditableUnitRow
-              key={unit.id}
-              companyId={company.id}
-              unit={unit}
-              isPending={isPending}
-              onUpdate={onUpdateUnit}
-              onDelete={onDeleteUnit}
-            />
-          ))}
+          <View className="mb-3">
+            {company.units.map((unit) => (
+              <EditableUnitRow
+                key={unit.id}
+                companyId={company.id}
+                unit={unit}
+                isPending={isPending}
+                onUpdate={onUpdateUnit}
+                onDelete={onDeleteUnit}
+              />
+            ))}
+          </View>
 
-          <View className="mt-1 rounded-xl border border-slate-200 p-3">
+          <View className="rounded-xl border border-slate-200 p-3.5">
             <FormTextField control={unitForm.control} name="name" label="Nova Unidade" />
+            <FormTextField
+              control={unitForm.control}
+              name="cnpj"
+              label="CNPJ da Unidade"
+              keyboardType="numeric"
+              transform={maskCnpj}
+            />
             <UnitAddressFields form={unitForm} isPending={isPending} />
             <AppButton
               label="Adicionar Unidade"
@@ -556,7 +616,7 @@ export default function CompaniesScreen() {
   });
 
   const createCompanyMutation = useMutation({
-    mutationFn: (name: string) => createCompany(slug, name),
+    mutationFn: (payload: CompanyInput) => createCompany(slug, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: registersQueryKeys.companies(slug),
@@ -565,8 +625,8 @@ export default function CompaniesScreen() {
   });
 
   const updateCompanyMutation = useMutation({
-    mutationFn: ({ companyId, name }: { companyId: string; name: string }) =>
-      updateCompany(slug, companyId, name),
+    mutationFn: ({ companyId, payload }: { companyId: string; payload: CompanyInput }) =>
+      updateCompany(slug, companyId, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: registersQueryKeys.companies(slug),
@@ -620,9 +680,9 @@ export default function CompaniesScreen() {
     },
   });
 
-  const createCompanyForm = useForm<SimpleNameValues>({
-    resolver: zodResolver(simpleNameSchema),
-    defaultValues: { name: "" },
+  const createCompanyForm = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: getCompanyDefaultValues(),
   });
 
   const isPending =
@@ -636,14 +696,28 @@ export default function CompaniesScreen() {
   const filteredCompanies = useMemo(() => {
     const companies = companiesQuery.data ?? [];
     const query = normalizeSearchValue(search);
+    const digitsQuery = unmask(search);
     if (!query) {
       return companies;
     }
 
     return companies.filter((company) => {
+      const companyCnpj = company.cnpj ?? "";
+      const companyCnpjDigits = unmask(companyCnpj);
+
       return (
         company.name.toLowerCase().includes(query) ||
-        company.units.some((unit) => unit.name.toLowerCase().includes(query))
+        companyCnpj.toLowerCase().includes(query) ||
+        (digitsQuery ? companyCnpjDigits.includes(digitsQuery) : false) ||
+        company.units.some((unit) => {
+          const unitCnpj = unit.cnpj ?? "";
+          const unitCnpjDigits = unmask(unitCnpj);
+          return (
+            unit.name.toLowerCase().includes(query) ||
+            unitCnpj.toLowerCase().includes(query) ||
+            (digitsQuery ? unitCnpjDigits.includes(digitsQuery) : false)
+          );
+        })
       );
     });
   }, [companiesQuery.data, search]);
@@ -660,19 +734,30 @@ export default function CompaniesScreen() {
     <AppScreen>
       <PageHeader title="Empresas" description="Gerencie empresas e as unidades vinculadas." />
 
-      <SearchField value={search} onChangeText={setSearch} placeholder="Buscar por empresa ou unidade..." />
+      <SearchField
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Buscar por nome ou CNPJ..."
+      />
 
       <Card>
         <Text className="mb-2 text-[14px] font-semibold text-slate-900">Nova Empresa</Text>
         <FormTextField control={createCompanyForm.control} name="name" label="Nome da Empresa" />
+        <FormTextField
+          control={createCompanyForm.control}
+          name="cnpj"
+          label="CNPJ da Empresa"
+          keyboardType="numeric"
+          transform={maskCnpj}
+        />
         <AppButton
           label="Adicionar Empresa"
           loading={createCompanyMutation.isPending}
           onPress={createCompanyForm.handleSubmit(async (values) => {
             await runAction(
               async () => {
-                await createCompanyMutation.mutateAsync(values.name);
-                createCompanyForm.reset({ name: "" });
+                await createCompanyMutation.mutateAsync(normalizeCompanyInput(values));
+                createCompanyForm.reset(getCompanyDefaultValues());
               },
               "Não foi possível criar a empresa.",
             );
@@ -688,81 +773,83 @@ export default function CompaniesScreen() {
         <EmptyState message="Nenhuma empresa encontrada." />
       ) : null}
 
-      {filteredCompanies.map((company) => (
-        <CompanyCard
-          key={company.id}
-          company={company}
-          isPending={isPending}
-          onUpdateCompany={(companyId, name) =>
-            runAction(
-              async () => {
-                await updateCompanyMutation.mutateAsync({ companyId, name });
-              },
-              "Não foi possível atualizar a empresa.",
-            )
-          }
-          onDeleteCompany={(companyId, name) =>
-            runAction(
-              async () => {
-                Alert.alert("Excluir empresa", `Deseja excluir "${name}"?`, [
-                  { text: "Cancelar", style: "cancel" },
-                  {
-                    text: "Excluir",
-                    style: "destructive",
-                    onPress: () => {
-                      void deleteCompanyMutation.mutateAsync(companyId).catch((error) => {
-                        Alert.alert(
-                          "Erro",
-                          getApiErrorMessage(error, "Não foi possível excluir a empresa."),
-                        );
-                      });
+      <View className="mt-1">
+        {filteredCompanies.map((company) => (
+          <CompanyCard
+            key={company.id}
+            company={company}
+            isPending={isPending}
+            onUpdateCompany={(companyId, payload) =>
+              runAction(
+                async () => {
+                  await updateCompanyMutation.mutateAsync({ companyId, payload });
+                },
+                "Não foi possível atualizar a empresa.",
+              )
+            }
+            onDeleteCompany={(companyId, name) =>
+              runAction(
+                async () => {
+                  Alert.alert("Excluir empresa", `Deseja excluir "${name}"?`, [
+                    { text: "Cancelar", style: "cancel" },
+                    {
+                      text: "Excluir",
+                      style: "destructive",
+                      onPress: () => {
+                        void deleteCompanyMutation.mutateAsync(companyId).catch((error) => {
+                          Alert.alert(
+                            "Erro",
+                            getApiErrorMessage(error, "Não foi possível excluir a empresa."),
+                          );
+                        });
+                      },
                     },
-                  },
-                ]);
-              },
-              "Não foi possível excluir a empresa.",
-            )
-          }
-          onCreateUnit={(companyId, payload) =>
-            runAction(
-              async () => {
-                await createUnitMutation.mutateAsync({ companyId, payload });
-              },
-              "Não foi possível criar a unidade.",
-            )
-          }
-          onUpdateUnit={(companyId, unitId, payload) =>
-            runAction(
-              async () => {
-                await updateUnitMutation.mutateAsync({ companyId, unitId, payload });
-              },
-              "Não foi possível atualizar a unidade.",
-            )
-          }
-          onDeleteUnit={(companyId, unitId, name) =>
-            runAction(
-              async () => {
-                Alert.alert("Excluir unidade", `Deseja excluir "${name}"?`, [
-                  { text: "Cancelar", style: "cancel" },
-                  {
-                    text: "Excluir",
-                    style: "destructive",
-                    onPress: () => {
-                      void deleteUnitMutation.mutateAsync({ companyId, unitId }).catch((error) => {
-                        Alert.alert(
-                          "Erro",
-                          getApiErrorMessage(error, "Não foi possível excluir a unidade."),
-                        );
-                      });
+                  ]);
+                },
+                "Não foi possível excluir a empresa.",
+              )
+            }
+            onCreateUnit={(companyId, payload) =>
+              runAction(
+                async () => {
+                  await createUnitMutation.mutateAsync({ companyId, payload });
+                },
+                "Não foi possível criar a unidade.",
+              )
+            }
+            onUpdateUnit={(companyId, unitId, payload) =>
+              runAction(
+                async () => {
+                  await updateUnitMutation.mutateAsync({ companyId, unitId, payload });
+                },
+                "Não foi possível atualizar a unidade.",
+              )
+            }
+            onDeleteUnit={(companyId, unitId, name) =>
+              runAction(
+                async () => {
+                  Alert.alert("Excluir unidade", `Deseja excluir "${name}"?`, [
+                    { text: "Cancelar", style: "cancel" },
+                    {
+                      text: "Excluir",
+                      style: "destructive",
+                      onPress: () => {
+                        void deleteUnitMutation.mutateAsync({ companyId, unitId }).catch((error) => {
+                          Alert.alert(
+                            "Erro",
+                            getApiErrorMessage(error, "Não foi possível excluir a unidade."),
+                          );
+                        });
+                      },
                     },
-                  },
-                ]);
-              },
-              "Não foi possível excluir a unidade.",
-            )
-          }
-        />
-      ))}
+                  ]);
+                },
+                "Não foi possível excluir a unidade.",
+              )
+            }
+          />
+        ))}
+      </View>
     </AppScreen>
   );
 }

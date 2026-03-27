@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { Unit } from "@/schemas/types/unit";
+import { formatDocument } from "@/utils/format-document";
 import { MapPin, Trash2 } from "lucide-react";
 import { UpdateUnit } from "./update-unit";
 import { useApp } from "@/context/app-context";
@@ -31,6 +33,13 @@ export function UnitCard({ companyId, unit }: UnitCardProps) {
 	const { organization } = useApp()
 	const queryClient = useQueryClient()
 	const addressPreview = buildUnitAddressPreview(unit);
+	const cnpjPreview = unit.cnpj
+		? formatDocument({
+			type: "CNPJ",
+			value: unit.cnpj,
+		})
+		: null;
+	const hasDetails = Boolean(cnpjPreview || addressPreview);
 
 	const { mutateAsync: handleDeleteUnit, isPending } = useDeleteOrganizationsSlugCompaniesCompanyidUnitsUnitid();
 
@@ -54,23 +63,33 @@ export function UnitCard({ companyId, unit }: UnitCardProps) {
 		});
 	}
 	return (
-		<Card className="flex flex-col gap-2 p-2 shadow-none border-none bg-muted/20 sm:flex-row sm:items-center sm:justify-between">
-			<div className="flex min-w-0 items-start gap-2">
-				<div className="p-2 rounded-xl">
+		<Card
+			className={cn(
+				"flex flex-col gap-3 rounded-lg border border-border/70 bg-background px-3 py-3 shadow-none sm:flex-row sm:justify-between",
+				hasDetails ? "sm:items-start" : "sm:items-center",
+			)}
+		>
+			<div className="flex min-w-0 flex-1 items-center gap-2.5">
+				<div className="rounded-md bg-muted p-2 text-muted-foreground">
 					<MapPin className="size-4" />
 				</div>
 
-				<div className="flex min-w-0 flex-1 flex-col">
-					<span className="truncate font-medium text-sm">{unit.name}</span>
-					{addressPreview ? (
-						<span className="truncate text-xs text-muted-foreground">
-							{addressPreview}
+					<div className="flex min-w-0 flex-1 flex-col gap-0.5">
+						<span className="truncate font-medium text-sm">{unit.name}</span>
+						{cnpjPreview ? (
+							<span className="truncate text-xs text-muted-foreground">
+								CNPJ: {cnpjPreview}
+							</span>
+						) : null}
+						{addressPreview ? (
+							<span className="truncate text-xs text-muted-foreground">
+								{addressPreview}
 						</span>
 					) : null}
 				</div>
 			</div>
 
-			<div className="flex w-full items-center justify-end gap-1 sm:w-auto">
+			<div className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:shrink-0 sm:self-center">
 				<UpdateUnit companyId={companyId} unit={unit} />
 
 				<Button
@@ -79,7 +98,7 @@ export function UnitCard({ companyId, unit }: UnitCardProps) {
 					disabled={isPending}
 					onClick={() => onDelete(unit)}
 				>
-					<Trash2 className="text-red-500" />
+					<Trash2 className="text-destructive" />
 				</Button>
 			</div>
 		</Card>

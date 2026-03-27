@@ -18,6 +18,7 @@ export const postOrganizationsSlugCompanies201Schema = z.object({
 
 export const postOrganizationsSlugCompaniesMutationRequestSchema = z.object({
   name: z.string(),
+  cnpj: z.optional(z.string()),
 });
 
 export const postOrganizationsSlugCompaniesMutationResponseSchema = z.lazy(

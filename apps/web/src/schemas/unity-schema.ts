@@ -2,6 +2,7 @@ import z from "zod";
 
 export const unitSchema = z.object({
 	name: z.string({ error: "Defina o nome da Unidade" }),
+	cnpj: z.string().optional(),
 	country: z.string().optional(),
 	state: z.string().optional(),
 	city: z.string().optional(),

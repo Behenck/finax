@@ -303,6 +303,7 @@ model PermissionAuditLog {
 model Company {
   id             String @id @default(uuid())
   name           String
+  cnpj           String?
   organizationId String @map("organization_id")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -326,6 +327,7 @@ model Company {
 model Unit {
   id           String @id @default(uuid())
   name         String
+  cnpj         String?
   country      String?
   state        String?
   city         String?

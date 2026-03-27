@@ -82,6 +82,7 @@ export async function updateUnit(app: FastifyInstance) {
 						},
 						data: {
 							name: data.name,
+							cnpj: data.cnpj,
 							country: data.country,
 							state: data.state,
 							city: data.city,

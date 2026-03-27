@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const unitAddressFieldsSchema = {
+	cnpj: z.string().optional(),
 	country: z.string().optional(),
 	state: z.string().optional(),
 	city: z.string().optional(),
@@ -19,6 +20,7 @@ export const unitMutationBodySchema = z.object({
 export const unitResponseSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
+	cnpj: z.string().nullable(),
 	country: z.string().nullable(),
 	state: z.string().nullable(),
 	city: z.string().nullable(),
@@ -38,6 +40,20 @@ function normalizeOptionalString(value: string | undefined) {
 	return normalized;
 }
 
+function normalizeCnpj(value: string | undefined) {
+	const normalized = normalizeOptionalString(value);
+	if (!normalized) {
+		return undefined;
+	}
+
+	const digits = normalized.replace(/\D/g, "").slice(0, 14);
+	if (!digits) {
+		return undefined;
+	}
+
+	return digits;
+}
+
 export type UnitMutationBody = z.infer<typeof unitMutationBodySchema>;
 
 export function normalizeUnitMutationBody(
@@ -45,6 +61,7 @@ export function normalizeUnitMutationBody(
 ): UnitMutationBody {
 	return {
 		name: data.name.trim(),
+		cnpj: normalizeCnpj(data.cnpj),
 		country: normalizeOptionalString(data.country),
 		state: normalizeOptionalString(data.state),
 		city: normalizeOptionalString(data.city),

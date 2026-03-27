@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
 import { formatTitleCase } from "@/utils/format-title-case";
+import { formatDocument } from "@/utils/format-document";
 import type { Company } from "@/schemas/types/company";
 import { getOrganizationsSlugCompaniesQueryKey, usePostOrganizationsSlugCompanies, usePutOrganizationsSlugCompaniesCompanyid } from "@/http/generated";
 import { useApp } from "@/context/app-context";
@@ -36,9 +37,10 @@ export function CompanyForm({
 	const { mutateAsync: updateCompany } = usePutOrganizationsSlugCompaniesCompanyid();
 
 	const { handleSubmit, control } = useForm<CreateCompanyType>({
-		resolver: zodResolver(companySchema as any),
+		resolver: zodResolver(companySchema),
 		defaultValues: {
 			name: initialData?.name ?? "",
+			cnpj: initialData?.cnpj ?? "",
 		},
 	});
 
@@ -104,6 +106,41 @@ export function CompanyForm({
 							</div>
 							{fieldState.invalid && (
 								<FieldError id="name-error" errors={[fieldState.error]} />
+							)}
+						</Field>
+					)}
+				/>
+				<Controller
+					name="cnpj"
+					control={control}
+					render={({ field, fieldState }) => (
+						<Field data-invalid={fieldState.invalid} className="gap-1">
+							<FieldLabel htmlFor="cnpj">CNPJ</FieldLabel>
+							<div>
+								<Input
+									{...field}
+									id="cnpj"
+									value={field.value ?? ""}
+									type="text"
+									autoCapitalize="none"
+									autoCorrect="off"
+									aria-invalid={fieldState.invalid}
+									aria-describedby={
+										fieldState.invalid ? "cnpj-error" : undefined
+									}
+									placeholder="00.000.000/0000-00"
+									onChange={(event) => {
+										field.onChange(
+											formatDocument({
+												type: "CNPJ",
+												value: event.target.value,
+											}),
+										);
+									}}
+								/>
+							</div>
+							{fieldState.invalid && (
+								<FieldError id="cnpj-error" errors={[fieldState.error]} />
 							)}
 						</Field>
 					)}
