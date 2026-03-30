@@ -610,6 +610,70 @@ function findBestProductSuggestionWithinScope(params: {
 	return bestChild ?? params.parentProductId;
 }
 
+function resolveProductIdFromRowValue(params: {
+	rowValue: unknown;
+	parentProductId?: string;
+	productOptions: ProductSuggestionOption[];
+}) {
+	const rawValue = stringifyImportCellValue(params.rowValue).trim();
+	const scopedProductOptions = getParentScopedProductOptions({
+		parentProductId: params.parentProductId,
+		productOptions: params.productOptions,
+	});
+	const hasScopedParentProduct = Boolean(
+		params.parentProductId &&
+			scopedProductOptions.some(
+				(product) => product.id === params.parentProductId,
+			),
+	);
+
+	if (!rawValue) {
+		return hasScopedParentProduct ? (params.parentProductId ?? null) : null;
+	}
+
+	const productByExactId = scopedProductOptions.find(
+		(product) => product.id === rawValue,
+	);
+	if (productByExactId) {
+		return productByExactId.id;
+	}
+
+	const normalizedRawValue = normalizeSearchValue(rawValue);
+	const productByLabel = scopedProductOptions.find(
+		(product) => normalizeSearchValue(product.label) === normalizedRawValue,
+	);
+	if (productByLabel) {
+		return productByLabel.id;
+	}
+
+	const productByName = scopedProductOptions.find(
+		(product) => normalizeSearchValue(product.name) === normalizedRawValue,
+	);
+	if (productByName) {
+		return productByName.id;
+	}
+
+	const suggestedProductId = findBestProductSuggestionWithinScope({
+		rawValue,
+		parentProductId: hasScopedParentProduct
+			? params.parentProductId
+			: undefined,
+		productOptions: params.productOptions,
+	});
+	if (!suggestedProductId) {
+		return hasScopedParentProduct ? (params.parentProductId ?? null) : null;
+	}
+
+	const isSuggestedProductInScope = scopedProductOptions.some(
+		(product) => product.id === suggestedProductId,
+	);
+	if (isSuggestedProductInScope || !hasScopedParentProduct) {
+		return suggestedProductId;
+	}
+
+	return params.parentProductId ?? null;
+}
+
 function parsePotentialAmountToCents(value: string) {
 	const normalizedInput = value.trim();
 	if (!normalizedInput) {
@@ -702,7 +766,10 @@ function buildFinalizationPreviewColumns(mapping: SaleImportMapping) {
 	const columns: FinalizationPreviewColumn[] = [];
 	const seenColumnKeys = new Set<string>();
 	const fieldLabelByKey = new Map(
-		REQUIRED_FIELD_CONFIG.map((fieldConfig) => [fieldConfig.key, fieldConfig.label]),
+		REQUIRED_FIELD_CONFIG.map((fieldConfig) => [
+			fieldConfig.key,
+			fieldConfig.label,
+		]),
 	);
 
 	const orderedStandardKeys: Array<keyof SaleImportFieldMapping> = [
@@ -731,10 +798,7 @@ function buildFinalizationPreviewColumns(mapping: SaleImportMapping) {
 
 	const selectedDynamicMapping = mapping.dynamicByProduct[0];
 	for (const fieldMapping of selectedDynamicMapping?.fields ?? []) {
-		if (
-			!fieldMapping.columnKey ||
-			seenColumnKeys.has(fieldMapping.columnKey)
-		) {
+		if (!fieldMapping.columnKey || seenColumnKeys.has(fieldMapping.columnKey)) {
 			continue;
 		}
 
@@ -807,26 +871,20 @@ function buildFinalizationRowData(params: {
 		return rowData;
 	}
 
-	const parentProductId = params.mapping.fixedValues.parentProductId;
-	const rawProductValue = stringifyImportCellValue(rowData[productColumn]).trim();
-
-	const resolvedProductId = rawProductValue
-		? findBestProductSuggestionWithinScope({
-				rawValue: rawProductValue,
-				parentProductId,
-				productOptions: params.productOptions,
-			})
-		: parentProductId;
+	const resolvedProductId = resolveProductIdFromRowValue({
+		rowValue: rowData[productColumn],
+		parentProductId: params.mapping.fixedValues.parentProductId,
+		productOptions: params.productOptions,
+	});
 
 	if (!resolvedProductId) {
-		rowData[productColumn] = rawProductValue;
+		rowData[productColumn] = stringifyImportCellValue(
+			rowData[productColumn],
+		).trim();
 		return rowData;
 	}
 
-	const resolvedProduct = params.productOptions.find(
-		(product) => product.id === resolvedProductId,
-	);
-	rowData[productColumn] = resolvedProduct?.label ?? resolvedProductId;
+	rowData[productColumn] = resolvedProductId;
 	return rowData;
 }
 
@@ -894,36 +952,15 @@ function isCorrectionValueValid(
 
 function resolveProductSelectValue(params: {
 	rowValue: unknown;
-	productOptions: Array<{ id: string; label: string; name: string }>;
+	productOptions: ProductSuggestionOption[];
+	parentProductId?: string;
 }) {
-	const rawValue = stringifyImportCellValue(params.rowValue).trim();
-	if (!rawValue) {
-		return NONE_VALUE;
-	}
-
-	const exactIdMatch = params.productOptions.find(
-		(option) => option.id === rawValue,
-	);
-	if (exactIdMatch) {
-		return exactIdMatch.id;
-	}
-
-	const normalizedRawValue = normalizeSearchValue(rawValue);
-	const byLabelMatch = params.productOptions.find(
-		(option) => normalizeSearchValue(option.label) === normalizedRawValue,
-	);
-	if (byLabelMatch) {
-		return byLabelMatch.id;
-	}
-
-	const byNameMatch = params.productOptions.find(
-		(option) => normalizeSearchValue(option.name) === normalizedRawValue,
-	);
-	if (byNameMatch) {
-		return byNameMatch.id;
-	}
-
-	return NONE_VALUE;
+	const resolvedProductId = resolveProductIdFromRowValue({
+		rowValue: params.rowValue,
+		parentProductId: params.parentProductId,
+		productOptions: params.productOptions,
+	});
+	return resolvedProductId ?? NONE_VALUE;
 }
 
 function buildFailedRowDrafts(params: {
@@ -1166,10 +1203,7 @@ function SingleProductDynamicMappingCard({
 									fieldMappingsByFieldId.get(field.id),
 								)}
 								onValueChange={(value) => {
-									onChangeField(
-										field.id,
-										fromOptionalSelectValue(value),
-									);
+									onChangeField(field.id, fromOptionalSelectValue(value));
 								}}
 							>
 								<SelectTrigger>
@@ -1261,6 +1295,14 @@ export function ImportSalesWizard() {
 			) ?? null,
 		[productOptions, mapping?.fixedValues.parentProductId],
 	);
+	const scopedImportProductOptions = useMemo(
+		() =>
+			getParentScopedProductOptions({
+				parentProductId: mapping?.fixedValues.parentProductId,
+				productOptions,
+			}),
+		[mapping?.fixedValues.parentProductId, productOptions],
+	);
 	const selectedDynamicMapping = useMemo(() => {
 		if (!mapping?.fixedValues.parentProductId) {
 			return null;
@@ -1333,8 +1375,7 @@ export function ImportSalesWizard() {
 	const finalizationValidRowsCount =
 		finalizationTotalRows - finalizationRowsWithWarningsCount;
 	const finalizationSelectedRowsCount = useMemo(
-		() =>
-			finalizationRowsDrafts.filter((row) => row.selectedForImport).length,
+		() => finalizationRowsDrafts.filter((row) => row.selectedForImport).length,
 		[finalizationRowsDrafts],
 	);
 	const finalizationTotalPages = Math.max(
@@ -1456,9 +1497,8 @@ export function ImportSalesWizard() {
 			if (!currentValue) {
 				return currentValue;
 			}
-			const normalizedTemplate = normalizeTemplateForSingleProduct(
-				suggestedTemplate,
-			);
+			const normalizedTemplate =
+				normalizeTemplateForSingleProduct(suggestedTemplate);
 			return {
 				...currentValue,
 				fields: normalizedTemplate.fields,
@@ -1478,43 +1518,34 @@ export function ImportSalesWizard() {
 
 		const productColumn = mapping.fields.productColumn;
 		const parentProductId = mapping.fixedValues.parentProductId;
-		const scopedProducts = getParentScopedProductOptions({
-			parentProductId,
-			productOptions,
-		});
+		if (!productColumn) {
+			return;
+		}
+
 		setFailedRowsDrafts((currentValue) => {
 			let hasChanges = false;
 
 			const nextRows = currentValue.map((row) => {
-				if (!productColumn || row.failure.field !== productColumn) {
+				if (row.failure.field !== productColumn) {
 					return row;
 				}
 
-				const currentValueRaw = stringifyImportCellValue(
-					row.rowData[productColumn],
-				).trim();
-				if (!currentValueRaw) {
-					return row;
-				}
-
-				const isExistingProductId = productOptions.some(
-					(product) => product.id === currentValueRaw,
-				);
-				const isExistingProductInScope = scopedProducts.some(
-					(product) => product.id === currentValueRaw,
-				);
-				if (isExistingProductId && isExistingProductInScope) {
-					return row;
-				}
-
-				const preferredRawValue =
-					row.excelFieldValue?.trim() || currentValueRaw;
-				const suggestedProductId = findBestProductSuggestionWithinScope({
-					rawValue: preferredRawValue,
+				const currentProductValue = row.rowData[productColumn];
+				const preferredValue = row.excelFieldValue?.trim().length
+					? row.excelFieldValue
+					: currentProductValue;
+				const resolvedProductId = resolveProductIdFromRowValue({
+					rowValue: preferredValue,
 					parentProductId,
 					productOptions,
 				});
-				if (!suggestedProductId) {
+				if (!resolvedProductId) {
+					return row;
+				}
+
+				const currentValueRaw =
+					stringifyImportCellValue(currentProductValue).trim();
+				if (currentValueRaw === resolvedProductId) {
 					return row;
 				}
 
@@ -1523,7 +1554,7 @@ export function ImportSalesWizard() {
 					...row,
 					rowData: {
 						...row.rowData,
-						[productColumn]: suggestedProductId,
+						[productColumn]: resolvedProductId,
 					},
 				};
 			});
@@ -1556,13 +1587,13 @@ export function ImportSalesWizard() {
 		try {
 			const parsed = await parseSpreadsheetFile(file);
 			setParsedFile(parsed);
-				setImportResult(null);
-				setImportSummary(null);
-				setFailedRowsDrafts([]);
-				setFinalizationRowsDrafts([]);
-				setFinalizationPage(1);
-				setTemplateName("");
-				setSelectedTemplateId("");
+			setImportResult(null);
+			setImportSummary(null);
+			setFailedRowsDrafts([]);
+			setFinalizationRowsDrafts([]);
+			setFinalizationPage(1);
+			setTemplateName("");
+			setSelectedTemplateId("");
 			autoAppliedTemplateRef.current = null;
 			setMapping(
 				createInitialMapping({
@@ -1657,8 +1688,10 @@ export function ImportSalesWizard() {
 		rowNumber: number,
 		columnKey: string,
 		selectedValue: string,
+		fallbackProductId?: string,
 	) {
-		const nextValue = selectedValue === NONE_VALUE ? "" : selectedValue;
+		const nextValue =
+			selectedValue === NONE_VALUE ? (fallbackProductId ?? "") : selectedValue;
 		setFailedRowsDrafts((currentValue) =>
 			currentValue.map((row) =>
 				row.originalRowNumber === rowNumber
@@ -1672,7 +1705,7 @@ export function ImportSalesWizard() {
 						}
 					: row,
 			),
-			);
+		);
 	}
 
 	function updateFinalizationRowSelection(
@@ -1687,6 +1720,22 @@ export function ImportSalesWizard() {
 	}
 
 	function updateFinalizationRowCellValue(
+		rowNumber: number,
+		columnKey: string,
+		value: string,
+	) {
+		applyFinalizationRowValueUpdate(rowNumber, columnKey, value);
+	}
+
+	function updateFinalizationRowProductValue(
+		rowNumber: number,
+		columnKey: string,
+		productId: string,
+	) {
+		applyFinalizationRowValueUpdate(rowNumber, columnKey, productId);
+	}
+
+	function applyFinalizationRowValueUpdate(
 		rowNumber: number,
 		columnKey: string,
 		value: string,
@@ -1707,10 +1756,16 @@ export function ImportSalesWizard() {
 				});
 
 				let nextSelectedForImport = row.selectedForImport;
-				if (row.validationErrors.length === 0 && nextValidationErrors.length > 0) {
+				if (
+					row.validationErrors.length === 0 &&
+					nextValidationErrors.length > 0
+				) {
 					nextSelectedForImport = false;
 				}
-				if (row.validationErrors.length > 0 && nextValidationErrors.length === 0) {
+				if (
+					row.validationErrors.length > 0 &&
+					nextValidationErrors.length === 0
+				) {
 					nextSelectedForImport = true;
 				}
 
@@ -2059,20 +2114,20 @@ export function ImportSalesWizard() {
 				return retriedFailure ? [retriedFailure] : [];
 			});
 
-				setImportResult(result);
-				setImportSummary((currentValue) => {
-					if (!currentValue) {
-						return {
-							totalRows: retrySourceRows.length,
-							importedRows: result.importedRows,
-						};
-					}
-
+			setImportResult(result);
+			setImportSummary((currentValue) => {
+				if (!currentValue) {
 					return {
-						...currentValue,
-						importedRows: currentValue.importedRows + result.importedRows,
+						totalRows: retrySourceRows.length,
+						importedRows: result.importedRows,
 					};
-				});
+				}
+
+				return {
+					...currentValue,
+					importedRows: currentValue.importedRows + result.importedRows,
+				};
+			});
 			setFailedRowsDrafts(nextFailedRows);
 
 			if (nextFailedRows.length === 0) {
@@ -2567,132 +2622,298 @@ export function ImportSalesWizard() {
 							>
 								Voltar
 							</Button>
-							<Button
-								type="button"
-								onClick={handleGoToFinalization}
-							>
+							<Button type="button" onClick={handleGoToFinalization}>
 								<FileSpreadsheet className="size-4" />
 								Ir para finalização
 							</Button>
 						</div>
 					</div>
-					) : null}
+				) : null}
 
-					{step === "FINALIZATION" && parsedFile && mapping ? (
-						<div className="space-y-4">
-							<Card className="space-y-3 p-4">
-								<div className="space-y-1">
-									<h3 className="font-semibold">Finalização da importação</h3>
+				{step === "FINALIZATION" && parsedFile && mapping ? (
+					<div className="space-y-4">
+						<Card className="space-y-3 p-4">
+							<div className="space-y-1">
+								<h3 className="font-semibold">Finalização da importação</h3>
+								<p className="text-sm text-muted-foreground">
+									Revise e ajuste os dados antes de enviar. Linhas com alerta
+									podem ser ignoradas ou corrigidas manualmente.
+								</p>
+							</div>
+							<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+								<div className="rounded-md border p-3">
+									<p className="text-muted-foreground text-xs">Total</p>
+									<p className="font-semibold text-lg">
+										{finalizationTotalRows}
+									</p>
+								</div>
+								<div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
+									<p className="text-emerald-700 dark:text-emerald-300 text-xs">
+										Válidas localmente
+									</p>
+									<p className="font-semibold text-emerald-700 dark:text-emerald-300 text-lg">
+										{finalizationValidRowsCount}
+									</p>
+								</div>
+								<div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
+									<p className="text-amber-700 dark:text-amber-300 text-xs">
+										Com alerta
+									</p>
+									<p className="font-semibold text-amber-700 dark:text-amber-300 text-lg">
+										{finalizationRowsWithWarningsCount}
+									</p>
+								</div>
+								<div className="rounded-md border border-primary/30 bg-primary/10 p-3">
+									<p className="text-primary text-xs">Selecionadas</p>
+									<p className="font-semibold text-lg text-primary">
+										{finalizationSelectedRowsCount}
+									</p>
+								</div>
+							</div>
+							<div className="grid gap-2 text-sm lg:grid-cols-2">
+								<p>
+									<strong>Empresa:</strong>{" "}
+									{selectedCompany?.name ?? "Não selecionada"}
+								</p>
+								<p>
+									<strong>Produto base:</strong>{" "}
+									{selectedImportProduct?.label ?? "Não selecionado"}
+								</p>
+								<p>
+									<strong>Responsável fixo:</strong> {selectedResponsibleLabel}
+								</p>
+								<p>
+									<strong>Linhas por página:</strong> {FINALIZATION_PAGE_SIZE}
+								</p>
+							</div>
+						</Card>
+
+						<Card className="space-y-4 p-4">
+							<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+								<div>
+									<h3 className="font-semibold">Dados a importar</h3>
 									<p className="text-sm text-muted-foreground">
-										Revise e ajuste os dados antes de enviar. Linhas com alerta
-										podem ser ignoradas ou corrigidas manualmente.
+										A tabela exibe apenas os campos mapeados nesta importação.
 									</p>
 								</div>
-								<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-									<div className="rounded-md border p-3">
-										<p className="text-muted-foreground text-xs">Total</p>
-										<p className="font-semibold text-lg">{finalizationTotalRows}</p>
-									</div>
-									<div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
-										<p className="text-emerald-700 dark:text-emerald-300 text-xs">Válidas localmente</p>
-										<p className="font-semibold text-emerald-700 dark:text-emerald-300 text-lg">
-											{finalizationValidRowsCount}
-										</p>
-									</div>
-									<div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
-										<p className="text-amber-700 dark:text-amber-300 text-xs">Com alerta</p>
-										<p className="font-semibold text-amber-700 dark:text-amber-300 text-lg">
-											{finalizationRowsWithWarningsCount}
-										</p>
-									</div>
-									<div className="rounded-md border border-primary/30 bg-primary/10 p-3">
-										<p className="text-primary text-xs">Selecionadas</p>
-										<p className="font-semibold text-lg text-primary">
-											{finalizationSelectedRowsCount}
-										</p>
-									</div>
+								<div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+									<Button
+										type="button"
+										size="sm"
+										variant="outline"
+										className="w-full sm:w-auto"
+										onClick={() => setAllFinalizationRowsSelection(true)}
+										disabled={executeImportMutation.isPending}
+									>
+										Selecionar todas
+									</Button>
+									<Button
+										type="button"
+										size="sm"
+										variant="outline"
+										className="w-full sm:w-auto"
+										onClick={() => setAllFinalizationRowsSelection(false)}
+										disabled={executeImportMutation.isPending}
+									>
+										Ignorar todas
+									</Button>
 								</div>
-								<div className="grid gap-2 text-sm lg:grid-cols-2">
-									<p>
-										<strong>Empresa:</strong>{" "}
-										{selectedCompany?.name ?? "Não selecionada"}
-									</p>
-									<p>
-										<strong>Produto base:</strong>{" "}
-										{selectedImportProduct?.label ?? "Não selecionado"}
-									</p>
-									<p>
-										<strong>Responsável fixo:</strong> {selectedResponsibleLabel}
-									</p>
-									<p>
-										<strong>Linhas por página:</strong> {FINALIZATION_PAGE_SIZE}
-									</p>
-								</div>
-							</Card>
+							</div>
 
-							<Card className="space-y-4 p-4">
-								<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-									<div>
-										<h3 className="font-semibold">Dados a importar</h3>
-										<p className="text-sm text-muted-foreground">
-											A tabela exibe apenas os campos mapeados nesta importação.
-										</p>
-									</div>
-									<div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-										<Button
-											type="button"
-											size="sm"
-											variant="outline"
-											className="w-full sm:w-auto"
-											onClick={() => setAllFinalizationRowsSelection(true)}
-											disabled={executeImportMutation.isPending}
-										>
-											Selecionar todas
-										</Button>
-										<Button
-											type="button"
-											size="sm"
-											variant="outline"
-											className="w-full sm:w-auto"
-											onClick={() => setAllFinalizationRowsSelection(false)}
-											disabled={executeImportMutation.isPending}
-										>
-											Ignorar todas
-										</Button>
-									</div>
+							{finalizationTotalRows === 0 ? (
+								<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+									Nenhuma linha disponível para revisão.
 								</div>
+							) : (
+								<>
+									<div className="space-y-3 lg:hidden">
+										{finalizationPageRows.map((rowDraft) => {
+											const hasAlerts = rowDraft.validationErrors.length > 0;
 
-								{finalizationTotalRows === 0 ? (
-									<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-										Nenhuma linha disponível para revisão.
-									</div>
-								) : (
-									<>
-										<div className="space-y-3 lg:hidden">
-											{finalizationPageRows.map((rowDraft) => {
-												const hasAlerts = rowDraft.validationErrors.length > 0;
+											return (
+												<div
+													key={`finalization-mobile-row-${rowDraft.rowNumber}`}
+													className={`space-y-3 rounded-md border p-3 ${
+														hasAlerts
+															? "border-amber-500/30 bg-amber-500/5"
+															: ""
+													}`}
+												>
+													<div className="flex items-start justify-between gap-3">
+														<div>
+															<p className="font-medium">
+																Linha {rowDraft.rowNumber}
+															</p>
+															<p
+																className={`text-xs ${
+																	hasAlerts
+																		? "text-amber-700 dark:text-amber-300"
+																		: "text-emerald-700 dark:text-emerald-300"
+																}`}
+															>
+																{hasAlerts ? "Com alerta" : "Pronta"}
+															</p>
+														</div>
+														<div className="flex items-center gap-2">
+															<Checkbox
+																checked={rowDraft.selectedForImport}
+																onClick={(event) =>
+																	finalizationMultiSelect.onCheckboxClick(
+																		rowDraft.rowNumber,
+																		event,
+																	)
+																}
+																onCheckedChange={(checked) =>
+																	finalizationMultiSelect.onCheckboxCheckedChange(
+																		rowDraft.rowNumber,
+																		Boolean(checked),
+																	)
+																}
+																disabled={executeImportMutation.isPending}
+																aria-label={`Selecionar linha ${rowDraft.rowNumber}`}
+															/>
+															<span className="text-muted-foreground text-xs">
+																{rowDraft.selectedForImport
+																	? "Incluir"
+																	: "Ignorar"}
+															</span>
+														</div>
+													</div>
 
-												return (
 													<div
-														key={`finalization-mobile-row-${rowDraft.rowNumber}`}
-														className={`space-y-3 rounded-md border p-3 ${
-															hasAlerts ? "border-amber-500/30 bg-amber-500/5" : ""
+														className={`rounded-md border px-2.5 py-2 text-xs ${
+															hasAlerts
+																? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+																: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
 														}`}
 													>
-														<div className="flex items-start justify-between gap-3">
-															<div>
-																<p className="font-medium">Linha {rowDraft.rowNumber}</p>
-																<p
-																	className={`text-xs ${
-																		hasAlerts
-																			? "text-amber-700 dark:text-amber-300"
-																			: "text-emerald-700 dark:text-emerald-300"
-																	}`}
+														{hasAlerts
+															? rowDraft.validationErrors.join(" | ")
+															: "Sem alertas"}
+													</div>
+
+													<div className="space-y-2">
+														{finalizationColumns.map((column) => {
+															const isProductColumn =
+																column.key === mapping.fields.productColumn;
+															const selectedProductValue = isProductColumn
+																? resolveProductSelectValue({
+																		rowValue: rowDraft.rowData[column.key],
+																		productOptions,
+																		parentProductId:
+																			mapping.fixedValues.parentProductId,
+																	})
+																: NONE_VALUE;
+															const productSelectValue =
+																scopedImportProductOptions.some(
+																	(product) =>
+																		product.id === selectedProductValue,
+																)
+																	? selectedProductValue
+																	: NONE_VALUE;
+
+															return (
+																<div
+																	key={`finalization-mobile-input-${rowDraft.rowNumber}-${column.key}`}
+																	className="space-y-1"
 																>
-																	{hasAlerts ? "Com alerta" : "Pronta"}
-																</p>
-															</div>
-															<div className="flex items-center gap-2">
+																	<Label className="text-xs">
+																		{column.label}
+																	</Label>
+																	{isProductColumn ? (
+																		<Select
+																			value={productSelectValue}
+																			onValueChange={(value) =>
+																				updateFinalizationRowProductValue(
+																					rowDraft.rowNumber,
+																					column.key,
+																					value,
+																				)
+																			}
+																			disabled={executeImportMutation.isPending}
+																		>
+																			<SelectTrigger className="w-full">
+																				<SelectValue placeholder="Selecione produto/subproduto" />
+																			</SelectTrigger>
+																			<SelectContent>
+																				{scopedImportProductOptions.length ===
+																				0 ? (
+																					<SelectItem
+																						value={NONE_VALUE}
+																						disabled
+																					>
+																						Nenhum produto disponível
+																					</SelectItem>
+																				) : null}
+																				{scopedImportProductOptions.map(
+																					(product) => (
+																						<SelectItem
+																							key={product.id}
+																							value={product.id}
+																						>
+																							{product.label}
+																						</SelectItem>
+																					),
+																				)}
+																			</SelectContent>
+																		</Select>
+																	) : (
+																		<Input
+																			value={stringifyImportCellValue(
+																				rowDraft.rowData[column.key],
+																			)}
+																			onChange={(event) =>
+																				updateFinalizationRowCellValue(
+																					rowDraft.rowNumber,
+																					column.key,
+																					event.target.value,
+																				)
+																			}
+																			disabled={executeImportMutation.isPending}
+																		/>
+																	)}
+																</div>
+															);
+														})}
+													</div>
+												</div>
+											);
+										})}
+									</div>
+
+										<div className="hidden overflow-x-auto lg:block">
+											<Table className="min-w-[1200px] table-fixed">
+											<TableHeader>
+												<TableRow>
+													<TableHead className="w-[90px]">Selecionar</TableHead>
+													<TableHead className="w-[80px]">Linha</TableHead>
+													<TableHead className="w-[120px]">Status</TableHead>
+													<TableHead className="w-[220px] whitespace-normal">
+														Alertas
+													</TableHead>
+													{finalizationColumns.map((column) => (
+														<TableHead
+															key={`finalization-column-${column.key}`}
+															className="whitespace-normal"
+														>
+															{column.label}
+														</TableHead>
+													))}
+												</TableRow>
+											</TableHeader>
+											<TableBody>
+												{finalizationPageRows.map((rowDraft) => {
+													const hasAlerts =
+														rowDraft.validationErrors.length > 0;
+
+													return (
+														<TableRow
+															key={`finalization-row-${rowDraft.rowNumber}`}
+															className={
+																hasAlerts ? "bg-amber-500/5" : undefined
+															}
+														>
+															<TableCell>
 																<Checkbox
 																	checked={rowDraft.selectedForImport}
 																	onClick={(event) =>
@@ -2710,221 +2931,191 @@ export function ImportSalesWizard() {
 																	disabled={executeImportMutation.isPending}
 																	aria-label={`Selecionar linha ${rowDraft.rowNumber}`}
 																/>
-																<span className="text-muted-foreground text-xs">
-																	{rowDraft.selectedForImport ? "Incluir" : "Ignorar"}
-																</span>
-															</div>
-														</div>
+															</TableCell>
+															<TableCell>{rowDraft.rowNumber}</TableCell>
+															<TableCell>
+																{hasAlerts ? "Com alerta" : "Pronta"}
+															</TableCell>
+															<TableCell className="max-w-[220px] whitespace-normal text-xs align-top">
+																{hasAlerts
+																	? rowDraft.validationErrors.join(" | ")
+																	: "Sem alertas"}
+															</TableCell>
+															{finalizationColumns.map((column) => {
+																const isProductColumn =
+																	column.key === mapping.fields.productColumn;
+																const selectedProductValue = isProductColumn
+																	? resolveProductSelectValue({
+																			rowValue: rowDraft.rowData[column.key],
+																			productOptions,
+																			parentProductId:
+																				mapping.fixedValues.parentProductId,
+																		})
+																	: NONE_VALUE;
+																const productSelectValue =
+																	scopedImportProductOptions.some(
+																		(product) =>
+																			product.id === selectedProductValue,
+																	)
+																		? selectedProductValue
+																		: NONE_VALUE;
 
-														<div
-															className={`rounded-md border px-2.5 py-2 text-xs ${
-																hasAlerts
-																	? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
-																	: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-															}`}
-														>
-															{hasAlerts
-																? rowDraft.validationErrors.join(" | ")
-																: "Sem alertas"}
-														</div>
-
-														<div className="space-y-2">
-															{finalizationColumns.map((column) => (
-																<div
-																	key={`finalization-mobile-input-${rowDraft.rowNumber}-${column.key}`}
-																	className="space-y-1"
-																>
-																	<Label className="text-xs">{column.label}</Label>
-																	<Input
-																		value={stringifyImportCellValue(
-																			rowDraft.rowData[column.key],
-																		)}
-																		onChange={(event) =>
-																			updateFinalizationRowCellValue(
-																				rowDraft.rowNumber,
-																				column.key,
-																				event.target.value,
-																			)
-																		}
-																		disabled={executeImportMutation.isPending}
-																	/>
-																</div>
-															))}
-														</div>
-													</div>
-												);
-											})}
-										</div>
-
-										<div className="hidden lg:block">
-											<Table className="table-fixed">
-												<TableHeader>
-													<TableRow>
-														<TableHead className="w-[90px]">Selecionar</TableHead>
-														<TableHead className="w-[80px]">Linha</TableHead>
-														<TableHead className="w-[120px]">Status</TableHead>
-														<TableHead className="w-[220px] whitespace-normal">
-															Alertas
-														</TableHead>
-														{finalizationColumns.map((column) => (
-															<TableHead
-																key={`finalization-column-${column.key}`}
-																className="whitespace-normal"
-															>
-																{column.label}
-															</TableHead>
-														))}
-													</TableRow>
-												</TableHeader>
-												<TableBody>
-													{finalizationPageRows.map((rowDraft) => {
-														const hasAlerts = rowDraft.validationErrors.length > 0;
-
-														return (
-															<TableRow
-																key={`finalization-row-${rowDraft.rowNumber}`}
-																className={hasAlerts ? "bg-amber-500/5" : undefined}
-															>
-																<TableCell>
-																	<Checkbox
-																		checked={rowDraft.selectedForImport}
-																		onClick={(event) =>
-																			finalizationMultiSelect.onCheckboxClick(
-																				rowDraft.rowNumber,
-																				event,
-																			)
-																		}
-																		onCheckedChange={(checked) =>
-																			finalizationMultiSelect.onCheckboxCheckedChange(
-																				rowDraft.rowNumber,
-																				Boolean(checked),
-																			)
-																		}
-																		disabled={executeImportMutation.isPending}
-																		aria-label={`Selecionar linha ${rowDraft.rowNumber}`}
-																	/>
-																</TableCell>
-																<TableCell>{rowDraft.rowNumber}</TableCell>
-																<TableCell>
-																	{hasAlerts ? "Com alerta" : "Pronta"}
-																</TableCell>
-																<TableCell className="max-w-[220px] whitespace-normal text-xs align-top">
-																	{hasAlerts
-																		? rowDraft.validationErrors.join(" | ")
-																		: "Sem alertas"}
-																</TableCell>
-																{finalizationColumns.map((column) => (
+																return (
 																	<TableCell
 																		key={`finalization-row-${rowDraft.rowNumber}-${column.key}`}
 																		className="min-w-[140px] align-top"
 																	>
-																		<Input
-																			className="h-8 text-xs"
-																			value={stringifyImportCellValue(
-																				rowDraft.rowData[column.key],
-																			)}
-																			onChange={(event) =>
-																				updateFinalizationRowCellValue(
-																					rowDraft.rowNumber,
-																					column.key,
-																					event.target.value,
-																				)
-																			}
-																			disabled={executeImportMutation.isPending}
-																		/>
+																		{isProductColumn ? (
+																			<Select
+																				value={productSelectValue}
+																				onValueChange={(value) =>
+																					updateFinalizationRowProductValue(
+																						rowDraft.rowNumber,
+																						column.key,
+																						value,
+																					)
+																				}
+																				disabled={
+																					executeImportMutation.isPending
+																				}
+																			>
+																					<SelectTrigger className="h-8 w-full text-xs">
+																						<SelectValue placeholder="Selecione produto/subproduto" />
+																					</SelectTrigger>
+																				<SelectContent>
+																					{scopedImportProductOptions.length ===
+																					0 ? (
+																						<SelectItem
+																							value={NONE_VALUE}
+																							disabled
+																						>
+																							Nenhum produto disponível
+																						</SelectItem>
+																					) : null}
+																					{scopedImportProductOptions.map(
+																						(product) => (
+																							<SelectItem
+																								key={product.id}
+																								value={product.id}
+																							>
+																								{product.label}
+																							</SelectItem>
+																						),
+																					)}
+																				</SelectContent>
+																			</Select>
+																		) : (
+																			<Input
+																				className="h-8 text-xs"
+																				value={stringifyImportCellValue(
+																					rowDraft.rowData[column.key],
+																				)}
+																				onChange={(event) =>
+																					updateFinalizationRowCellValue(
+																						rowDraft.rowNumber,
+																						column.key,
+																						event.target.value,
+																					)
+																				}
+																				disabled={
+																					executeImportMutation.isPending
+																				}
+																			/>
+																		)}
 																	</TableCell>
-																))}
-															</TableRow>
-														);
-													})}
-												</TableBody>
-											</Table>
-										</div>
+																);
+															})}
+														</TableRow>
+													);
+												})}
+											</TableBody>
+										</Table>
+									</div>
 
-										<div className="flex flex-col gap-2 text-sm lg:flex-row lg:items-center lg:justify-between">
-											<p className="text-muted-foreground">
-												Mostrando {finalizationPageStartIndex + 1} até{" "}
-												{Math.min(
-													finalizationPageStartIndex + FINALIZATION_PAGE_SIZE,
-													finalizationTotalRows,
-												)}{" "}
-												de {finalizationTotalRows} linha(s)
-											</p>
-											<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-												<Button
-													type="button"
-													size="sm"
-													variant="outline"
-													className="w-full sm:w-auto"
-													onClick={() =>
-														setFinalizationPage((currentValue) =>
-															Math.max(1, currentValue - 1),
-														)
-													}
-													disabled={currentFinalizationPage <= 1}
-												>
-													Anterior
-												</Button>
-												<span className="text-muted-foreground text-center text-xs">
-													Página {currentFinalizationPage} de{" "}
-													{finalizationTotalPages}
-												</span>
-												<Button
-													type="button"
-													size="sm"
-													variant="outline"
-													className="w-full sm:w-auto"
-													onClick={() =>
-														setFinalizationPage((currentValue) =>
-															Math.min(finalizationTotalPages, currentValue + 1),
-														)
-													}
-													disabled={
-														currentFinalizationPage >= finalizationTotalPages
-													}
-												>
-													Próxima
-												</Button>
-											</div>
+									<div className="flex flex-col gap-2 text-sm lg:flex-row lg:items-center lg:justify-between">
+										<p className="text-muted-foreground">
+											Mostrando {finalizationPageStartIndex + 1} até{" "}
+											{Math.min(
+												finalizationPageStartIndex + FINALIZATION_PAGE_SIZE,
+												finalizationTotalRows,
+											)}{" "}
+											de {finalizationTotalRows} linha(s)
+										</p>
+										<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+											<Button
+												type="button"
+												size="sm"
+												variant="outline"
+												className="w-full sm:w-auto"
+												onClick={() =>
+													setFinalizationPage((currentValue) =>
+														Math.max(1, currentValue - 1),
+													)
+												}
+												disabled={currentFinalizationPage <= 1}
+											>
+												Anterior
+											</Button>
+											<span className="text-muted-foreground text-center text-xs">
+												Página {currentFinalizationPage} de{" "}
+												{finalizationTotalPages}
+											</span>
+											<Button
+												type="button"
+												size="sm"
+												variant="outline"
+												className="w-full sm:w-auto"
+												onClick={() =>
+													setFinalizationPage((currentValue) =>
+														Math.min(finalizationTotalPages, currentValue + 1),
+													)
+												}
+												disabled={
+													currentFinalizationPage >= finalizationTotalPages
+												}
+											>
+												Próxima
+											</Button>
 										</div>
-									</>
+									</div>
+								</>
+							)}
+						</Card>
+
+						<div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+							<Button
+								type="button"
+								variant="outline"
+								className="w-full sm:w-auto"
+								onClick={() => setStep("MAPPING")}
+								disabled={executeImportMutation.isPending}
+							>
+								Voltar para mapeamento
+							</Button>
+							<Button
+								type="button"
+								className="w-full sm:w-auto"
+								onClick={handleExecuteImport}
+								disabled={
+									executeImportMutation.isPending ||
+									finalizationSelectedRowsCount === 0
+								}
+							>
+								{executeImportMutation.isPending ? (
+									<Loader2 className="size-4 animate-spin" />
+								) : (
+									<Upload className="size-4" />
 								)}
-							</Card>
-
-							<div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-								<Button
-									type="button"
-									variant="outline"
-									className="w-full sm:w-auto"
-									onClick={() => setStep("MAPPING")}
-									disabled={executeImportMutation.isPending}
-								>
-									Voltar para mapeamento
-								</Button>
-								<Button
-									type="button"
-									className="w-full sm:w-auto"
-									onClick={handleExecuteImport}
-									disabled={
-										executeImportMutation.isPending ||
-										finalizationSelectedRowsCount === 0
-									}
-								>
-									{executeImportMutation.isPending ? (
-										<Loader2 className="size-4 animate-spin" />
-									) : (
-										<Upload className="size-4" />
-									)}
-									{executeImportMutation.isPending
-										? "Importando..."
-										: `Importar linhas selecionadas (${finalizationSelectedRowsCount})`}
-								</Button>
-							</div>
+								{executeImportMutation.isPending
+									? "Importando..."
+									: `Importar linhas selecionadas (${finalizationSelectedRowsCount})`}
+							</Button>
 						</div>
-					) : null}
+					</div>
+				) : null}
 
-					{step === "RESULT" && importResult ? (
-						<div className="space-y-4">
+				{step === "RESULT" && importResult ? (
+					<div className="space-y-4">
 						<Card className="space-y-3 p-4">
 							<h3 className="font-semibold">Resumo da importação</h3>
 							<div className="grid gap-3 md:grid-cols-4">
@@ -2935,7 +3126,9 @@ export function ImportSalesWizard() {
 									<p className="font-semibold text-lg">{totalRowsCount}</p>
 								</div>
 								<div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
-									<p className="text-xs text-emerald-700 dark:text-emerald-300">Importadas</p>
+									<p className="text-xs text-emerald-700 dark:text-emerald-300">
+										Importadas
+									</p>
 									<p className="font-semibold text-lg text-emerald-700 dark:text-emerald-300">
 										{importedRowsCount}
 									</p>
@@ -2947,7 +3140,9 @@ export function ImportSalesWizard() {
 									</p>
 								</div>
 								<div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
-									<p className="text-amber-700 dark:text-amber-300 text-xs">Ignoradas</p>
+									<p className="text-amber-700 dark:text-amber-300 text-xs">
+										Ignoradas
+									</p>
 									<p className="font-semibold text-amber-700 dark:text-amber-300 text-lg">
 										{ignoredRowsCount}
 									</p>
@@ -3040,11 +3235,6 @@ export function ImportSalesWizard() {
 																mapping,
 															})
 														: "NONE";
-												const currentFieldValue = failureField
-													? stringifyImportCellValue(
-															failedRow.rowData[failureField],
-														)
-													: "";
 												const excelFieldValue =
 													failedRow.excelFieldValue?.trim() ?? "";
 												const scopedProductOptions =
@@ -3068,14 +3258,31 @@ export function ImportSalesWizard() {
 														? productOptions.find(
 																(product) => product.id === excelFieldValue,
 															)
-															: null;
+														: null;
+												const resolvedCurrentProductId =
+													editorType === "PRODUCT" && failureField
+														? resolveProductIdFromRowValue({
+																rowValue: failedRow.rowData[failureField],
+																parentProductId:
+																	mapping?.fixedValues.parentProductId,
+																productOptions,
+															})
+														: null;
 												const selectedProductSuggestion =
 													editorType === "PRODUCT"
 														? scopedProductOptions.find(
 																(product) =>
-																	product.id === currentFieldValue.trim(),
+																	product.id === resolvedCurrentProductId,
 															)
 														: null;
+												const productSelectValue =
+													resolvedCurrentProductId &&
+													scopedProductOptions.some(
+														(product) =>
+															product.id === resolvedCurrentProductId,
+													)
+														? resolvedCurrentProductId
+														: NONE_VALUE;
 												const currentExcelDisplayValue =
 													excelFieldValue.length > 0
 														? (productCurrentValue?.label ?? excelFieldValue)
@@ -3143,39 +3350,39 @@ export function ImportSalesWizard() {
 																	<p className="text-muted-foreground text-xs">
 																		Campo: {failureField}
 																	</p>
-																{selectedProductSuggestion ? (
-																	<p className="text-xs text-emerald-700 dark:text-emerald-300">
-																		Sugestão automática:{" "}
-																		{selectedProductSuggestion.label}
-																	</p>
-																) : null}
-																{mapping?.fixedValues.parentProductId ? (
-																	<p className="text-muted-foreground text-xs">
-																		Limitado ao produto da importação selecionado
-																		mapeamento.
-																	</p>
-																) : null}
-																<Select
-																	value={resolveProductSelectValue({
-																		rowValue: failedRow.rowData[failureField],
-																		productOptions: scopedProductOptions,
-																	})}
-																	onValueChange={(value) =>
-																		updateFailedRowProductValue(
-																			failedRow.originalRowNumber,
+																	{selectedProductSuggestion ? (
+																		<p className="text-xs text-emerald-700 dark:text-emerald-300">
+																			Sugestão automática:{" "}
+																			{selectedProductSuggestion.label}
+																		</p>
+																	) : null}
+																	{mapping?.fixedValues.parentProductId ? (
+																		<p className="text-muted-foreground text-xs">
+																			Limitado ao produto da importação
+																			selecionado mapeamento.
+																		</p>
+																	) : null}
+																	<Select
+																		value={productSelectValue}
+																		onValueChange={(value) =>
+																			updateFailedRowProductValue(
+																				failedRow.originalRowNumber,
 																				failureField,
 																				value,
+																				mapping?.fixedValues.parentProductId,
 																			)
 																		}
 																		disabled={executeImportMutation.isPending}
 																	>
-																		<SelectTrigger>
+																		<SelectTrigger className="w-full">
 																			<SelectValue placeholder="Selecione o produto para corrigir" />
 																		</SelectTrigger>
 																		<SelectContent>
-																			<SelectItem value={NONE_VALUE}>
-																				Ignorar (sem correção)
-																			</SelectItem>
+																			{mapping?.fixedValues.parentProductId ? (
+																				<SelectItem value={NONE_VALUE}>
+																					Usar produto base da importação
+																				</SelectItem>
+																			) : null}
 																			{sortedProductOptions.map((product) => (
 																				<SelectItem
 																					key={product.id}
