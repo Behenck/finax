@@ -73,6 +73,7 @@ import {
 	productFilterParser,
 	textFilterParser,
 } from "@/hooks/filters/parsers";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
 	useDeleteSaleCommissionInstallment,
 	usePatchSaleCommissionInstallmentStatus,
@@ -600,6 +601,17 @@ export function CommissionsDataTable() {
 		() => Array.from(selectedInstallmentsById.values()),
 		[selectedInstallmentsById],
 	);
+	const selectableInstallmentIds = useMemo(
+		() => new Set(eligibleInstallmentsOnPage.map((installment) => installment.id)),
+		[eligibleInstallmentsOnPage],
+	);
+	const visibleInstallmentsById = useMemo(
+		() =>
+			new Map(
+				installments.map((installment) => [installment.id, installment]),
+			),
+		[installments],
+	);
 	const selectedInstallmentsTotalAmount = useMemo(
 		() =>
 			selectedInstallments.reduce(
@@ -761,6 +773,54 @@ export function CommissionsDataTable() {
 			return next;
 		});
 	}
+
+	function handleInstallmentCheckedChange(installmentId: string, checked: boolean) {
+		const installment = visibleInstallmentsById.get(installmentId);
+		if (!installment) {
+			return;
+		}
+
+		toggleInstallmentSelection(installment, checked);
+	}
+
+	function toggleVisibleInstallments(installmentIds: string[], checked: boolean) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
+		setSelectedInstallmentsById((current) => {
+			const next = new Map(current);
+
+			for (const installmentId of installmentIds) {
+				const installment = visibleInstallmentsById.get(installmentId);
+				if (!installment || !selectableInstallmentIds.has(installmentId)) {
+					continue;
+				}
+
+				if (checked) {
+					next.set(installment.id, {
+						id: installment.id,
+						saleId: installment.saleId,
+						amount: installment.amount,
+					});
+				} else {
+					next.delete(installment.id);
+				}
+			}
+
+			return next;
+		});
+	}
+
+	const installmentsMultiSelect = useCheckboxMultiSelect<string>({
+		visibleIds: installments.map((installment) => installment.id),
+		isSelectable: (installmentId) =>
+			selectableInstallmentIds.has(installmentId),
+		toggleOne: handleInstallmentCheckedChange,
+		toggleMany: toggleVisibleInstallments,
+		onClearSelection: clearSelectedInstallments,
+		enabled: canChangeInstallmentStatus,
+	});
 
 	async function undoInstallmentsPayment(installments: SelectedInstallment[]) {
 		if (installments.length === 0) {
@@ -1370,9 +1430,15 @@ export function CommissionsDataTable() {
 														</div>
 														<Checkbox
 															checked={isSelected}
+															onClick={(event) =>
+																installmentsMultiSelect.onCheckboxClick(
+																	installment.id,
+																	event,
+																)
+															}
 															onCheckedChange={(checked) =>
-																toggleInstallmentSelection(
-																	installment,
+																installmentsMultiSelect.onCheckboxCheckedChange(
+																	installment.id,
 																	Boolean(checked),
 																)
 															}
@@ -1599,9 +1665,15 @@ export function CommissionsDataTable() {
 															<TableCell>
 																<Checkbox
 																	checked={isSelected}
+																	onClick={(event) =>
+																		installmentsMultiSelect.onCheckboxClick(
+																			installment.id,
+																			event,
+																		)
+																	}
 																	onCheckedChange={(checked) =>
-																		toggleInstallmentSelection(
-																			installment,
+																		installmentsMultiSelect.onCheckboxCheckedChange(
+																			installment.id,
 																			Boolean(checked),
 																		)
 																	}

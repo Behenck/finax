@@ -33,6 +33,7 @@ import {
 	transactionStatusFilterParser,
 	transactionTypeFilterParser,
 } from "@/hooks/filters/parsers";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import { usePatchTransactionsPaymentBulk } from "@/hooks/transactions/use-patch-transactions-payment-bulk";
 import { useRestoreTransactionsPending } from "@/hooks/transactions/use-restore-transactions-pending";
 import { useTransactions } from "@/hooks/transactions/use-transactions";
@@ -300,6 +301,23 @@ function TransactionsPage() {
 		() => Array.from(selectedTransactionsById.values()),
 		[selectedTransactionsById],
 	);
+	const selectableTransactionIds = useMemo(
+		() => new Set(eligibleTransactions.map((transaction) => transaction.id)),
+		[eligibleTransactions],
+	);
+	const visibleTransactionsById = useMemo(
+		() =>
+			new Map(
+				transactions.map((transaction) => [
+					transaction.id,
+					{
+						id: transaction.id,
+						status: transaction.status,
+					},
+				]),
+			),
+		[transactions],
+	);
 
 	function clearSelectedTransactions() {
 		setSelectedTransactionsById(new Map());
@@ -354,6 +372,45 @@ function TransactionsPage() {
 			return next;
 		});
 	}
+
+	function handleTransactionCheckedChange(transactionId: string, checked: boolean) {
+		const transaction = visibleTransactionsById.get(transactionId);
+		if (!transaction) {
+			return;
+		}
+
+		toggleTransactionSelection(transaction, checked);
+	}
+
+	function toggleVisibleTransactions(transactionIds: string[], checked: boolean) {
+		setSelectedTransactionsById((current) => {
+			const next = new Map(current);
+
+			for (const transactionId of transactionIds) {
+				const transaction = visibleTransactionsById.get(transactionId);
+				if (!transaction || !selectableTransactionIds.has(transactionId)) {
+					continue;
+				}
+
+				if (checked) {
+					next.set(transaction.id, transaction);
+				} else {
+					next.delete(transaction.id);
+				}
+			}
+
+			return next;
+		});
+	}
+
+	const transactionMultiSelect = useCheckboxMultiSelect<string>({
+		visibleIds: transactions.map((transaction) => transaction.id),
+		isSelectable: (transactionId) => selectableTransactionIds.has(transactionId),
+		toggleOne: handleTransactionCheckedChange,
+		toggleMany: toggleVisibleTransactions,
+		onClearSelection: clearSelectedTransactions,
+		enabled: canManagePayments,
+	});
 
 	async function handleBulkPayToday() {
 		if (selectedTransactions.length === 0) {
@@ -798,12 +855,15 @@ function TransactionsPage() {
 										</div>
 										<Checkbox
 											checked={isSelected}
+											onClick={(event) =>
+												transactionMultiSelect.onCheckboxClick(
+													transaction.id,
+													event,
+												)
+											}
 											onCheckedChange={(checked) =>
-												toggleTransactionSelection(
-													{
-														id: transaction.id,
-														status: transaction.status,
-													},
+												transactionMultiSelect.onCheckboxCheckedChange(
+													transaction.id,
 													Boolean(checked),
 												)
 											}
@@ -945,12 +1005,15 @@ function TransactionsPage() {
 											<TableCell>
 												<Checkbox
 													checked={isSelected}
+													onClick={(event) =>
+														transactionMultiSelect.onCheckboxClick(
+															transaction.id,
+															event,
+														)
+													}
 													onCheckedChange={(checked) =>
-														toggleTransactionSelection(
-															{
-																id: transaction.id,
-																status: transaction.status,
-															},
+														transactionMultiSelect.onCheckboxCheckedChange(
+															transaction.id,
 															Boolean(checked),
 														)
 													}

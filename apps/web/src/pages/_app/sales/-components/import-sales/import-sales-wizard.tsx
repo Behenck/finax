@@ -40,6 +40,7 @@ import {
 	useSaleImportTemplates,
 	useUpdateSaleImportTemplate,
 } from "@/hooks/sales";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import { useGetOrganizationsSlugProductsIdSaleFields } from "@/http/generated";
 import type {
 	SaleImportDynamicProductMapping,
@@ -1359,6 +1360,20 @@ export function ImportSalesWizard() {
 	const importedRowsCount =
 		importSummary?.importedRows ?? importResult?.importedRows ?? 0;
 	const failedRowsCount = failedRowsDrafts.length;
+	const finalizationMultiSelect = useCheckboxMultiSelect<number>({
+		visibleIds: finalizationPageRows.map((row) => row.rowNumber),
+		toggleOne: updateFinalizationRowSelection,
+		toggleMany: setPartialFinalizationRowsSelection,
+		onClearSelection: () => setAllFinalizationRowsSelection(false),
+		enabled: step === "FINALIZATION" && !executeImportMutation.isPending,
+	});
+	const failedRowsMultiSelect = useCheckboxMultiSelect<number>({
+		visibleIds: failedRowsDrafts.map((row) => row.originalRowNumber),
+		toggleOne: updateFailedRowRetrySelection,
+		toggleMany: setPartialFailedRowRetrySelection,
+		onClearSelection: () => setAllFailedRowRetrySelection(false),
+		enabled: step === "RESULT" && !executeImportMutation.isPending,
+	});
 
 	useEffect(() => {
 		if (finalizationPage > finalizationTotalPages) {
@@ -1599,6 +1614,23 @@ export function ImportSalesWizard() {
 		);
 	}
 
+	function setPartialFailedRowRetrySelection(
+		rowNumbers: number[],
+		shouldRetry: boolean,
+	) {
+		const rowNumbersSet = new Set(rowNumbers);
+		setFailedRowsDrafts((currentValue) =>
+			currentValue.map((row) =>
+				rowNumbersSet.has(row.originalRowNumber)
+					? {
+							...row,
+							shouldRetry,
+						}
+					: row,
+			),
+		);
+	}
+
 	function updateFailedRowCellValue(
 		rowNumber: number,
 		columnKey: string,
@@ -1698,6 +1730,23 @@ export function ImportSalesWizard() {
 				...row,
 				selectedForImport,
 			})),
+		);
+	}
+
+	function setPartialFinalizationRowsSelection(
+		rowNumbers: number[],
+		selectedForImport: boolean,
+	) {
+		const rowNumbersSet = new Set(rowNumbers);
+		setFinalizationRowsDrafts((currentValue) =>
+			currentValue.map((row) =>
+				rowNumbersSet.has(row.rowNumber)
+					? {
+							...row,
+							selectedForImport,
+						}
+					: row,
+			),
 		);
 	}
 
@@ -2646,8 +2695,14 @@ export function ImportSalesWizard() {
 															<div className="flex items-center gap-2">
 																<Checkbox
 																	checked={rowDraft.selectedForImport}
+																	onClick={(event) =>
+																		finalizationMultiSelect.onCheckboxClick(
+																			rowDraft.rowNumber,
+																			event,
+																		)
+																	}
 																	onCheckedChange={(checked) =>
-																		updateFinalizationRowSelection(
+																		finalizationMultiSelect.onCheckboxCheckedChange(
 																			rowDraft.rowNumber,
 																			Boolean(checked),
 																		)
@@ -2733,8 +2788,14 @@ export function ImportSalesWizard() {
 																<TableCell>
 																	<Checkbox
 																		checked={rowDraft.selectedForImport}
+																		onClick={(event) =>
+																			finalizationMultiSelect.onCheckboxClick(
+																				rowDraft.rowNumber,
+																				event,
+																			)
+																		}
 																		onCheckedChange={(checked) =>
-																			updateFinalizationRowSelection(
+																			finalizationMultiSelect.onCheckboxCheckedChange(
 																				rowDraft.rowNumber,
 																				Boolean(checked),
 																			)
@@ -3030,8 +3091,14 @@ export function ImportSalesWizard() {
 														<TableCell>
 															<Checkbox
 																checked={failedRow.shouldRetry}
+																onClick={(event) =>
+																	failedRowsMultiSelect.onCheckboxClick(
+																		failedRow.originalRowNumber,
+																		event,
+																	)
+																}
 																onCheckedChange={(value) =>
-																	updateFailedRowRetrySelection(
+																	failedRowsMultiSelect.onCheckboxCheckedChange(
 																		failedRow.originalRowNumber,
 																		Boolean(value),
 																	)

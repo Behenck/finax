@@ -27,7 +27,13 @@ import {
 	Trash2,
 } from "lucide-react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	type MouseEvent as ReactMouseEvent,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { FilterPanel } from "@/components/filter-panel";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
@@ -70,6 +76,7 @@ import {
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
 import { entityFilterParser, textFilterParser } from "@/hooks/filters/parsers";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
 	useDeleteSale,
 	useDeleteSalesBulk,
@@ -398,6 +405,12 @@ export function SalesDataTable({
 	const [bulkStatus, setBulkStatus] = useState<SaleStatus | "">("");
 	const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 	const restoredFiltersRef = useRef(false);
+	const saleCheckboxClickHandlerRef = useRef<
+		(saleId: string, event: ReactMouseEvent<HTMLElement>) => void
+	>(() => {});
+	const saleCheckboxCheckedChangeHandlerRef = useRef<
+		(saleId: string, checked: boolean) => void
+	>(() => {});
 	const [globalFilter, setGlobalFilter] = useQueryState("q", textFilterParser);
 	const [companyIdFilter, setCompanyIdFilter] = useQueryState(
 		"companyId",
@@ -602,12 +615,15 @@ export function SalesDataTable({
 				cell: ({ row }) => (
 					<Checkbox
 						checked={row.getIsSelected()}
-						onCheckedChange={(value) => {
-							if (!canUseBulkActions) {
-								return;
-							}
-							row.toggleSelected(Boolean(value));
-						}}
+						onClick={(event) =>
+							saleCheckboxClickHandlerRef.current(row.original.id, event)
+						}
+						onCheckedChange={(value) =>
+							saleCheckboxCheckedChangeHandlerRef.current(
+								row.original.id,
+								Boolean(value),
+							)
+						}
 						disabled={!canUseBulkActions}
 						aria-label={`Selecionar venda ${row.original.id}`}
 					/>
@@ -783,6 +799,61 @@ export function SalesDataTable({
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
+	const visibleSaleIds = table
+		.getRowModel()
+		.rows.map((row) => row.original.id);
+
+	function toggleSaleSelectionById(saleId: string, checked: boolean) {
+		if (!canUseBulkActions) {
+			return;
+		}
+
+		setRowSelection((current) => {
+			const next = { ...current };
+			if (checked) {
+				next[saleId] = true;
+			} else {
+				delete next[saleId];
+			}
+
+			return next;
+		});
+	}
+
+	function toggleVisibleSalesSelection(saleIds: string[], checked: boolean) {
+		if (!canUseBulkActions) {
+			return;
+		}
+
+		setRowSelection((current) => {
+			const next = { ...current };
+			for (const saleId of saleIds) {
+				if (checked) {
+					next[saleId] = true;
+				} else {
+					delete next[saleId];
+				}
+			}
+
+			return next;
+		});
+	}
+
+	const saleMultiSelect = useCheckboxMultiSelect<string>({
+		visibleIds: visibleSaleIds,
+		isSelectable: () => canUseBulkActions,
+		toggleOne: toggleSaleSelectionById,
+		toggleMany: toggleVisibleSalesSelection,
+		onClearSelection: () => {
+			setRowSelection({});
+			setBulkStatus("");
+		},
+		enabled: canUseBulkActions,
+	});
+
+	saleCheckboxClickHandlerRef.current = saleMultiSelect.onCheckboxClick;
+	saleCheckboxCheckedChangeHandlerRef.current =
+		saleMultiSelect.onCheckboxCheckedChange;
 
 	const selectedSales = table
 		.getSelectedRowModel()
@@ -1186,8 +1257,17 @@ export function SalesDataTable({
 											</div>
 											<Checkbox
 												checked={row.getIsSelected()}
+												onClick={(event) =>
+													saleCheckboxClickHandlerRef.current(
+														row.original.id,
+														event,
+													)
+												}
 												onCheckedChange={(value) =>
-													row.toggleSelected(Boolean(value))
+													saleCheckboxCheckedChangeHandlerRef.current(
+														row.original.id,
+														Boolean(value),
+													)
 												}
 												disabled={!canUseBulkActions}
 												aria-label={`Selecionar venda ${sale.id}`}
