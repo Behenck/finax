@@ -12,10 +12,20 @@ import { updateProduct } from "./update-product";
 
 function resolveProductsPermission(params: { method: string; routeUrl: string }) {
 	const { method, routeUrl } = params;
+	const salesReadPermissions = [
+		"sales.view",
+		"sales.create",
+		"sales.update",
+	] as const;
 
 	if (routeUrl === "/organizations/:slug/products/:id/commission-scenarios") {
 		if (method === "GET") {
-			return "registers.products.view" as const;
+			return [
+				"registers.products.view",
+				"sales.commissions.create",
+				"sales.commissions.update",
+				"sales.commissions.manage",
+			] as const;
 		}
 
 		if (method === "PUT") {
@@ -25,7 +35,7 @@ function resolveProductsPermission(params: { method: string; routeUrl: string })
 
 	if (routeUrl === "/organizations/:slug/products/:id/sale-fields") {
 		if (method === "GET") {
-			return "registers.products.view" as const;
+			return ["registers.products.view", ...salesReadPermissions] as const;
 		}
 
 		if (method === "PUT") {
@@ -40,7 +50,9 @@ function resolveProductsPermission(params: { method: string; routeUrl: string })
 		return null;
 	}
 
-	if (method === "GET") return "registers.products.view" as const;
+	if (method === "GET") {
+		return ["registers.products.view", ...salesReadPermissions] as const;
+	}
 	if (method === "POST") return "registers.products.create" as const;
 	if (method === "PUT") return "registers.products.update" as const;
 	if (method === "DELETE") return "registers.products.delete" as const;

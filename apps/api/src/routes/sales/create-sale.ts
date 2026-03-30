@@ -12,13 +12,13 @@ import {
 	resolveSaleCommissionsData,
 } from "./sale-commissions";
 import {
-	createSaleCreatedHistoryEvent,
-	loadSaleHistorySnapshot,
-} from "./sale-history";
-import {
 	loadProductSaleFieldSchema,
 	normalizeSaleDynamicFieldValues,
 } from "./sale-dynamic-fields";
+import {
+	createSaleCreatedHistoryEvent,
+	loadSaleHistorySnapshot,
+} from "./sale-history";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { CreateSaleBodySchema, parseSaleDateInput } from "./sale-schemas";
 
@@ -48,6 +48,12 @@ export async function createSale(app: FastifyInstance) {
 				const { slug } = request.params;
 				const data = request.body;
 				const userId = await request.getCurrentUserId();
+				const hasCommissionInput =
+					Array.isArray(data.commissions) && data.commissions.length > 0;
+
+				if (hasCommissionInput) {
+					await request.requirePermission(slug, "sales.commissions.create");
+				}
 
 				const organization = await prisma.organization.findUnique({
 					where: {

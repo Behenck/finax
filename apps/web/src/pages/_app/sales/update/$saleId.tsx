@@ -12,10 +12,11 @@ export const Route = createFileRoute("/_app/sales/update/$saleId")({
 function UpdateSalePage() {
 	const ability = useAbility();
 	const canUpdateSale = ability.can("access", "sales.update");
+	const canCreateSale = ability.can("access", "sales.create");
 	const { saleId } = Route.useParams();
 	const { data, isLoading, isError } = useSale(saleId);
 
-	if (!canUpdateSale) {
+	if (!canUpdateSale && !canCreateSale) {
 		return (
 			<Card className="p-6">
 				<span className="text-muted-foreground">
@@ -37,6 +38,18 @@ function UpdateSalePage() {
 		return (
 			<Card className="p-6">
 				<span className="text-destructive">Não foi possível carregar a venda.</span>
+			</Card>
+		);
+	}
+	const canEditSale =
+		canUpdateSale || (canCreateSale && data.sale.status === "PENDING");
+
+	if (!canEditSale) {
+		return (
+			<Card className="p-6">
+				<span className="text-muted-foreground">
+					Você não possui permissão para editar esta venda no status atual.
+				</span>
 			</Card>
 		);
 	}

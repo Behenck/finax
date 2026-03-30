@@ -37,32 +37,45 @@ export const PERMISSION_CATALOG = [
 		description: "Excluir vendas.",
 	},
 	{
+		key: "sales.commissions.create",
+		module: "sales.commissions",
+		action: "commissions.create",
+		description: "Adicionar comissões em vendas.",
+	},
+	{
+		key: "sales.commissions.update",
+		module: "sales.commissions",
+		action: "commissions.update",
+		description: "Editar comissões em vendas.",
+	},
+	{
 		key: "sales.commissions.manage",
-		module: "sales",
+		module: "sales.commissions",
 		action: "commissions.manage",
-		description: "Gerenciar parcelas e status de comissões de vendas.",
+		description:
+			"Permissão legada de compatibilidade para gerenciar comissões em vendas.",
 	},
 	{
 		key: "sales.commissions.installments.status.change",
-		module: "sales",
+		module: "sales.commissions",
 		action: "commissions.installments.status.change",
 		description: "Alterar status de parcelas de comissão (pagar/cancelar).",
 	},
 	{
 		key: "sales.commissions.installments.update",
-		module: "sales",
+		module: "sales.commissions",
 		action: "commissions.installments.update",
 		description: "Editar parcelas de comissão.",
 	},
 	{
 		key: "sales.commissions.installments.delete",
-		module: "sales",
+		module: "sales.commissions",
 		action: "commissions.installments.delete",
 		description: "Excluir parcelas de comissão.",
 	},
 	{
 		key: "sales.commissions.view.all",
-		module: "sales",
+		module: "sales.commissions",
 		action: "commissions.view.all",
 		description:
 			"Visualizar todas as comissões da organização, além das vinculadas ao membro.",

@@ -82,7 +82,7 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 	}
 
 	if (routeUrl === "/organizations/:slug/sales/:saleId" && method === "PUT") {
-		return "sales.update" as const;
+		return ["sales.update", "sales.create"] as const;
 	}
 
 	if (routeUrl === "/organizations/:slug/sales/:saleId" && method === "DELETE") {

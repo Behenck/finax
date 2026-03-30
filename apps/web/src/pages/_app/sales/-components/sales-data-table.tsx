@@ -215,8 +215,11 @@ function SaleTableRowActions({
 	onOpenInstallments,
 }: SaleTableRowActionsProps) {
 	const ability = useAbility();
+	const canCreateSale = ability.can("access", "sales.create");
 	const canUpdateSale = ability.can("access", "sales.update");
-	const canDuplicateSale = ability.can("access", "sales.create");
+	const canEditSale =
+		canUpdateSale || (canCreateSale && sale.status === "PENDING");
+	const canDuplicateSale = canCreateSale;
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSalePermission = ability.can("access", "sales.delete");
 	const canManageCommissions = ability.can("access", "sales.commissions.manage");
@@ -268,7 +271,7 @@ function SaleTableRowActions({
 							Ver detalhes
 						</Link>
 					</DropdownMenuItem>
-					{canUpdateSale ? (
+					{canEditSale ? (
 						<DropdownMenuItem asChild>
 							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
 								<Pencil className="size-4" />
@@ -1165,6 +1168,9 @@ export function SalesDataTable({
 						) : (
 							table.getRowModel().rows.map((row) => {
 								const sale = row.original;
+								const canEditSale =
+									canUpdateSale ||
+									(canCreateSale && sale.status === "PENDING");
 								const summary = sale.commissionInstallmentsSummary;
 
 								return (
@@ -1234,7 +1240,7 @@ export function SalesDataTable({
 													Detalhes
 												</Link>
 											</Button>
-											{canUpdateSale ? (
+											{canEditSale ? (
 												<Button variant="outline" size="sm" asChild>
 													<Link
 														to="/sales/update/$saleId"

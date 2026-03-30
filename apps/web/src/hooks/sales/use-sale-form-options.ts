@@ -92,6 +92,13 @@ export function useSaleFormOptions() {
 	const canViewCompanies = ability.can("access", "registers.companies.view");
 	const canViewCustomers = ability.can("access", "registers.customers.view");
 	const canViewProducts = ability.can("access", "registers.products.view");
+	const canViewSales = ability.can("access", "sales.view");
+	const canCreateSales = ability.can("access", "sales.create");
+	const canUpdateSales = ability.can("access", "sales.update");
+	const canReadCompaniesForSales =
+		canViewCompanies || canViewSales || canCreateSales || canUpdateSales;
+	const canReadProductsForSales =
+		canViewProducts || canViewSales || canCreateSales || canUpdateSales;
 	const canViewSellers = ability.can("access", "registers.sellers.view");
 	const canViewPartners = ability.can("access", "registers.partners.view");
 	const canViewSupervisors = ability.can("access", "settings.members.view");
@@ -99,7 +106,7 @@ export function useSaleFormOptions() {
 	const companiesQuery = useGetOrganizationsSlugCompanies(
 		{ slug },
 		{
-			query: { enabled: enabled && canViewCompanies },
+			query: { enabled: enabled && canReadCompaniesForSales },
 		},
 	);
 	const customersQuery = useGetOrganizationsSlugCustomers(
@@ -111,7 +118,7 @@ export function useSaleFormOptions() {
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
-			query: { enabled: enabled && canViewProducts },
+			query: { enabled: enabled && canReadProductsForSales },
 		},
 	);
 	const sellersQuery = useGetOrganizationsSlugSellers(
@@ -192,7 +199,7 @@ export function useSaleFormOptions() {
 	const queries = [
 		{
 			query: companiesQuery,
-			enabled: enabled && canViewCompanies,
+			enabled: enabled && canReadCompaniesForSales,
 		},
 		{
 			query: customersQuery,
@@ -200,7 +207,7 @@ export function useSaleFormOptions() {
 		},
 		{
 			query: productsQuery,
-			enabled: enabled && canViewProducts,
+			enabled: enabled && canReadProductsForSales,
 		},
 		{
 			query: sellersQuery,

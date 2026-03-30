@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,10 +19,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import {
+	type GetOrganizationsSlugPermissionsCatalog200,
 	getOrganizationsSlugMembersMemberidPermissionsQueryKey,
 	getOrganizationsSlugMembersQueryKey,
-	type GetOrganizationsSlugPermissionsCatalog200,
 	type PutOrganizationsSlugMembersMemberidMutationRequest,
 	useGetOrganizationsSlugMembersMemberidPermissions,
 	useGetOrganizationsSlugPermissionsCatalog,
@@ -30,20 +33,14 @@ import {
 	usePutOrganizationsSlugMembersMemberidPermissions,
 } from "@/http/generated";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 
 import {
 	MemberAccessScopePicker,
 	type MemberAccessScopeValue,
 } from "../member-access-scope-picker";
 import { MemberAccessSummary } from "./member-access-summary";
-import type {
-	CompanyOption,
-	MemberListItem,
-} from "./utils/types";
 import { getMemberScope } from "./utils";
+import type { CompanyOption, MemberListItem } from "./utils/types";
 
 const MODULE_SECTION_LABELS: Record<string, string> = {
 	registers: "Cadastros",
@@ -54,6 +51,7 @@ const MODULE_SECTION_LABELS: Record<string, string> = {
 
 const MODULE_CARD_LABELS: Record<string, string> = {
 	sales: "Vendas",
+	"sales.commissions": "Comissões",
 	transactions: "Transações",
 	"registers.categories": "Categorias",
 	"registers.companies": "Empresas",
@@ -74,6 +72,8 @@ const SECTION_ORDER = ["registers", "sales", "transactions", "settings"];
 const ACTION_LABELS: Record<string, string> = {
 	create: "Criar",
 	delete: "Excluir",
+	"commissions.create": "Comissões (adicionar)",
+	"commissions.update": "Comissões (editar)",
 	"commissions.view.all": "Comissões (ver todas)",
 	"commissions.installments.status.change": "Parcelas (status)",
 	"commissions.installments.update": "Parcelas (editar)",
@@ -89,7 +89,10 @@ const ACTION_LABELS: Record<string, string> = {
 	update: "Editar",
 	view: "Visualizar",
 	"view.all": "Visualizar todos",
-	"commissions.manage": "Comissões",
+};
+
+const PERMISSION_KEY_LABELS: Record<string, string> = {
+	"sales.commissions.manage": "Comissões (legado)",
 };
 
 type MemberAccessManagerTab = "access" | "permissions";
@@ -141,6 +144,10 @@ function getCardTitle(moduleKey: string) {
 }
 
 function getPermissionTitle(permission: PermissionCatalogItem) {
+	if (PERMISSION_KEY_LABELS[permission.key]) {
+		return PERMISSION_KEY_LABELS[permission.key];
+	}
+
 	return ACTION_LABELS[permission.action] ?? toStartCase(permission.action);
 }
 

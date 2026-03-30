@@ -1,23 +1,23 @@
 import { ArrowRight, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo } from "react";
-import { useWatch } from "react-hook-form";
 import type {
 	Control,
 	UseFormGetValues,
 	UseFormSetValue,
 } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { FieldError } from "@/components/field-error";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
+import type { SaleStatus } from "@/schemas/types/sales";
+import { SaleCommissionCard } from "../../sale-commission-card";
 import {
 	buildSaleCommissionBaseOptionsByIndex,
 	groupSaleCommissionsByBase,
 	resolveEffectiveSaleCommissionsPercentages,
 } from "../../sale-commission-helpers";
-import { SaleCommissionCard } from "../../sale-commission-card";
 import { SaleInstallmentsPanel } from "../../sale-installments-panel";
-import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
-import type { SaleStatus } from "@/schemas/types/sales";
 
 type SelectOption = {
 	id: string;
@@ -26,6 +26,7 @@ type SelectOption = {
 
 interface CommissionsSectionProps {
 	isCommissionEditable: boolean;
+	isCommissionAccessDenied: boolean;
 	isInstallmentsSectionVisible: boolean;
 	initialSaleId?: string;
 	initialSaleStatus: SaleStatus;
@@ -57,6 +58,7 @@ interface CommissionsSectionProps {
 
 export function CommissionsSection({
 	isCommissionEditable,
+	isCommissionAccessDenied,
 	isInstallmentsSectionVisible,
 	initialSaleId,
 	initialSaleStatus,
@@ -103,6 +105,23 @@ export function CommissionsSection({
 		() => resolveEffectiveSaleCommissionsPercentages(commissionValues),
 		[commissionValues],
 	);
+	const hasLinkedCommissions = commissionFields.length > 0;
+
+	if (isCommissionAccessDenied) {
+		if (!hasLinkedCommissions) {
+			return null;
+		}
+
+		return (
+			<Card className="rounded-sm gap-4 p-5">
+				<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
+				<p className="text-sm text-muted-foreground">
+					Você não possui permissão para adicionar ou editar comissões nesta
+					venda.
+				</p>
+			</Card>
+		);
+	}
 
 	if (!isCommissionEditable) {
 		return (
@@ -123,7 +142,11 @@ export function CommissionsSection({
 				<h2 className="font-semibold text-md">Comissões aplicáveis</h2>
 
 				<div className="flex items-center gap-2 md:gap-1.5">
-					<Button type="button" variant="outline" onClick={onAddManualCommission}>
+					<Button
+						type="button"
+						variant="outline"
+						onClick={onAddManualCommission}
+					>
 						<Plus className="size-4" />
 						Adicionar comissão
 					</Button>
@@ -133,14 +156,16 @@ export function CommissionsSection({
 						onClick={onFetchCommissionScenarios}
 						disabled={!hasSelectedProduct || isCommissionScenariosFetching}
 					>
-						{isCommissionScenariosFetching
-							? "Carregando..."
-							: hasLoadedCommissionForCurrentProduct
-								? "Atualizar comissão"
-								: <>
+						{isCommissionScenariosFetching ? (
+							"Carregando..."
+						) : hasLoadedCommissionForCurrentProduct ? (
+							"Atualizar comissão"
+						) : (
+							<>
 								<Search />
 								Buscar comissão
-								</>}
+							</>
+						)}
 					</Button>
 					<Button
 						type="button"
@@ -207,7 +232,10 @@ export function CommissionsSection({
 						}
 
 						return (
-							<div key={parentCommissionField.id} className="space-y-3 md:space-y-2">
+							<div
+								key={parentCommissionField.id}
+								className="space-y-3 md:space-y-2"
+							>
 								<SaleCommissionCard
 									index={group.parentIndex}
 									control={control}
@@ -225,7 +253,8 @@ export function CommissionsSection({
 										baseCommissionOptionsByIndex[group.parentIndex] ?? []
 									}
 									effectiveTotalPercentage={
-										effectivePercentagesByIndex[group.parentIndex]?.totalPercentage
+										effectivePercentagesByIndex[group.parentIndex]
+											?.totalPercentage
 									}
 									effectiveInstallmentPercentages={
 										effectivePercentagesByIndex[group.parentIndex]

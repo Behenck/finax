@@ -6,28 +6,35 @@ import { deleteCompany } from "./delete-company";
 import { getCompanies } from "./get-companies";
 
 function resolveCompaniesPermission(params: { method: string; routeUrl: string }) {
-  const { method, routeUrl } = params;
+	const { method, routeUrl } = params;
+	const salesReadPermissions = [
+		"sales.view",
+		"sales.create",
+		"sales.update",
+	] as const;
 
-  if (
-    routeUrl !== "/organizations/:slug/companies" &&
-    routeUrl !== "/organizations/:slug/companies/:companyId"
-  ) {
-    return null;
-  }
+	if (
+		routeUrl !== "/organizations/:slug/companies" &&
+		routeUrl !== "/organizations/:slug/companies/:companyId"
+	) {
+		return null;
+	}
 
-  if (method === "GET") return "registers.companies.view" as const;
-  if (method === "POST") return "registers.companies.create" as const;
-  if (method === "PUT") return "registers.companies.update" as const;
-  if (method === "DELETE") return "registers.companies.delete" as const;
+	if (method === "GET") {
+		return ["registers.companies.view", ...salesReadPermissions] as const;
+	}
+	if (method === "POST") return "registers.companies.create" as const;
+	if (method === "PUT") return "registers.companies.update" as const;
+	if (method === "DELETE") return "registers.companies.delete" as const;
 
-  return null;
+	return null;
 }
 
 export async function companyRoutes(app: FastifyInstance) {
-  registerModulePermissionGuard(app, resolveCompaniesPermission);
+	registerModulePermissionGuard(app, resolveCompaniesPermission);
 
-  await app.register(createCompany);
-  await app.register(updateCompany);
-  await app.register(deleteCompany);
-  await app.register(getCompanies);
+	await app.register(createCompany);
+	await app.register(updateCompany);
+	await app.register(deleteCompany);
+	await app.register(getCompanies);
 }

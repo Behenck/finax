@@ -128,6 +128,7 @@ function SaleDetailsPage() {
 	const ability = useAbility();
 	const canViewSale = ability.can("access", "sales.view");
 	const canUpdateSale = ability.can("access", "sales.update");
+	const canCreateSale = ability.can("access", "sales.create");
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSalePermission = ability.can("access", "sales.delete");
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -205,6 +206,8 @@ function SaleDetailsPage() {
 	}
 
 	const { sale } = data;
+	const canEditSale =
+		canUpdateSale || (canCreateSale && sale.status === "PENDING");
 	const saleProductPath =
 		productPathById.get(sale.product.id) ?? sale.product.name;
 	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
@@ -234,7 +237,7 @@ function SaleDetailsPage() {
 							Voltar
 						</Link>
 					</Button>
-					{canUpdateSale ? (
+					{canEditSale ? (
 						<Button variant="outline" className="w-full md:w-auto" asChild>
 							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
 								<Pencil className="size-4" />

@@ -1,3 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Palette } from "lucide-react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import type z from "zod";
+import { getLucideIcon } from "@/components/lucide-icon";
 import { Button } from "@/components/ui/button";
 import {
 	Field,
@@ -6,6 +12,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Select,
 	SelectContent,
@@ -13,23 +20,21 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-	categorySchema,
-	type CategoryFormData,
-} from "@/schemas/category-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getLucideIcon } from "@/components/lucide-icon";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import { Palette } from "lucide-react";
-import type z from "zod";
-import { cn } from "@/lib/utils";
-import type { Category, CategoryChild } from "@/schemas/types/category";
-import { formatTitleCase } from "@/utils/format-title-case";
-import { formatCategoryCode } from "@/utils/format-category-code";
-import { getOrganizationsSlugCategoriesQueryKey, usePostOrganizationsSlugCategories, usePutOrganizationsSlugCategoriesId, type CategoriesTypeEnumKey } from "@/http/generated";
 import { useApp } from "@/context/app-context";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+	type CategoriesTypeEnumKey,
+	getOrganizationsSlugCategoriesQueryKey,
+	usePostOrganizationsSlugCategories,
+	usePutOrganizationsSlugCategoriesId,
+} from "@/http/generated";
+import { cn } from "@/lib/utils";
+import {
+	type CategoryFormData,
+	categorySchema,
+} from "@/schemas/category-schema";
+import type { Category, CategoryChild } from "@/schemas/types/category";
+import { formatCategoryCode } from "@/utils/format-category-code";
+import { formatTitleCase } from "@/utils/format-title-case";
 
 export type CreateCategoryType = z.infer<typeof categorySchema>;
 
@@ -127,13 +132,15 @@ export function CategoryForm({
 	parentId,
 	parentColor,
 }: CreateCategoryFormProps) {
-	const { organization } = useApp()
-	const queryClient = useQueryClient()
+	const { organization } = useApp();
+	const queryClient = useQueryClient();
 
-	const { mutateAsync: createCategory } = usePostOrganizationsSlugCategories();
-	const { mutateAsync: updateCategory } = usePutOrganizationsSlugCategoriesId();
+	const { mutateAsync: createCategory, isPending: isCreatePending } =
+		usePostOrganizationsSlugCategories();
+	const { mutateAsync: updateCategory, isPending: isUpdatePending } =
+		usePutOrganizationsSlugCategoriesId();
 
-	const { handleSubmit, control } = useForm<CreateCategoryType>({
+	const { handleSubmit, control, formState } = useForm<CreateCategoryType>({
 		resolver: zodResolver(categorySchema as any),
 		defaultValues: {
 			name: initialData?.name ?? "",
@@ -148,42 +155,56 @@ export function CategoryForm({
 		control,
 		name: "color",
 	});
+	const categoryName =
+		useWatch({
+			control,
+			name: "name",
+		}) ?? "";
+	const isSubmitting =
+		formState.isSubmitting || isCreatePending || isUpdatePending;
+	const isNameDefined = categoryName.trim().length > 0;
 
 	async function onSubmit(data: CategoryFormData) {
 		if (mode === "edit" && initialData) {
-			await updateCategory({
-				slug: organization!.slug,
-				id: initialData.id,
-				data,
-			}, {
-				onSuccess: async () => {
-					await queryClient.invalidateQueries({
-						queryKey: getOrganizationsSlugCategoriesQueryKey({
-							slug: organization!.slug,
-						}),
-					})
+			await updateCategory(
+				{
+					slug: organization!.slug,
+					id: initialData.id,
+					data,
 				},
-			});
+				{
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: getOrganizationsSlugCategoriesQueryKey({
+								slug: organization!.slug,
+							}),
+						});
+					},
+				},
+			);
 		} else {
 			const { parentId: oldParentId, ...rest } = data;
 
 			const payload = {
 				...rest,
 				parentId,
-			}
+			};
 
-			await createCategory({
-				slug: organization!.slug,
-				data: payload
-			}, {
-				onSuccess: async () => {
-					await queryClient.invalidateQueries({
-						queryKey: getOrganizationsSlugCategoriesQueryKey({
-							slug: organization!.slug,
-						}),
-					})
+			await createCategory(
+				{
+					slug: organization!.slug,
+					data: payload,
 				},
-			});
+				{
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: getOrganizationsSlugCategoriesQueryKey({
+								slug: organization!.slug,
+							}),
+						});
+					},
+				},
+			);
 		}
 
 		onSuccess?.();
@@ -304,13 +325,13 @@ export function CategoryForm({
 												key={iconName}
 												type="button"
 												onClick={() => field.onChange(iconName)}
-													className={cn(
-														"flex items-center justify-center p-2 rounded-md border-none bg-muted/20 transition-colors",
-														isSelected
-															? "bg-primary/15 text-primary"
-															: "hover:bg-muted hover:text-foreground border-border",
-													)}
-												>
+												className={cn(
+													"flex items-center justify-center p-2 rounded-md border-none bg-muted/20 transition-colors",
+													isSelected
+														? "bg-primary/15 text-primary"
+														: "hover:bg-muted hover:text-foreground border-border",
+												)}
+											>
 												<Icon
 													className="size-5"
 													style={
@@ -346,12 +367,12 @@ export function CategoryForm({
 													key={color}
 													type="button"
 													onClick={() => field.onChange(color)}
-														className={cn(
-															"w-9 h-9 rounded-full border-2 transition-all",
-															isSelected
-																? "border-foreground scale-110 shadow-md"
-																: "border-border hover:border-border hover:scale-105",
-														)}
+													className={cn(
+														"w-9 h-9 rounded-full border-2 transition-all",
+														isSelected
+															? "border-foreground scale-110 shadow-md"
+															: "border-border hover:border-border hover:scale-105",
+													)}
 													style={{ backgroundColor: color }}
 													aria-label={`Cor ${color}`}
 												/>
@@ -393,7 +414,9 @@ export function CategoryForm({
 				</FieldGroup>
 			)}
 			<div className="flex justify-end gap-2">
-				<Button type="submit">Salvar</Button>
+				<Button type="submit" disabled={!isNameDefined || isSubmitting}>
+					Salvar
+				</Button>
 			</div>
 		</form>
 	);

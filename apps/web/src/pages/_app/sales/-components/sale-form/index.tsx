@@ -7,25 +7,25 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useApp } from "@/context/app-context";
-import { useCreateSale, useSaleFormOptions, useUpdateSale } from "@/hooks/sales";
+import {
+	useCreateSale,
+	useSaleFormOptions,
+	useUpdateSale,
+} from "@/hooks/sales";
+import { useAbility } from "@/permissions/access";
 import {
 	type SaleFormData,
 	type SaleFormInput,
 	saleSchema,
 } from "@/schemas/sale-schema";
-import {
-	type SaleResponsibleType,
-	type SaleStatus,
-} from "@/schemas/types/sales";
+import type { SaleResponsibleType, SaleStatus } from "@/schemas/types/sales";
 import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
 } from "@/utils/format-amount";
 import { roundSaleCommissionPercentage } from "../sale-commission-helpers";
 import { toSaleDynamicFieldPayloadValues } from "../sale-dynamic-fields";
-import {
-	QUICK_CUSTOMER_DEFAULT_VALUES,
-} from "./constants";
+import { QUICK_CUSTOMER_DEFAULT_VALUES } from "./constants";
 import { normalizeCustomerSearchValue } from "./customer-search";
 import { parseSaleDateFromApi } from "./date-utils";
 import { EditSelectedCustomerDialog } from "./dialogs/edit-selected-customer-dialog";
@@ -33,7 +33,10 @@ import { QuickCustomerDialog } from "./dialogs/quick-customer-dialog";
 import { useQuickCustomer } from "./hooks/use-quick-customer";
 import { useSaleCommissions } from "./hooks/use-sale-commissions";
 import { useSaleDynamicFields } from "./hooks/use-sale-dynamic-fields";
-import { resolveInitialCommissions, resolveInitialDynamicFields } from "./initial-values";
+import {
+	resolveInitialCommissions,
+	resolveInitialDynamicFields,
+} from "./initial-values";
 import {
 	type QuickCustomerData,
 	type QuickCustomerInput,
@@ -85,6 +88,15 @@ export function SaleForm({
 	initialSale,
 	prefilledCustomerId,
 }: SaleFormProps) {
+	const ability = useAbility();
+	const canCreateCommissions = ability.can(
+		"access",
+		"sales.commissions.create",
+	);
+	const canUpdateCommissions = ability.can(
+		"access",
+		"sales.commissions.update",
+	);
 	const { organization } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -104,9 +116,18 @@ export function SaleForm({
 		refetch,
 	} = useSaleFormOptions();
 
+	const canManageCommissionsOnCreate = canCreateCommissions;
+	const canManageCommissionsOnUpdate =
+		canCreateCommissions && canUpdateCommissions;
+	const canManageCommissionsByMode =
+		mode === "CREATE"
+			? canManageCommissionsOnCreate
+			: canManageCommissionsOnUpdate;
 	const isCommissionEditable =
-		mode === "CREATE" ||
-		(initialSale?.status as SaleStatus | undefined) === "PENDING";
+		mode === "CREATE"
+			? canManageCommissionsOnCreate
+			: canManageCommissionsOnUpdate &&
+				(initialSale?.status as SaleStatus | undefined) === "PENDING";
 	const isInstallmentsSectionVisible =
 		!isCommissionEditable && Boolean(initialSale);
 
@@ -116,8 +137,10 @@ export function SaleForm({
 	const [customerQueryInput, setCustomerQueryInput] = useState<string | null>(
 		null,
 	);
-	const [shouldValidateSelectedCustomerAfterRefresh, setShouldValidateSelectedCustomerAfterRefresh] =
-		useState(false);
+	const [
+		shouldValidateSelectedCustomerAfterRefresh,
+		setShouldValidateSelectedCustomerAfterRefresh,
+	] = useState(false);
 	const [isCreateCustomerDialogOpen, setIsCreateCustomerDialogOpen] =
 		useState(false);
 	const [isEditCustomerDialogOpen, setIsEditCustomerDialogOpen] =
@@ -243,27 +266,24 @@ export function SaleForm({
 		onProductChanged: resetOnProductChange,
 	});
 
-	const {
-		quickCreatedCustomer,
-		createQuickCustomer,
-		isCreatingQuickCustomer,
-	} = useQuickCustomer({
-		organizationSlug: organization?.slug,
-		queryClient,
-		setSaleCustomerId: (customerId) => {
-			setValue("customerId", customerId, {
-				shouldDirty: true,
-				shouldTouch: true,
-				shouldValidate: true,
-			});
-		},
-		onQuickCustomerCreated: () => {
-			setIsCustomerLocked(false);
-			setCustomerQueryInput(null);
-			quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
-			setIsCreateCustomerDialogOpen(false);
-		},
-	});
+	const { quickCreatedCustomer, createQuickCustomer, isCreatingQuickCustomer } =
+		useQuickCustomer({
+			organizationSlug: organization?.slug,
+			queryClient,
+			setSaleCustomerId: (customerId) => {
+				setValue("customerId", customerId, {
+					shouldDirty: true,
+					shouldTouch: true,
+					shouldValidate: true,
+				});
+			},
+			onQuickCustomerCreated: () => {
+				setIsCustomerLocked(false);
+				setCustomerQueryInput(null);
+				quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+				setIsCreateCustomerDialogOpen(false);
+			},
+		});
 
 	const hierarchicalProductsForSelect = useMemo(() => {
 		if (!initialSale?.productId) {
@@ -379,10 +399,7 @@ export function SaleForm({
 			pj: null,
 		};
 
-		return [
-			fallbackCustomer,
-			...customers,
-		];
+		return [fallbackCustomer, ...customers];
 	}, [customers, initialSale]);
 
 	const customersForSelect = useMemo(() => {
@@ -409,7 +426,8 @@ export function SaleForm({
 	const isQueryingCustomers = customerQueryInput !== null;
 
 	const selectedCompany = useMemo(
-		() => companiesForSelect.find((company) => company.id === selectedCompanyId),
+		() =>
+			companiesForSelect.find((company) => company.id === selectedCompanyId),
 		[companiesForSelect, selectedCompanyId],
 	);
 
@@ -455,11 +473,7 @@ export function SaleForm({
 		}
 
 		return mergeSelectOptionsById(sellerOptions, [fallbackResponsibleOption]);
-	}, [
-		fallbackResponsibleOption,
-		initialSale?.responsibleType,
-		sellerOptions,
-	]);
+	}, [fallbackResponsibleOption, initialSale?.responsibleType, sellerOptions]);
 
 	const partnerOptionsForSelect = useMemo(() => {
 		if (
@@ -470,11 +484,7 @@ export function SaleForm({
 		}
 
 		return mergeSelectOptionsById(partnerOptions, [fallbackResponsibleOption]);
-	}, [
-		fallbackResponsibleOption,
-		initialSale?.responsibleType,
-		partnerOptions,
-	]);
+	}, [fallbackResponsibleOption, initialSale?.responsibleType, partnerOptions]);
 
 	const commissionFallbackOptionsByType = useMemo(
 		() =>
@@ -850,6 +860,7 @@ export function SaleForm({
 			/>
 			<CommissionsSection
 				isCommissionEditable={isCommissionEditable}
+				isCommissionAccessDenied={!canManageCommissionsByMode}
 				isInstallmentsSectionVisible={isInstallmentsSectionVisible}
 				initialSaleId={initialSale?.id}
 				initialSaleStatus={

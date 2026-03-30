@@ -7,21 +7,22 @@ import { db } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
+import { ForbiddenError } from "../_errors/forbidden-error";
 import {
 	recalculatePersistedSaleCommissionsAmounts,
 	replaceSaleCommissions,
 	resolveSaleCommissionsData,
 } from "./sale-commissions";
 import {
-	createSaleDiffHistoryEvent,
-	loadSaleHistorySnapshot,
-} from "./sale-history";
-import {
 	loadProductSaleFieldSchema,
 	normalizeSaleDynamicFieldValues,
 	parseSaleDynamicFieldSchemaJson,
 	parseSaleDynamicFieldValuesJson,
 } from "./sale-dynamic-fields";
+import {
+	createSaleDiffHistoryEvent,
+	loadSaleHistorySnapshot,
+} from "./sale-history";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
 import { syncPendingSaleTransactionFromSale } from "./sale-transactions";
@@ -74,14 +75,52 @@ export async function updateSale(app: FastifyInstance) {
 					select: {
 						id: true,
 						status: true,
+						totalAmount: true,
 						productId: true,
 						dynamicFieldSchema: true,
 						dynamicFieldValues: true,
+						commissions: {
+							select: {
+								id: true,
+							},
+							take: 1,
+						},
 					},
 				});
 
 				if (!sale) {
 					throw new BadRequestError("Sale not found");
+				}
+
+				const [
+					canUpdateSale,
+					canCreateSale,
+					canCreateCommissions,
+					canUpdateCommissions,
+				] = await Promise.all([
+					request.hasPermission(slug, "sales.update"),
+					request.hasPermission(slug, "sales.create"),
+					request.hasPermission(slug, "sales.commissions.create"),
+					request.hasPermission(slug, "sales.commissions.update"),
+				]);
+				const canEditPendingSaleByCreatePermission =
+					canCreateSale && sale.status === "PENDING";
+				if (!canUpdateSale && !canEditPendingSaleByCreatePermission) {
+					throw new ForbiddenError(
+						`You don't have permission to access "sales.update".`,
+					);
+				}
+				const canManageCommissionsOnUpdate =
+					canCreateCommissions && canUpdateCommissions;
+
+				if (data.commissions !== undefined && !canManageCommissionsOnUpdate) {
+					if (!canCreateCommissions) {
+						await request.requirePermission(slug, "sales.commissions.create");
+					}
+
+					if (!canUpdateCommissions) {
+						await request.requirePermission(slug, "sales.commissions.update");
+					}
 				}
 
 				const beforeSnapshot = await loadSaleHistorySnapshot(
@@ -97,6 +136,20 @@ export async function updateSale(app: FastifyInstance) {
 				if (sale.status !== "PENDING" && data.commissions !== undefined) {
 					throw new BadRequestError(
 						"Cannot update commissions when sale status is not PENDING",
+					);
+				}
+
+				const hasPersistedCommissions = sale.commissions.length > 0;
+				const isChangingTotalAmount = data.totalAmount !== sale.totalAmount;
+				if (
+					!canManageCommissionsOnUpdate &&
+					data.commissions === undefined &&
+					hasPersistedCommissions &&
+					isChangingTotalAmount &&
+					sale.status !== "PENDING"
+				) {
+					throw new ForbiddenError(
+						`You don't have permission to access "sales.commissions.update".`,
 					);
 				}
 

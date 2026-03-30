@@ -271,7 +271,45 @@ describe("sales visibility by supervisor linked partner", () => {
 		expect(hiddenDetailResponse.body.message).toBe("Sale not found");
 	});
 
-	it("should keep sales update blocked by permission even when sale is linked", async () => {
+	it("should keep sales update blocked by permission when member lacks sales.update and sales.create", async () => {
+		const fixture = await createVisibilityFixture();
+
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: fixture.supervisor.member.id,
+			permissionKey: "sales.view.all",
+		});
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: fixture.supervisor.member.id,
+			permissionKey: "sales.update",
+		});
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: fixture.supervisor.member.id,
+			permissionKey: "sales.create",
+		});
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${fixture.visibleSale.id}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleDate: "2026-03-04",
+				customerId: fixture.visibleCustomer.id,
+				productId: fixture.product.id,
+				totalAmount: 130_000,
+				responsible: {
+					type: "PARTNER",
+					id: fixture.visiblePartner.id,
+				},
+				companyId: fixture.company.id,
+				notes: "Permission regression test",
+			});
+
+		expect(updateResponse.statusCode).toBe(403);
+	});
+
+	it("should allow sales update with sales.create fallback when sale status is pending", async () => {
 		const fixture = await createVisibilityFixture();
 
 		await denyPermission({
@@ -298,9 +336,54 @@ describe("sales visibility by supervisor linked partner", () => {
 					id: fixture.visiblePartner.id,
 				},
 				companyId: fixture.company.id,
-				notes: "Permission regression test",
+				notes: "Permission fallback test",
 			});
 
-		expect(updateResponse.statusCode).toBe(403);
+		expect(updateResponse.statusCode).toBe(204);
 	});
+
+	it.each([SaleStatus.APPROVED, SaleStatus.COMPLETED])(
+		"should return 403 on sales update with sales.create fallback when sale status is %s",
+		async (saleStatus) => {
+			const fixture = await createVisibilityFixture();
+
+			await denyPermission({
+				organizationId: fixture.org.id,
+				memberId: fixture.supervisor.member.id,
+				permissionKey: "sales.view.all",
+			});
+			await denyPermission({
+				organizationId: fixture.org.id,
+				memberId: fixture.supervisor.member.id,
+				permissionKey: "sales.update",
+			});
+
+			await prisma.sale.update({
+				where: {
+					id: fixture.visibleSale.id,
+				},
+				data: {
+					status: saleStatus,
+				},
+			});
+
+			const updateResponse = await request(app.server)
+				.put(`/organizations/${fixture.org.slug}/sales/${fixture.visibleSale.id}`)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					saleDate: "2026-03-04",
+					customerId: fixture.visibleCustomer.id,
+					productId: fixture.product.id,
+					totalAmount: 130_000,
+					responsible: {
+						type: "PARTNER",
+						id: fixture.visiblePartner.id,
+					},
+					companyId: fixture.company.id,
+					notes: "Permission fallback blocked by status",
+				});
+
+			expect(updateResponse.statusCode).toBe(403);
+		},
+	);
 });
