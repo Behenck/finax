@@ -376,7 +376,7 @@ describe("product commission scenarios", () => {
 		]);
 	});
 
-	it("should accept linked partner, seller and supervisor recipients without beneficiary id", async () => {
+	it("should accept linked company, partner, seller and supervisor recipients without beneficiary id", async () => {
 		const fixture = await createFixture();
 
 		const saveResponse = await request(app.server)
@@ -390,6 +390,11 @@ describe("product commission scenarios", () => {
 						name: "Venda padrão",
 						conditions: [],
 						commissions: [
+							{
+								recipientType: "COMPANY",
+								totalPercentage: 1,
+								installments: [{ installmentNumber: 1, percentage: 1 }],
+							},
 							{
 								recipientType: "PARTNER",
 								totalPercentage: 1,
@@ -420,30 +425,39 @@ describe("product commission scenarios", () => {
 
 		expect(getResponse.statusCode).toBe(200);
 		expect(getResponse.body.scenarios[0].commissions[0].recipientType).toBe(
-			"PARTNER",
+			"COMPANY",
 		);
 		expect(getResponse.body.scenarios[0].commissions[0].beneficiaryId).toBe(
 			undefined,
 		);
 		expect(getResponse.body.scenarios[0].commissions[0].beneficiaryLabel).toBe(
-			"Parceiro vinculado",
+			"Empresa vinculada",
 		);
 		expect(getResponse.body.scenarios[0].commissions[1].recipientType).toBe(
-			"SELLER",
+			"PARTNER",
 		);
 		expect(getResponse.body.scenarios[0].commissions[1].beneficiaryId).toBe(
 			undefined,
 		);
 		expect(getResponse.body.scenarios[0].commissions[1].beneficiaryLabel).toBe(
-			"Vendedor vinculado",
+			"Parceiro vinculado",
 		);
 		expect(getResponse.body.scenarios[0].commissions[2].recipientType).toBe(
-			"SUPERVISOR",
+			"SELLER",
 		);
 		expect(getResponse.body.scenarios[0].commissions[2].beneficiaryId).toBe(
 			undefined,
 		);
 		expect(getResponse.body.scenarios[0].commissions[2].beneficiaryLabel).toBe(
+			"Vendedor vinculado",
+		);
+		expect(getResponse.body.scenarios[0].commissions[3].recipientType).toBe(
+			"SUPERVISOR",
+		);
+		expect(getResponse.body.scenarios[0].commissions[3].beneficiaryId).toBe(
+			undefined,
+		);
+		expect(getResponse.body.scenarios[0].commissions[3].beneficiaryLabel).toBe(
 			"Supervisor vinculado",
 		);
 	});

@@ -17,6 +17,10 @@ import type {
 	QuickCustomerData,
 	QuickCustomerInput,
 } from "../quick-customer-schema";
+import {
+	normalizeQuickCustomerName,
+	resolveQuickCustomerDocumentMaskType,
+} from "../quick-customer-schema";
 
 interface QuickCustomerDialogProps {
 	open: boolean;
@@ -33,13 +37,23 @@ export function QuickCustomerDialog({
 	isPending,
 	onSubmit,
 }: QuickCustomerDialogProps) {
+	const nameField = form.register("name", {
+		onBlur: (event) => {
+			form.setValue("name", normalizeQuickCustomerName(event.target.value), {
+				shouldDirty: true,
+				shouldTouch: true,
+				shouldValidate: true,
+			});
+		},
+	});
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Cadastrar cliente rápido</DialogTitle>
 					<DialogDescription>
-						Cria um cliente pessoa física com dados base (nome, CPF e celular).
+						Cria um cliente com dados base (nome, CPF/CNPJ e celular).
 					</DialogDescription>
 				</DialogHeader>
 
@@ -47,7 +61,7 @@ export function QuickCustomerDialog({
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Nome completo *</FieldLabel>
-							<Input {...form.register("name")} />
+							<Input {...nameField} />
 							<FieldError error={form.formState.errors.name} />
 						</Field>
 					</FieldGroup>
@@ -55,19 +69,21 @@ export function QuickCustomerDialog({
 					<div className="grid gap-4 md:grid-cols-2">
 						<FieldGroup>
 							<Field className="gap-1">
-								<FieldLabel>CPF *</FieldLabel>
+								<FieldLabel>CPF/CNPJ *</FieldLabel>
 								<Controller
 									control={form.control}
 									name="documentNumber"
 									render={({ field, fieldState }) => (
 										<>
 											<Input
-												placeholder="000.000.000-00"
+												placeholder="000.000.000-00 ou 00.000.000/0000-00"
 												value={field.value ?? ""}
 												onChange={(event) =>
 													field.onChange(
 														formatDocument({
-															type: "CPF",
+															type: resolveQuickCustomerDocumentMaskType(
+																event.target.value,
+															),
 															value: event.target.value,
 														}),
 													)

@@ -2,9 +2,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { format, parse, parseISO } from "date-fns";
 import {
 	ArrowLeft,
+	ArrowRight,
 	CheckCircle2,
+	Eye,
 	FilePenLine,
-	Pencil,
 	PlusCircle,
 	Trash2,
 	WalletCards,
@@ -24,8 +25,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useApp } from "@/context/app-context";
-import { useDeleteSale, useSale, useSaleHistory } from "@/hooks/sales";
+import {
+	useDeleteSale,
+	useSale,
+	useSaleHistory,
+	useSaleNavigation,
+} from "@/hooks/sales";
 import { useGetOrganizationsSlugProducts } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
 import {
@@ -42,8 +53,10 @@ import {
 	toSaleHistoryTimelineEvent,
 } from "./-components/sale-history-presenter";
 import { formatSaleDynamicFieldValue } from "./-components/sale-dynamic-fields";
-import { SaleStatusBadge } from "./-components/sale-status-badge";
+import { SaleActionsDropdown } from "./-components/sale-actions-dropdown";
+import { SaleInstallmentsDrawer } from "./-components/sale-installments-drawer";
 import { SaleStatusAction } from "./-components/sale-status-action";
+import { SaleStatusBadge } from "./-components/sale-status-badge";
 
 type ProductTreeNode = {
 	id: string;
@@ -101,15 +114,26 @@ const SALE_HISTORY_ACTION_ICON_CLASS: Record<
 	SaleHistoryEvent["action"],
 	string
 > = {
-	CREATED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30",
+	CREATED:
+		"bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30",
 	UPDATED: "bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30",
 	STATUS_CHANGED: "bg-amber-500/10 text-amber-600 border-amber-500/30",
 	COMMISSION_INSTALLMENT_UPDATED:
 		"bg-indigo-500/10 text-indigo-600 border-indigo-500/30",
 	COMMISSION_INSTALLMENT_STATUS_UPDATED:
 		"bg-orange-500/10 text-orange-600 border-orange-500/30",
-	COMMISSION_INSTALLMENT_DELETED: "bg-rose-500/10 text-rose-600 border-rose-500/30",
+	COMMISSION_INSTALLMENT_DELETED:
+		"bg-rose-500/10 text-rose-600 border-rose-500/30",
 };
+
+type SaleInstallmentsDrawerState =
+	| {
+			mode: "ALL";
+	  }
+	| {
+			mode: "COMMISSION";
+			saleCommissionId: string;
+	  };
 
 function getActorInitials(name: string | null) {
 	if (!name) {
@@ -124,15 +148,43 @@ function getActorInitials(name: string | null) {
 		.join("");
 }
 
-function SaleDetailsPage() {
+export function SaleDetailsPage() {
 	const ability = useAbility();
 	const canViewSale = ability.can("access", "sales.view");
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canCreateSale = ability.can("access", "sales.create");
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSalePermission = ability.can("access", "sales.delete");
+	const canManageCommissions = ability.can(
+		"access",
+		"sales.commissions.manage",
+	);
+	const canChangeCommissionInstallmentStatus = ability.can(
+		"access",
+		"sales.commissions.installments.status.change",
+	);
+	const canUpdateCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.update",
+	);
+	const canDeleteCommissionInstallment = ability.can(
+		"access",
+		"sales.commissions.installments.delete",
+	);
+	const canAccessCommissionInstallments =
+		canManageCommissions ||
+		canChangeCommissionInstallmentStatus ||
+		canUpdateCommissionInstallment ||
+		canDeleteCommissionInstallment;
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [installmentsDrawerState, setInstallmentsDrawerState] =
+		useState<SaleInstallmentsDrawerState | null>(null);
 	const { saleId } = Route.useParams();
+	const {
+		previousSaleId,
+		nextSaleId,
+		isLoading: isSaleNavigationLoading,
+	} = useSaleNavigation(saleId);
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
 	const navigate = useNavigate();
@@ -187,6 +239,32 @@ function SaleDetailsPage() {
 		}
 	}
 
+	function handleGoToPreviousSale() {
+		if (!previousSaleId) {
+			return;
+		}
+
+		void navigate({
+			to: "/sales/$saleId",
+			params: {
+				saleId: previousSaleId,
+			},
+		});
+	}
+
+	function handleGoToNextSale() {
+		if (!nextSaleId) {
+			return;
+		}
+
+		void navigate({
+			to: "/sales/$saleId",
+			params: {
+				saleId: nextSaleId,
+			},
+		});
+	}
+
 	if (isLoading) {
 		return (
 			<Card className="p-6">
@@ -237,44 +315,53 @@ function SaleDetailsPage() {
 							Voltar
 						</Link>
 					</Button>
-					{canCreateSale ? (
-						<Button variant="outline" className="w-full md:w-auto" asChild>
-							<Link
-								to="/sales/create"
-								search={{
-									customerId: sale.customer.id,
-								}}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="w-full md:w-10"
+								aria-label="Venda anterior"
+								disabled={isSaleNavigationLoading || !previousSaleId}
+								onClick={handleGoToPreviousSale}
 							>
-								<PlusCircle className="size-4" />
-								Nova venda
-							</Link>
-						</Button>
-					) : null}
-					{canEditSale ? (
-						<Button variant="outline" className="w-full md:w-auto" asChild>
-							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
-								<Pencil className="size-4" />
-								Editar
-							</Link>
-						</Button>
-					) : null}
+								<ArrowLeft className="size-4" />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent side="top">Ir para venda anterior</TooltipContent>
+					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="w-full md:w-10"
+								aria-label="Venda próxima"
+								disabled={isSaleNavigationLoading || !nextSaleId}
+								onClick={handleGoToNextSale}
+							>
+								<ArrowRight className="size-4" />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent side="top">Ir para próxima venda</TooltipContent>
+					</Tooltip>
+					<SaleActionsDropdown
+						saleId={sale.id}
+						customerId={sale.customer.id}
+						canCreateSale={canCreateSale}
+						canEditSale={canEditSale}
+						canDeleteSale={canDeleteSalePermission}
+						isDeleting={isDeletingSale}
+						onRequestDelete={() => setDeleteDialogOpen(true)}
+					/>
 					{canChangeSaleStatus ? (
 						<SaleStatusAction
 							saleId={sale.id}
 							currentStatus={sale.status as SaleStatus}
 							buttonMode="modal-only"
 						/>
-					) : null}
-					{canDeleteSalePermission ? (
-						<Button
-							variant="destructive"
-							className="w-full md:w-auto"
-							onClick={() => setDeleteDialogOpen(true)}
-							disabled={isDeletingSale}
-						>
-							<Trash2 className="size-4" />
-							Excluir
-						</Button>
 					) : null}
 				</div>
 			</header>
@@ -353,9 +440,14 @@ function SaleDetailsPage() {
 						Esta venda não possui campos personalizados.
 					</p>
 				) : (
-					<div className="space-y-2 text-sm">
+					<div className="grid gap-2 text-sm md:grid-cols-2">
 						{dynamicFields.map((field) => (
-							<p key={field.fieldId}>
+							<p
+								key={field.fieldId}
+								className={
+									field.type === "RICH_TEXT" ? "md:col-span-2" : undefined
+								}
+							>
 								<strong>{field.label}:</strong>{" "}
 								{formatSaleDynamicFieldValue(field, field.value)}
 							</p>
@@ -365,7 +457,20 @@ function SaleDetailsPage() {
 			</Card>
 
 			<Card className="p-6 space-y-3">
-				<h2 className="font-semibold">Comissões da venda</h2>
+				<div className="flex items-center justify-between gap-2">
+					<h2 className="font-semibold">Comissões da venda</h2>
+					{canAccessCommissionInstallments && sale.commissions.length > 0 ? (
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={() => setInstallmentsDrawerState({ mode: "ALL" })}
+						>
+							<Eye className="size-4" />
+							Ver todas
+						</Button>
+					) : null}
+				</div>
 
 				{sale.commissions.length === 0 ? (
 					<p className="text-sm text-muted-foreground">
@@ -395,6 +500,23 @@ function SaleDetailsPage() {
 										<p className="text-muted-foreground text-xs">
 											{formatCurrencyBRL(commission.totalAmount / 100)}
 										</p>
+										{canAccessCommissionInstallments ? (
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												className="mt-2"
+												onClick={() =>
+													setInstallmentsDrawerState({
+														mode: "COMMISSION",
+														saleCommissionId: commission.id,
+													})
+												}
+											>
+												<Eye className="size-4" />
+												Ver
+											</Button>
+										) : null}
 									</div>
 								</div>
 								<p className="text-muted-foreground text-xs">
@@ -459,10 +581,12 @@ function SaleDetailsPage() {
 
 							return (
 								<article key={event.id} className="relative flex gap-3">
-									<div
-										className={`z-10 mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border ${SALE_HISTORY_ACTION_ICON_CLASS[event.action]}`}
-									>
-										<ActionIcon className="size-5" />
+									<div className="z-10 mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-background">
+										<div
+											className={`flex size-10 items-center justify-center rounded-full border ${SALE_HISTORY_ACTION_ICON_CLASS[event.action]}`}
+										>
+											<ActionIcon className="size-5" />
+										</div>
 									</div>
 
 									<div className="w-full rounded-lg border bg-muted/20 p-4">
@@ -512,6 +636,24 @@ function SaleDetailsPage() {
 					{sale.notes ?? "Sem observações."}
 				</p>
 			</Card>
+
+			{installmentsDrawerState ? (
+				<SaleInstallmentsDrawer
+					open={Boolean(installmentsDrawerState)}
+					onOpenChange={(open) => {
+						if (!open) {
+							setInstallmentsDrawerState(null);
+						}
+					}}
+					saleId={sale.id}
+					saleStatus={sale.status as SaleStatus}
+					saleCommissionId={
+						installmentsDrawerState.mode === "COMMISSION"
+							? installmentsDrawerState.saleCommissionId
+							: undefined
+					}
+				/>
+			) : null}
 
 			<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
 				<AlertDialogContent>

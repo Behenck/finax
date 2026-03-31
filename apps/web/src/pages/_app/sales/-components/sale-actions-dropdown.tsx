@@ -1,0 +1,124 @@
+import { Link } from "@tanstack/react-router";
+import {
+	ClipboardPlus,
+	Copy,
+	EllipsisVertical,
+	Pencil,
+	Plus,
+	Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface SaleActionsDropdownProps {
+	saleId: string;
+	customerId?: string;
+	canCreateSale: boolean;
+	canEditSale: boolean;
+	canDeleteSale: boolean;
+	isDeleting?: boolean;
+	onRequestDelete(): void;
+}
+
+export function SaleActionsDropdown({
+	saleId,
+	customerId,
+	canCreateSale,
+	canEditSale,
+	canDeleteSale,
+	isDeleting = false,
+	onRequestDelete,
+}: SaleActionsDropdownProps) {
+	const canRenderActions =
+		canCreateSale || canEditSale || canDeleteSale || isDeleting;
+
+	if (!canRenderActions) {
+		return null;
+	}
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button type="button" variant="outline" className="w-full md:w-auto">
+					<EllipsisVertical className="size-4" />
+					Ações
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-56">
+				<DropdownMenuLabel>Vendas</DropdownMenuLabel>
+				{canCreateSale ? (
+					<>
+						<DropdownMenuItem asChild>
+							{customerId ? (
+								<Link
+									to="/sales/create"
+									search={{
+										customerId,
+									}}
+								>
+									<Plus className="size-4" />
+									Criar venda
+								</Link>
+							) : (
+								<Link to="/sales/create">
+									<Plus className="size-4" />
+									Criar venda
+								</Link>
+							)}
+						</DropdownMenuItem>
+						<DropdownMenuItem asChild>
+							<Link to="/sales/quick-create">
+								<ClipboardPlus className="size-4" />
+								Venda em massa
+							</Link>
+						</DropdownMenuItem>
+					</>
+				) : null}
+				{canEditSale ? (
+					<DropdownMenuItem asChild>
+						<Link to="/sales/update/$saleId" params={{ saleId }}>
+							<Pencil className="size-4" />
+							Editar
+						</Link>
+					</DropdownMenuItem>
+				) : null}
+				{canCreateSale ? (
+					<DropdownMenuItem asChild>
+						<Link
+							to="/sales/create"
+							search={{
+								duplicateSaleId: saleId,
+							}}
+						>
+							<Copy className="size-4" />
+							Duplicar
+						</Link>
+					</DropdownMenuItem>
+				) : null}
+				{canDeleteSale ? (
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem
+							variant="destructive"
+							disabled={isDeleting}
+							onSelect={(event) => {
+								event.preventDefault();
+								onRequestDelete();
+							}}
+						>
+							<Trash2 className="size-4" />
+							{isDeleting ? "Excluindo..." : "Excluir"}
+						</DropdownMenuItem>
+					</>
+				) : null}
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}

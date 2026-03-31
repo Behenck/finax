@@ -8,7 +8,11 @@ import {
 	postOrganizationsSlugCustomers,
 } from "@/http/generated";
 import { formatDocument } from "@/utils/format-document";
-import type { QuickCustomerData } from "../quick-customer-schema";
+import {
+	normalizeQuickCustomerName,
+	resolveQuickCustomerDocumentType,
+	type QuickCustomerData,
+} from "../quick-customer-schema";
 import type { SaleCustomerOption } from "../types";
 import { useState } from "react";
 
@@ -28,87 +32,102 @@ export function useQuickCustomer({
 	const [quickCreatedCustomer, setQuickCreatedCustomer] =
 		useState<SaleCustomerOption | null>(null);
 
-	const { mutateAsync: createQuickCustomer, isPending: isCreatingQuickCustomer } =
-		useMutation({
-			mutationFn: async (data: QuickCustomerData) => {
-				if (!organizationSlug) {
-					throw new Error("Organização não encontrada");
-				}
+	const {
+		mutateAsync: createQuickCustomer,
+		isPending: isCreatingQuickCustomer,
+	} = useMutation({
+		mutationFn: async (data: QuickCustomerData) => {
+			if (!organizationSlug) {
+				throw new Error("Organização não encontrada");
+			}
 
-				return postOrganizationsSlugCustomers({
-					slug: organizationSlug,
-					data: {
-						name: data.name.trim(),
-						personType: "PF",
-						documentType: "CPF",
-						documentNumber: formatDocument({
-							type: "CPF",
-							value: data.documentNumber,
-						}),
-						phone: data.phone?.trim() ? data.phone.trim() : undefined,
-					},
-				});
-			},
-			onSuccess: async (response, submittedData) => {
-				if (!organizationSlug) {
-					return;
-				}
+			const documentType = resolveQuickCustomerDocumentType(
+				data.documentNumber,
+			);
+			if (!documentType) {
+				throw new Error("CPF/CNPJ inválido");
+			}
+			const personType = documentType === "CNPJ" ? "PJ" : "PF";
+			const normalizedName = normalizeQuickCustomerName(data.name.trim());
 
-				const customersQueryKey = getOrganizationsSlugCustomersQueryKey({
-					slug: organizationSlug,
-				});
-				const normalizedPhone = submittedData.phone?.trim()
-					? submittedData.phone.trim()
-					: null;
-				const normalizedDocumentNumber = formatDocument({
-					type: "CPF",
-					value: submittedData.documentNumber,
-				});
+			return postOrganizationsSlugCustomers({
+				slug: organizationSlug,
+				data: {
+					name: normalizedName,
+					personType,
+					documentType,
+					documentNumber: formatDocument({
+						type: documentType,
+						value: data.documentNumber,
+					}),
+					phone: data.phone?.trim() ? data.phone.trim() : undefined,
+				},
+			});
+		},
+		onSuccess: async (response, submittedData) => {
+			if (!organizationSlug) {
+				return;
+			}
 
-				const createdCustomer: SaleCustomerOption = {
-					id: response.customerId,
-					name: submittedData.name.trim(),
-					personType: "PF",
-					phone: normalizedPhone,
-					email: null,
-					documentType: "CPF",
-					documentNumber: normalizedDocumentNumber,
-					status: "ACTIVE",
-					responsible: null,
-					pf: null,
-					pj: null,
-				};
+			const customersQueryKey = getOrganizationsSlugCustomersQueryKey({
+				slug: organizationSlug,
+			});
+			const normalizedPhone = submittedData.phone?.trim()
+				? submittedData.phone.trim()
+				: null;
+			const normalizedName = normalizeQuickCustomerName(submittedData.name.trim());
+			const documentType =
+				resolveQuickCustomerDocumentType(submittedData.documentNumber) ?? "CPF";
+			const personType = documentType === "CNPJ" ? "PJ" : "PF";
+			const normalizedDocumentNumber = formatDocument({
+				type: documentType,
+				value: submittedData.documentNumber,
+			});
 
-				setQuickCreatedCustomer(createdCustomer);
-				setSaleCustomerId(response.customerId);
-				onQuickCustomerCreated();
+			const createdCustomer: SaleCustomerOption = {
+				id: response.customerId,
+				name: normalizedName,
+				personType,
+				phone: normalizedPhone,
+				email: null,
+				documentType,
+				documentNumber: normalizedDocumentNumber,
+				status: "ACTIVE",
+				responsible: null,
+				pf: null,
+				pj: null,
+			};
 
-				await queryClient.invalidateQueries({
-					queryKey: customersQueryKey,
-				});
-				await queryClient.refetchQueries({
-					queryKey: customersQueryKey,
-				});
+			setQuickCreatedCustomer(createdCustomer);
+			setSaleCustomerId(response.customerId);
+			onQuickCustomerCreated();
 
-				const refreshedCustomers =
-					queryClient.getQueryData<GetOrganizationsSlugCustomersQueryResponse>(
-						customersQueryKey,
-					)?.customers ?? [];
-				if (
-					refreshedCustomers.some(
-						(customer) => customer.id === response.customerId,
-					)
-				) {
-					setQuickCreatedCustomer(null);
-				}
+			await queryClient.invalidateQueries({
+				queryKey: customersQueryKey,
+			});
+			await queryClient.refetchQueries({
+				queryKey: customersQueryKey,
+			});
 
-				toast.success("Cliente cadastrado e selecionado.");
-			},
-			onError: (error) => {
-				const message = resolveErrorMessage(normalizeApiError(error));
-				toast.error(message);
-			},
-		});
+			const refreshedCustomers =
+				queryClient.getQueryData<GetOrganizationsSlugCustomersQueryResponse>(
+					customersQueryKey,
+				)?.customers ?? [];
+			if (
+				refreshedCustomers.some(
+					(customer) => customer.id === response.customerId,
+				)
+			) {
+				setQuickCreatedCustomer(null);
+			}
+
+			toast.success("Cliente cadastrado e selecionado.");
+		},
+		onError: (error) => {
+			const message = resolveErrorMessage(normalizeApiError(error));
+			toast.error(message);
+		},
+	});
 
 	return {
 		quickCreatedCustomer,

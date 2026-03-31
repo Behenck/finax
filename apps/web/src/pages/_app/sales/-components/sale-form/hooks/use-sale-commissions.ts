@@ -200,6 +200,17 @@ export function useSaleCommissions({
 			? mapScenarioCommissionsToPulledSaleCommissions(
 					matchedCommissionScenario.commissions,
 					getValues("saleDate") as Date | undefined,
+					{
+						companyId: selectedCompanyId || undefined,
+						sellerId:
+							selectedResponsibleType === "SELLER" && selectedResponsibleId
+								? selectedResponsibleId
+								: undefined,
+						partnerId:
+							selectedResponsibleType === "PARTNER" && selectedResponsibleId
+								? selectedResponsibleId
+								: undefined,
+					},
 				)
 			: [];
 
@@ -212,6 +223,9 @@ export function useSaleCommissions({
 		getValues,
 		hasRequestedCommissionForCurrentProduct,
 		matchedCommissionScenario,
+		selectedCompanyId,
+		selectedResponsibleId,
+		selectedResponsibleType,
 	]);
 
 	return {

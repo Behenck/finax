@@ -15,6 +15,32 @@ interface CalendarDateInputProps {
 	"aria-invalid"?: boolean;
 }
 
+function countDigitsBeforePosition(value: string, position: number) {
+	return value
+		.slice(0, Math.max(position, 0))
+		.replace(/\D/g, "")
+		.length;
+}
+
+function resolveCaretPositionByDigitCount(value: string, digitCount: number) {
+	if (digitCount <= 0) {
+		return 0;
+	}
+
+	let normalizedDigitCount = 0;
+	for (let index = 0; index < value.length; index += 1) {
+		if (/\d/.test(value[index])) {
+			normalizedDigitCount += 1;
+		}
+
+		if (normalizedDigitCount >= digitCount) {
+			return index + 1;
+		}
+	}
+
+	return value.length;
+}
+
 export function CalendarDateInput({
 	value,
 	onChange,
@@ -39,13 +65,38 @@ export function CalendarDateInput({
 			return;
 		}
 
-		input.value = selectedDate ? format(selectedDate, "dd/MM/yyyy") : "";
+		const formattedValue = selectedDate ? format(selectedDate, "dd/MM/yyyy") : "";
+		if (input.value === formattedValue) {
+			return;
+		}
+
+		input.value = formattedValue;
 	}, [selectedDate]);
 
-	function handleInputChange(rawValue: string) {
+	function handleInputChange(input: HTMLInputElement) {
+		const rawValue = input.value;
+		const selectionStart = input.selectionStart ?? rawValue.length;
+		const selectionEnd = input.selectionEnd ?? rawValue.length;
+		const digitsBeforeSelectionStart = countDigitsBeforePosition(
+			rawValue,
+			selectionStart,
+		);
+		const digitsBeforeSelectionEnd = countDigitsBeforePosition(
+			rawValue,
+			selectionEnd,
+		);
 		const maskedValue = applyDateInputMask(rawValue);
-		if (inputRef.current) {
-			inputRef.current.value = maskedValue;
+		if (input.value !== maskedValue) {
+			input.value = maskedValue;
+			const nextSelectionStart = resolveCaretPositionByDigitCount(
+				maskedValue,
+				digitsBeforeSelectionStart,
+			);
+			const nextSelectionEnd = resolveCaretPositionByDigitCount(
+				maskedValue,
+				digitsBeforeSelectionEnd,
+			);
+			input.setSelectionRange(nextSelectionStart, nextSelectionEnd);
 		}
 
 		if (maskedValue.length === 0) {
@@ -75,7 +126,7 @@ export function CalendarDateInput({
 				disabled={disabled}
 				aria-invalid={ariaInvalid}
 				className="pr-11"
-				onChange={(event) => handleInputChange(event.target.value)}
+				onChange={(event) => handleInputChange(event.target)}
 			/>
 
 			<Popover>

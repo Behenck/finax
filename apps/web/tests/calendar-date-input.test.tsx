@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 
@@ -81,5 +82,32 @@ describe("CalendarDateInput", () => {
 		await waitFor(() => {
 			expect(input).toHaveValue("25/12/2026");
 		});
+	});
+
+	it("should preserve caret position when editing first day digit", async () => {
+		function ControlledCalendarDateInput() {
+			const [value, setValue] = useState("2026-03-15");
+			return <CalendarDateInput value={value} onChange={setValue} />;
+		}
+
+		render(<ControlledCalendarDateInput />);
+
+		const input = screen.getByPlaceholderText("dd/mm/aaaa");
+		input.focus();
+		input.setSelectionRange(0, 1);
+
+		fireEvent.change(input, {
+			target: {
+				value: "05/03/2026",
+				selectionStart: 1,
+				selectionEnd: 1,
+			},
+		});
+
+		await waitFor(() => {
+			expect(input).toHaveValue("05/03/2026");
+		});
+		expect(input.selectionStart).toBe(1);
+		expect(input.selectionEnd).toBe(1);
 	});
 });

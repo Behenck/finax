@@ -49,9 +49,14 @@ export function DynamicFieldsSection({
 					Este produto não possui campos personalizados.
 				</p>
 			) : (
-				<div className="space-y-4">
+				<div className="grid gap-4 md:grid-cols-2">
 					{dynamicFieldSchema.map((dynamicField) => (
-						<FieldGroup key={dynamicField.fieldId}>
+						<FieldGroup
+							key={dynamicField.fieldId}
+							className={
+								dynamicField.type === "RICH_TEXT" ? "md:col-span-2" : undefined
+							}
+						>
 							<Field className="gap-2">
 								<FieldLabel>
 									{dynamicField.label}

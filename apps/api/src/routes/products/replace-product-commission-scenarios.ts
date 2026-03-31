@@ -522,6 +522,8 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 															recipientSupervisorId
 														? (supervisorNameById.get(recipientSupervisorId) ??
 															"Supervisor")
+														: recipientType === "COMPANY"
+															? "Empresa vinculada"
 														: recipientType === "PARTNER"
 															? "Parceiro vinculado"
 															: recipientType === "SELLER"

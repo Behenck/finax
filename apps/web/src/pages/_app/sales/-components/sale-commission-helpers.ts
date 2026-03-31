@@ -442,9 +442,23 @@ export function mapSaleCommissionToForm(
 export function mapScenarioCommissionsToPulledSaleCommissions(
 	commissions: ProductCommission[],
 	startDate?: Date,
+	saleContext?: {
+		companyId?: string;
+		sellerId?: string;
+		partnerId?: string;
+	},
 ) {
-	return commissions.map((commission) =>
-		mapSaleCommissionToForm({
+	return commissions.map((commission) => {
+		const resolvedBeneficiaryId =
+			commission.recipientType === "COMPANY"
+				? (commission.beneficiaryId ?? saleContext?.companyId)
+				: commission.recipientType === "SELLER"
+					? (commission.beneficiaryId ?? saleContext?.sellerId)
+					: commission.recipientType === "PARTNER"
+						? (commission.beneficiaryId ?? saleContext?.partnerId)
+						: commission.beneficiaryId;
+
+		return mapSaleCommissionToForm({
 			sourceType: "PULLED",
 			recipientType: commission.recipientType,
 			calculationBase:
@@ -455,7 +469,7 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 				commission.calculationBase === "COMMISSION"
 					? commission.baseCommissionIndex
 					: undefined,
-			beneficiaryId: commission.beneficiaryId,
+			beneficiaryId: resolvedBeneficiaryId,
 			beneficiaryLabel: commission.beneficiaryLabel,
 			startDate,
 			totalPercentage: commission.totalPercentage,
@@ -463,8 +477,8 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 				installmentNumber: installment.installmentNumber,
 				percentage: installment.percentage,
 			})),
-		}),
-	);
+		});
+	});
 }
 
 export function buildSaleCommissionBaseOptionsByIndex(

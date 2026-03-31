@@ -85,8 +85,7 @@ export const ProductCommissionSchema = z
 				});
 			}
 		} else if (
-			(commission.recipientType === "COMPANY" ||
-				commission.recipientType === "UNIT") &&
+			commission.recipientType === "UNIT" &&
 			!commission.beneficiaryId
 		) {
 			ctx.addIssue({

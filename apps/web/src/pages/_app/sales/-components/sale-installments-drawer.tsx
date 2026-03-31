@@ -13,6 +13,7 @@ interface SaleInstallmentsDrawerProps {
 	onOpenChange(open: boolean): void;
 	saleId: string;
 	saleStatus: SaleStatus;
+	saleCommissionId?: string;
 }
 
 export function SaleInstallmentsDrawer({
@@ -20,7 +21,10 @@ export function SaleInstallmentsDrawer({
 	onOpenChange,
 	saleId,
 	saleStatus,
+	saleCommissionId,
 }: SaleInstallmentsDrawerProps) {
+	const isCommissionScoped = Boolean(saleCommissionId);
+
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<SheetContent
@@ -28,9 +32,15 @@ export function SaleInstallmentsDrawer({
 				className="w-full sm:max-w-5xl overflow-y-auto"
 			>
 				<SheetHeader>
-					<SheetTitle>Parcelas de comissão</SheetTitle>
+					<SheetTitle>
+						{isCommissionScoped
+							? "Parcelas da comissão"
+							: "Parcelas de comissão"}
+					</SheetTitle>
 					<SheetDescription>
-						Acompanhe e opere as parcelas por comissionado.
+						{isCommissionScoped
+							? "Acompanhe e opere as parcelas da comissão selecionada."
+							: "Acompanhe e opere as parcelas por comissionado."}
 					</SheetDescription>
 				</SheetHeader>
 
@@ -38,6 +48,7 @@ export function SaleInstallmentsDrawer({
 					<SaleInstallmentsPanel
 						saleId={saleId}
 						saleStatus={saleStatus}
+						saleCommissionId={saleCommissionId}
 						enabled={open}
 					/>
 				</div>

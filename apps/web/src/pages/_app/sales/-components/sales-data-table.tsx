@@ -30,6 +30,7 @@ import {
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import {
 	type MouseEvent as ReactMouseEvent,
+	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -83,6 +84,7 @@ import {
 	useDeleteSalesBulk,
 	usePatchSalesStatusBulk,
 } from "@/hooks/sales";
+import { persistSaleNavigationContext } from "@/hooks/sales/use-sale-navigation";
 import {
 	type GetOrganizationsSlugSales200,
 	type GetOrganizationsSlugSalesSaleid200,
@@ -300,11 +302,13 @@ interface SalesDataTableProps {
 interface SaleTableRowActionsProps {
 	sale: SaleTableRow;
 	onOpenInstallments(sale: SaleTableRow): void;
+	onNavigateSale(): void;
 }
 
 function SaleTableRowActions({
 	sale,
 	onOpenInstallments,
+	onNavigateSale,
 }: SaleTableRowActionsProps) {
 	const ability = useAbility();
 	const canCreateSale = ability.can("access", "sales.create");
@@ -314,7 +318,10 @@ function SaleTableRowActions({
 	const canDuplicateSale = canCreateSale;
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSalePermission = ability.can("access", "sales.delete");
-	const canManageCommissions = ability.can("access", "sales.commissions.manage");
+	const canManageCommissions = ability.can(
+		"access",
+		"sales.commissions.manage",
+	);
 	const canChangeCommissionInstallmentStatus = ability.can(
 		"access",
 		"sales.commissions.installments.status.change",
@@ -358,14 +365,22 @@ function SaleTableRowActions({
 					<DropdownMenuLabel>Ações</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem asChild>
-						<Link to="/sales/$saleId" params={{ saleId: sale.id }}>
+						<Link
+							to="/sales/$saleId"
+							params={{ saleId: sale.id }}
+							onClick={onNavigateSale}
+						>
 							<Eye className="size-4" />
 							Ver detalhes
 						</Link>
 					</DropdownMenuItem>
 					{canEditSale ? (
 						<DropdownMenuItem asChild>
-							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
+							<Link
+								to="/sales/update/$saleId"
+								params={{ saleId: sale.id }}
+								onClick={onNavigateSale}
+							>
 								<Pencil className="size-4" />
 								Editar
 							</Link>
@@ -461,7 +476,10 @@ export function SalesDataTable({
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSale = ability.can("access", "sales.delete");
-	const canManageCommissions = ability.can("access", "sales.commissions.manage");
+	const canManageCommissions = ability.can(
+		"access",
+		"sales.commissions.manage",
+	);
 	const canChangeCommissionInstallmentStatus = ability.can(
 		"access",
 		"sales.commissions.installments.status.change",
@@ -490,6 +508,7 @@ export function SalesDataTable({
 	const [bulkStatus, setBulkStatus] = useState<SaleStatus | "">("");
 	const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 	const restoredFiltersRef = useRef(false);
+	const saleNavigationOrderedIdsRef = useRef<string[]>([]);
 	const saleCheckboxClickHandlerRef = useRef<
 		(saleId: string, event: ReactMouseEvent<HTMLElement>) => void
 	>(() => {});
@@ -520,6 +539,9 @@ export function SalesDataTable({
 	);
 	const [installmentsDrawerSale, setInstallmentsDrawerSale] =
 		useState<SaleTableRow | null>(null);
+	const handlePersistSaleNavigationContext = useCallback(() => {
+		persistSaleNavigationContext(saleNavigationOrderedIdsRef.current);
+	}, []);
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
@@ -615,7 +637,9 @@ export function SalesDataTable({
 			return [];
 		}
 
-		return companies.find((company) => company.id === companyIdFilter)?.units ?? [];
+		return (
+			companies.find((company) => company.id === companyIdFilter)?.units ?? []
+		);
 	}, [companies, companyIdFilter]);
 
 	useEffect(() => {
@@ -726,18 +750,13 @@ export function SalesDataTable({
 	const dynamicFieldLabelByColumnId = useMemo(
 		() =>
 			new Map(
-				dynamicFieldColumns.map((field) => [
-					field.columnId,
-					field.label,
-				]),
+				dynamicFieldColumns.map((field) => [field.columnId, field.label]),
 			),
 		[dynamicFieldColumns],
 	);
 	const dynamicFieldColumnsReady = useMemo(
 		() =>
-			dynamicFieldColumns.filter(
-				(field) => field.columnId in columnVisibility,
-			),
+			dynamicFieldColumns.filter((field) => field.columnId in columnVisibility),
 		[columnVisibility, dynamicFieldColumns],
 	);
 	const searchableVisibleDynamicContentBySaleId = useMemo(() => {
@@ -953,8 +972,8 @@ export function SalesDataTable({
 					</div>
 				),
 			},
-				{
-					accessorKey: "totalAmount",
+			{
+				accessorKey: "totalAmount",
 				header: ({ column }) => (
 					<Button
 						variant="ghost"
@@ -965,18 +984,18 @@ export function SalesDataTable({
 						<ArrowUpDown className="ml-2 size-4" />
 					</Button>
 				),
-					cell: ({ row }) => (
-						<span
-							className={
-								row.original.totalAmount === 0
-									? "font-semibold text-muted-foreground"
-									: "font-semibold"
-							}
-						>
-							{formatCurrencyBRL(row.original.totalAmount / 100)}
-						</span>
-					),
-				},
+				cell: ({ row }) => (
+					<span
+						className={
+							row.original.totalAmount === 0
+								? "font-semibold text-muted-foreground"
+								: "font-semibold"
+						}
+					>
+						{formatCurrencyBRL(row.original.totalAmount / 100)}
+					</span>
+				),
+			},
 			{
 				id: "commissionInstallments",
 				header: "Parcelas",
@@ -1026,7 +1045,9 @@ export function SalesDataTable({
 					const saleDetail = saleDetailsBySaleId.get(row.original.id);
 					if (!saleDetail) {
 						return (
-							<span className="text-muted-foreground text-sm">Carregando...</span>
+							<span className="text-muted-foreground text-sm">
+								Carregando...
+							</span>
 						);
 					}
 
@@ -1074,7 +1095,10 @@ export function SalesDataTable({
 									<span className="sr-only">Colunas</span>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
+							<DropdownMenuContent
+								align="end"
+								className="max-h-80 overflow-y-auto"
+							>
 								{(() => {
 									const hideableColumns = table
 										.getAllColumns()
@@ -1115,7 +1139,9 @@ export function SalesDataTable({
 													{defaultColumns.length > 0 ? (
 														<DropdownMenuSeparator />
 													) : null}
-													<DropdownMenuLabel>Campos personalizados</DropdownMenuLabel>
+													<DropdownMenuLabel>
+														Campos personalizados
+													</DropdownMenuLabel>
 													{dynamicColumns.map((column) => (
 														<DropdownMenuCheckboxItem
 															key={column.id}
@@ -1144,19 +1170,21 @@ export function SalesDataTable({
 						<SaleTableRowActions
 							sale={row.original}
 							onOpenInstallments={(sale) => setInstallmentsDrawerSale(sale)}
+							onNavigateSale={handlePersistSaleNavigationContext}
 						/>
 					</div>
 				),
 			},
 		],
 		[
-				canAccessCommissionInstallments,
-				canUseBulkActions,
-				dynamicFieldColumnsReady,
-				dynamicFieldLabelByColumnId,
-				saleDetailsBySaleId,
-			],
-		);
+			canAccessCommissionInstallments,
+			canUseBulkActions,
+			dynamicFieldColumnsReady,
+			dynamicFieldLabelByColumnId,
+			handlePersistSaleNavigationContext,
+			saleDetailsBySaleId,
+		],
+	);
 
 	const table = useReactTable({
 		data: tableData,
@@ -1179,13 +1207,14 @@ export function SalesDataTable({
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
+	saleNavigationOrderedIdsRef.current = table
+		.getSortedRowModel()
+		.rows.map((row) => row.original.id);
 	const desktopTableMinWidthPx = Math.max(
 		table.getVisibleLeafColumns().length * 120,
 		840,
 	);
-	const visibleSaleIds = table
-		.getRowModel()
-		.rows.map((row) => row.original.id);
+	const visibleSaleIds = table.getRowModel().rows.map((row) => row.original.id);
 
 	function toggleSaleSelectionById(saleId: string, checked: boolean) {
 		if (!canUseBulkActions) {
@@ -1523,8 +1552,8 @@ export function SalesDataTable({
 							<AlertDialogTitle>Excluir vendas em lote</AlertDialogTitle>
 							<AlertDialogDescription>
 								Tem certeza que deseja excluir{" "}
-								<strong>{selectedSaleIds.length}</strong> venda(s) selecionada(s)?
-								Esta ação não pode ser desfeita.
+								<strong>{selectedSaleIds.length}</strong> venda(s)
+								selecionada(s)? Esta ação não pode ser desfeita.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
@@ -1581,8 +1610,7 @@ export function SalesDataTable({
 							table.getRowModel().rows.map((row) => {
 								const sale = row.original;
 								const canEditSale =
-									canUpdateSale ||
-									(canCreateSale && sale.status === "PENDING");
+									canUpdateSale || (canCreateSale && sale.status === "PENDING");
 								const summary = sale.commissionInstallmentsSummary;
 
 								return (
@@ -1634,18 +1662,18 @@ export function SalesDataTable({
 											</div>
 										</div>
 
-											<div className="flex items-center justify-between gap-3">
-												<SaleStatusBadge status={sale.status as SaleStatus} />
-												<p
-													className={
-														sale.totalAmount === 0
-															? "text-sm font-semibold text-muted-foreground"
-															: "text-sm font-semibold"
-													}
-												>
-													{formatCurrencyBRL(sale.totalAmount / 100)}
-												</p>
-											</div>
+										<div className="flex items-center justify-between gap-3">
+											<SaleStatusBadge status={sale.status as SaleStatus} />
+											<p
+												className={
+													sale.totalAmount === 0
+														? "text-sm font-semibold text-muted-foreground"
+														: "text-sm font-semibold"
+												}
+											>
+												{formatCurrencyBRL(sale.totalAmount / 100)}
+											</p>
+										</div>
 
 										<div className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
 											Parcelas:{" "}
@@ -1656,7 +1684,11 @@ export function SalesDataTable({
 
 										<div className="grid grid-cols-2 gap-2">
 											<Button variant="outline" size="sm" asChild>
-												<Link to="/sales/$saleId" params={{ saleId: sale.id }}>
+												<Link
+													to="/sales/$saleId"
+													params={{ saleId: sale.id }}
+													onClick={handlePersistSaleNavigationContext}
+												>
 													<Eye className="size-4" />
 													Detalhes
 												</Link>
@@ -1666,6 +1698,7 @@ export function SalesDataTable({
 													<Link
 														to="/sales/update/$saleId"
 														params={{ saleId: sale.id }}
+														onClick={handlePersistSaleNavigationContext}
 													>
 														<Pencil className="size-4" />
 														Editar

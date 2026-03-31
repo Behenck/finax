@@ -114,12 +114,14 @@ function getTodayDateInputValue() {
 interface SaleInstallmentsPanelProps {
 	saleId: string;
 	saleStatus: SaleStatus;
+	saleCommissionId?: string;
 	enabled?: boolean;
 }
 
 export function SaleInstallmentsPanel({
 	saleId,
 	saleStatus,
+	saleCommissionId,
 	enabled = true,
 }: SaleInstallmentsPanelProps) {
 	const ability = useAbility();
@@ -165,27 +167,37 @@ export function SaleInstallmentsPanel({
 		() => data?.installments ?? [],
 		[data?.installments],
 	);
+	const filteredInstallments = useMemo(
+		() =>
+			saleCommissionId
+				? installments.filter(
+						(installment) => installment.saleCommissionId === saleCommissionId,
+					)
+				: installments,
+		[installments, saleCommissionId],
+	);
 	const summary = useMemo(
 		() => ({
-			total: installments.length,
-			paid: installments.filter((installment) => installment.status === "PAID")
-				.length,
-			pending: installments.filter(
+			total: filteredInstallments.length,
+			paid: filteredInstallments.filter(
+				(installment) => installment.status === "PAID",
+			).length,
+			pending: filteredInstallments.filter(
 				(installment) => installment.status === "PENDING",
 			).length,
-			canceled: installments.filter(
+			canceled: filteredInstallments.filter(
 				(installment) => installment.status === "CANCELED",
 			).length,
 		}),
-		[installments],
+		[filteredInstallments],
 	);
 
 	const visibleInstallments = useMemo(
 		() =>
 			showZeroValueInstallments
-				? installments
-				: installments.filter((installment) => installment.amount > 0),
-		[installments, showZeroValueInstallments],
+				? filteredInstallments
+				: filteredInstallments.filter((installment) => installment.amount > 0),
+		[filteredInstallments, showZeroValueInstallments],
 	);
 	const installmentsByBeneficiary = useMemo(() => {
 		const map = new Map<
@@ -375,9 +387,11 @@ export function SaleInstallmentsPanel({
 							Tentar novamente
 						</Button>
 					</div>
-				) : installments.length === 0 ? (
+				) : filteredInstallments.length === 0 ? (
 					<p className="text-sm text-muted-foreground">
-						Sem parcelas de comissão vinculadas nesta venda.
+						{saleCommissionId
+							? "Sem parcelas para esta comissão."
+							: "Sem parcelas de comissão vinculadas nesta venda."}
 					</p>
 				) : installmentsByBeneficiary.length === 0 ? (
 					<p className="text-sm text-muted-foreground">

@@ -135,11 +135,14 @@ export function ScenarioCommissionCard({
 						: [];
 	const autoLinkedBeneficiaryValue = "__AUTO_LINKED_BENEFICIARY__";
 	const isAutoLinkedRecipient =
+		recipientType === "COMPANY" ||
 		recipientType === "SELLER" ||
 		recipientType === "SUPERVISOR" ||
 		recipientType === "PARTNER";
 	const autoLinkedBeneficiaryLabel =
-		recipientType === "SELLER"
+		recipientType === "COMPANY"
+			? "Empresa vinculada"
+			: recipientType === "SELLER"
 			? "Vendedor vinculado"
 			: recipientType === "SUPERVISOR"
 				? "Supervisor vinculado"
