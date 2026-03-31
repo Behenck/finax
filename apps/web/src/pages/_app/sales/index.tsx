@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { PageHeader } from "@/components/page-header";
 import { useSales } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
@@ -45,20 +51,28 @@ function SalesPage() {
 							</Button>
 						) : null}
 						{canCreateSales ? (
-							<Button asChild variant="outline" className="w-full sm:w-auto">
-								<Link to="/sales/quick-create">
-									<ClipboardPlus className="size-4" />
-									Cadastro Rápido
-								</Link>
-							</Button>
-						) : null}
-						{canCreateSales ? (
-							<Button asChild className="w-full sm:w-auto">
-								<Link to="/sales/create">
-									<Plus className="size-4" />
-									Nova Venda
-								</Link>
-							</Button>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button className="w-full sm:w-auto">
+										<Plus className="size-4" />
+										Adicionar venda
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-52">
+									<DropdownMenuItem asChild>
+										<Link to="/sales/create">
+											<Plus className="size-4" />
+											Nova venda
+										</Link>
+									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link to="/sales/quick-create">
+											<ClipboardPlus className="size-4" />
+											Venda em massa
+										</Link>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						) : null}
 					</>
 				}

@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { useSale } from "@/hooks/sales";
 import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAbility } from "@/permissions/access";
+import { ArrowLeft, ClipboardPlus } from "lucide-react";
 import { SaleForm } from "./-components/sale-form";
 
 const createSaleSearchSchema = z.object({
@@ -56,6 +58,22 @@ function CreateSalePage() {
 					duplicateSaleId
 						? "Revise os dados e confirme o novo cadastro baseado na venda selecionada."
 						: "Preencha os dados para registrar uma nova venda."
+				}
+				actions={
+					<>
+						<Button asChild variant="outline" className="w-full sm:w-auto">
+							<Link to="/sales">
+								<ArrowLeft className="size-4" />
+								Voltar
+							</Link>
+						</Button>
+						<Button asChild variant="outline" className="w-full sm:w-auto">
+							<Link to="/sales/quick-create">
+								<ClipboardPlus className="size-4" />
+								Mudar para venda em massa
+							</Link>
+						</Button>
+					</>
 				}
 			/>
 

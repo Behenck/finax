@@ -19,7 +19,7 @@ import {
 	SunIcon,
 } from "lucide-react";
 import { AvatarDropDown } from "./avatar";
-import { openQuickActionsCommand } from "./quick-actions-command";
+import { openQuickActionsCommand } from "./quick-actions-command-events";
 
 type ThemeMode = "system" | "light" | "dark";
 

@@ -28,12 +28,14 @@ interface SaleStatusActionProps {
 	saleId: string;
 	currentStatus: SaleStatus;
 	trigger?: "button" | "dropdown-item";
+	buttonMode?: "default" | "modal-only";
 }
 
 export function SaleStatusAction({
 	saleId,
 	currentStatus,
 	trigger = "button",
+	buttonMode = "default",
 }: SaleStatusActionProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [nextStatus, setNextStatus] = useState<SaleStatus | "">("");
@@ -50,9 +52,9 @@ export function SaleStatusAction({
 
 	function openStatusModal(preferAlternativeStatus = false) {
 		const defaultStatus = preferAlternativeStatus
-			? (availableTransitions.find((status) => status !== "COMPLETED") ?? "")
-			: availableTransitions.includes("COMPLETED")
-				? "COMPLETED"
+			? (availableTransitions.find((status) => status !== "APPROVED") ?? "")
+			: availableTransitions.includes("APPROVED")
+				? "APPROVED"
 				: (availableTransitions[0] ?? "");
 
 		setNextStatus(defaultStatus);
@@ -130,38 +132,54 @@ export function SaleStatusAction({
 				</>
 			) : (
 				<div className="flex flex-col gap-2 sm:flex-row">
-					{canCompleteDirectly ? (
-						<Button
-							size="sm"
-							disabled={isPending}
-							onClick={() => {
-								void handleCompleteDirectly();
-							}}
-						>
-							<CheckCircle2 className="size-4" />
-							Concluir venda
-						</Button>
-					) : null}
-
-					{hasAlternativeTransitions ||
-					(!canCompleteDirectly && availableTransitions.length > 0) ? (
+					{buttonMode === "modal-only" ? (
 						<Button
 							variant="outline"
 							size="sm"
-							disabled={isPending}
-							onClick={() => openStatusModal(canCompleteDirectly)}
+							disabled={isPending || availableTransitions.length === 0}
+							onClick={() => openStatusModal(false)}
 						>
 							<RefreshCcw className="size-4" />
-							{canCompleteDirectly ? "Outros status" : "Alterar status"}
+							{availableTransitions.length === 0
+								? "Sem transição"
+								: "Mudar status"}
 						</Button>
-					) : null}
+					) : (
+						<>
+							{canCompleteDirectly ? (
+								<Button
+									size="sm"
+									disabled={isPending}
+									onClick={() => {
+										void handleCompleteDirectly();
+									}}
+								>
+									<CheckCircle2 className="size-4" />
+									Concluir venda
+								</Button>
+							) : null}
 
-					{availableTransitions.length === 0 ? (
-						<Button variant="outline" size="sm" disabled>
-							<RefreshCcw className="size-4" />
-							Sem transição
-						</Button>
-					) : null}
+							{hasAlternativeTransitions ||
+							(!canCompleteDirectly && availableTransitions.length > 0) ? (
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={isPending}
+									onClick={() => openStatusModal(canCompleteDirectly)}
+								>
+									<RefreshCcw className="size-4" />
+									{canCompleteDirectly ? "Outros status" : "Alterar status"}
+								</Button>
+							) : null}
+
+							{availableTransitions.length === 0 ? (
+								<Button variant="outline" size="sm" disabled>
+									<RefreshCcw className="size-4" />
+									Sem transição
+								</Button>
+							) : null}
+						</>
+					)}
 				</div>
 			)}
 

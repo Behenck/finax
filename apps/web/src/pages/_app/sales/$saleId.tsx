@@ -237,6 +237,19 @@ function SaleDetailsPage() {
 							Voltar
 						</Link>
 					</Button>
+					{canCreateSale ? (
+						<Button variant="outline" className="w-full md:w-auto" asChild>
+							<Link
+								to="/sales/create"
+								search={{
+									customerId: sale.customer.id,
+								}}
+							>
+								<PlusCircle className="size-4" />
+								Nova venda
+							</Link>
+						</Button>
+					) : null}
 					{canEditSale ? (
 						<Button variant="outline" className="w-full md:w-auto" asChild>
 							<Link to="/sales/update/$saleId" params={{ saleId: sale.id }}>
@@ -249,6 +262,7 @@ function SaleDetailsPage() {
 						<SaleStatusAction
 							saleId={sale.id}
 							currentStatus={sale.status as SaleStatus}
+							buttonMode="modal-only"
 						/>
 					) : null}
 					{canDeleteSalePermission ? (

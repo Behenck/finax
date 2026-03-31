@@ -1,10 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useAbility } from "@/permissions/access";
 import { Link } from "@tanstack/react-router";
 import {
 	ArrowLeftRight,
 	Building2,
+	ClipboardPlus,
+	type LucideIcon,
 	Package,
 	ShoppingCart,
 	UserRound,
@@ -13,16 +16,41 @@ import {
 	Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { QUICK_ACTIONS_COMMAND_OPEN_EVENT } from "./quick-actions-command-events";
 
-const QUICK_ACTIONS_COMMAND_OPEN_EVENT = "finax:quick-actions:open";
+type QuickAction = {
+	id: string;
+	label: string;
+	description: string;
+	to:
+		| "/sales/create"
+		| "/sales/quick-create"
+		| "/transactions/create"
+		| "/commissions"
+		| "/registers/products"
+		| "/registers/customers"
+		| "/registers/partners"
+		| "/registers/companies";
+	icon: LucideIcon;
+	requiredPermission?: string;
+};
 
-const QUICK_ACTIONS = [
+const QUICK_ACTIONS: QuickAction[] = [
 	{
 		id: "new-sale",
 		label: "Nova venda",
 		description: "Lançar venda",
 		to: "/sales/create",
 		icon: ShoppingCart,
+		requiredPermission: "sales.create",
+	},
+	{
+		id: "new-sales-batch",
+		label: "Venda em massa",
+		description: "Cadastrar vendas em lote",
+		to: "/sales/quick-create",
+		icon: ClipboardPlus,
+		requiredPermission: "sales.create",
 	},
 	{
 		id: "new-transaction",
@@ -66,17 +94,10 @@ const QUICK_ACTIONS = [
 		to: "/registers/companies",
 		icon: Building2,
 	},
-] as const;
-
-export function openQuickActionsCommand() {
-	if (typeof window === "undefined") {
-		return;
-	}
-
-	window.dispatchEvent(new Event(QUICK_ACTIONS_COMMAND_OPEN_EVENT));
-}
+];
 
 export function QuickActionsCommand() {
+	const ability = useAbility();
 	const [isOpen, setIsOpen] = useState(false);
 	const [query, setQuery] = useState("");
 
@@ -105,16 +126,26 @@ export function QuickActionsCommand() {
 		};
 	}, []);
 
+	const visibleActions = useMemo(
+		() =>
+			QUICK_ACTIONS.filter((action) =>
+				action.requiredPermission
+					? ability.can("access", action.requiredPermission)
+					: true,
+			),
+		[ability],
+	);
+
 	const filteredActions = useMemo(() => {
 		const term = query.trim().toLowerCase();
 		if (!term) {
-			return QUICK_ACTIONS;
+			return visibleActions;
 		}
 
-		return QUICK_ACTIONS.filter((action) =>
+		return visibleActions.filter((action) =>
 			`${action.label} ${action.description}`.toLowerCase().includes(term),
 		);
-	}, [query]);
+	}, [query, visibleActions]);
 
 	return (
 		<Dialog

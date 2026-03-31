@@ -33,6 +33,7 @@ import {
 	useGetOrganizationsSlugSellers,
 } from "@/http/generated";
 import { cn } from "@/lib/utils";
+import { useAbility } from "@/permissions/access";
 import { Link } from "@tanstack/react-router";
 import type { ComponentType } from "react";
 import {
@@ -50,7 +51,9 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 
 
 export function DashboardOperationalOverview() {
 	const { organization } = useApp();
+	const ability = useAbility();
 	const slug = organization?.slug ?? "";
+	const canCreateSales = ability.can("access", "sales.create");
 
 	const customersQuery = useGetOrganizationsSlugCustomers({ slug });
 	const sellersQuery = useGetOrganizationsSlugSellers({ slug });
@@ -451,10 +454,24 @@ export function DashboardOperationalOverview() {
 					<CardHeader>
 						<CardTitle>Atalhos</CardTitle>
 						<CardDescription>
-							Ações rápidas para manter os cadastros atualizados.
+							Ações rápidas para manter os cadastros e vendas atualizados.
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
+						{canCreateSales ? (
+							<QuickLink
+								to="/sales/create"
+								title="Nova venda"
+								description="Cadastrar uma nova venda individual"
+							/>
+						) : null}
+						{canCreateSales ? (
+							<QuickLink
+								to="/sales/quick-create"
+								title="Venda em massa"
+								description="Cadastrar várias vendas em lote"
+							/>
+						) : null}
 						<QuickLink
 							to="/registers/customers"
 							title="Clientes"
@@ -576,7 +593,13 @@ function QuickLink({
 	title,
 	description,
 }: {
-	to: "/registers/customers" | "/registers/sellers" | "/registers/partners" | "/settings/members";
+	to:
+		| "/sales/create"
+		| "/sales/quick-create"
+		| "/registers/customers"
+		| "/registers/sellers"
+		| "/registers/partners"
+		| "/settings/members";
 	title: string;
 	description: string;
 }) {
