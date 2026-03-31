@@ -1,4 +1,5 @@
 export * from "./use-create-sale";
+export * from "./use-create-sales-batch";
 export * from "./use-delete-sale";
 export * from "./use-delete-sale-commission-installment";
 export * from "./use-delete-sales-bulk";

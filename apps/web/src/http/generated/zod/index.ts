@@ -450,6 +450,12 @@ export {
   postOrganizationsSlugRecurrencesMutationResponseSchema,
 } from "./postOrganizationsSlugRecurrencesSchema.ts";
 export {
+  postOrganizationsSlugSalesBatchPathParamsSchema,
+  postOrganizationsSlugSalesBatch201Schema,
+  postOrganizationsSlugSalesBatchMutationRequestSchema,
+  postOrganizationsSlugSalesBatchMutationResponseSchema,
+} from "./postOrganizationsSlugSalesBatchSchema.ts";
+export {
   postOrganizationsSlugSalesImportsPathParamsSchema,
   postOrganizationsSlugSalesImports200Schema,
   postOrganizationsSlugSalesImportsMutationRequestSchema,

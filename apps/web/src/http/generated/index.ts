@@ -124,6 +124,7 @@ export type { PostOrganizationsSlugPartnersMutationKey } from "./hooks/usePostOr
 export type { PostOrganizationsSlugProductsMutationKey } from "./hooks/usePostOrganizationsSlugProducts.ts";
 export type { PostOrganizationsSlugRecurrencesMutationKey } from "./hooks/usePostOrganizationsSlugRecurrences.ts";
 export type { PostOrganizationsSlugSalesMutationKey } from "./hooks/usePostOrganizationsSlugSales.ts";
+export type { PostOrganizationsSlugSalesBatchMutationKey } from "./hooks/usePostOrganizationsSlugSalesBatch.ts";
 export type { PostOrganizationsSlugSalesImportsMutationKey } from "./hooks/usePostOrganizationsSlugSalesImports.ts";
 export type { PostOrganizationsSlugSalesImportTemplatesMutationKey } from "./hooks/usePostOrganizationsSlugSalesImportTemplates.ts";
 export type { PostOrganizationsSlugSellersMutationKey } from "./hooks/usePostOrganizationsSlugSellers.ts";
@@ -504,7 +505,7 @@ export type {
 export type {
   GetOrganizationsSlugSalesImportTemplatesPathParams,
   GetOrganizationsSlugSalesImportTemplatesQueryParams,
-  ResponsibleTypeEnum9Key,
+  ResponsibleTypeEnum10Key,
   GetOrganizationsSlugSalesImportTemplates200,
   GetOrganizationsSlugSalesImportTemplatesQueryResponse,
   GetOrganizationsSlugSalesImportTemplatesQuery,
@@ -512,7 +513,7 @@ export type {
 export type {
   GetOrganizationsSlugSalesSaleidPathParams,
   SaleStatusEnumKey,
-  ResponsibleTypeEnum8Key,
+  ResponsibleTypeEnum9Key,
   SaleResponsibleTypeEnumKey,
   DynamicFieldSchemaTypeEnumKey,
   CommissionsSourceTypeEnum3Key,
@@ -839,10 +840,18 @@ export type {
   PostOrganizationsSlugSalesMutation,
 } from "./models/PostOrganizationsSlugSales.ts";
 export type {
+  PostOrganizationsSlugSalesBatchPathParams,
+  PostOrganizationsSlugSalesBatch201,
+  ResponsibleTypeEnum7Key,
+  PostOrganizationsSlugSalesBatchMutationRequest,
+  PostOrganizationsSlugSalesBatchMutationResponse,
+  PostOrganizationsSlugSalesBatchMutation,
+} from "./models/PostOrganizationsSlugSalesBatch.ts";
+export type {
   PostOrganizationsSlugSalesImportsPathParams,
   PostOrganizationsSlugSalesImports200,
   PostOrganizationsSlugSalesImportsMutationRequestFileTypeEnumKey,
-  ResponsibleTypeEnum12Key,
+  ResponsibleTypeEnum13Key,
   PostOrganizationsSlugSalesImportsMutationRequest,
   PostOrganizationsSlugSalesImportsMutationResponse,
   PostOrganizationsSlugSalesImportsMutation,
@@ -850,7 +859,7 @@ export type {
 export type {
   PostOrganizationsSlugSalesImportTemplatesPathParams,
   PostOrganizationsSlugSalesImportTemplates201,
-  ResponsibleTypeEnum10Key,
+  ResponsibleTypeEnum11Key,
   PostOrganizationsSlugSalesImportTemplatesMutationRequest,
   PostOrganizationsSlugSalesImportTemplatesMutationResponse,
   PostOrganizationsSlugSalesImportTemplatesMutation,
@@ -1060,7 +1069,7 @@ export type {
   PutOrganizationsSlugSalesImportTemplatesTemplateidPathParams,
   PutOrganizationsSlugSalesImportTemplatesTemplateid204EnumKey,
   PutOrganizationsSlugSalesImportTemplatesTemplateid204,
-  ResponsibleTypeEnum11Key,
+  ResponsibleTypeEnum12Key,
   PutOrganizationsSlugSalesImportTemplatesTemplateidMutationRequest,
   PutOrganizationsSlugSalesImportTemplatesTemplateidMutationResponse,
   PutOrganizationsSlugSalesImportTemplatesTemplateidMutation,
@@ -1069,7 +1078,7 @@ export type {
   PutOrganizationsSlugSalesSaleidPathParams,
   PutOrganizationsSlugSalesSaleid204EnumKey,
   PutOrganizationsSlugSalesSaleid204,
-  ResponsibleTypeEnum7Key,
+  ResponsibleTypeEnum8Key,
   CommissionsSourceTypeEnum2Key,
   CommissionsRecipientTypeEnum4Key,
   CommissionsDirectionEnum2Key,
@@ -1534,6 +1543,9 @@ export { usePostOrganizationsSlugRecurrences } from "./hooks/usePostOrganization
 export { postOrganizationsSlugSalesMutationKey } from "./hooks/usePostOrganizationsSlugSales.ts";
 export { postOrganizationsSlugSalesMutationOptions } from "./hooks/usePostOrganizationsSlugSales.ts";
 export { usePostOrganizationsSlugSales } from "./hooks/usePostOrganizationsSlugSales.ts";
+export { postOrganizationsSlugSalesBatchMutationKey } from "./hooks/usePostOrganizationsSlugSalesBatch.ts";
+export { postOrganizationsSlugSalesBatchMutationOptions } from "./hooks/usePostOrganizationsSlugSalesBatch.ts";
+export { usePostOrganizationsSlugSalesBatch } from "./hooks/usePostOrganizationsSlugSalesBatch.ts";
 export { postOrganizationsSlugSalesImportsMutationKey } from "./hooks/usePostOrganizationsSlugSalesImports.ts";
 export { postOrganizationsSlugSalesImportsMutationOptions } from "./hooks/usePostOrganizationsSlugSalesImports.ts";
 export { usePostOrganizationsSlugSalesImports } from "./hooks/usePostOrganizationsSlugSalesImports.ts";
@@ -1690,9 +1702,9 @@ export { salesStatusEnum } from "./models/GetOrganizationsSlugSales.ts";
 export { responsibleTypeEnum6 } from "./models/GetOrganizationsSlugSales.ts";
 export { topResponsiblesTypeEnum } from "./models/GetOrganizationsSlugSalesDashboard.ts";
 export { commissionsReferenceEnum } from "./models/GetOrganizationsSlugSalesDashboard.ts";
-export { responsibleTypeEnum9 } from "./models/GetOrganizationsSlugSalesImportTemplates.ts";
+export { responsibleTypeEnum10 } from "./models/GetOrganizationsSlugSalesImportTemplates.ts";
 export { saleStatusEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
-export { responsibleTypeEnum8 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
+export { responsibleTypeEnum9 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { saleResponsibleTypeEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { dynamicFieldSchemaTypeEnum } from "./models/GetOrganizationsSlugSalesSaleid.ts";
 export { commissionsSourceTypeEnum3 } from "./models/GetOrganizationsSlugSalesSaleid.ts";
@@ -1757,9 +1769,10 @@ export { commissionsSourceTypeEnum } from "./models/PostOrganizationsSlugSales.t
 export { commissionsRecipientTypeEnum3 } from "./models/PostOrganizationsSlugSales.ts";
 export { commissionsDirectionEnum } from "./models/PostOrganizationsSlugSales.ts";
 export { commissionsCalculationBaseEnum3 } from "./models/PostOrganizationsSlugSales.ts";
+export { responsibleTypeEnum7 } from "./models/PostOrganizationsSlugSalesBatch.ts";
 export { postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum } from "./models/PostOrganizationsSlugSalesImports.ts";
-export { responsibleTypeEnum12 } from "./models/PostOrganizationsSlugSalesImports.ts";
-export { responsibleTypeEnum10 } from "./models/PostOrganizationsSlugSalesImportTemplates.ts";
+export { responsibleTypeEnum13 } from "./models/PostOrganizationsSlugSalesImports.ts";
+export { responsibleTypeEnum11 } from "./models/PostOrganizationsSlugSalesImportTemplates.ts";
 export { postOrganizationsSlugSellersMutationRequestDocumentTypeEnum } from "./models/PostOrganizationsSlugSellers.ts";
 export { postOrganizationsSlugSellersMutationRequestStatusEnum } from "./models/PostOrganizationsSlugSellers.ts";
 export { postOrganizationsSlugTransactions201Enum } from "./models/PostOrganizationsSlugTransactions.ts";
@@ -1809,9 +1822,9 @@ export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestStatusEnum } 
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestExecutionDayTypeEnum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestAdjustmentRuleEnum } from "./models/PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugSalesImportTemplatesTemplateid204Enum } from "./models/PutOrganizationsSlugSalesImportTemplatesTemplateid.ts";
-export { responsibleTypeEnum11 } from "./models/PutOrganizationsSlugSalesImportTemplatesTemplateid.ts";
+export { responsibleTypeEnum12 } from "./models/PutOrganizationsSlugSalesImportTemplatesTemplateid.ts";
 export { putOrganizationsSlugSalesSaleid204Enum } from "./models/PutOrganizationsSlugSalesSaleid.ts";
-export { responsibleTypeEnum7 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
+export { responsibleTypeEnum8 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { commissionsSourceTypeEnum2 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { commissionsRecipientTypeEnum4 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
 export { commissionsDirectionEnum2 } from "./models/PutOrganizationsSlugSalesSaleid.ts";
@@ -1853,6 +1866,7 @@ export { postOrganizationsSlugPartners } from "./postOrganizationsSlugPartners.t
 export { postOrganizationsSlugProducts } from "./postOrganizationsSlugProducts.ts";
 export { postOrganizationsSlugRecurrences } from "./postOrganizationsSlugRecurrences.ts";
 export { postOrganizationsSlugSales } from "./postOrganizationsSlugSales.ts";
+export { postOrganizationsSlugSalesBatch } from "./postOrganizationsSlugSalesBatch.ts";
 export { postOrganizationsSlugSalesImports } from "./postOrganizationsSlugSalesImports.ts";
 export { postOrganizationsSlugSalesImportTemplates } from "./postOrganizationsSlugSalesImportTemplates.ts";
 export { postOrganizationsSlugSellers } from "./postOrganizationsSlugSellers.ts";
@@ -2332,6 +2346,12 @@ export {
   postOrganizationsSlugRecurrencesMutationRequestSchema,
   postOrganizationsSlugRecurrencesMutationResponseSchema,
 } from "./zod/postOrganizationsSlugRecurrencesSchema.ts";
+export {
+  postOrganizationsSlugSalesBatchPathParamsSchema,
+  postOrganizationsSlugSalesBatch201Schema,
+  postOrganizationsSlugSalesBatchMutationRequestSchema,
+  postOrganizationsSlugSalesBatchMutationResponseSchema,
+} from "./zod/postOrganizationsSlugSalesBatchSchema.ts";
 export {
   postOrganizationsSlugSalesImportsPathParamsSchema,
   postOrganizationsSlugSalesImports200Schema,

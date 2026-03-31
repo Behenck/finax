@@ -27,6 +27,7 @@ import { Route as AuthPasswordResetRouteImport } from './pages/_auth/password/re
 import { Route as AuthPasswordRecoverRouteImport } from './pages/_auth/password/recover'
 import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/forgot'
 import { Route as AuthGoogleCallbackRouteImport } from './pages/_auth/google/callback'
+import { Route as AppSalesQuickCreateRouteImport } from './pages/_app/sales/quick-create'
 import { Route as AppSalesImportRouteImport } from './pages/_app/sales/import'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
@@ -139,6 +140,11 @@ const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
   id: '/google/callback',
   path: '/google/callback',
   getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AppSalesQuickCreateRoute = AppSalesQuickCreateRouteImport.update({
+  id: '/sales/quick-create',
+  path: '/sales/quick-create',
+  getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppSalesImportRoute = AppSalesImportRouteImport.update({
   id: '/sales/import',
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/import': typeof AppSalesImportRoute
+  '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/import': typeof AppSalesImportRoute
+  '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
   '/password/forgot': typeof AuthPasswordForgotRoute
   '/password/recover': typeof AuthPasswordRecoverRoute
@@ -373,6 +381,7 @@ export interface FileRoutesById {
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
   '/_app/sales/import': typeof AppSalesImportRoute
+  '/_app/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/_auth/google/callback': typeof AuthGoogleCallbackRoute
   '/_auth/password/forgot': typeof AuthPasswordForgotRoute
   '/_auth/password/recover': typeof AuthPasswordRecoverRoute
@@ -417,6 +426,7 @@ export interface FileRouteTypes {
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/import'
+    | '/sales/quick-create'
     | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
@@ -457,6 +467,7 @@ export interface FileRouteTypes {
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/import'
+    | '/sales/quick-create'
     | '/google/callback'
     | '/password/forgot'
     | '/password/recover'
@@ -501,6 +512,7 @@ export interface FileRouteTypes {
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
     | '/_app/sales/import'
+    | '/_app/sales/quick-create'
     | '/_auth/google/callback'
     | '/_auth/password/forgot'
     | '/_auth/password/recover'
@@ -667,6 +679,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/google/callback'
       preLoaderRoute: typeof AuthGoogleCallbackRouteImport
       parentRoute: typeof AuthLayoutRoute
+    }
+    '/_app/sales/quick-create': {
+      id: '/_app/sales/quick-create'
+      path: '/sales/quick-create'
+      fullPath: '/sales/quick-create'
+      preLoaderRoute: typeof AppSalesQuickCreateRouteImport
+      parentRoute: typeof AppLayoutRoute
     }
     '/_app/sales/import': {
       id: '/_app/sales/import'
@@ -859,6 +878,7 @@ interface AppLayoutRouteChildren {
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
   AppSalesImportRoute: typeof AppSalesImportRoute
+  AppSalesQuickCreateRoute: typeof AppSalesQuickCreateRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppCommissionsIndexRoute: typeof AppCommissionsIndexRoute
   AppProfileIndexRoute: typeof AppProfileIndexRoute
@@ -888,6 +908,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
   AppSalesImportRoute: AppSalesImportRoute,
+  AppSalesQuickCreateRoute: AppSalesQuickCreateRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppCommissionsIndexRoute: AppCommissionsIndexRoute,
   AppProfileIndexRoute: AppProfileIndexRoute,

@@ -45,6 +45,7 @@ export default defineConfig({
     }),
     pluginReactQuery({
       client: {
+        importPath: "@/lib/axios",
         dataReturnType: "data",
       },
       paramsType: "object",

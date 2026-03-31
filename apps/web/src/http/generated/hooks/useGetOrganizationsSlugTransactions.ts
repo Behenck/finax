@@ -3,16 +3,13 @@
  * Do not edit manually.
  */
 
-import fetch from "@kubb/plugin-client/clients/axios";
+import fetch from "@/lib/axios";
 import type {
   GetOrganizationsSlugTransactionsQueryResponse,
   GetOrganizationsSlugTransactionsPathParams,
   GetOrganizationsSlugTransactionsQueryParams,
 } from "../models/GetOrganizationsSlugTransactions.ts";
-import type {
-  RequestConfig,
-  ResponseErrorConfig,
-} from "@kubb/plugin-client/clients/axios";
+import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 import type {
   QueryKey,
   QueryClient,

@@ -35,6 +35,7 @@ export type PutOrganizationsSlugCategoriesIdMutationRequestTypeEnumKey =
 
 export type PutOrganizationsSlugCategoriesIdMutationRequest = {
   /**
+   * @minLength 1
    * @type string
    */
   name: string;

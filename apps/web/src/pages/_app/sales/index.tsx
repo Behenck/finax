@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { useSales } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileSpreadsheet, Plus } from "lucide-react";
+import { ClipboardPlus, FileSpreadsheet, Plus } from "lucide-react";
 import { SalesDataTable } from "./-components/sales-data-table";
 
 export const Route = createFileRoute("/_app/sales/")({
@@ -41,6 +41,14 @@ function SalesPage() {
 								<Link to="/sales/import">
 									<FileSpreadsheet className="size-4" />
 									Importar Planilha
+								</Link>
+							</Button>
+						) : null}
+						{canCreateSales ? (
+							<Button asChild variant="outline" className="w-full sm:w-auto">
+								<Link to="/sales/quick-create">
+									<ClipboardPlus className="size-4" />
+									Cadastro Rápido
 								</Link>
 							</Button>
 						) : null}

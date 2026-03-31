@@ -124,6 +124,7 @@ export type { PostOrganizationsSlugPartnersMutationKey } from "./usePostOrganiza
 export type { PostOrganizationsSlugProductsMutationKey } from "./usePostOrganizationsSlugProducts.ts";
 export type { PostOrganizationsSlugRecurrencesMutationKey } from "./usePostOrganizationsSlugRecurrences.ts";
 export type { PostOrganizationsSlugSalesMutationKey } from "./usePostOrganizationsSlugSales.ts";
+export type { PostOrganizationsSlugSalesBatchMutationKey } from "./usePostOrganizationsSlugSalesBatch.ts";
 export type { PostOrganizationsSlugSalesImportsMutationKey } from "./usePostOrganizationsSlugSalesImports.ts";
 export type { PostOrganizationsSlugSalesImportTemplatesMutationKey } from "./usePostOrganizationsSlugSalesImportTemplates.ts";
 export type { PostOrganizationsSlugSellersMutationKey } from "./usePostOrganizationsSlugSellers.ts";
@@ -530,6 +531,9 @@ export { usePostOrganizationsSlugRecurrences } from "./usePostOrganizationsSlugR
 export { postOrganizationsSlugSalesMutationKey } from "./usePostOrganizationsSlugSales.ts";
 export { postOrganizationsSlugSalesMutationOptions } from "./usePostOrganizationsSlugSales.ts";
 export { usePostOrganizationsSlugSales } from "./usePostOrganizationsSlugSales.ts";
+export { postOrganizationsSlugSalesBatchMutationKey } from "./usePostOrganizationsSlugSalesBatch.ts";
+export { postOrganizationsSlugSalesBatchMutationOptions } from "./usePostOrganizationsSlugSalesBatch.ts";
+export { usePostOrganizationsSlugSalesBatch } from "./usePostOrganizationsSlugSalesBatch.ts";
 export { postOrganizationsSlugSalesImportsMutationKey } from "./usePostOrganizationsSlugSalesImports.ts";
 export { postOrganizationsSlugSalesImportsMutationOptions } from "./usePostOrganizationsSlugSalesImports.ts";
 export { usePostOrganizationsSlugSalesImports } from "./usePostOrganizationsSlugSalesImports.ts";

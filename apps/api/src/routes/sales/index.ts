@@ -17,6 +17,7 @@ import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-in
 import { patchSaleStatus } from "./patch-sale-status";
 import { patchSalesDeleteBulk } from "./patch-sales-delete-bulk";
 import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
+import { postSalesBatch } from "./post-sales-batch";
 import { postSalesImport } from "./post-sales-import";
 import { updateSale } from "./update-sale";
 import { updateSaleImportTemplate } from "./update-sale-import-template";
@@ -81,6 +82,10 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 		return "sales.create" as const;
 	}
 
+	if (routeUrl === "/organizations/:slug/sales/batch" && method === "POST") {
+		return "sales.create" as const;
+	}
+
 	if (routeUrl === "/organizations/:slug/sales/:saleId" && method === "PUT") {
 		return ["sales.update", "sales.create"] as const;
 	}
@@ -105,6 +110,7 @@ export async function saleRoutes(app: FastifyInstance) {
 	registerModulePermissionGuard(app, resolveSalesPermission);
 
 	await app.register(createSale);
+	await app.register(postSalesBatch);
 	await app.register(updateSale);
 	await app.register(deleteSale);
 	await app.register(getOrganizationCommissionInstallments);

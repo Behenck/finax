@@ -157,6 +157,15 @@ describe("sales routes smoke", () => {
 		expect(response.statusCode).not.toBe(405);
 	});
 
+	it("POST /organizations/:slug/sales/batch should be registered", async () => {
+		const url = fillPathParams("/organizations/:slug/sales/batch");
+		const agent = request(app.server);
+		const response = await agent.post(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
 	it("GET /organizations/:slug/sales/import-templates should be registered", async () => {
 		const url = fillPathParams("/organizations/:slug/sales/import-templates");
 		const agent = request(app.server);

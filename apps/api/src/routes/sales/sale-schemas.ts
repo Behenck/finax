@@ -476,6 +476,36 @@ export const CreateSaleBodySchema = z
 		}
 	});
 
+export const CreateSaleBatchItemSchema = z
+	.object({
+		productId: z.uuid(),
+		saleDate: SaleDateInputSchema,
+		totalAmount: z.number().int().positive(),
+		dynamicFields: SaleDynamicFieldsInputSchema.optional(),
+	})
+	.strict();
+
+export const CREATE_SALE_BATCH_MAX_ITEMS = 50;
+
+export const CreateSaleBatchBodySchema = z
+	.object({
+		parentProductId: z.uuid(),
+		customerId: z.uuid(),
+		responsible: SaleResponsibleSchema,
+		companyId: z.uuid(),
+		unitId: z.uuid().optional(),
+		items: z
+			.array(CreateSaleBatchItemSchema)
+			.min(1)
+			.max(CREATE_SALE_BATCH_MAX_ITEMS),
+	})
+	.strict();
+
+export const CreateSaleBatchResponseSchema = z.object({
+	saleIds: z.array(z.uuid()),
+	createdCount: z.number().int().nonnegative(),
+});
+
 export const UpdateSaleBodySchema = CreateSaleBodySchema;
 
 export const PatchSaleStatusBodySchema = z
@@ -616,6 +646,8 @@ export type GetSalesDashboardQuery = z.infer<
 	typeof GetSalesDashboardQuerySchema
 >;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
+export type CreateSaleBatchItem = z.infer<typeof CreateSaleBatchItemSchema>;
+export type CreateSaleBatchBody = z.infer<typeof CreateSaleBatchBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
 export type SaleDynamicFieldSchemaItem = z.infer<
 	typeof SaleDynamicFieldSchemaItemSchema

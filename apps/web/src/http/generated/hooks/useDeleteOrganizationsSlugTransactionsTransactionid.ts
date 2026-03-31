@@ -3,15 +3,12 @@
  * Do not edit manually.
  */
 
-import fetch from "@kubb/plugin-client/clients/axios";
+import fetch from "@/lib/axios";
 import type {
   DeleteOrganizationsSlugTransactionsTransactionidMutationResponse,
   DeleteOrganizationsSlugTransactionsTransactionidPathParams,
 } from "../models/DeleteOrganizationsSlugTransactionsTransactionid.ts";
-import type {
-  RequestConfig,
-  ResponseErrorConfig,
-} from "@kubb/plugin-client/clients/axios";
+import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 import type {
   UseMutationOptions,
   UseMutationResult,

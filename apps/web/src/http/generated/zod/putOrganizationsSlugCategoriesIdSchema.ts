@@ -16,7 +16,7 @@ export const putOrganizationsSlugCategoriesIdPathParamsSchema = z.object({
 export const putOrganizationsSlugCategoriesId204Schema = z.enum([]).nullable();
 
 export const putOrganizationsSlugCategoriesIdMutationRequestSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1),
   code: z.optional(z.string()),
   type: z.enum(["INCOME", "OUTCOME"]),
   icon: z.string(),

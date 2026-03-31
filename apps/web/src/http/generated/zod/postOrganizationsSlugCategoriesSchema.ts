@@ -17,7 +17,7 @@ export const postOrganizationsSlugCategories201Schema = z.object({
 });
 
 export const postOrganizationsSlugCategoriesMutationRequestSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1),
   code: z.optional(z.string()),
   type: z.enum(["INCOME", "OUTCOME"]),
   icon: z.string(),

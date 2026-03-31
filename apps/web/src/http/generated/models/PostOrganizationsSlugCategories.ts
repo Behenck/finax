@@ -30,6 +30,7 @@ export type PostOrganizationsSlugCategoriesMutationRequestTypeEnumKey =
 
 export type PostOrganizationsSlugCategoriesMutationRequest = {
   /**
+   * @minLength 1
    * @type string
    */
   name: string;
