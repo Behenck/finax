@@ -36,7 +36,7 @@ function SalesPage() {
 	}
 
 	return (
-		<main className="w-full space-y-6">
+		<main className="w-full min-w-0 space-y-6">
 			<PageHeader
 				title="Gerenciar Vendas"
 				description="Acompanhe, edite e atualize o status das vendas da organização."

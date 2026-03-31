@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useQueries } from "@tanstack/react-query";
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
@@ -66,8 +67,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
-	Table,
 	TableBody,
 	TableCell,
 	TableHead,
@@ -84,10 +85,16 @@ import {
 } from "@/hooks/sales";
 import {
 	type GetOrganizationsSlugSales200,
+	type GetOrganizationsSlugSalesSaleid200,
+	getOrganizationsSlugSalesSaleidQueryOptions,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugProducts,
 } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
+import type {
+	SaleDynamicFieldOption,
+	SaleDynamicFieldType,
+} from "@/schemas/types/sale-dynamic-fields";
 import {
 	SALE_STATUS_LABEL,
 	SALE_STATUS_TRANSITIONS,
@@ -96,12 +103,22 @@ import {
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
+import { formatSaleDynamicFieldValue } from "./sale-dynamic-fields";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
 
 type SaleRow = GetOrganizationsSlugSales200["sales"][number];
+type SaleDetailRow = GetOrganizationsSlugSalesSaleid200["sale"];
 type SaleTableRow = SaleRow & {
 	productLabel: string;
+};
+
+type SaleDynamicFieldColumn = {
+	columnId: string;
+	label: string;
+	labelNormalized: string;
+	type: SaleDynamicFieldType;
+	options: SaleDynamicFieldOption[];
 };
 
 type ProductTreeNode = {
@@ -133,6 +150,59 @@ const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
 
 const SALES_FILTERS_STORAGE_KEY = "finax:sales:list:filters";
 const SALES_COLUMNS_STORAGE_KEY = "finax:sales:list:columns";
+const SALE_DYNAMIC_FIELD_COLUMN_PREFIX = "dynamicField:";
+
+function getSaleDynamicFieldColumnId(fieldId: string) {
+	return `${SALE_DYNAMIC_FIELD_COLUMN_PREFIX}${encodeURIComponent(fieldId)}`;
+}
+
+function normalizeDynamicFieldLabel(label: string) {
+	return label.trim().replace(/\s+/g, " ").toLocaleLowerCase("pt-BR");
+}
+
+function getColumnVisibilityLabel(
+	columnId: string,
+	dynamicFieldLabelByColumnId: Map<string, string>,
+) {
+	const dynamicFieldLabel = dynamicFieldLabelByColumnId.get(columnId);
+	if (dynamicFieldLabel) {
+		return dynamicFieldLabel;
+	}
+
+	if (columnId === "saleDate") {
+		return "data";
+	}
+
+	if (columnId === "customer") {
+		return "cliente";
+	}
+
+	if (columnId === "productLabel") {
+		return "produto";
+	}
+
+	if (columnId === "companyUnit") {
+		return "empresa/unidade";
+	}
+
+	if (columnId === "responsible") {
+		return "responsável";
+	}
+
+	if (columnId === "totalAmount") {
+		return "valor";
+	}
+
+	if (columnId === "commissionInstallments") {
+		return "parcelas";
+	}
+
+	if (columnId === "status") {
+		return "status";
+	}
+
+	return "atualização";
+}
 
 function readStorageJson<T>(key: string, fallback: T): T {
 	if (typeof window === "undefined") {
@@ -161,6 +231,20 @@ function formatDateTime(value: string) {
 	return format(parseISO(value), "dd/MM/yyyy HH:mm");
 }
 
+function splitProductHierarchyLabel(productLabel: string) {
+	const parts = productLabel
+		.split("->")
+		.map((part) => part.trim())
+		.filter(Boolean);
+	const parentLabel = parts[0] ?? productLabel;
+	const childPathLabel = parts.slice(1).join(" -> ");
+
+	return {
+		parentLabel,
+		childPathLabel,
+	};
+}
+
 function buildProductPathMap(
 	nodes: ProductTreeNode[],
 	parentPath: string[] = [],
@@ -177,33 +261,34 @@ function buildProductPathMap(
 	return map;
 }
 
-const salesGlobalFilterFn: FilterFn<SaleTableRow> = (
-	row,
-	_columnId,
-	filterValue,
-) => {
-	const term = String(filterValue ?? "")
-		.trim()
-		.toLowerCase();
-	if (!term) {
-		return true;
+function resolveSaleDynamicFieldDisplayValue(
+	saleDetail: SaleDetailRow,
+	field: SaleDynamicFieldColumn,
+) {
+	const matchedField = saleDetail.dynamicFieldSchema.find(
+		(schemaField) =>
+			normalizeDynamicFieldLabel(schemaField.label) === field.labelNormalized,
+	);
+	const fieldId = matchedField?.fieldId;
+	if (!fieldId) {
+		return "vazio";
 	}
 
-	const searchableContent = [
-		row.original.customer.name,
-		row.original.productLabel,
-		row.original.company.name,
-		row.original.unit?.name,
-		row.original.responsible?.name,
-		row.original.notes,
-		SALE_STATUS_LABEL[row.original.status as SaleStatus],
-	]
-		.filter(Boolean)
-		.join(" ")
-		.toLowerCase();
+	const value = Object.prototype.hasOwnProperty.call(
+		saleDetail.dynamicFieldValues,
+		fieldId,
+	)
+		? saleDetail.dynamicFieldValues[fieldId]
+		: null;
 
-	return searchableContent.includes(term);
-};
+	return formatSaleDynamicFieldValue(
+		{
+			type: (matchedField?.type as SaleDynamicFieldType) ?? field.type,
+			options: matchedField?.options ?? field.options,
+		},
+		value,
+	);
+}
 
 interface SalesDataTableProps {
 	sales: SaleRow[];
@@ -585,6 +670,156 @@ export function SalesDataTable({
 				}),
 		[filteredSales, productPathById],
 	);
+	const saleDetailQueries = useQueries({
+		queries: tableData.map((sale) => ({
+			...getOrganizationsSlugSalesSaleidQueryOptions({
+				slug,
+				saleId: sale.id,
+			}),
+			staleTime: 60_000,
+		})),
+	});
+	const saleDetailsBySaleId = useMemo(() => {
+		return new Map(
+			tableData.map((sale, index) => [
+				sale.id,
+				saleDetailQueries[index]?.data?.sale ?? null,
+			]),
+		);
+	}, [saleDetailQueries, tableData]);
+	const dynamicFieldColumns = useMemo<SaleDynamicFieldColumn[]>(() => {
+		const columnsByLabel = new Map<string, SaleDynamicFieldColumn>();
+
+		for (const query of saleDetailQueries) {
+			const saleDetail = query.data?.sale;
+			if (!saleDetail) {
+				continue;
+			}
+
+			for (const field of saleDetail.dynamicFieldSchema) {
+				const labelNormalized = normalizeDynamicFieldLabel(field.label);
+				if (!labelNormalized || columnsByLabel.has(labelNormalized)) {
+					continue;
+				}
+
+				columnsByLabel.set(labelNormalized, {
+					columnId: getSaleDynamicFieldColumnId(labelNormalized),
+					label: field.label,
+					labelNormalized,
+					type: field.type as SaleDynamicFieldType,
+					options: field.options,
+				});
+			}
+		}
+
+		return Array.from(columnsByLabel.values()).sort((columnA, columnB) =>
+			columnA.label.localeCompare(columnB.label, "pt-BR"),
+		);
+	}, [saleDetailQueries]);
+	const visibleDynamicFieldColumns = useMemo(
+		() =>
+			dynamicFieldColumns.filter(
+				(field) => columnVisibility[field.columnId] === true,
+			),
+		[columnVisibility, dynamicFieldColumns],
+	);
+	const dynamicFieldLabelByColumnId = useMemo(
+		() =>
+			new Map(
+				dynamicFieldColumns.map((field) => [
+					field.columnId,
+					field.label,
+				]),
+			),
+		[dynamicFieldColumns],
+	);
+	const dynamicFieldColumnsReady = useMemo(
+		() =>
+			dynamicFieldColumns.filter(
+				(field) => field.columnId in columnVisibility,
+			),
+		[columnVisibility, dynamicFieldColumns],
+	);
+	const searchableVisibleDynamicContentBySaleId = useMemo(() => {
+		const contentBySaleId = new Map<string, string>();
+		if (visibleDynamicFieldColumns.length === 0) {
+			return contentBySaleId;
+		}
+
+		for (const sale of tableData) {
+			const saleDetail = saleDetailsBySaleId.get(sale.id);
+			if (!saleDetail) {
+				continue;
+			}
+
+			const searchableContent = visibleDynamicFieldColumns
+				.map((field) => resolveSaleDynamicFieldDisplayValue(saleDetail, field))
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
+			if (!searchableContent) {
+				continue;
+			}
+
+			contentBySaleId.set(sale.id, searchableContent);
+		}
+
+		return contentBySaleId;
+	}, [saleDetailsBySaleId, tableData, visibleDynamicFieldColumns]);
+
+	useEffect(() => {
+		if (dynamicFieldColumns.length === 0) {
+			return;
+		}
+
+		setColumnVisibility((currentValue) => {
+			let hasChanges = false;
+			const nextValue: VisibilityState = { ...currentValue };
+
+			for (const field of dynamicFieldColumns) {
+				const columnId = field.columnId;
+				if (columnId in nextValue) {
+					continue;
+				}
+
+				nextValue[columnId] = false;
+				hasChanges = true;
+			}
+
+			return hasChanges ? nextValue : currentValue;
+		});
+	}, [dynamicFieldColumns]);
+	const salesGlobalFilterFn = useMemo<FilterFn<SaleTableRow>>(
+		() => (row, _columnId, filterValue) => {
+			const term = String(filterValue ?? "")
+				.trim()
+				.toLowerCase();
+			if (!term) {
+				return true;
+			}
+
+			const baseSearchableContent = [
+				row.original.customer.name,
+				row.original.productLabel,
+				row.original.company.name,
+				row.original.unit?.name,
+				row.original.responsible?.name,
+				row.original.notes,
+				SALE_STATUS_LABEL[row.original.status as SaleStatus],
+			]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+			const dynamicSearchableContent =
+				searchableVisibleDynamicContentBySaleId.get(row.original.id) ?? "";
+
+			return `${baseSearchableContent} ${dynamicSearchableContent}`.includes(
+				term,
+			);
+		},
+		[searchableVisibleDynamicContentBySaleId],
+	);
 
 	const columns = useMemo<ColumnDef<SaleTableRow>[]>(
 		() => [
@@ -646,20 +881,52 @@ export function SalesDataTable({
 			{
 				accessorKey: "customer",
 				header: "Cliente",
-				cell: ({ row }) => row.original.customer.name,
+				cell: ({ row }) => (
+					<span
+						className="block max-w-[220px] truncate"
+						title={row.original.customer.name}
+					>
+						{row.original.customer.name}
+					</span>
+				),
 			},
 			{
 				accessorKey: "productLabel",
 				header: "Produto",
-				cell: ({ row }) => row.original.productLabel,
+				cell: ({ row }) => {
+					const { parentLabel, childPathLabel } = splitProductHierarchyLabel(
+						row.original.productLabel,
+					);
+
+					return (
+						<div className="flex max-w-[220px] flex-col">
+							<span className="truncate font-medium" title={parentLabel}>
+								{parentLabel}
+							</span>
+							{childPathLabel ? (
+								<span
+									className="truncate text-xs text-muted-foreground"
+									title={childPathLabel}
+								>
+									{childPathLabel}
+								</span>
+							) : null}
+						</div>
+					);
+				},
 			},
 			{
 				id: "companyUnit",
 				header: "Empresa/Unidade",
 				cell: ({ row }) => (
-					<div className="flex flex-col">
-						<span>{row.original.company.name}</span>
-						<span className="text-xs text-muted-foreground">
+					<div className="flex max-w-[220px] flex-col">
+						<span className="truncate" title={row.original.company.name}>
+							{row.original.company.name}
+						</span>
+						<span
+							className="truncate text-xs text-muted-foreground"
+							title={row.original.unit?.name ?? "Sem unidade"}
+						>
 							{row.original.unit?.name ?? "Sem unidade"}
 						</span>
 					</div>
@@ -669,9 +936,14 @@ export function SalesDataTable({
 				accessorKey: "responsible",
 				header: "Responsável",
 				cell: ({ row }) => (
-					<div className="flex flex-col">
-						<span>{row.original.responsible?.name ?? "Não informado"}</span>
-						<span className="text-xs text-muted-foreground">
+					<div className="flex max-w-[180px] flex-col">
+						<span
+							className="truncate"
+							title={row.original.responsible?.name ?? "Não informado"}
+						>
+							{row.original.responsible?.name ?? "Não informado"}
+						</span>
+						<span className="truncate text-xs text-muted-foreground">
 							{row.original.responsible
 								? row.original.responsible.type === "SELLER"
 									? "Vendedor"
@@ -747,6 +1019,29 @@ export function SalesDataTable({
 					<SaleStatusBadge status={row.original.status as SaleStatus} />
 				),
 			},
+			...dynamicFieldColumnsReady.map<ColumnDef<SaleTableRow>>((field) => ({
+				id: field.columnId,
+				header: field.label,
+				cell: ({ row }) => {
+					const saleDetail = saleDetailsBySaleId.get(row.original.id);
+					if (!saleDetail) {
+						return (
+							<span className="text-muted-foreground text-sm">Carregando...</span>
+						);
+					}
+
+					const renderedValue = resolveSaleDynamicFieldDisplayValue(
+						saleDetail,
+						field,
+					);
+
+					return (
+						<span className="block max-w-[180px] truncate">
+							{renderedValue}
+						</span>
+					);
+				},
+			})),
 			{
 				accessorKey: "updatedAt",
 				header: ({ column }) => (
@@ -764,7 +1059,86 @@ export function SalesDataTable({
 			{
 				id: "actions",
 				enableHiding: false,
-				header: "",
+				header: ({ table }) => (
+					<div className="flex justify-end">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="ghost"
+									size="icon"
+									className="size-8"
+									aria-label="Mostrar ou ocultar colunas"
+									title="Colunas"
+								>
+									<ListFilter className="size-4" />
+									<span className="sr-only">Colunas</span>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
+								{(() => {
+									const hideableColumns = table
+										.getAllColumns()
+										.filter((column) => column.getCanHide());
+									const defaultColumns = hideableColumns.filter(
+										(column) =>
+											!column.id.startsWith(SALE_DYNAMIC_FIELD_COLUMN_PREFIX),
+									);
+									const dynamicColumns = hideableColumns.filter((column) =>
+										column.id.startsWith(SALE_DYNAMIC_FIELD_COLUMN_PREFIX),
+									);
+
+									return (
+										<>
+											{defaultColumns.length > 0 ? (
+												<>
+													<DropdownMenuLabel>Colunas padrão</DropdownMenuLabel>
+													{defaultColumns.map((column) => (
+														<DropdownMenuCheckboxItem
+															key={column.id}
+															className="capitalize"
+															checked={column.getIsVisible()}
+															onCheckedChange={(value) =>
+																column.toggleVisibility(Boolean(value))
+															}
+														>
+															{getColumnVisibilityLabel(
+																column.id,
+																dynamicFieldLabelByColumnId,
+															)}
+														</DropdownMenuCheckboxItem>
+													))}
+												</>
+											) : null}
+
+											{dynamicColumns.length > 0 ? (
+												<>
+													{defaultColumns.length > 0 ? (
+														<DropdownMenuSeparator />
+													) : null}
+													<DropdownMenuLabel>Campos personalizados</DropdownMenuLabel>
+													{dynamicColumns.map((column) => (
+														<DropdownMenuCheckboxItem
+															key={column.id}
+															checked={column.getIsVisible()}
+															onCheckedChange={(value) =>
+																column.toggleVisibility(Boolean(value))
+															}
+														>
+															{getColumnVisibilityLabel(
+																column.id,
+																dynamicFieldLabelByColumnId,
+															)}
+														</DropdownMenuCheckboxItem>
+													))}
+												</>
+											) : null}
+										</>
+									);
+								})()}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+				),
 				cell: ({ row }) => (
 					<div className="flex justify-end">
 						<SaleTableRowActions
@@ -775,8 +1149,14 @@ export function SalesDataTable({
 				),
 			},
 		],
-		[canAccessCommissionInstallments, canUseBulkActions],
-	);
+		[
+				canAccessCommissionInstallments,
+				canUseBulkActions,
+				dynamicFieldColumnsReady,
+				dynamicFieldLabelByColumnId,
+				saleDetailsBySaleId,
+			],
+		);
 
 	const table = useReactTable({
 		data: tableData,
@@ -799,6 +1179,10 @@ export function SalesDataTable({
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
+	const desktopTableMinWidthPx = Math.max(
+		table.getVisibleLeafColumns().length * 120,
+		840,
+	);
 	const visibleSaleIds = table
 		.getRowModel()
 		.rows.map((row) => row.original.id);
@@ -983,7 +1367,7 @@ export function SalesDataTable({
 	}
 
 	return (
-		<div className="space-y-4">
+		<div className="w-full min-w-0 space-y-4">
 			<FilterPanel className="lg:grid-cols-4 xl:grid-cols-6 xl:items-end">
 				<div className="space-y-1 xl:col-span-2">
 					<p className="text-xs text-muted-foreground">Busca</p>
@@ -1074,50 +1458,6 @@ export function SalesDataTable({
 				</Button>
 			</FilterPanel>
 
-			<div className="flex justify-end">
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="w-full sm:w-auto">
-							<ListFilter className="size-4" />
-							Colunas
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						{table
-							.getAllColumns()
-							.filter((column) => column.getCanHide())
-							.map((column) => (
-								<DropdownMenuCheckboxItem
-									key={column.id}
-									className="capitalize"
-									checked={column.getIsVisible()}
-									onCheckedChange={(value) =>
-										column.toggleVisibility(Boolean(value))
-									}
-								>
-									{column.id === "saleDate"
-										? "data"
-										: column.id === "customer"
-											? "cliente"
-											: column.id === "productLabel"
-												? "produto"
-												: column.id === "companyUnit"
-													? "empresa/unidade"
-													: column.id === "responsible"
-														? "responsável"
-														: column.id === "totalAmount"
-															? "valor"
-															: column.id === "commissionInstallments"
-																? "parcelas"
-																: column.id === "status"
-																	? "status"
-																	: "atualização"}
-								</DropdownMenuCheckboxItem>
-							))}
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
-
 			{selectedSaleIds.length > 0 && canUseBulkActions ? (
 				<div className="flex flex-col gap-3 rounded-md border border-blue-500/30 bg-blue-500/10 p-4 md:flex-row md:items-center md:justify-between">
 					<p className="text-sm text-blue-700 dark:text-blue-300">
@@ -1204,6 +1544,7 @@ export function SalesDataTable({
 			) : null}
 
 			<ResponsiveDataView
+				desktopClassName="w-full min-w-0 max-w-full"
 				mobile={
 					<div className="space-y-3">
 						{canUseBulkActions ? (
@@ -1370,50 +1711,60 @@ export function SalesDataTable({
 					</div>
 				}
 				desktop={
-					<div className="overflow-x-auto rounded-md border bg-card">
-						<Table>
-							<TableHeader>
-								{table.getHeaderGroups().map((headerGroup) => (
-									<TableRow key={headerGroup.id}>
-										{headerGroup.headers.map((header) => (
-											<TableHead key={header.id}>
-												{header.isPlaceholder
-													? null
-													: flexRender(
-															header.column.columnDef.header,
-															header.getContext(),
-														)}
-											</TableHead>
-										))}
-									</TableRow>
-								))}
-							</TableHeader>
-							<TableBody>
-								{table.getRowModel().rows.length > 0 ? (
-									table.getRowModel().rows.map((row) => (
-										<TableRow key={row.id}>
-											{row.getVisibleCells().map((cell) => (
-												<TableCell key={cell.id}>
-													{flexRender(
-														cell.column.columnDef.cell,
-														cell.getContext(),
-													)}
-												</TableCell>
+					<div className="w-full max-w-full overflow-hidden rounded-md border bg-card">
+						<ScrollArea
+							type="always"
+							scrollHideDelay={0}
+							className="w-full max-w-full"
+						>
+							<table
+								className="caption-bottom text-sm"
+								style={{ width: `max(100%, ${desktopTableMinWidthPx}px)` }}
+							>
+								<TableHeader>
+									{table.getHeaderGroups().map((headerGroup) => (
+										<TableRow key={headerGroup.id}>
+											{headerGroup.headers.map((header) => (
+												<TableHead key={header.id}>
+													{header.isPlaceholder
+														? null
+														: flexRender(
+																header.column.columnDef.header,
+																header.getContext(),
+															)}
+												</TableHead>
 											))}
 										</TableRow>
-									))
-								) : (
-									<TableRow>
-										<TableCell
-											colSpan={columns.length}
-											className="h-24 text-center"
-										>
-											Nenhum resultado encontrado para os filtros aplicados.
-										</TableCell>
-									</TableRow>
-								)}
-							</TableBody>
-						</Table>
+									))}
+								</TableHeader>
+								<TableBody>
+									{table.getRowModel().rows.length > 0 ? (
+										table.getRowModel().rows.map((row) => (
+											<TableRow key={row.id}>
+												{row.getVisibleCells().map((cell) => (
+													<TableCell key={cell.id}>
+														{flexRender(
+															cell.column.columnDef.cell,
+															cell.getContext(),
+														)}
+													</TableCell>
+												))}
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell
+												colSpan={columns.length}
+												className="h-24 text-center"
+											>
+												Nenhum resultado encontrado para os filtros aplicados.
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</table>
+							<ScrollBar orientation="horizontal" />
+						</ScrollArea>
 					</div>
 				}
 			/>

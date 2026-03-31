@@ -26,6 +26,7 @@ import {
 	usePostOrganizationsSlugEmployees,
 	usePutOrganizationsSlugEmployeesEmployeeid,
 } from "@/http/generated";
+import { lookupZipCode } from "@/lib/zip-code-lookup";
 import {
 	employeeSchema,
 	type EmployeeFormData,
@@ -53,16 +54,6 @@ const PIX_KEY_TYPE_OPTIONS = [
 	{ value: "PHONE", label: "Telefone" },
 	{ value: "RANDOM", label: "Chave aleatória" },
 ] as const;
-
-type ViaCepResponse = {
-	cep?: string;
-	logradouro?: string;
-	complemento?: string;
-	bairro?: string;
-	localidade?: string;
-	uf?: string;
-	erro?: boolean;
-};
 
 function formatZipCode(value: string) {
 	const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -148,22 +139,20 @@ export function EmployeeForm({
 
 		const resolveZipCode = async () => {
 			try {
-				const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`, {
+				const zipCodeData = await lookupZipCode(digits, {
 					signal: abortController.signal,
 				});
+				if (!zipCodeData) {
+					return;
+				}
 
-				if (!response.ok) return;
-
-				const data = (await response.json()) as ViaCepResponse;
-				if (data.erro) return;
-
-				setValue("street", data.logradouro ?? "");
-				setValue("neighborhood", data.bairro ?? "");
-				setValue("city", data.localidade ?? "");
-				setValue("state", data.uf ?? "");
-				setValue("country", "BR");
-				if (data.complemento) {
-					setValue("complement", data.complemento);
+				setValue("street", zipCodeData.street);
+				setValue("neighborhood", zipCodeData.neighborhood);
+				setValue("city", zipCodeData.city);
+				setValue("state", zipCodeData.state);
+				setValue("country", zipCodeData.country);
+				if (zipCodeData.complement) {
+					setValue("complement", zipCodeData.complement);
 				}
 			} catch (error) {
 				if (error instanceof DOMException && error.name === "AbortError") {
