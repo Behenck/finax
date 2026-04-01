@@ -311,6 +311,10 @@ function SaleTableRowActions({
 	onNavigateSale,
 }: SaleTableRowActionsProps) {
 	const ability = useAbility();
+	const canViewAllCommissions = ability.can(
+		"access",
+		"sales.commissions.view.all",
+	);
 	const canCreateSale = ability.can("access", "sales.create");
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canEditSale =
@@ -335,10 +339,11 @@ function SaleTableRowActions({
 		"sales.commissions.installments.delete",
 	);
 	const canAccessCommissionInstallments =
-		canManageCommissions ||
-		canChangeCommissionInstallmentStatus ||
-		canUpdateCommissionInstallment ||
-		canDeleteCommissionInstallment;
+		canViewAllCommissions &&
+		(canManageCommissions ||
+			canChangeCommissionInstallmentStatus ||
+			canUpdateCommissionInstallment ||
+			canDeleteCommissionInstallment);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { mutateAsync: deleteSale, isPending } = useDeleteSale();
 
@@ -472,6 +477,10 @@ export function SalesDataTable({
 	onRetry,
 }: SalesDataTableProps) {
 	const ability = useAbility();
+	const canViewAllCommissions = ability.can(
+		"access",
+		"sales.commissions.view.all",
+	);
 	const canCreateSale = ability.can("access", "sales.create");
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canChangeSaleStatus = ability.can("access", "sales.status.change");
@@ -493,10 +502,11 @@ export function SalesDataTable({
 		"sales.commissions.installments.delete",
 	);
 	const canAccessCommissionInstallments =
-		canManageCommissions ||
-		canChangeCommissionInstallmentStatus ||
-		canUpdateCommissionInstallment ||
-		canDeleteCommissionInstallment;
+		canViewAllCommissions &&
+		(canManageCommissions ||
+			canChangeCommissionInstallmentStatus ||
+			canUpdateCommissionInstallment ||
+			canDeleteCommissionInstallment);
 	const canUseBulkActions = canChangeSaleStatus || canDeleteSale;
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
@@ -553,6 +563,23 @@ export function SalesDataTable({
 			JSON.stringify(columnVisibility),
 		);
 	}, [columnVisibility]);
+
+	useEffect(() => {
+		if (!canViewAllCommissions) {
+			return;
+		}
+
+		setColumnVisibility((currentValue) => {
+			if ("commissionInstallments" in currentValue) {
+				return currentValue;
+			}
+
+			return {
+				...currentValue,
+				commissionInstallments: true,
+			};
+		});
+	}, [canViewAllCommissions]);
 
 	useEffect(() => {
 		if (restoredFiltersRef.current) {
@@ -996,34 +1023,39 @@ export function SalesDataTable({
 					</span>
 				),
 			},
-			{
-				id: "commissionInstallments",
-				header: "Parcelas",
-				cell: ({ row }) => {
-					const summary = row.original.commissionInstallmentsSummary;
-					if (!canAccessCommissionInstallments) {
-						return (
-							<span className="text-sm text-muted-foreground">
-								{summary.total === 0
-									? "Sem parcelas"
-									: `${summary.paid}/${summary.total} pagas`}
-							</span>
-						);
-					}
-					return (
-						<Button
-							type="button"
-							variant="ghost"
-							className="h-auto px-2 py-1 justify-start"
-							onClick={() => setInstallmentsDrawerSale(row.original)}
-						>
-							{summary.total === 0
-								? "Sem parcelas"
-								: `${summary.paid}/${summary.total} pagas`}
-						</Button>
-					);
-				},
-			},
+			...(canViewAllCommissions
+				? ([
+						{
+							id: "commissionInstallments",
+							enableHiding: true,
+							header: "Parcelas",
+							cell: ({ row }) => {
+								const summary = row.original.commissionInstallmentsSummary;
+								if (!canAccessCommissionInstallments) {
+									return (
+										<span className="text-sm text-muted-foreground">
+											{summary.total === 0
+												? "Sem parcelas"
+												: `${summary.paid}/${summary.total} pagas`}
+										</span>
+									);
+								}
+								return (
+									<Button
+										type="button"
+										variant="ghost"
+										className="h-auto px-2 py-1 justify-start"
+										onClick={() => setInstallmentsDrawerSale(row.original)}
+									>
+										{summary.total === 0
+											? "Sem parcelas"
+											: `${summary.paid}/${summary.total} pagas`}
+									</Button>
+								);
+							},
+						},
+					] as ColumnDef<SaleTableRow>[])
+				: []),
 			{
 				accessorKey: "status",
 				header: "Status",
@@ -1177,6 +1209,7 @@ export function SalesDataTable({
 			},
 		],
 		[
+			canViewAllCommissions,
 			canAccessCommissionInstallments,
 			canUseBulkActions,
 			dynamicFieldColumnsReady,
@@ -1675,12 +1708,14 @@ export function SalesDataTable({
 											</p>
 										</div>
 
-										<div className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
-											Parcelas:{" "}
-											{summary.total === 0
-												? "Sem parcelas"
-												: `${summary.paid}/${summary.total} pagas`}
-										</div>
+										{canViewAllCommissions ? (
+											<div className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
+												Parcelas:{" "}
+												{summary.total === 0
+													? "Sem parcelas"
+													: `${summary.paid}/${summary.total} pagas`}
+											</div>
+										) : null}
 
 										<div className="grid grid-cols-2 gap-2">
 											<Button variant="outline" size="sm" asChild>

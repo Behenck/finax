@@ -24,7 +24,9 @@ function createWrapper() {
 	});
 
 	return function Wrapper({ children }: { children: ReactNode }) {
-		return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+		return (
+			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		);
 	};
 }
 
@@ -34,8 +36,7 @@ function renderQuickSaleForm(
 	const defaultOnSubmitBatch = vi.fn().mockResolvedValue(undefined);
 	const defaultOnSuccess = vi.fn();
 	const defaultLoadProductDynamicFields = vi.fn().mockResolvedValue([]);
-	const onSubmitBatch =
-		props.onSubmitBatch ?? defaultOnSubmitBatch;
+	const onSubmitBatch = props.onSubmitBatch ?? defaultOnSubmitBatch;
 	const onSuccess = props.onSuccess ?? defaultOnSuccess;
 	const loadProductDynamicFields =
 		props.loadProductDynamicFields ?? defaultLoadProductDynamicFields;
@@ -117,19 +118,19 @@ function renderQuickSaleForm(
 			onSuccess={onSuccess}
 			initialValues={{
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
-					items: [
-						{
-							productId: CHILD_PRODUCT_A_ID,
-							quantity: "1",
-							saleDate: "2026-03-10",
-							totalAmount: "R$ 1.000,00",
-							dynamicFields: {},
-						},
+				items: [
+					{
+						customerId: CUSTOMER_ID,
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
 				],
 			}}
 			{...props}
@@ -153,13 +154,13 @@ describe("quick-sale-form", () => {
 		renderQuickSaleForm({
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
 				items: [
 					{
+						customerId: CUSTOMER_ID,
 						productId: CHILD_PRODUCT_A_ID,
 						quantity: "49",
 						saleDate: "2026-03-10",
@@ -189,13 +190,13 @@ describe("quick-sale-form", () => {
 		const { onSubmitBatch } = renderQuickSaleForm({
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
 				items: [
 					{
+						customerId: CUSTOMER_ID,
 						productId: CHILD_PRODUCT_B_ID,
 						quantity: "1",
 						saleDate: "2026-03-10",
@@ -219,31 +220,40 @@ describe("quick-sale-form", () => {
 
 		const payload = onSubmitBatch.mock.calls[0]?.[0];
 		expect(payload.items).toHaveLength(2);
+		expect(payload.items[0]?.customerId).toBe(CUSTOMER_ID);
+		expect(payload.items[1]?.customerId).toBe(CUSTOMER_ID);
 		expect(payload.items[0]?.productId).toBe(CHILD_PRODUCT_B_ID);
 		expect(payload.items[1]?.productId).toBe(CHILD_PRODUCT_B_ID);
 	});
 
-	it("should duplicate the clicked item", async () => {
+	it("should duplicate the clicked item and preserve customer", async () => {
 		const user = userEvent.setup();
-		renderQuickSaleForm();
+		const { onSubmitBatch } = renderQuickSaleForm();
 
 		await user.click(screen.getByRole("button", { name: "Duplicar item 1" }));
+		await user.click(screen.getByRole("button", { name: "Salvar vendas" }));
 
 		expect(screen.getAllByText(/Item \d+/)).toHaveLength(2);
 		expect(screen.getAllByDisplayValue("R$ 1.000,00")).toHaveLength(2);
+		await waitFor(() => {
+			expect(onSubmitBatch).toHaveBeenCalledTimes(1);
+		});
+		const payload = onSubmitBatch.mock.calls[0]?.[0];
+		expect(payload.items[0]?.customerId).toBe(CUSTOMER_ID);
+		expect(payload.items[1]?.customerId).toBe(CUSTOMER_ID);
 	});
 
 	it("should disable copy when duplicating would exceed total limit", () => {
 		renderQuickSaleForm({
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
 				items: [
 					{
+						customerId: CUSTOMER_ID,
 						productId: CHILD_PRODUCT_A_ID,
 						quantity: "50",
 						saleDate: "2026-03-10",
@@ -254,7 +264,9 @@ describe("quick-sale-form", () => {
 			},
 		});
 
-		expect(screen.getByRole("button", { name: "Duplicar item 1" })).toBeDisabled();
+		expect(
+			screen.getByRole("button", { name: "Duplicar item 1" }),
+		).toBeDisabled();
 	});
 
 	it("should render dynamic fields by item product", async () => {
@@ -292,26 +304,27 @@ describe("quick-sale-form", () => {
 			loadProductDynamicFields,
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
-					items: [
-						{
-							productId: CHILD_PRODUCT_A_ID,
-							quantity: "1",
-							saleDate: "2026-03-10",
-							totalAmount: "R$ 1.000,00",
-							dynamicFields: {},
-						},
-						{
-							productId: CHILD_PRODUCT_B_ID,
-							quantity: "1",
-							saleDate: "2026-03-11",
-							totalAmount: "R$ 2.000,00",
-							dynamicFields: {},
-						},
+				items: [
+					{
+						customerId: CUSTOMER_ID,
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
+					{
+						customerId: CUSTOMER_ID,
+						productId: CHILD_PRODUCT_B_ID,
+						quantity: "1",
+						saleDate: "2026-03-11",
+						totalAmount: "R$ 2.000,00",
+						dynamicFields: {},
+					},
 				],
 			},
 		});
@@ -344,19 +357,19 @@ describe("quick-sale-form", () => {
 			],
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: "",
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
-					items: [
-						{
-							productId: CHILD_PRODUCT_A_ID,
-							quantity: "1",
-							saleDate: "2026-03-10",
-							totalAmount: "R$ 1.000,00",
-							dynamicFields: {},
-						},
+				items: [
+					{
+						customerId: "",
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
 				],
 			},
 		});
@@ -374,7 +387,101 @@ describe("quick-sale-form", () => {
 		await user.click(screen.getByRole("button", { name: /Claudio Braga/i }));
 
 		expect(customerInput).toHaveValue("Claudio Braga");
-		expect(screen.getByRole("button", { name: "Editar cliente" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Editar cliente" }),
+		).toBeInTheDocument();
+	});
+
+	it("should submit distinct customers across different items", async () => {
+		const user = userEvent.setup();
+		const { onSubmitBatch } = renderQuickSaleForm({
+			customers: [
+				{
+					id: CUSTOMER_ID,
+					name: "Cliente Teste",
+					documentType: "CPF",
+					documentNumber: "12345678901",
+					phone: "11999999999",
+				},
+				{
+					id: SECOND_CUSTOMER_ID,
+					name: "Claudio Braga",
+					documentType: "CPF",
+					documentNumber: "98765432100",
+					phone: "11988887777",
+				},
+			],
+			initialValues: {
+				parentProductId: ROOT_PRODUCT_ID,
+				companyId: COMPANY_ID,
+				unitId: UNIT_ID,
+				responsibleType: "SELLER",
+				responsibleId: SELLER_ID,
+				items: [
+					{
+						customerId: CUSTOMER_ID,
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
+					{
+						customerId: "",
+						productId: CHILD_PRODUCT_B_ID,
+						quantity: "1",
+						saleDate: "2026-03-11",
+						totalAmount: "R$ 2.000,00",
+						dynamicFields: {},
+					},
+				],
+			},
+		});
+
+		const customerInputs = screen.getAllByPlaceholderText(
+			"Digite o nome, documento ou celular do cliente",
+		);
+		await user.type(customerInputs[1] as HTMLInputElement, "Cla");
+		await user.click(screen.getByRole("button", { name: /Claudio Braga/i }));
+		await user.click(screen.getByRole("button", { name: "Salvar vendas" }));
+
+		await waitFor(() => {
+			expect(onSubmitBatch).toHaveBeenCalledTimes(1);
+		});
+		const payload = onSubmitBatch.mock.calls[0]?.[0];
+		expect(payload.items).toHaveLength(2);
+		expect(payload.items[0]?.customerId).toBe(CUSTOMER_ID);
+		expect(payload.items[1]?.customerId).toBe(SECOND_CUSTOMER_ID);
+	});
+
+	it("should require customer per item before submit", async () => {
+		const user = userEvent.setup();
+		const { onSubmitBatch } = renderQuickSaleForm({
+			initialValues: {
+				parentProductId: ROOT_PRODUCT_ID,
+				companyId: COMPANY_ID,
+				unitId: UNIT_ID,
+				responsibleType: "SELLER",
+				responsibleId: SELLER_ID,
+				items: [
+					{
+						customerId: "",
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
+				],
+			},
+		});
+
+		await user.click(screen.getByRole("button", { name: "Salvar vendas" }));
+
+		await waitFor(() => {
+			expect(onSubmitBatch).not.toHaveBeenCalled();
+		});
+		expect(screen.getByText("Selecione o cliente do item")).toBeInTheDocument();
 	});
 
 	it("should submit and call success callback", async () => {
@@ -391,10 +498,10 @@ describe("quick-sale-form", () => {
 		expect(onSubmitBatch).toHaveBeenCalledWith(
 			expect.objectContaining({
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				items: [
 					expect.objectContaining({
+						customerId: CUSTOMER_ID,
 						productId: CHILD_PRODUCT_A_ID,
 						totalAmount: 100_000,
 					}),
@@ -408,13 +515,13 @@ describe("quick-sale-form", () => {
 		const { onSubmitBatch } = renderQuickSaleForm({
 			initialValues: {
 				parentProductId: ROOT_PRODUCT_ID,
-				customerId: CUSTOMER_ID,
 				companyId: COMPANY_ID,
 				unitId: UNIT_ID,
 				responsibleType: "SELLER",
 				responsibleId: SELLER_ID,
 				items: [
 					{
+						customerId: CUSTOMER_ID,
 						productId: CHILD_PRODUCT_A_ID,
 						quantity: "3",
 						saleDate: "2026-03-10",
@@ -433,7 +540,16 @@ describe("quick-sale-form", () => {
 
 		const payload = onSubmitBatch.mock.calls[0]?.[0];
 		expect(payload.items).toHaveLength(3);
-		expect(payload.items.every((item: { productId: string }) => item.productId === CHILD_PRODUCT_A_ID)).toBe(true);
+		expect(
+			payload.items.every(
+				(item: { customerId: string }) => item.customerId === CUSTOMER_ID,
+			),
+		).toBe(true);
+		expect(
+			payload.items.every(
+				(item: { productId: string }) => item.productId === CHILD_PRODUCT_A_ID,
+			),
+		).toBe(true);
 	});
 
 	it("should keep form values and show error message when submit fails", async () => {

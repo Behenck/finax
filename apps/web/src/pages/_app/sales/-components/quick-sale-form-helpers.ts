@@ -21,7 +21,6 @@ export interface QuickSaleScopedProductOption {
 
 export interface QuickSaleBatchPayload {
 	parentProductId: string;
-	customerId: string;
 	companyId: string;
 	unitId?: string;
 	responsible: {
@@ -29,6 +28,7 @@ export interface QuickSaleBatchPayload {
 		id: string;
 	};
 	items: Array<{
+		customerId: string;
 		productId: string;
 		saleDate: string;
 		totalAmount: number;
@@ -36,11 +36,9 @@ export interface QuickSaleBatchPayload {
 	}>;
 }
 
-export function resolveQuickSaleItemQuantity(
-	item: {
-		quantity?: string | number | null;
-	},
-) {
+export function resolveQuickSaleItemQuantity(item: {
+	quantity?: string | number | null;
+}) {
 	const parsedQuantity = Number.parseInt(String(item.quantity ?? ""), 10);
 
 	if (Number.isNaN(parsedQuantity) || parsedQuantity < 1) {
@@ -72,9 +70,11 @@ export function resolveScopedItemProducts(
 
 export function createQuickSaleItemDraft(
 	parentProductId?: string,
+	customerId?: string,
 	saleDate = format(new Date(), "yyyy-MM-dd"),
 ): QuickSaleBatchFormInput["items"][number] {
 	return {
+		customerId: customerId ?? "",
 		productId: parentProductId ?? "",
 		quantity: "1",
 		saleDate,
@@ -99,12 +99,14 @@ export function buildQuickSaleBatchPayload(params: {
 
 	const payloadItems = values.items.flatMap((item) => {
 		const quantity = resolveQuickSaleItemQuantity(item);
-		const dynamicFieldSchema = dynamicFieldSchemaByProductId[item.productId] ?? [];
+		const dynamicFieldSchema =
+			dynamicFieldSchemaByProductId[item.productId] ?? [];
 		const normalizedDynamicFields = toSaleDynamicFieldPayloadValues(
 			dynamicFieldSchema,
 			item.dynamicFields ?? {},
 		);
 		const normalizedItem = {
+			customerId: item.customerId,
 			productId: item.productId,
 			saleDate: item.saleDate,
 			totalAmount: parseBRLCurrencyToCents(item.totalAmount),
@@ -119,7 +121,6 @@ export function buildQuickSaleBatchPayload(params: {
 
 	return {
 		parentProductId: values.parentProductId,
-		customerId: values.customerId,
 		companyId: values.companyId,
 		unitId: values.unitId,
 		responsible: {

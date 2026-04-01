@@ -464,12 +464,12 @@ export const CreateSaleBodySchema = z
 			}
 
 			const baseCommission = data.commissions[baseCommissionIndex];
-			const baseCalculationBase = baseCommission?.calculationBase ?? "SALE_TOTAL";
+			const baseCalculationBase =
+				baseCommission?.calculationBase ?? "SALE_TOTAL";
 			if (!baseCommission || baseCalculationBase !== "SALE_TOTAL") {
 				ctx.addIssue({
 					code: "custom",
-					message:
-						"Commission base must reference a SALE_TOTAL commission",
+					message: "Commission base must reference a SALE_TOTAL commission",
 					path: ["commissions", commissionIndex, "baseCommissionIndex"],
 				});
 			}
@@ -478,6 +478,7 @@ export const CreateSaleBodySchema = z
 
 export const CreateSaleBatchItemSchema = z
 	.object({
+		customerId: z.uuid(),
 		productId: z.uuid(),
 		saleDate: SaleDateInputSchema,
 		totalAmount: z.number().int().positive(),
@@ -490,7 +491,6 @@ export const CREATE_SALE_BATCH_MAX_ITEMS = 50;
 export const CreateSaleBatchBodySchema = z
 	.object({
 		parentProductId: z.uuid(),
-		customerId: z.uuid(),
 		responsible: SaleResponsibleSchema,
 		companyId: z.uuid(),
 		unitId: z.uuid().optional(),

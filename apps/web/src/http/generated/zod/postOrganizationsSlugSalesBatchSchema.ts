@@ -19,7 +19,6 @@ export const postOrganizationsSlugSalesBatch201Schema = z.object({
 
 export const postOrganizationsSlugSalesBatchMutationRequestSchema = z.object({
   parentProductId: z.uuid(),
-  customerId: z.uuid(),
   responsible: z.object({
     type: z.enum(["SELLER", "PARTNER"]),
     id: z.uuid(),
@@ -29,6 +28,7 @@ export const postOrganizationsSlugSalesBatchMutationRequestSchema = z.object({
   items: z
     .array(
       z.object({
+        customerId: z.uuid(),
         productId: z.uuid(),
         saleDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         totalAmount: z.int().max(9007199254740991),
@@ -36,7 +36,7 @@ export const postOrganizationsSlugSalesBatchMutationRequestSchema = z.object({
       }),
     )
     .min(1)
-    .max(20),
+    .max(50),
 });
 
 export const postOrganizationsSlugSalesBatchMutationResponseSchema = z.lazy(

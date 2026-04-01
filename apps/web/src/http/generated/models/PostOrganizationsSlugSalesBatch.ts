@@ -40,10 +40,6 @@ export type PostOrganizationsSlugSalesBatchMutationRequest = {
    */
   parentProductId: string;
   /**
-   * @type string, uuid
-   */
-  customerId: string;
-  /**
    * @type object
    */
   responsible: {
@@ -68,6 +64,10 @@ export type PostOrganizationsSlugSalesBatchMutationRequest = {
    * @type array
    */
   items: {
+    /**
+     * @type string, uuid
+     */
+    customerId: string;
     /**
      * @type string, uuid
      */

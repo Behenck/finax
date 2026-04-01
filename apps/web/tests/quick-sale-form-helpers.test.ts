@@ -48,13 +48,13 @@ describe("quick-sale-form helpers", () => {
 	it("should build batch payload with currency/date/dynamic conversions", () => {
 		const parsedValues = quickSaleBatchSchema.parse({
 			parentProductId: "11111111-1111-4111-8111-111111111111",
-			customerId: "44444444-4444-4444-8444-444444444444",
 			companyId: "55555555-5555-4555-8555-555555555555",
 			unitId: "66666666-6666-4666-8666-666666666666",
 			responsibleType: "SELLER",
 			responsibleId: "77777777-7777-4777-8777-777777777777",
 			items: [
 				{
+					customerId: "44444444-4444-4444-8444-444444444444",
 					productId: "22222222-2222-4222-8222-222222222222",
 					quantity: "1",
 					saleDate: "2026-03-10",
@@ -90,6 +90,9 @@ describe("quick-sale-form helpers", () => {
 		});
 
 		expect(payload.items).toHaveLength(1);
+		expect(payload.items[0]?.customerId).toBe(
+			"44444444-4444-4444-8444-444444444444",
+		);
 		expect(payload.items[0]?.totalAmount).toBe(150_000);
 		expect(payload.items[0]?.saleDate).toBe("2026-03-10");
 		expect(payload.items[0]?.dynamicFields).toEqual({
@@ -101,12 +104,12 @@ describe("quick-sale-form helpers", () => {
 	it("should replicate payload items based on quantity", () => {
 		const parsedValues = quickSaleBatchSchema.parse({
 			parentProductId: "11111111-1111-4111-8111-111111111111",
-			customerId: "44444444-4444-4444-8444-444444444444",
 			companyId: "55555555-5555-4555-8555-555555555555",
 			responsibleType: "SELLER",
 			responsibleId: "77777777-7777-4777-8777-777777777777",
 			items: [
 				{
+					customerId: "44444444-4444-4444-8444-444444444444",
 					productId: "22222222-2222-4222-8222-222222222222",
 					quantity: "3",
 					saleDate: "2026-03-10",
@@ -122,7 +125,14 @@ describe("quick-sale-form helpers", () => {
 		});
 
 		expect(payload.items).toHaveLength(3);
-		expect(payload.items.every((item) => item.totalAmount === 50_000)).toBe(true);
+		expect(payload.items.every((item) => item.totalAmount === 50_000)).toBe(
+			true,
+		);
+		expect(
+			payload.items.every(
+				(item) => item.customerId === "44444444-4444-4444-8444-444444444444",
+			),
+		).toBe(true);
 		expect(
 			payload.items.every(
 				(item) => item.productId === "22222222-2222-4222-8222-222222222222",

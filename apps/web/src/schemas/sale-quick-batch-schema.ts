@@ -15,6 +15,7 @@ function isValidSaleDate(value: string) {
 }
 
 export const quickSaleBatchItemSchema = z.object({
+	customerId: z.uuid({ error: "Selecione o cliente do item" }),
 	productId: z.uuid({ error: "Selecione o produto do item" }),
 	quantity: z
 		.string({ error: "Defina a quantidade" })
@@ -42,39 +43,40 @@ export const quickSaleBatchItemSchema = z.object({
 	dynamicFields: z.record(z.string(), z.unknown()).default({}),
 });
 
-export const quickSaleBatchSchema = z.object({
-	parentProductId: z.uuid({ error: "Selecione o produto pai" }),
-	customerId: z.uuid({ error: "Selecione o cliente" }),
-	companyId: z.uuid({ error: "Selecione a empresa" }),
-	unitId: z.preprocess(
-		(value) => (value === "" ? undefined : value),
-		z.uuid().optional(),
-	),
-	responsibleType: SaleResponsibleTypeSchema,
-	responsibleId: z.uuid({ error: "Selecione o responsável" }),
-	items: z
-		.array(quickSaleBatchItemSchema)
-		.min(1, "Adicione ao menos um item")
-		.max(
-			QUICK_SALE_BATCH_MAX_ITEMS,
-			`Você pode adicionar no máximo ${QUICK_SALE_BATCH_MAX_ITEMS} itens`,
+export const quickSaleBatchSchema = z
+	.object({
+		parentProductId: z.uuid({ error: "Selecione o produto pai" }),
+		companyId: z.uuid({ error: "Selecione a empresa" }),
+		unitId: z.preprocess(
+			(value) => (value === "" ? undefined : value),
+			z.uuid().optional(),
 		),
-}).superRefine((values, context) => {
-	const replicatedItemsCount = values.items.reduce(
-		(total, item) => total + Number.parseInt(item.quantity, 10),
-		0,
-	);
+		responsibleType: SaleResponsibleTypeSchema,
+		responsibleId: z.uuid({ error: "Selecione o responsável" }),
+		items: z
+			.array(quickSaleBatchItemSchema)
+			.min(1, "Adicione ao menos um item")
+			.max(
+				QUICK_SALE_BATCH_MAX_ITEMS,
+				`Você pode adicionar no máximo ${QUICK_SALE_BATCH_MAX_ITEMS} itens`,
+			),
+	})
+	.superRefine((values, context) => {
+		const replicatedItemsCount = values.items.reduce(
+			(total, item) => total + Number.parseInt(item.quantity, 10),
+			0,
+		);
 
-	if (replicatedItemsCount <= QUICK_SALE_BATCH_MAX_ITEMS) {
-		return;
-	}
+		if (replicatedItemsCount <= QUICK_SALE_BATCH_MAX_ITEMS) {
+			return;
+		}
 
-	context.addIssue({
-		code: "custom",
-		path: ["items"],
-		message: `A soma das quantidades dos itens não pode ultrapassar ${QUICK_SALE_BATCH_MAX_ITEMS} vendas`,
+		context.addIssue({
+			code: "custom",
+			path: ["items"],
+			message: `A soma das quantidades dos itens não pode ultrapassar ${QUICK_SALE_BATCH_MAX_ITEMS} vendas`,
+		});
 	});
-});
 
 export type QuickSaleBatchFormInput = z.input<typeof quickSaleBatchSchema>;
 export type QuickSaleBatchFormData = z.output<typeof quickSaleBatchSchema>;

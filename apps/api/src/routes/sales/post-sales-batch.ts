@@ -33,7 +33,9 @@ function resolveAllowedProductScope(
 	parentProductId: string,
 	products: ProductScopeNode[],
 ) {
-	const productsById = new Map(products.map((product) => [product.id, product]));
+	const productsById = new Map(
+		products.map((product) => [product.id, product]),
+	);
 	const childrenByParentId = new Map<string, string[]>();
 
 	for (const product of products) {
@@ -121,25 +123,10 @@ export async function postSalesBatch(app: FastifyInstance) {
 					throw new BadRequestError("Organization not found");
 				}
 
-				const customer = await prisma.customer.findFirst({
-					where: {
-						id: data.customerId,
-						organizationId: organization.id,
-						status: CustomerStatus.ACTIVE,
-					},
-					select: {
-						id: true,
-					},
-				});
-
-				if (!customer) {
-					throw new BadRequestError("Customer not found or inactive");
-				}
-
 				const company = await prisma.company.findFirst({
 					where: {
-						id: data.companyId,
 						organizationId: organization.id,
+						id: data.companyId,
 					},
 					select: {
 						id: true,
@@ -149,6 +136,25 @@ export async function postSalesBatch(app: FastifyInstance) {
 				if (!company) {
 					throw new BadRequestError("Company not found");
 				}
+
+				const customerIds = Array.from(
+					new Set(data.items.map((item) => item.customerId)),
+				);
+				const customers = await prisma.customer.findMany({
+					where: {
+						id: {
+							in: customerIds,
+						},
+						organizationId: organization.id,
+						status: CustomerStatus.ACTIVE,
+					},
+					select: {
+						id: true,
+					},
+				});
+				const activeCustomerIds = new Set(
+					customers.map((customer) => customer.id),
+				);
 
 				if (data.unitId) {
 					const unit = await prisma.unit.findFirst({
@@ -197,6 +203,10 @@ export async function postSalesBatch(app: FastifyInstance) {
 
 						for (const [itemIndex, item] of data.items.entries()) {
 							try {
+								if (!activeCustomerIds.has(item.customerId)) {
+									throw new BadRequestError("Customer not found or inactive");
+								}
+
 								if (!allowedProductIds.has(item.productId)) {
 									throw new BadRequestError(
 										"Product is outside selected parent scope",
@@ -232,7 +242,7 @@ export async function postSalesBatch(app: FastifyInstance) {
 										organizationId: organization.id,
 										companyId: data.companyId,
 										unitId: data.unitId,
-										customerId: data.customerId,
+										customerId: item.customerId,
 										productId: item.productId,
 										saleDate: parseSaleDateInput(item.saleDate),
 										totalAmount: item.totalAmount,

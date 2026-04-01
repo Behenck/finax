@@ -17,10 +17,12 @@ let app: Awaited<ReturnType<typeof createTestApp>>;
 async function createFixture() {
 	const { user, org } = await makeUser();
 
-	const loginResponse = await request(app.server).post("/sessions/password").send({
-		email: user.email,
-		password: user.password,
-	});
+	const loginResponse = await request(app.server)
+		.post("/sessions/password")
+		.send({
+			email: user.email,
+			password: user.password,
+		});
 
 	expect(loginResponse.statusCode).toBe(200);
 
@@ -48,6 +50,16 @@ async function createFixture() {
 			name: `Customer ${suffix}`,
 			documentType: CustomerDocumentType.CPF,
 			documentNumber: `000000000${Math.floor(Math.random() * 9)}`,
+			status: CustomerStatus.ACTIVE,
+		},
+	});
+	const secondCustomer = await prisma.customer.create({
+		data: {
+			organizationId: org.id,
+			personType: CustomerPersonType.PF,
+			name: `Customer 2 ${suffix}`,
+			documentType: CustomerDocumentType.CPF,
+			documentNumber: `111111111${Math.floor(Math.random() * 9)}`,
 			status: CustomerStatus.ACTIVE,
 		},
 	});
@@ -100,6 +112,7 @@ async function createFixture() {
 		company,
 		unit,
 		customer,
+		secondCustomer,
 		seller,
 		parentProduct,
 		childProduct,
@@ -112,7 +125,10 @@ async function createRequiredDynamicField(productId: string, label: string) {
 		data: {
 			productId,
 			label,
-			labelNormalized: label.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, ""),
+			labelNormalized: label
+				.toLowerCase()
+				.normalize("NFD")
+				.replace(/\p{Diacritic}/gu, ""),
 			type: SaleDynamicFieldType.TEXT,
 			required: true,
 			sortOrder: 0,
@@ -124,7 +140,6 @@ function buildBatchPayload(
 	fixture: Awaited<ReturnType<typeof createFixture>>,
 	overrides?: Partial<{
 		parentProductId: string;
-		customerId: string;
 		companyId: string;
 		unitId: string | undefined;
 		responsible: {
@@ -132,6 +147,7 @@ function buildBatchPayload(
 			id: string;
 		};
 		items: Array<{
+			customerId: string;
 			productId: string;
 			saleDate: string;
 			totalAmount: number;
@@ -141,7 +157,6 @@ function buildBatchPayload(
 ) {
 	return {
 		parentProductId: overrides?.parentProductId ?? fixture.parentProduct.id,
-		customerId: overrides?.customerId ?? fixture.customer.id,
 		companyId: overrides?.companyId ?? fixture.company.id,
 		unitId: overrides?.unitId ?? fixture.unit.id,
 		responsible: overrides?.responsible ?? {
@@ -150,6 +165,7 @@ function buildBatchPayload(
 		},
 		items: overrides?.items ?? [
 			{
+				customerId: fixture.customer.id,
 				productId: fixture.parentProduct.id,
 				saleDate: "2026-03-10",
 				totalAmount: 150_000,
@@ -177,11 +193,13 @@ describe("sales batch create", () => {
 				buildBatchPayload(fixture, {
 					items: [
 						{
+							customerId: fixture.customer.id,
 							productId: fixture.parentProduct.id,
 							saleDate: "2026-03-10",
 							totalAmount: 100_000,
 						},
 						{
+							customerId: fixture.secondCustomer.id,
 							productId: fixture.childProduct.id,
 							saleDate: "2026-03-11",
 							totalAmount: 250_000,
@@ -211,6 +229,10 @@ describe("sales batch create", () => {
 			fixture.parentProduct.id,
 			fixture.childProduct.id,
 		]);
+		expect(sales.map((sale) => sale.customerId)).toEqual([
+			fixture.customer.id,
+			fixture.secondCustomer.id,
+		]);
 
 		const historyCount = await prisma.saleHistoryEvent.count({
 			where: {
@@ -237,6 +259,7 @@ describe("sales batch create", () => {
 				buildBatchPayload(fixture, {
 					items: [
 						{
+							customerId: fixture.customer.id,
 							productId: fixture.childProduct.id,
 							saleDate: "2026-03-10",
 							totalAmount: 100_000,
@@ -245,6 +268,7 @@ describe("sales batch create", () => {
 							},
 						},
 						{
+							customerId: fixture.customer.id,
 							productId: fixture.childProduct.id,
 							saleDate: "2026-03-11",
 							totalAmount: 250_000,
@@ -269,6 +293,7 @@ describe("sales batch create", () => {
 		const fixture = await createFixture();
 
 		const items = Array.from({ length: 51 }).map((_, index) => ({
+			customerId: fixture.customer.id,
 			productId: fixture.parentProduct.id,
 			saleDate: `2026-03-${String((index % 28) + 1).padStart(2, "0")}`,
 			totalAmount: 100_000 + index,
@@ -303,6 +328,7 @@ describe("sales batch create", () => {
 				buildBatchPayload(fixture, {
 					items: [
 						{
+							customerId: fixture.customer.id,
 							productId: fixture.outsideScopeProduct.id,
 							saleDate: "2026-03-10",
 							totalAmount: 300_000,
@@ -314,6 +340,44 @@ describe("sales batch create", () => {
 		expect(response.statusCode).toBe(400);
 		expect(response.body.message).toContain("Item 1:");
 		expect(response.body.message).toContain("outside selected parent scope");
+
+		const salesCount = await prisma.sale.count({
+			where: {
+				organizationId: fixture.org.id,
+			},
+		});
+		expect(salesCount).toBe(0);
+	});
+
+	it("should rollback all items when one item has invalid customer", async () => {
+		const fixture = await createFixture();
+		const invalidCustomerId = "00000000-0000-4000-8000-000000000000";
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/batch`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildBatchPayload(fixture, {
+					items: [
+						{
+							customerId: fixture.customer.id,
+							productId: fixture.parentProduct.id,
+							saleDate: "2026-03-10",
+							totalAmount: 120_000,
+						},
+						{
+							customerId: invalidCustomerId,
+							productId: fixture.childProduct.id,
+							saleDate: "2026-03-11",
+							totalAmount: 90_000,
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toContain("Item 2:");
+		expect(response.body.message).toContain("Customer not found or inactive");
 
 		const salesCount = await prisma.sale.count({
 			where: {
