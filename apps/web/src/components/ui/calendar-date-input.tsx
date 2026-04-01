@@ -1,4 +1,4 @@
-import { format, isValid, parse } from "date-fns";
+import { format, isValid, parse, type Locale } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { applyDateInputMask } from "@/utils/date-mask";
@@ -12,14 +12,12 @@ interface CalendarDateInputProps {
 	onChange: (value: string) => void;
 	placeholder?: string;
 	disabled?: boolean;
+	locale?: Locale;
 	"aria-invalid"?: boolean;
 }
 
 function countDigitsBeforePosition(value: string, position: number) {
-	return value
-		.slice(0, Math.max(position, 0))
-		.replace(/\D/g, "")
-		.length;
+	return value.slice(0, Math.max(position, 0)).replace(/\D/g, "").length;
 }
 
 function resolveCaretPositionByDigitCount(value: string, digitCount: number) {
@@ -46,6 +44,7 @@ export function CalendarDateInput({
 	onChange,
 	placeholder = "dd/mm/aaaa",
 	disabled,
+	locale,
 	"aria-invalid": ariaInvalid,
 }: CalendarDateInputProps) {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +64,9 @@ export function CalendarDateInput({
 			return;
 		}
 
-		const formattedValue = selectedDate ? format(selectedDate, "dd/MM/yyyy") : "";
+		const formattedValue = selectedDate
+			? format(selectedDate, "dd/MM/yyyy")
+			: "";
 		if (input.value === formattedValue) {
 			return;
 		}
@@ -110,7 +111,10 @@ export function CalendarDateInput({
 
 		const parsedDate = parse(maskedValue, "dd/MM/yyyy", new Date());
 
-		if (!isValid(parsedDate) || format(parsedDate, "dd/MM/yyyy") !== maskedValue) {
+		if (
+			!isValid(parsedDate) ||
+			format(parsedDate, "dd/MM/yyyy") !== maskedValue
+		) {
 			return;
 		}
 
@@ -149,6 +153,7 @@ export function CalendarDateInput({
 				>
 					<Calendar
 						mode="single"
+						locale={locale}
 						selected={selectedDate}
 						onSelect={(date) => {
 							if (!date) {
