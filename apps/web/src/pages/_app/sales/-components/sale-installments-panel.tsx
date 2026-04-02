@@ -1,5 +1,6 @@
-import { format, parseISO } from "date-fns";
+import { format, parse } from "date-fns";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -48,13 +49,13 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import {
 	useDeleteSaleCommissionInstallment,
 	usePatchSaleCommissionInstallmentStatus,
 	useSaleCommissionInstallments,
 	useUpdateSaleCommissionInstallment,
 } from "@/hooks/sales";
-import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import type { GetOrganizationsSlugSalesSaleidCommissionInstallments200 } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
 import {
@@ -69,7 +70,6 @@ import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
 } from "@/utils/format-amount";
-import { useQueryState } from "nuqs";
 
 type SaleInstallmentRow =
 	GetOrganizationsSlugSalesSaleidCommissionInstallments200["installments"][number];
@@ -94,13 +94,16 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	SaleCommissionInstallmentStatus,
 	string
 > = {
-	PENDING: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
+	PENDING:
+		"bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
 	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
 	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
 };
 
 function formatDate(value: string) {
-	return format(parseISO(value), "dd/MM/yyyy");
+	const dateOnly = value.slice(0, 10);
+	const parsedDate = parse(dateOnly, "yyyy-MM-dd", new Date());
+	return format(parsedDate, "dd/MM/yyyy");
 }
 
 function toDateInputValue(value?: string | null) {
@@ -252,7 +255,7 @@ export function SaleInstallmentsPanel({
 			paymentDate:
 				nextStatus === "PAID"
 					? toDateInputValue(installment.paymentDate) ||
-					getTodayDateInputValue()
+						getTodayDateInputValue()
 					: "",
 			amount: formatCurrencyBRL(installment.amount / 100),
 		});
@@ -434,10 +437,10 @@ export function SaleInstallmentsPanel({
 												const statusActions =
 													canUpdateInstallmentsBySaleStatus &&
 													canChangeInstallmentStatus
-													? (["PAID", "CANCELED"] as const).filter(
-														(status) => status !== installment.status,
-													)
-													: [];
+														? (["PAID", "CANCELED"] as const).filter(
+																(status) => status !== installment.status,
+															)
+														: [];
 
 												return (
 													<TableRow key={installment.id}>
@@ -453,13 +456,13 @@ export function SaleInstallmentsPanel({
 																variant="outline"
 																className={
 																	INSTALLMENT_STATUS_BADGE_CLASSNAME[
-																	installment.status
+																		installment.status
 																	]
 																}
 															>
 																{
 																	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																	installment.status
+																		installment.status
 																	]
 																}
 															</Badge>
@@ -469,7 +472,7 @@ export function SaleInstallmentsPanel({
 														</TableCell>
 														<TableCell>
 															{installment.status === "PAID" &&
-																installment.paymentDate
+															installment.paymentDate
 																? formatDate(installment.paymentDate)
 																: "—"}
 														</TableCell>
@@ -483,7 +486,7 @@ export function SaleInstallmentsPanel({
 														<TableCell>
 															{
 																SALE_COMMISSION_SOURCE_TYPE_LABEL[
-																installment.sourceType
+																	installment.sourceType
 																]
 															}
 														</TableCell>
@@ -519,21 +522,23 @@ export function SaleInstallmentsPanel({
 																				Marcar como{" "}
 																				{
 																					SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																					actionStatus
+																						actionStatus
 																					]
 																				}
 																			</DropdownMenuItem>
 																		))}
-																		{(statusActions.length > 0 &&
-																			(canEditInstallment ||
-																				canDeleteInstallment)) ? (
+																		{statusActions.length > 0 &&
+																		(canEditInstallment ||
+																			canDeleteInstallment) ? (
 																			<DropdownMenuSeparator />
 																		) : null}
 																		{canEditInstallment ? (
 																			<DropdownMenuItem
 																				onSelect={(event) => {
 																					event.preventDefault();
-																					requestInstallmentEdition(installment);
+																					requestInstallmentEdition(
+																						installment,
+																					);
 																				}}
 																			>
 																				<Pencil className="size-4" />
@@ -591,8 +596,8 @@ export function SaleInstallmentsPanel({
 							para{" "}
 							{statusAction
 								? SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-								statusAction.nextStatus
-								]
+										statusAction.nextStatus
+									]
 								: ""}
 							?
 						</AlertDialogDescription>
@@ -608,32 +613,32 @@ export function SaleInstallmentsPanel({
 									setStatusAction((current) =>
 										current
 											? {
-												...current,
-												amount: formatCurrencyBRL(event.target.value),
-											}
+													...current,
+													amount: formatCurrencyBRL(event.target.value),
+												}
 											: current,
 									);
 								}}
 							/>
 						</div>
 
-							{statusAction?.nextStatus === "PAID" ? (
-								<div className="space-y-1">
-									<p className="text-sm font-medium">Data de pagamento</p>
-									<CalendarDateInput
-										value={statusAction.paymentDate}
-										onChange={(value) => {
-											setStatusAction((current) =>
-												current
-													? {
-															...current,
-															paymentDate: value,
-														}
-													: current,
-											);
-										}}
-									/>
-								</div>
+						{statusAction?.nextStatus === "PAID" ? (
+							<div className="space-y-1">
+								<p className="text-sm font-medium">Data de pagamento</p>
+								<CalendarDateInput
+									value={statusAction.paymentDate}
+									onChange={(value) => {
+										setStatusAction((current) =>
+											current
+												? {
+														...current,
+														paymentDate: value,
+													}
+												: current,
+										);
+									}}
+								/>
+							</div>
 						) : null}
 					</div>
 
@@ -681,9 +686,9 @@ export function SaleInstallmentsPanel({
 										setEditingInstallment((current) =>
 											current
 												? {
-													...current,
-													percentage: event.target.value,
-												}
+														...current,
+														percentage: event.target.value,
+													}
 												: current,
 										);
 									}}
@@ -698,9 +703,9 @@ export function SaleInstallmentsPanel({
 										setEditingInstallment((current) =>
 											current
 												? {
-													...current,
-													amount: formatCurrencyBRL(event.target.value),
-												}
+														...current,
+														amount: formatCurrencyBRL(event.target.value),
+													}
 												: current,
 										);
 									}}
@@ -717,14 +722,14 @@ export function SaleInstallmentsPanel({
 										setEditingInstallment((current) =>
 											current
 												? {
-													...current,
-													status: value as SaleCommissionInstallmentStatus,
-												}
+														...current,
+														status: value as SaleCommissionInstallmentStatus,
+													}
 												: current,
 										);
 									}}
 								>
-									<SelectTrigger>
+									<SelectTrigger className="w-full">
 										<SelectValue placeholder="Selecione" />
 									</SelectTrigger>
 									<SelectContent>
@@ -734,41 +739,41 @@ export function SaleInstallmentsPanel({
 									</SelectContent>
 								</Select>
 							</div>
-								<div className="space-y-1">
-									<p className="text-sm font-medium">Previsão de pagamento</p>
-									<CalendarDateInput
-										value={editingInstallment?.expectedPaymentDate ?? ""}
-										onChange={(value) => {
-											setEditingInstallment((current) =>
-												current
-													? {
-															...current,
-															expectedPaymentDate: value,
-														}
-													: current,
-											);
-										}}
-									/>
-								</div>
+							<div className="space-y-1">
+								<p className="text-sm font-medium">Previsão de pagamento</p>
+								<CalendarDateInput
+									value={editingInstallment?.expectedPaymentDate ?? ""}
+									onChange={(value) => {
+										setEditingInstallment((current) =>
+											current
+												? {
+														...current,
+														expectedPaymentDate: value,
+													}
+												: current,
+										);
+									}}
+								/>
+							</div>
 						</div>
 
-							{editingInstallment?.status === "PAID" ? (
-								<div className="space-y-1">
-									<p className="text-sm font-medium">Data de pagamento</p>
-									<CalendarDateInput
-										value={editingInstallment.paymentDate}
-										onChange={(value) => {
-											setEditingInstallment((current) =>
-												current
-													? {
-															...current,
-															paymentDate: value,
-														}
-													: current,
-											);
-										}}
-									/>
-								</div>
+						{editingInstallment?.status === "PAID" ? (
+							<div className="space-y-1">
+								<p className="text-sm font-medium">Data de pagamento</p>
+								<CalendarDateInput
+									value={editingInstallment.paymentDate}
+									onChange={(value) => {
+										setEditingInstallment((current) =>
+											current
+												? {
+														...current,
+														paymentDate: value,
+													}
+												: current,
+										);
+									}}
+								/>
+							</div>
 						) : null}
 					</div>
 

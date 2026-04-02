@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { useAbility } from "@/permissions/access";
 import { CommissionReceiptImportWizard } from "./-components/commission-receipt-import-wizard";
-import { CommissionsDataTable } from "./-components/commissions-data-table";
+import { CommissionsDataTable } from "./-components/commissions-data-table/index";
 
 export const Route = createFileRoute("/_app/commissions/")({
 	component: CommissionsPage,

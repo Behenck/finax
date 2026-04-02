@@ -84,6 +84,9 @@ Aplica-se a tudo dentro de `apps/web`.
 - Componentes compartilhados devem ir para `src/components`.
 - Componentes especificos de pagina/fluxo devem ficar colocalizados em `src/pages/**/-components`.
 - Manter consistencia de classes Tailwind com o padrao existente no modulo.
+- Quando um arquivo de pagina/componente crescer e acumular responsabilidades (ex.: filtros + summary + dialogs + tabela), separar por funcionalidade em componentes e hooks locais.
+- Preferir `index.tsx` como orquestrador da feature (wiring de dados e handlers) e mover detalhes para `-components`/hooks colocalizados.
+- Evitar micro-splits sem ganho real: dividir apenas o necessario para reduzir complexidade e facilitar manutencao.
 
 ### Imports e aliases
 - Preferir alias `@/` para imports internos (configurado em `tsconfig.json`).

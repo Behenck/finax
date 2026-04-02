@@ -57,8 +57,8 @@ describe("sale-installments-panel", () => {
 						percentage: 2,
 						amount: 2000,
 						status: "PAID",
-						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
-						paymentDate: "2026-03-10T00:00:00.000Z",
+						expectedPaymentDate: "2026-03-10T00:00:00+14:00",
+						paymentDate: "2026-03-10T00:00:00+14:00",
 					},
 					{
 						id: "inst-2",
@@ -98,6 +98,7 @@ describe("sale-installments-panel", () => {
 		expect(
 			screen.getByText("Resumo: 1/1 pagas, 0 pendentes, 0 canceladas."),
 		).toBeInTheDocument();
+		expect(screen.getAllByText("10/03/2026").length).toBeGreaterThan(0);
 	});
 
 	it("should keep showing all installments when no commission filter is provided", () => {

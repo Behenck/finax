@@ -41,6 +41,8 @@ Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/
 - Sempre priorizar tipagem forte e explicita; evitar `any` e tipos implicitos quando houver alternativa tipada.
 - Nao editar manualmente codigo gerado.
 - Nao executar comandos destrutivos de banco (ex.: `prisma migrate reset`, `db reset`, `DROP`, `TRUNCATE`) sem permissao explicita do usuario na conversa atual.
+- Em arquivos grandes com multiplas responsabilidades, separar por funcionalidade quando houver ganho claro (componentes, hooks ou contextos), mantendo um arquivo principal como orquestrador.
+- Evitar separacao excessivamente minuciosa sem beneficio real de manutencao.
 - Quando uma mudanca alterar estrutura, fluxo de geracao ou convencoes, atualizar o `AGENTS.md` correspondente no mesmo ciclo de mudanca.
 - Em mudancas full-stack, tratar backend + contrato + frontend como um fluxo unico (nao parar no meio).
 
