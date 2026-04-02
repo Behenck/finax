@@ -42,6 +42,7 @@ export const SaleCommissionInstallmentStatusSchema = z.enum([
 	"PENDING",
 	"PAID",
 	"CANCELED",
+	"REVERSED",
 ]);
 
 export type SaleCommissionInstallmentStatus = z.infer<
@@ -96,6 +97,7 @@ export const SALE_COMMISSION_INSTALLMENT_STATUS_LABEL: Record<
 	PENDING: "Pendente",
 	PAID: "Paga",
 	CANCELED: "Cancelada",
+	REVERSED: "Estornada",
 };
 
 export const SALE_STATUS_TRANSITIONS: Record<SaleStatus, SaleStatus[]> = {

@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { useApp } from "@/context/app-context";
+import { resolveErrorMessage } from "@/errors";
+import { normalizeApiError } from "@/errors/api-error";
 import {
 	useDeleteSaleCommissionInstallment,
 	usePatchSaleCommissionInstallmentStatus,
+	useReverseSaleCommissionInstallment,
 	useUpdateSaleCommissionInstallment,
 } from "@/hooks/sales";
+import {
+	getOrganizationsSlugProductsIdCommissionReversalRules,
+	getOrganizationsSlugSalesSaleidCommissionInstallments,
+} from "@/http/generated";
 import {
 	formatCurrencyBRL,
 	parseBRLCurrencyToCents,
@@ -13,9 +21,14 @@ import type {
 	CommissionInstallmentRow,
 	InstallmentEditState,
 	InstallmentPayAction,
+	InstallmentReversalAction,
 	SelectedInstallment,
 } from "../types";
 import { getTodayDateInputValue, toDateInputValue } from "../utils";
+
+function formatCentsToDecimalInput(valueInCents: number) {
+	return (valueInCents / 100).toFixed(2);
+}
 
 interface UseCommissionsInstallmentActionsParams {
 	canChangeInstallmentStatus: boolean;
@@ -34,9 +47,12 @@ export function useCommissionsInstallmentActions({
 	onDeselectInstallment,
 	onDeselectInstallments,
 }: UseCommissionsInstallmentActionsParams) {
+	const { organization } = useApp();
 	const [payAction, setPayAction] = useState<InstallmentPayAction | null>(null);
 	const [editingInstallment, setEditingInstallment] =
 		useState<InstallmentEditState | null>(null);
+	const [reversalAction, setReversalAction] =
+		useState<InstallmentReversalAction | null>(null);
 	const [installmentToDelete, setInstallmentToDelete] =
 		useState<CommissionInstallmentRow | null>(null);
 	const [isBulkPaymentDialogOpen, setIsBulkPaymentDialogOpen] = useState(false);
@@ -45,11 +61,15 @@ export function useCommissionsInstallmentActions({
 	);
 	const [isBulkPaying, setIsBulkPaying] = useState(false);
 	const [isUndoingPayments, setIsUndoingPayments] = useState(false);
+	const [isPreparingReversal, setIsPreparingReversal] = useState(false);
+	const reversalLoadRequestIdRef = useRef(0);
 
 	const { mutateAsync: patchInstallmentStatus, isPending: isPatchingStatus } =
 		usePatchSaleCommissionInstallmentStatus();
 	const { mutateAsync: updateInstallment, isPending: isUpdatingInstallment } =
 		useUpdateSaleCommissionInstallment();
+	const { mutateAsync: reverseInstallment, isPending: isReversingInstallment } =
+		useReverseSaleCommissionInstallment();
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
 
@@ -89,6 +109,139 @@ export function useCommissionsInstallmentActions({
 		}
 
 		setInstallmentToDelete(installment);
+	}
+
+	function requestInstallmentReversal(installment: CommissionInstallmentRow) {
+		if (!canChangeInstallmentStatus) {
+			return;
+		}
+
+		if (!organization?.slug) {
+			toast.error("Organização não encontrada.");
+			return;
+		}
+
+		const requestId = reversalLoadRequestIdRef.current + 1;
+		reversalLoadRequestIdRef.current = requestId;
+
+		setReversalAction({
+			installment,
+			reversalDate: getTodayDateInputValue(),
+			mode: "MANUAL",
+			calculationStatus: "LOADING",
+			calculationError: null,
+			hasManualOverride: false,
+			manualAmount: "",
+			rulePercentage: null,
+			totalPaidAmount: null,
+			calculatedAmount: null,
+		});
+		setIsPreparingReversal(true);
+
+		void (async () => {
+			try {
+				const [rulesResponse, saleInstallmentsResponse] = await Promise.all([
+					getOrganizationsSlugProductsIdCommissionReversalRules({
+						slug: organization.slug,
+						id: installment.product.id,
+						params: {
+							includeInherited: true,
+						},
+					}),
+					getOrganizationsSlugSalesSaleidCommissionInstallments({
+						slug: organization.slug,
+						saleId: installment.saleId,
+					}),
+				]);
+
+				const matchedRule = rulesResponse.rules.find(
+					(rule) => rule.installmentNumber === installment.installmentNumber,
+				);
+
+				if (!matchedRule) {
+					setReversalAction((current) => {
+						if (
+							!current ||
+							current.installment.id !== installment.id ||
+							reversalLoadRequestIdRef.current !== requestId
+						) {
+							return current;
+						}
+
+						return {
+							...current,
+							mode: "MANUAL",
+							calculationStatus: "READY",
+							calculationError: null,
+							rulePercentage: null,
+							totalPaidAmount: null,
+							calculatedAmount: null,
+						};
+					});
+					return;
+				}
+
+				const totalPaidAmount = saleInstallmentsResponse.installments
+					.filter(
+						(row) =>
+							row.saleCommissionId === installment.saleCommissionId &&
+							row.status === "PAID" &&
+							row.amount > 0,
+					)
+					.reduce((sum, row) => sum + row.amount, 0);
+				const calculatedAmount = -Math.round(
+					(totalPaidAmount * matchedRule.percentage) / 100,
+				);
+
+				setReversalAction((current) => {
+					if (
+						!current ||
+						current.installment.id !== installment.id ||
+						reversalLoadRequestIdRef.current !== requestId
+					) {
+						return current;
+					}
+
+					const shouldUseCalculatedAmount =
+						!current.hasManualOverride && current.manualAmount.trim().length === 0;
+
+					return {
+						...current,
+						mode: "AUTO",
+						calculationStatus: "READY",
+						calculationError: null,
+						manualAmount: shouldUseCalculatedAmount
+							? formatCentsToDecimalInput(calculatedAmount)
+							: current.manualAmount,
+						rulePercentage: matchedRule.percentage,
+						totalPaidAmount,
+						calculatedAmount,
+					};
+				});
+			} catch (error) {
+				const message = resolveErrorMessage(normalizeApiError(error));
+				setReversalAction((current) => {
+					if (
+						!current ||
+						current.installment.id !== installment.id ||
+						reversalLoadRequestIdRef.current !== requestId
+					) {
+						return current;
+					}
+
+					return {
+						...current,
+						mode: "MANUAL",
+						calculationStatus: "ERROR",
+						calculationError: message,
+					};
+				});
+			} finally {
+				if (reversalLoadRequestIdRef.current === requestId) {
+					setIsPreparingReversal(false);
+				}
+			}
+		})();
 	}
 
 	async function undoInstallmentsPayment(installments: SelectedInstallment[]) {
@@ -310,17 +463,28 @@ export function useCommissionsInstallmentActions({
 			return;
 		}
 
-		try {
-			await updateInstallment({
-				saleId: editingInstallment.installment.saleId,
-				installmentId: editingInstallment.installment.id,
-				data: {
-					percentage: parsedPercentage,
-					amount: parseBRLCurrencyToCents(editingInstallment.amount),
-					status: editingInstallment.status,
-					expectedPaymentDate: editingInstallment.expectedPaymentDate,
+	try {
+		const parsedAmount = parseBRLCurrencyToCents(editingInstallment.amount);
+		if (editingInstallment.status === "REVERSED" && parsedAmount >= 0) {
+			toast.error("Para parcela estornada, o valor deve ser negativo.");
+			return;
+		}
+		if (editingInstallment.status !== "REVERSED" && parsedAmount < 0) {
+			toast.error("Valor negativo só é permitido para parcela estornada.");
+			return;
+		}
+
+		await updateInstallment({
+			saleId: editingInstallment.installment.saleId,
+			installmentId: editingInstallment.installment.id,
+			data: {
+				percentage: parsedPercentage,
+				amount: parsedAmount,
+				status: editingInstallment.status,
+				expectedPaymentDate: editingInstallment.expectedPaymentDate,
 					paymentDate:
-						editingInstallment.status === "PAID"
+						editingInstallment.status === "PAID" ||
+						editingInstallment.status === "REVERSED"
 							? editingInstallment.paymentDate || null
 							: null,
 				},
@@ -348,6 +512,56 @@ export function useCommissionsInstallmentActions({
 		}
 	}
 
+	function parseManualAmountToCents(value: string) {
+		const normalizedValue = value.replace(",", ".").trim();
+		const parsedValue = Number(normalizedValue);
+		if (Number.isNaN(parsedValue) || !Number.isFinite(parsedValue)) {
+			return null;
+		}
+
+		return Math.round(parsedValue * 100);
+	}
+
+	async function handleConfirmInstallmentReversal() {
+		if (!reversalAction || !canChangeInstallmentStatus) {
+			return;
+		}
+
+		if (!reversalAction.reversalDate) {
+			toast.error("Informe a data do estorno.");
+			return;
+		}
+
+		const parsedManualAmount = parseManualAmountToCents(
+			reversalAction.manualAmount,
+		);
+		if (parsedManualAmount === null) {
+			toast.error("Informe um valor válido para o estorno.");
+			return;
+		}
+		if (parsedManualAmount === 0) {
+			toast.error("O valor do estorno deve ser diferente de zero.");
+			return;
+		}
+		if (parsedManualAmount > 0) {
+			toast.error("O valor do estorno deve ser negativo.");
+			return;
+		}
+
+		try {
+			await reverseInstallment({
+				saleId: reversalAction.installment.saleId,
+				installmentId: reversalAction.installment.id,
+				reversalDate: reversalAction.reversalDate,
+				manualAmount: parsedManualAmount,
+			});
+			onDeselectInstallment(reversalAction.installment.id);
+			setReversalAction(null);
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
 	function openBulkPaymentDialog() {
 		setBulkPaymentDate(getTodayDateInputValue());
 		setIsBulkPaymentDialogOpen(true);
@@ -362,6 +576,8 @@ export function useCommissionsInstallmentActions({
 		setPayAction,
 		editingInstallment,
 		setEditingInstallment,
+		reversalAction,
+		setReversalAction,
 		installmentToDelete,
 		setInstallmentToDelete,
 		isBulkPaymentDialogOpen,
@@ -369,17 +585,21 @@ export function useCommissionsInstallmentActions({
 		bulkPaymentDate,
 		setBulkPaymentDate,
 		isPaymentActionPending,
+		isPreparingReversal,
 		isPatchingStatus,
 		isUpdatingInstallment,
+		isReversingInstallment,
 		isDeletingInstallment,
 		requestInstallmentPayment,
 		requestInstallmentEdition,
+		requestInstallmentReversal,
 		requestInstallmentDelete,
 		handleConfirmInstallmentPayment,
 		handlePayInstallmentToday,
 		handleConfirmBulkPayment,
 		handlePaySelectedToday,
 		handleConfirmInstallmentEdition,
+		handleConfirmInstallmentReversal,
 		handleConfirmInstallmentDelete,
 		openBulkPaymentDialog,
 		resetBulkPaymentDate,

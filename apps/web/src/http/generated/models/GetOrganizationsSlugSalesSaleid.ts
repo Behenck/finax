@@ -95,6 +95,7 @@ export const installmentsStatusEnum = {
   PENDING: "PENDING",
   PAID: "PAID",
   CANCELED: "CANCELED",
+  REVERSED: "REVERSED",
 } as const;
 
 export type InstallmentsStatusEnumKey =
@@ -344,7 +345,7 @@ export type GetOrganizationsSlugSalesSaleid200 = {
        */
       totalPercentage: number;
       /**
-       * @minLength 0
+       * @minLength -9007199254740991
        * @maxLength 9007199254740991
        * @type integer
        */
@@ -372,7 +373,7 @@ export type GetOrganizationsSlugSalesSaleid200 = {
          */
         percentage: number;
         /**
-         * @minLength 0
+         * @minLength -9007199254740991
          * @maxLength 9007199254740991
          * @type integer
          */

@@ -111,6 +111,9 @@ export async function patchSaleStatus(app: FastifyInstance) {
 									saleCommission: {
 										saleId,
 									},
+									status: {
+										not: SaleCommissionInstallmentStatus.REVERSED,
+									},
 								},
 								data: {
 									status: SaleCommissionInstallmentStatus.CANCELED,

@@ -125,7 +125,13 @@ export async function getSales(app: FastifyInstance) {
 				const saleIds = sales.map((sale) => sale.id);
 				const commissionInstallmentsSummaryBySaleId = new Map<
 					string,
-					{ total: number; pending: number; paid: number; canceled: number }
+					{
+						total: number;
+						pending: number;
+						paid: number;
+						canceled: number;
+						reversed: number;
+					}
 				>(
 					saleIds.map((saleId) => [
 						saleId,
@@ -134,6 +140,7 @@ export async function getSales(app: FastifyInstance) {
 							pending: 0,
 							paid: 0,
 							canceled: 0,
+							reversed: 0,
 						},
 					]),
 				);
@@ -179,6 +186,10 @@ export async function getSales(app: FastifyInstance) {
 							installment.status === SaleCommissionInstallmentStatus.CANCELED
 						) {
 							summary.canceled += 1;
+						} else if (
+							installment.status === SaleCommissionInstallmentStatus.REVERSED
+						) {
+							summary.reversed += 1;
 						}
 					}
 				}
@@ -204,6 +215,7 @@ export async function getSales(app: FastifyInstance) {
 								pending: 0,
 								paid: 0,
 								canceled: 0,
+								reversed: 0,
 							},
 					};
 				});

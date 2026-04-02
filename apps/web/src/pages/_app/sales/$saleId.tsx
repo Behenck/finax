@@ -6,10 +6,10 @@ import {
 	CheckCircle2,
 	Eye,
 	FilePenLine,
+	type LucideIcon,
 	PlusCircle,
 	Trash2,
 	WalletCards,
-	type LucideIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
@@ -47,13 +47,13 @@ import {
 	type SaleStatus,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
+import { SaleActionsDropdown } from "./-components/sale-actions-dropdown";
+import { formatSaleDynamicFieldValue } from "./-components/sale-dynamic-fields";
 import {
 	SALE_HISTORY_ACTION_LABEL,
 	type SaleHistoryEvent,
 	toSaleHistoryTimelineEvent,
 } from "./-components/sale-history-presenter";
-import { formatSaleDynamicFieldValue } from "./-components/sale-dynamic-fields";
-import { SaleActionsDropdown } from "./-components/sale-actions-dropdown";
 import { SaleInstallmentsDrawer } from "./-components/sale-installments-drawer";
 import { SaleStatusAction } from "./-components/sale-status-action";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
@@ -290,10 +290,7 @@ export function SaleDetailsPage() {
 		productPathById.get(sale.product.id) ?? sale.product.name;
 	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
 		...field,
-		value: Object.prototype.hasOwnProperty.call(
-			sale.dynamicFieldValues,
-			field.fieldId,
-		)
+		value: Object.hasOwn(sale.dynamicFieldValues, field.fieldId)
 			? sale.dynamicFieldValues[field.fieldId]
 			: null,
 	}));
@@ -647,6 +644,7 @@ export function SaleDetailsPage() {
 					}}
 					saleId={sale.id}
 					saleStatus={sale.status as SaleStatus}
+					saleProductId={sale.product.id}
 					saleCommissionId={
 						installmentsDrawerState.mode === "COMMISSION"
 							? installmentsDrawerState.saleCommissionId

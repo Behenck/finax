@@ -30,6 +30,10 @@ const EMPTY_DIRECTION_SUMMARY: InstallmentDirectionSummary = {
 		count: 0,
 		amount: 0,
 	},
+	reversed: {
+		count: 0,
+		amount: 0,
+	},
 };
 
 export const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
@@ -40,6 +44,7 @@ export const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 		"bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
 	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
 	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
+	REVERSED: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
 export function formatDate(value: string) {

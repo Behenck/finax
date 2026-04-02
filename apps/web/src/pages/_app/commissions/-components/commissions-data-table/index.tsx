@@ -6,6 +6,7 @@ import {
 	MoreHorizontal,
 	Pencil,
 	Trash2,
+	Undo2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
@@ -201,6 +202,7 @@ export function CommissionsDataTable() {
 		: paySummary;
 	const pendingSummaryForCurrentUser = summaryForCurrentUser.pending;
 	const paidSummaryForCurrentUser = summaryForCurrentUser.paid;
+	const reversedSummaryForCurrentUser = summaryForCurrentUser.reversed;
 	const pagination = data?.pagination;
 	const productPathById = useMemo(
 		() =>
@@ -389,6 +391,8 @@ export function CommissionsDataTable() {
 		setPayAction,
 		editingInstallment,
 		setEditingInstallment,
+		reversalAction,
+		setReversalAction,
 		installmentToDelete,
 		setInstallmentToDelete,
 		isBulkPaymentDialogOpen,
@@ -396,17 +400,21 @@ export function CommissionsDataTable() {
 		bulkPaymentDate,
 		setBulkPaymentDate,
 		isPaymentActionPending,
+		isPreparingReversal,
 		isPatchingStatus,
 		isUpdatingInstallment,
+		isReversingInstallment,
 		isDeletingInstallment,
 		requestInstallmentPayment,
 		requestInstallmentEdition,
+		requestInstallmentReversal,
 		requestInstallmentDelete,
 		handleConfirmInstallmentPayment,
 		handlePayInstallmentToday,
 		handleConfirmBulkPayment,
 		handlePaySelectedToday,
 		handleConfirmInstallmentEdition,
+		handleConfirmInstallmentReversal,
 		handleConfirmInstallmentDelete,
 		openBulkPaymentDialog,
 		resetBulkPaymentDate,
@@ -421,7 +429,9 @@ export function CommissionsDataTable() {
 	const isAnyInstallmentActionPending =
 		isPatchingStatus ||
 		isUpdatingInstallment ||
+		isReversingInstallment ||
 		isDeletingInstallment ||
+		isPreparingReversal ||
 		isPaymentActionPending;
 
 	return (
@@ -449,6 +459,7 @@ export function CommissionsDataTable() {
 					receiveSummary={receiveSummary}
 					pendingSummaryForCurrentUser={pendingSummaryForCurrentUser}
 					paidSummaryForCurrentUser={paidSummaryForCurrentUser}
+					reversedSummaryForCurrentUser={reversedSummaryForCurrentUser}
 				/>
 
 				<CommissionsFiltersPanel
@@ -561,9 +572,15 @@ export function CommissionsDataTable() {
 											const canEditRowAction = canEditRow && canEditInstallment;
 											const canDeleteRowAction =
 												canEditRow && canDeleteInstallment;
+											const canReverseRow =
+												canEditRow &&
+												canChangeInstallmentStatus &&
+												(installment.status === "PENDING" ||
+													installment.status === "PAID");
 											const canOpenRowActions =
 												canChangeStatusRow ||
 												canEditRowAction ||
+												canReverseRow ||
 												canDeleteRowAction;
 											const isSelected = selectedInstallmentsById.has(
 												installment.id,
@@ -730,6 +747,21 @@ export function CommissionsDataTable() {
 																	Pagar parcela
 																</DropdownMenuItem>
 																<DropdownMenuItem
+																	disabled={!canReverseRow}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canReverseRow) {
+																			return;
+																		}
+																		void requestInstallmentReversal(
+																			installment,
+																		);
+																	}}
+																>
+																	<Undo2 className="size-4" />
+																	Estornar parcela
+																</DropdownMenuItem>
+																<DropdownMenuItem
 																	variant="destructive"
 																	disabled={!canDeleteRowAction}
 																	onSelect={(event) => {
@@ -810,9 +842,15 @@ export function CommissionsDataTable() {
 														canEditRow && canEditInstallment;
 													const canDeleteRowAction =
 														canEditRow && canDeleteInstallment;
+													const canReverseRow =
+														canEditRow &&
+														canChangeInstallmentStatus &&
+														(installment.status === "PENDING" ||
+															installment.status === "PAID");
 													const canOpenRowActions =
 														canChangeStatusRow ||
 														canEditRowAction ||
+														canReverseRow ||
 														canDeleteRowAction;
 													const isSelected = selectedInstallmentsById.has(
 														installment.id,
@@ -981,6 +1019,21 @@ export function CommissionsDataTable() {
 																				Pagar hoje
 																			</DropdownMenuItem>
 																			<DropdownMenuItem
+																				disabled={!canReverseRow}
+																				onSelect={(event) => {
+																					event.preventDefault();
+																					if (!canReverseRow) {
+																						return;
+																					}
+																					void requestInstallmentReversal(
+																						installment,
+																					);
+																				}}
+																			>
+																				<Undo2 className="size-4" />
+																				Estornar parcela
+																			</DropdownMenuItem>
+																			<DropdownMenuItem
 																				variant="destructive"
 																				disabled={!canDeleteRowAction}
 																				onSelect={(event) => {
@@ -1060,6 +1113,10 @@ export function CommissionsDataTable() {
 				onPayActionChange={setPayAction}
 				onConfirmInstallmentPayment={handleConfirmInstallmentPayment}
 				isPatchingStatus={isPatchingStatus}
+				reversalAction={reversalAction}
+				onReversalActionChange={setReversalAction}
+				onConfirmInstallmentReversal={handleConfirmInstallmentReversal}
+				isReversingInstallment={isReversingInstallment}
 				editingInstallment={editingInstallment}
 				onEditingInstallmentChange={setEditingInstallment}
 				onConfirmInstallmentEdition={handleConfirmInstallmentEdition}

@@ -4,9 +4,11 @@ import { createProduct } from "./create-product";
 import { deleteProduct } from "./delete-product";
 import { getProduct } from "./get-product";
 import { getProductCommissionScenarios } from "./get-product-commission-scenarios";
+import { getProductCommissionReversalRules } from "./get-product-commission-reversal-rules";
 import { getProductSaleFields } from "./get-product-sale-fields";
 import { getProducts } from "./get-products";
 import { replaceProductCommissionScenarios } from "./replace-product-commission-scenarios";
+import { replaceProductCommissionReversalRules } from "./replace-product-commission-reversal-rules";
 import { replaceProductSaleFields } from "./replace-product-sale-fields";
 import { updateProduct } from "./update-product";
 
@@ -26,6 +28,18 @@ function resolveProductsPermission(params: { method: string; routeUrl: string })
 				"sales.commissions.update",
 				"sales.commissions.manage",
 			] as const;
+		}
+
+		if (method === "PUT") {
+			return "registers.products.commissions.manage" as const;
+		}
+	}
+
+	if (
+		routeUrl === "/organizations/:slug/products/:id/commission-reversal-rules"
+	) {
+		if (method === "GET") {
+			return ["registers.products.view", ...salesReadPermissions] as const;
 		}
 
 		if (method === "PUT") {
@@ -69,6 +83,8 @@ export async function productRoutes(app: FastifyInstance) {
 	await app.register(getProduct);
 	await app.register(getProductCommissionScenarios);
 	await app.register(replaceProductCommissionScenarios);
+	await app.register(getProductCommissionReversalRules);
+	await app.register(replaceProductCommissionReversalRules);
 	await app.register(getProductSaleFields);
 	await app.register(replaceProductSaleFields);
 	await app.register(deleteProduct);

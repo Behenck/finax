@@ -1,4 +1,5 @@
 import { RefreshCcw } from "lucide-react";
+import { ptBR } from "date-fns/locale";
 import { FilterPanel } from "@/components/filter-panel";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
@@ -161,6 +162,7 @@ export function CommissionsFiltersPanel({
 						<SelectItem value="PENDING">Pendente</SelectItem>
 						<SelectItem value="PAID">Paga</SelectItem>
 						<SelectItem value="CANCELED">Cancelada</SelectItem>
+						<SelectItem value="REVERSED">Estornada</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
@@ -170,6 +172,7 @@ export function CommissionsFiltersPanel({
 				<CalendarDateInput
 					value={effectiveExpectedFrom}
 					onChange={onExpectedFromChange}
+					locale={ptBR}
 				/>
 			</div>
 
@@ -178,6 +181,7 @@ export function CommissionsFiltersPanel({
 				<CalendarDateInput
 					value={effectiveExpectedTo}
 					onChange={onExpectedToChange}
+					locale={ptBR}
 				/>
 			</div>
 

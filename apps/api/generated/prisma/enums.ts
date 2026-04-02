@@ -262,7 +262,8 @@ export type SaleCommissionCalculationBase = (typeof SaleCommissionCalculationBas
 export const SaleCommissionInstallmentStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',
-  CANCELED: 'CANCELED'
+  CANCELED: 'CANCELED',
+  REVERSED: 'REVERSED'
 } as const
 
 export type SaleCommissionInstallmentStatus = (typeof SaleCommissionInstallmentStatus)[keyof typeof SaleCommissionInstallmentStatus]

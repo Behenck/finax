@@ -11,6 +11,7 @@ interface CommissionsSummaryCardsProps {
 	receiveSummary: InstallmentDirectionSummary;
 	pendingSummaryForCurrentUser: InstallmentSummaryBucket;
 	paidSummaryForCurrentUser: InstallmentSummaryBucket;
+	reversedSummaryForCurrentUser: InstallmentSummaryBucket;
 }
 
 export function CommissionsSummaryCards({
@@ -19,6 +20,7 @@ export function CommissionsSummaryCards({
 	receiveSummary,
 	pendingSummaryForCurrentUser,
 	paidSummaryForCurrentUser,
+	reversedSummaryForCurrentUser,
 }: CommissionsSummaryCardsProps) {
 	return (
 		<div className="grid gap-3 md:grid-cols-2">
@@ -31,7 +33,9 @@ export function CommissionsSummaryCards({
 						</p>
 						<p className="text-xs text-muted-foreground">
 							Pendente: {formatCurrencyBRL(paySummary.pending.amount / 100)} ·{" "}
-							{paySummary.pending.count}/{paySummary.total.count} parcelas
+							{paySummary.pending.count}/{paySummary.total.count} parcelas ·
+							Estornadas:{" "}
+							{formatCurrencyBRL(paySummary.reversed.amount / 100)}
 						</p>
 					</Card>
 
@@ -43,7 +47,8 @@ export function CommissionsSummaryCards({
 						<p className="text-xs text-muted-foreground">
 							Pendente: {formatCurrencyBRL(receiveSummary.pending.amount / 100)}{" "}
 							· {receiveSummary.pending.count}/{receiveSummary.total.count}{" "}
-							parcelas
+							parcelas · Estornadas:{" "}
+							{formatCurrencyBRL(receiveSummary.reversed.amount / 100)}
 						</p>
 					</Card>
 				</>
@@ -65,7 +70,8 @@ export function CommissionsSummaryCards({
 							{formatCurrencyBRL(paidSummaryForCurrentUser.amount / 100)}
 						</p>
 						<p className="text-xs text-muted-foreground">
-							{paidSummaryForCurrentUser.count} parcela(s) recebida(s)
+							{paidSummaryForCurrentUser.count} parcela(s) recebida(s) ·{" "}
+							{reversedSummaryForCurrentUser.count} estornada(s)
 						</p>
 					</Card>
 				</>

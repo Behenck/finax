@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, ChevronUp, CirclePlus, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Controller,
 	type FieldErrors,
@@ -9,11 +11,11 @@ import {
 } from "react-hook-form";
 import { toast } from "sonner";
 import { FieldError as FormFieldError } from "@/components/field-error";
+import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import {
 	Select,
 	SelectContent,
@@ -27,10 +29,14 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
-	useGetOrganizationsSlugCategories,
+	useProductCommissionReversalRules,
+	useReplaceProductCommissionReversalRules,
+} from "@/hooks/commissions";
+import {
 	getOrganizationsSlugProductsIdCommissionScenariosQueryKey,
 	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
 	getOrganizationsSlugProductsQueryKey,
+	useGetOrganizationsSlugCategories,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugCostcenters,
 	useGetOrganizationsSlugMembersRole,
@@ -44,14 +50,12 @@ import {
 	usePutOrganizationsSlugProductsIdSaleFields,
 } from "@/http/generated";
 import { type ProductFormData, productSchema } from "@/schemas/product-schema";
+import type { ProductListItem } from "@/schemas/types/product";
 import {
 	SALE_DYNAMIC_FIELD_TYPE_LABEL,
 	SALE_DYNAMIC_FIELD_TYPE_VALUES,
 	type SaleDynamicFieldType,
 } from "@/schemas/types/sale-dynamic-fields";
-import type { ProductListItem } from "@/schemas/types/product";
-import { ChevronDown, ChevronUp, CirclePlus, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { ScenarioTabContent } from "./-components/scenario-tab-content";
 import {
 	createDefaultScenario,
@@ -130,6 +134,10 @@ export function ProductForm({
 		mutateAsync: replaceProductSaleFields,
 		isPending: isSavingSaleFields,
 	} = usePutOrganizationsSlugProductsIdSaleFields();
+	const {
+		mutateAsync: replaceCommissionReversalRules,
+		isPending: isSavingReversalRules,
+	} = useReplaceProductCommissionReversalRules();
 
 	const isEditMode = mode === "edit" && !!initialData;
 	const sourceProductId = isEditMode
@@ -200,6 +208,14 @@ export function ProductForm({
 			},
 		},
 	);
+	const {
+		data: commissionReversalRulesData,
+		isLoading: isLoadingCommissionReversalRules,
+		isError: isCommissionReversalRulesError,
+		error: commissionReversalRulesError,
+	} = useProductCommissionReversalRules(sourceProductId, {
+		enabled: !!organization?.slug && shouldLoadSourceProductData,
+	});
 
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productSchema),
@@ -217,6 +233,7 @@ export function ProductForm({
 				: (duplicateSalesTransactionCostCenterId ?? undefined),
 			scenarios: [],
 			saleFields: [],
+			commissionReversalRules: [],
 		},
 	});
 
@@ -250,6 +267,14 @@ export function ProductForm({
 		control,
 		name: "saleFields",
 	});
+	const {
+		fields: commissionReversalRuleFields,
+		append: appendCommissionReversalRule,
+		remove: removeCommissionReversalRule,
+	} = useFieldArray({
+		control,
+		name: "commissionReversalRules",
+	});
 
 	const scenarioValues = useWatch({ control, name: "scenarios" }) ?? [];
 	const saleFieldValues = useWatch({ control, name: "saleFields" }) ?? [];
@@ -259,7 +284,11 @@ export function ProductForm({
 		"commission-scenarios",
 	);
 	const isPending =
-		isCreating || isUpdating || isSavingScenarios || isSavingSaleFields;
+		isCreating ||
+		isUpdating ||
+		isSavingScenarios ||
+		isSavingSaleFields ||
+		isSavingReversalRules;
 	const resolvedActiveScenarioTab = scenarioFields.some(
 		(_, scenarioIndex) => `scenario-${scenarioIndex}` === activeScenarioTab,
 	)
@@ -372,9 +401,26 @@ export function ProductForm({
 		return resolveErrorMessage(normalizeApiError(saleFieldsError));
 	}, [isSaleFieldsError, saleFieldsError]);
 
+	const commissionReversalRulesLoadErrorMessage = useMemo(() => {
+		if (!isCommissionReversalRulesError) {
+			return null;
+		}
+
+		return resolveErrorMessage(normalizeApiError(commissionReversalRulesError));
+	}, [commissionReversalRulesError, isCommissionReversalRulesError]);
+
+	const commissionReversalRulesFormErrorMessage = useMemo(() => {
+		return resolveFirstFormErrorMessage(errors.commissionReversalRules);
+	}, [errors.commissionReversalRules]);
+
 	useEffect(() => {
 		if (!shouldLoadSourceProductData) return;
-		if (isLoadingScenarios || isLoadingSaleFields) return;
+		if (
+			isLoadingScenarios ||
+			isLoadingSaleFields ||
+			isLoadingCommissionReversalRules
+		)
+			return;
 		if (initializedFromApiRef.current && isDirty) return;
 
 		const currentName = getValues("name").trim();
@@ -404,9 +450,16 @@ export function ProductForm({
 					isDefault: option.isDefault,
 				})),
 			})),
+			commissionReversalRules: (commissionReversalRulesData?.rules ?? []).map(
+				(rule) => ({
+					installmentNumber: rule.installmentNumber,
+					percentage: rule.percentage,
+				}),
+			),
 		});
 		initializedFromApiRef.current = true;
 	}, [
+		commissionReversalRulesData,
 		duplicateSalesTransactionCategoryId,
 		duplicateSalesTransactionCostCenterId,
 		duplicateProductName,
@@ -414,6 +467,7 @@ export function ProductForm({
 		initialData,
 		isDirty,
 		isEditMode,
+		isLoadingCommissionReversalRules,
 		isLoadingSaleFields,
 		isLoadingScenarios,
 		reset,
@@ -423,6 +477,8 @@ export function ProductForm({
 	]);
 
 	useEffect(() => {
+		void mode;
+		void sourceProductId;
 		initializedFromApiRef.current = false;
 	}, [mode, sourceProductId]);
 
@@ -452,6 +508,18 @@ export function ProductForm({
 		});
 	};
 
+	const invalidateProductCommissionReversalRules = async (
+		productId: string,
+	) => {
+		await queryClient.invalidateQueries({
+			queryKey: [
+				"product-commission-reversal-rules",
+				organization!.slug,
+				productId,
+			],
+		});
+	};
+
 	const handleAddScenario = () => {
 		const nextIndex = scenarioFields.length;
 		appendScenario(createDefaultScenario(`Cenário ${nextIndex + 1}`));
@@ -477,6 +545,23 @@ export function ProductForm({
 			required: false,
 			options: [],
 		});
+	};
+
+	const handleAddCommissionReversalRule = () => {
+		const currentRules = getValues("commissionReversalRules") ?? [];
+		const nextInstallmentNumber =
+			currentRules.length > 0
+				? Math.max(...currentRules.map((rule) => rule.installmentNumber)) + 1
+				: 1;
+
+		appendCommissionReversalRule({
+			installmentNumber: nextInstallmentNumber,
+			percentage: 1,
+		});
+	};
+
+	const handleRemoveCommissionReversalRule = (ruleIndex: number) => {
+		removeCommissionReversalRule(ruleIndex);
 	};
 
 	const handleMoveSaleField = (fromIndex: number, toIndex: number) => {
@@ -614,6 +699,19 @@ export function ProductForm({
 		});
 	};
 
+	const saveProductCommissionReversalRules = async (
+		productId: string,
+		commissionReversalRules: ProductFormData["commissionReversalRules"],
+	) => {
+		await replaceCommissionReversalRules({
+			productId,
+			rules: commissionReversalRules.map((rule) => ({
+				installmentNumber: rule.installmentNumber,
+				percentage: rule.percentage,
+			})),
+		});
+	};
+
 	const onSubmit = async (data: ProductFormData) => {
 		const name = data.name.trim();
 		const salesTransactionCategoryId = data.salesTransactionCategoryId ?? null;
@@ -672,8 +770,13 @@ export function ProductForm({
 			try {
 				await saveProductCommissionScenarios(createdProductId, data.scenarios);
 				await saveProductSaleFields(createdProductId, data.saleFields);
+				await saveProductCommissionReversalRules(
+					createdProductId,
+					data.commissionReversalRules,
+				);
 				await invalidateProductCommissionScenarios(createdProductId);
 				await invalidateProductSaleFields(createdProductId);
+				await invalidateProductCommissionReversalRules(createdProductId);
 				await invalidateProducts();
 				toast.success("Produto cadastrado com sucesso");
 				onSuccess?.();
@@ -682,11 +785,11 @@ export function ProductForm({
 				const message = resolveErrorMessage(normalizeApiError(error));
 				if (isDatabaseSchemaOutdatedMessage(message)) {
 					toast.error(
-						`Produto cadastrado, mas as regras de comissão/campos não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
+						`Produto cadastrado, mas as regras de comissão/campos/estorno não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
 					);
 				} else {
 					toast.error(
-						`Produto cadastrado, mas as regras de comissão/campos não foram salvas. ${message}. Edite o produto para concluir a configuração.`,
+						`Produto cadastrado, mas as regras de comissão/campos/estorno não foram salvas. ${message}. Edite o produto para concluir a configuração.`,
 					);
 				}
 				onSuccess?.();
@@ -719,8 +822,13 @@ export function ProductForm({
 		try {
 			await saveProductCommissionScenarios(initialData.id, data.scenarios);
 			await saveProductSaleFields(initialData.id, data.saleFields);
+			await saveProductCommissionReversalRules(
+				initialData.id,
+				data.commissionReversalRules,
+			);
 			await invalidateProductCommissionScenarios(initialData.id);
 			await invalidateProductSaleFields(initialData.id);
+			await invalidateProductCommissionReversalRules(initialData.id);
 			await invalidateProducts();
 			toast.success("Produto atualizado com sucesso");
 			onSuccess?.();
@@ -729,11 +837,11 @@ export function ProductForm({
 			const message = resolveErrorMessage(normalizeApiError(error));
 			if (isDatabaseSchemaOutdatedMessage(message)) {
 				toast.error(
-					`Produto atualizado, mas as regras de comissão/campos não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
+					`Produto atualizado, mas as regras de comissão/campos/estorno não foram salvas. ${message} Execute as migrações no backend ("pnpm --filter @sass/api db:migrate" local ou "pnpm --filter @sass/api db:migrate:deploy" em deploy) e tente novamente.`,
 				);
 			} else {
 				toast.error(
-					`Produto atualizado, mas as regras de comissão/campos não foram salvas. ${message}. Ajuste os dados e tente novamente.`,
+					`Produto atualizado, mas as regras de comissão/campos/estorno não foram salvas. ${message}. Ajuste os dados e tente novamente.`,
 				);
 			}
 		}
@@ -783,6 +891,9 @@ export function ProductForm({
 						className="rounded-sm font-normal"
 					>
 						Cenários de comissão
+					</TabsTrigger>
+					<TabsTrigger value="reversal-rules" className="rounded-sm font-normal">
+						Cenário de estorno
 					</TabsTrigger>
 					<TabsTrigger value="sale-fields" className="rounded-sm font-normal">
 						Campos da venda
@@ -1060,6 +1171,129 @@ export function ProductForm({
 							})
 						)}
 					</div>
+				</TabsContent>
+
+				<TabsContent value="reversal-rules" className="space-y-4">
+					<Card className="space-y-4 p-4">
+						<div className="flex items-center justify-between gap-3">
+							<div className="space-y-1">
+								<p className="text-sm font-medium">
+									Regra de estorno por parcela
+								</p>
+								<p className="text-muted-foreground text-xs">
+									Defina o percentual de estorno por número da parcela do
+									produto.
+								</p>
+							</div>
+							<Button
+								type="button"
+								variant="outline"
+								className="font-normal"
+								onClick={handleAddCommissionReversalRule}
+							>
+								<CirclePlus />
+								Adicionar regra
+							</Button>
+						</div>
+
+						{shouldLoadSourceProductData && isLoadingCommissionReversalRules ? (
+							<p className="text-muted-foreground text-sm">
+								Carregando regras de estorno...
+							</p>
+						) : shouldLoadSourceProductData &&
+							isCommissionReversalRulesError ? (
+							<div className="space-y-2">
+								<p className="text-destructive text-sm">
+									{commissionReversalRulesLoadErrorMessage ??
+										"Não foi possível carregar as regras de estorno."}
+								</p>
+								{isDatabaseSchemaOutdatedMessage(
+									commissionReversalRulesLoadErrorMessage ?? "",
+								) ? (
+									<p className="text-muted-foreground text-xs">
+										Execute as migrações no backend e tente novamente.
+									</p>
+								) : null}
+							</div>
+						) : commissionReversalRuleFields.length === 0 ? (
+							<p className="text-muted-foreground text-sm">
+								Sem regra cadastrada. Ao estornar, o valor será manual quando
+								não houver regra para a parcela.
+							</p>
+						) : (
+							<div className="space-y-3">
+								{commissionReversalRuleFields.map((ruleField, ruleIndex) => (
+									<div
+										key={ruleField.id}
+										className="grid gap-3 rounded-md border p-3 md:grid-cols-[180px_200px_auto]"
+									>
+										<Field className="gap-1">
+											<FieldLabel>Parcela</FieldLabel>
+											<Input
+												type="number"
+												min={1}
+												step={1}
+												{...register(
+													`commissionReversalRules.${ruleIndex}.installmentNumber`,
+													{
+														valueAsNumber: true,
+													},
+												)}
+											/>
+											<FormFieldError
+												error={
+													errors.commissionReversalRules?.[ruleIndex]
+														?.installmentNumber
+												}
+											/>
+										</Field>
+
+										<Field className="gap-1">
+											<FieldLabel>% Estorno</FieldLabel>
+											<Input
+												type="number"
+												min={0.0001}
+												max={100}
+												step={0.0001}
+												{...register(
+													`commissionReversalRules.${ruleIndex}.percentage`,
+													{
+														valueAsNumber: true,
+													},
+												)}
+											/>
+											<FormFieldError
+												error={
+													errors.commissionReversalRules?.[ruleIndex]
+														?.percentage
+												}
+											/>
+										</Field>
+
+										<div className="flex items-end justify-end">
+											<Button
+												type="button"
+												variant="outline"
+												size="icon"
+												aria-label="Remover regra"
+												onClick={() =>
+													handleRemoveCommissionReversalRule(ruleIndex)
+												}
+											>
+												<Trash2 className="size-4" />
+											</Button>
+										</div>
+									</div>
+								))}
+							</div>
+						)}
+
+						{commissionReversalRulesFormErrorMessage ? (
+							<p className="text-destructive text-sm">
+								{commissionReversalRulesFormErrorMessage}
+							</p>
+						) : null}
+					</Card>
 				</TabsContent>
 
 				<TabsContent value="commission-scenarios" className="space-y-4">

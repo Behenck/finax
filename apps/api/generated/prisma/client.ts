@@ -155,6 +155,11 @@ export type Seller = Prisma.SellerModel
  */
 export type Product = Prisma.ProductModel
 /**
+ * Model ProductCommissionReversalRule
+ * 
+ */
+export type ProductCommissionReversalRule = Prisma.ProductCommissionReversalRuleModel
+/**
  * Model ProductSaleField
  * 
  */

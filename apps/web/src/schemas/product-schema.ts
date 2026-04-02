@@ -29,6 +29,20 @@ const commissionInstallmentSchema = z.object({
 	percentage: percentageSchema,
 });
 
+const commissionReversalRuleSchema = z.object({
+	installmentNumber: z
+		.number({ error: "Informe o número da parcela" })
+		.int("Informe o número da parcela")
+		.min(1, "Informe um número de parcela válido"),
+	percentage: z
+		.number({ error: "Informe um percentual válido" })
+		.gt(0, "Informe um percentual maior que zero")
+		.max(100, "Informe um percentual válido")
+		.refine(hasUpTo4Decimals, {
+			message: "Use no máximo 4 casas decimais",
+		}),
+});
+
 const productCommissionSchema = z
 	.object({
 		recipientType: z.enum([
@@ -209,6 +223,7 @@ export const productSchema = z
 		salesTransactionCostCenterId: z.uuid().optional(),
 		scenarios: z.array(productCommissionScenarioSchema),
 		saleFields: z.array(productSaleFieldSchema),
+		commissionReversalRules: z.array(commissionReversalRuleSchema),
 	})
 	.superRefine((data, ctx) => {
 		const scenarioNames = new Set<string>();
@@ -306,6 +321,18 @@ export const productSchema = z
 				});
 			}
 			saleFieldLabels.add(normalizedFieldLabel);
+		}
+
+		const reversalRuleInstallments = new Set<number>();
+		for (const [ruleIndex, rule] of data.commissionReversalRules.entries()) {
+			if (reversalRuleInstallments.has(rule.installmentNumber)) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Número da parcela repetido",
+					path: ["commissionReversalRules", ruleIndex, "installmentNumber"],
+				});
+			}
+			reversalRuleInstallments.add(rule.installmentNumber);
 		}
 	});
 

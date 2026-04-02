@@ -44,19 +44,19 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
     byStatus: z.object({
       PENDING: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       APPROVED: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       COMPLETED: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       CANCELED: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
     }),
     timeline: z.array(
@@ -90,37 +90,45 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
       INCOME: z.object({
         total: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         pending: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         paid: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         canceled: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
+        }),
+        reversed: z.object({
+          count: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
       }),
       OUTCOME: z.object({
         total: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         pending: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         paid: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         canceled: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
+        }),
+        reversed: z.object({
+          count: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
       }),
       netAmount: z.int().min(-9007199254740991).max(9007199254740991),
@@ -129,37 +137,45 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
       INCOME: z.object({
         total: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         pending: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         paid: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         canceled: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
+        }),
+        reversed: z.object({
+          count: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
       }),
       OUTCOME: z.object({
         total: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         pending: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         paid: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
         canceled: z.object({
           count: z.int().min(0).max(9007199254740991),
-          amount: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
+        }),
+        reversed: z.object({
+          count: z.int().min(0).max(9007199254740991),
+          amount: z.int().min(-9007199254740991).max(9007199254740991),
         }),
       }),
       netAmount: z.int().min(-9007199254740991).max(9007199254740991),

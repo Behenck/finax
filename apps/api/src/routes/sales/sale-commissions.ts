@@ -1401,6 +1401,7 @@ type InstallmentDirectionSummary = {
 	pending: InstallmentSummaryBucket;
 	paid: InstallmentSummaryBucket;
 	canceled: InstallmentSummaryBucket;
+	reversed: InstallmentSummaryBucket;
 };
 
 type InstallmentSummaryByDirection = Record<
@@ -1423,7 +1424,7 @@ export async function loadOrganizationInstallmentsSummaryByDirection(
 ): Promise<InstallmentSummaryByDirection> {
 	const summaries = await Promise.all(
 		saleCommissionDirections.map(async (direction) => {
-			const [total, pending, paid, canceled] = await Promise.all([
+			const [total, pending, paid, canceled, reversed] = await Promise.all([
 				prisma.saleCommissionInstallment.aggregate({
 					where: buildOrganizationCommissionInstallmentsWhere({
 						...filters,
@@ -1475,6 +1476,19 @@ export async function loadOrganizationInstallmentsSummaryByDirection(
 						amount: true,
 					},
 				}),
+				prisma.saleCommissionInstallment.aggregate({
+					where: buildOrganizationCommissionInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.REVERSED,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
 			]);
 
 			return [
@@ -1484,6 +1498,7 @@ export async function loadOrganizationInstallmentsSummaryByDirection(
 					pending: toInstallmentSummaryBucket(pending),
 					paid: toInstallmentSummaryBucket(paid),
 					canceled: toInstallmentSummaryBucket(canceled),
+					reversed: toInstallmentSummaryBucket(reversed),
 				},
 			] as const;
 		}),

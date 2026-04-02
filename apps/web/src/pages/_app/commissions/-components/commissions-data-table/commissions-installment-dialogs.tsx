@@ -33,7 +33,18 @@ import type {
 	CommissionInstallmentRow,
 	InstallmentEditState,
 	InstallmentPayAction,
+	InstallmentReversalAction,
 } from "./types";
+
+function formatInstallmentAmountInput(value: string, forceNegative: boolean) {
+	const formattedValue = formatCurrencyBRL(value).replace(/^-/, "");
+
+	if (!forceNegative) {
+		return formattedValue;
+	}
+
+	return `-${formattedValue}`;
+}
 
 interface CommissionsInstallmentDialogsProps {
 	selectedInstallmentsCount: number;
@@ -51,6 +62,12 @@ interface CommissionsInstallmentDialogsProps {
 	onPayActionChange: Dispatch<SetStateAction<InstallmentPayAction | null>>;
 	onConfirmInstallmentPayment: () => void;
 	isPatchingStatus: boolean;
+	reversalAction: InstallmentReversalAction | null;
+	onReversalActionChange: Dispatch<
+		SetStateAction<InstallmentReversalAction | null>
+	>;
+	onConfirmInstallmentReversal: () => void;
+	isReversingInstallment: boolean;
 	editingInstallment: InstallmentEditState | null;
 	onEditingInstallmentChange: Dispatch<
 		SetStateAction<InstallmentEditState | null>
@@ -79,6 +96,10 @@ export function CommissionsInstallmentDialogs({
 	onPayActionChange,
 	onConfirmInstallmentPayment,
 	isPatchingStatus,
+	reversalAction,
+	onReversalActionChange,
+	onConfirmInstallmentReversal,
+	isReversingInstallment,
 	editingInstallment,
 	onEditingInstallmentChange,
 	onConfirmInstallmentEdition,
@@ -88,6 +109,15 @@ export function CommissionsInstallmentDialogs({
 	onConfirmInstallmentDelete,
 	isDeletingInstallment,
 }: CommissionsInstallmentDialogsProps) {
+	const parsedReversalAmount =
+		reversalAction?.manualAmount.trim().length
+			? Number(reversalAction.manualAmount.replace(",", ".").trim())
+			: Number.NaN;
+	const isReversalAmountInvalid =
+		!Number.isFinite(parsedReversalAmount) || parsedReversalAmount === 0;
+	const shouldForceNegativeEditAmount =
+		editingInstallment?.status === "REVERSED";
+
 	return (
 		<>
 			<Dialog
@@ -214,6 +244,150 @@ export function CommissionsInstallmentDialogs({
 			</AlertDialog>
 
 			<Dialog
+				open={Boolean(reversalAction)}
+				onOpenChange={(open) => {
+					if (!open) {
+						onReversalActionChange(null);
+					}
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Estornar parcela</DialogTitle>
+						<DialogDescription>
+							Confirme o estorno da parcela{" "}
+							{reversalAction
+								? `P${reversalAction.installment.installmentNumber}`
+								: ""}
+							.
+						</DialogDescription>
+					</DialogHeader>
+
+					<div className="space-y-4">
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Data do estorno</p>
+							<CalendarDateInput
+								value={reversalAction?.reversalDate ?? ""}
+								onChange={(value) => {
+									onReversalActionChange((current) =>
+										current
+											? {
+													...current,
+													reversalDate: value,
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
+
+						{reversalAction?.calculationStatus === "LOADING" ? (
+							<div className="space-y-2 rounded-md border p-3">
+								<p className="text-sm font-medium">
+									Calculando regra automática...
+								</p>
+								<div className="h-3 w-4/5 animate-pulse rounded bg-muted" />
+								<div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+							</div>
+						) : null}
+
+						{reversalAction?.calculationStatus === "ERROR" ? (
+							<div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3">
+								<p className="text-sm font-medium text-amber-700 dark:text-amber-300">
+									Não foi possível calcular automaticamente.
+								</p>
+								<p className="text-xs text-amber-700 dark:text-amber-300">
+									{reversalAction.calculationError ??
+										"Preencha o valor manualmente para continuar."}
+								</p>
+							</div>
+						) : null}
+
+						{reversalAction?.mode === "AUTO" ? (
+							<div className="space-y-2 rounded-md border p-3">
+								<p className="text-sm font-medium">
+									Regra automática do produto
+								</p>
+								<p className="text-sm text-muted-foreground">
+									Parcela {reversalAction.installment.installmentNumber}:{" "}
+									{reversalAction.rulePercentage ?? 0}% sobre o total pago
+									positivo acumulado.
+								</p>
+								<p className="text-sm text-muted-foreground">
+									Total pago positivo:{" "}
+									{formatCurrencyBRL(
+										(reversalAction.totalPaidAmount ?? 0) / 100,
+									)}
+								</p>
+								<p className="text-sm font-medium">
+									Valor do estorno:{" "}
+									{formatCurrencyBRL(
+										(reversalAction.calculatedAmount ?? 0) / 100,
+									)}
+								</p>
+								{(reversalAction.calculatedAmount ?? 0) === 0 ? (
+									<p className="text-destructive text-xs">
+										O valor sugerido ficou zerado. Ajuste o valor para
+										continuar.
+									</p>
+								) : null}
+							</div>
+						) : null}
+
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Valor do estorno (R$)</p>
+							<Input
+								type="number"
+								step="0.01"
+								placeholder={
+									reversalAction?.calculationStatus === "LOADING"
+										? "Carregando valor sugerido..."
+										: "-130.00"
+								}
+								value={reversalAction?.manualAmount ?? ""}
+								onChange={(event) => {
+									onReversalActionChange((current) =>
+										current
+											? {
+													...current,
+													hasManualOverride: true,
+													manualAmount: event.target.value,
+												}
+											: current,
+									);
+								}}
+							/>
+							{reversalAction?.calculationStatus === "LOADING" &&
+							!reversalAction.manualAmount ? (
+								<div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+							) : null}
+							<p className="text-muted-foreground text-xs">
+								Informe um valor negativo para estorno (ex.: -130.00).
+							</p>
+						</div>
+					</div>
+
+					<DialogFooter>
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => onReversalActionChange(null)}
+							disabled={isReversingInstallment}
+						>
+							Cancelar
+						</Button>
+						<Button
+							type="button"
+							onClick={onConfirmInstallmentReversal}
+							disabled={isReversingInstallment || isReversalAmountInvalid}
+						>
+							{isReversingInstallment ? "Estornando..." : "Confirmar estorno"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog
 				open={Boolean(editingInstallment)}
 				onOpenChange={(open) => {
 					if (!open) {
@@ -261,7 +435,10 @@ export function CommissionsInstallmentDialogs({
 											current
 												? {
 														...current,
-														amount: formatCurrencyBRL(event.target.value),
+														amount: formatInstallmentAmountInput(
+															event.target.value,
+															current.status === "REVERSED",
+														),
 													}
 												: current,
 										);
@@ -281,6 +458,10 @@ export function CommissionsInstallmentDialogs({
 												? {
 														...current,
 														status: value as SaleCommissionInstallmentStatus,
+														amount: formatInstallmentAmountInput(
+															current.amount,
+															value === "REVERSED",
+														),
 													}
 												: current,
 										);
@@ -293,6 +474,7 @@ export function CommissionsInstallmentDialogs({
 										<SelectItem value="PENDING">Pendente</SelectItem>
 										<SelectItem value="PAID">Paga</SelectItem>
 										<SelectItem value="CANCELED">Cancelada</SelectItem>
+										<SelectItem value="REVERSED">Estornada</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -314,9 +496,20 @@ export function CommissionsInstallmentDialogs({
 							</div>
 						</div>
 
-						{editingInstallment?.status === "PAID" ? (
+						{shouldForceNegativeEditAmount ? (
+							<p className="text-muted-foreground text-xs">
+								Para status estornada, o valor deve permanecer negativo.
+							</p>
+						) : null}
+
+						{editingInstallment?.status === "PAID" ||
+						editingInstallment?.status === "REVERSED" ? (
 							<div className="space-y-1">
-								<p className="text-sm font-medium">Data de pagamento</p>
+								<p className="text-sm font-medium">
+									{editingInstallment.status === "REVERSED"
+										? "Data do estorno"
+										: "Data de pagamento"}
+								</p>
 								<CalendarDateInput
 									value={editingInstallment.paymentDate}
 									onChange={(value) => {

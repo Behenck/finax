@@ -148,7 +148,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
          */
         count: number;
         /**
-         * @minLength 0
+         * @minLength -9007199254740991
          * @maxLength 9007199254740991
          * @type integer
          */
@@ -165,7 +165,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
          */
         count: number;
         /**
-         * @minLength 0
+         * @minLength -9007199254740991
          * @maxLength 9007199254740991
          * @type integer
          */
@@ -182,7 +182,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
          */
         count: number;
         /**
-         * @minLength 0
+         * @minLength -9007199254740991
          * @maxLength 9007199254740991
          * @type integer
          */
@@ -199,7 +199,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
          */
         count: number;
         /**
-         * @minLength 0
+         * @minLength -9007199254740991
          * @maxLength 9007199254740991
          * @type integer
          */
@@ -309,7 +309,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -326,7 +326,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -343,7 +343,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -360,7 +360,24 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
+           * @minLength -9007199254740991
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          amount: number;
+        };
+        /**
+         * @type object
+         */
+        reversed: {
+          /**
            * @minLength 0
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          count: number;
+          /**
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -382,7 +399,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -399,7 +416,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -416,7 +433,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -433,7 +450,24 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
+           * @minLength -9007199254740991
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          amount: number;
+        };
+        /**
+         * @type object
+         */
+        reversed: {
+          /**
            * @minLength 0
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          count: number;
+          /**
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -466,7 +500,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -483,7 +517,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -500,7 +534,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -517,7 +551,24 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
+           * @minLength -9007199254740991
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          amount: number;
+        };
+        /**
+         * @type object
+         */
+        reversed: {
+          /**
            * @minLength 0
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          count: number;
+          /**
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -539,7 +590,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -556,7 +607,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -573,7 +624,7 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
-           * @minLength 0
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */
@@ -590,7 +641,24 @@ export type GetOrganizationsSlugSalesDashboard200 = {
            */
           count: number;
           /**
+           * @minLength -9007199254740991
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          amount: number;
+        };
+        /**
+         * @type object
+         */
+        reversed: {
+          /**
            * @minLength 0
+           * @maxLength 9007199254740991
+           * @type integer
+           */
+          count: number;
+          /**
+           * @minLength -9007199254740991
            * @maxLength 9007199254740991
            * @type integer
            */

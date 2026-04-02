@@ -130,6 +130,7 @@ export function CommissionsSection({
 				<SaleInstallmentsPanel
 					saleId={initialSaleId ?? ""}
 					saleStatus={initialSaleStatus}
+					saleProductId={selectedProductId}
 					enabled={isInstallmentsSectionVisible}
 				/>
 			</Card>

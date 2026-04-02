@@ -13,6 +13,7 @@ interface SaleInstallmentsDrawerProps {
 	onOpenChange(open: boolean): void;
 	saleId: string;
 	saleStatus: SaleStatus;
+	saleProductId: string;
 	saleCommissionId?: string;
 }
 
@@ -21,6 +22,7 @@ export function SaleInstallmentsDrawer({
 	onOpenChange,
 	saleId,
 	saleStatus,
+	saleProductId,
 	saleCommissionId,
 }: SaleInstallmentsDrawerProps) {
 	const isCommissionScoped = Boolean(saleCommissionId);
@@ -48,6 +50,7 @@ export function SaleInstallmentsDrawer({
 					<SaleInstallmentsPanel
 						saleId={saleId}
 						saleStatus={saleStatus}
+						saleProductId={saleProductId}
 						saleCommissionId={saleCommissionId}
 						enabled={open}
 					/>

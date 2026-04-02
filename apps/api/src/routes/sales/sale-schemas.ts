@@ -217,7 +217,7 @@ export const SaleCommissionInputSchema = z
 const SaleCommissionInstallmentDetailSchema = z.object({
 	installmentNumber: z.number().int().min(1),
 	percentage: CommissionPercentageSchema,
-	amount: z.number().int().nonnegative(),
+	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
 	expectedPaymentDate: z.date(),
 	paymentDate: z.date().nullable(),
@@ -234,7 +234,7 @@ export const SaleCommissionDetailSchema = z.object({
 	beneficiaryLabel: z.string().nullable(),
 	startDate: z.date(),
 	totalPercentage: CommissionTotalPercentageSchema,
-	totalAmount: z.number().int().nonnegative(),
+	totalAmount: z.number().int(),
 	sortOrder: z.number().int().nonnegative(),
 	installments: z.array(SaleCommissionInstallmentDetailSchema).min(1),
 });
@@ -244,6 +244,7 @@ export const SaleCommissionInstallmentsSummarySchema = z.object({
 	pending: z.number().int().nonnegative(),
 	paid: z.number().int().nonnegative(),
 	canceled: z.number().int().nonnegative(),
+	reversed: z.number().int().nonnegative(),
 });
 
 export const SaleCommissionInstallmentRowSchema = z.object({
@@ -257,7 +258,7 @@ export const SaleCommissionInstallmentRowSchema = z.object({
 	beneficiaryLabel: z.string().nullable(),
 	installmentNumber: z.number().int().min(1),
 	percentage: CommissionPercentageSchema,
-	amount: z.number().int().nonnegative(),
+	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
 	expectedPaymentDate: z.date(),
 	paymentDate: z.date().nullable(),
@@ -268,6 +269,7 @@ const saleCommissionInstallmentStatusFilterValues = [
 	"PENDING",
 	"PAID",
 	"CANCELED",
+	"REVERSED",
 ] as const;
 
 export const SaleCommissionInstallmentStatusFilterSchema = z.enum(
@@ -312,7 +314,7 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 	beneficiaryLabel: z.string().nullable(),
 	beneficiaryKey: z.string().min(1),
 	percentage: CommissionPercentageSchema,
-	amount: z.number().int().nonnegative(),
+	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
 	expectedPaymentDate: z.date(),
 	paymentDate: z.date().nullable(),
@@ -320,7 +322,7 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 
 export const CommissionInstallmentSummaryBucketSchema = z.object({
 	count: z.number().int().nonnegative(),
-	amount: z.number().int().nonnegative(),
+	amount: z.number().int(),
 });
 
 export const CommissionInstallmentDirectionSummarySchema = z.object({
@@ -328,6 +330,7 @@ export const CommissionInstallmentDirectionSummarySchema = z.object({
 	pending: CommissionInstallmentSummaryBucketSchema,
 	paid: CommissionInstallmentSummaryBucketSchema,
 	canceled: CommissionInstallmentSummaryBucketSchema,
+	reversed: CommissionInstallmentSummaryBucketSchema,
 });
 
 export const OrganizationCommissionInstallmentsResponseSchema = z.object({
@@ -549,7 +552,7 @@ export const PatchSaleCommissionInstallmentStatusBodySchema = z
 export const PatchSaleCommissionInstallmentBodySchema = z
 	.object({
 		percentage: CommissionPercentageSchema.optional(),
-		amount: z.number().int().nonnegative().optional(),
+		amount: z.number().int().optional(),
 		status: SaleCommissionInstallmentStatusSchema.optional(),
 		expectedPaymentDate: SaleDateInputSchema.optional(),
 		paymentDate: SaleDateInputSchema.nullable().optional(),

@@ -120,6 +120,9 @@ export async function patchSalesStatusBulk(app: FastifyInstance) {
 										saleCommission: {
 											saleId: sale.id,
 										},
+										status: {
+											not: SaleCommissionInstallmentStatus.REVERSED,
+										},
 									},
 									data: {
 										status: SaleCommissionInstallmentStatus.CANCELED,

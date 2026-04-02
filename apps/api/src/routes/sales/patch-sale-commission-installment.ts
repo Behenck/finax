@@ -125,6 +125,7 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 								id: true,
 								saleCommissionId: true,
 								status: true,
+								amount: true,
 								paymentDate: true,
 							},
 						});
@@ -134,13 +135,29 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 						}
 
 						const finalStatus = data.status ?? installment.status;
+						const finalAmount = data.amount ?? installment.amount;
+						const statusRequiresPaymentDate =
+							finalStatus === "PAID" || finalStatus === "REVERSED";
+
+						if (finalStatus === "REVERSED" && finalAmount >= 0) {
+							throw new BadRequestError(
+								"Reversed installment amount must be a negative value",
+							);
+						}
+
+						if (finalStatus !== "REVERSED" && finalAmount < 0) {
+							throw new BadRequestError(
+								"Negative amount is only allowed for reversed installments",
+							);
+						}
+
 						const nextPaymentDate =
-							finalStatus === "PAID"
+							statusRequiresPaymentDate
 								? data.paymentDate !== undefined
 									? data.paymentDate
 										? parseSaleDateInput(data.paymentDate)
 										: null
-									: installment.status === "PAID" && installment.paymentDate
+									: installment.status === finalStatus && installment.paymentDate
 										? installment.paymentDate
 										: getCurrentDateUtc()
 								: null;

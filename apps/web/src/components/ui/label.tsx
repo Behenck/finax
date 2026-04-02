@@ -1,5 +1,5 @@
-import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -13,14 +13,16 @@ function highlightAsterisks(
 		}
 
 		const parts = node.split("*");
-		return parts.flatMap((part, index) => {
-			if (index === parts.length - 1) {
+		let cursor = 0;
+		return parts.flatMap((part, partIndex) => {
+			if (partIndex === parts.length - 1) {
 				return part;
 			}
+			cursor += part.length + 1;
 
 			return [
 				part,
-				<span key={`${keyPrefix}-star-${index}`} className="text-destructive">
+				<span key={`${keyPrefix}-star-${cursor}`} className="text-destructive">
 					*
 				</span>,
 			];
@@ -34,7 +36,9 @@ function highlightAsterisks(
 	}
 
 	if (React.isValidElement(node)) {
-		const elementChildren = node.props.children as React.ReactNode;
+		const elementChildren = (
+			node as React.ReactElement<{ children?: React.ReactNode }>
+		).props.children;
 
 		if (elementChildren == null) {
 			return node;

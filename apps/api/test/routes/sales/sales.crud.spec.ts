@@ -1524,6 +1524,7 @@ describe("sales crud", () => {
 			pending: 0,
 			paid: 0,
 			canceled: 0,
+			reversed: 0,
 		});
 
 		const secondSale = response.body.sales.find(
@@ -1536,6 +1537,7 @@ describe("sales crud", () => {
 			pending: 3,
 			paid: 0,
 			canceled: 0,
+			reversed: 0,
 		});
 	});
 
@@ -2347,6 +2349,10 @@ describe("sales crud", () => {
 				count: 0,
 				amount: 0,
 			},
+			reversed: {
+				count: 0,
+				amount: 0,
+			},
 		});
 		expect(response.body.summaryByDirection.INCOME).toEqual({
 			total: {
@@ -2362,6 +2368,10 @@ describe("sales crud", () => {
 				amount: 0,
 			},
 			canceled: {
+				count: 0,
+				amount: 0,
+			},
+			reversed: {
 				count: 0,
 				amount: 0,
 			},
@@ -2928,6 +2938,495 @@ describe("sales crud", () => {
 
 		expect(installment?.status).toBe("PENDING");
 		expect(installment?.paymentDate).toBeNull();
+	});
+
+	it("should apply automatic reversal using product rule on pending installment", async () => {
+		const fixture = await createFixture();
+		await prisma.productCommissionReversalRule.create({
+			data: {
+				productId: fixture.product.id,
+				installmentNumber: 2,
+				percentage: 650_000,
+			},
+		});
+
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const sellerInstallments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallments[0]?.id}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				amount: 10_000,
+				paymentDate: "2026-03-20",
+			});
+
+		const reverseResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallments[1]?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+			});
+
+		expect(reverseResponse.statusCode).toBe(204);
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: sellerInstallments[1]?.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+				},
+			});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.amount).toBe(-6_500);
+		expect(reversedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-03-25",
+		);
+	});
+
+	it("should apply automatic reversal using parent product rule when child has no local rules", async () => {
+		const fixture = await createFixture();
+		const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+
+		const parentProduct = await prisma.product.create({
+			data: {
+				organizationId: fixture.org.id,
+				name: `Parent reversal product ${suffix}`,
+				description: "Parent product for reversal rule inheritance",
+			},
+		});
+		const childProduct = await prisma.product.create({
+			data: {
+				organizationId: fixture.org.id,
+				parentId: parentProduct.id,
+				name: `Child reversal product ${suffix}`,
+				description: "Child product without local reversal rules",
+			},
+		});
+
+		await prisma.productCommissionReversalRule.create({
+			data: {
+				productId: parentProduct.id,
+				installmentNumber: 2,
+				percentage: 650_000,
+			},
+		});
+
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				productId: childProduct.id,
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const sellerInstallments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallments[0]?.id}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				amount: 10_000,
+				paymentDate: "2026-03-20",
+			});
+
+		const reverseResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${sellerInstallments[1]?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+			});
+
+		expect(reverseResponse.statusCode).toBe(204);
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: sellerInstallments[1]?.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+				},
+			});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.amount).toBe(-6_500);
+		expect(reversedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-03-25",
+		);
+	});
+
+	it("should prioritize manual override when rule exists and require negative value", async () => {
+		const fixture = await createFixture();
+		await prisma.productCommissionReversalRule.create({
+			data: {
+				productId: fixture.product.id,
+				installmentNumber: 2,
+				percentage: 650_000,
+			},
+		});
+
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installment = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				installmentNumber: 2,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const invalidReverseResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+				manualAmount: 1234,
+			});
+
+		expect(invalidReverseResponse.statusCode).toBe(400);
+
+		const reverseResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+				manualAmount: -1234,
+			});
+
+		expect(reverseResponse.statusCode).toBe(204);
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment?.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+				},
+			});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.amount).toBe(-1234);
+		expect(reversedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-03-25",
+		);
+	});
+
+	it("should require manual amount when no rule exists and require negative value", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installment = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				installmentNumber: 1,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const missingManualAmountResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+			});
+
+		expect(missingManualAmountResponse.statusCode).toBe(400);
+
+		const invalidManualAmountResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+				manualAmount: 0,
+			});
+
+		expect(invalidManualAmountResponse.statusCode).toBe(400);
+
+		const invalidPositiveManualResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+				manualAmount: 777,
+			});
+
+		expect(invalidPositiveManualResponse.statusCode).toBe(400);
+
+		const applyManualResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-25",
+				manualAmount: -777,
+			});
+
+		expect(applyManualResponse.statusCode).toBe(204);
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment?.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+				},
+		});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.amount).toBe(-777);
+		expect(reversedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			"2026-03-25",
+		);
+	});
+
+	it("should allow reversal for paid installments", async () => {
+		const fixture = await createFixture();
+		await prisma.productCommissionReversalRule.create({
+			data: {
+				productId: fixture.product.id,
+				installmentNumber: 1,
+				percentage: 800_000,
+			},
+		});
+
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installment = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				installmentNumber: 1,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				amount: 10_000,
+				paymentDate: "2026-03-20",
+			});
+
+		const reverseResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-26",
+			});
+
+		expect(reverseResponse.statusCode).toBe(204);
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment?.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+				},
+			});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.amount).toBe(-8_000);
+	});
+
+	it("should keep reversed installment status when sale is canceled", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installment = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				installmentNumber: 1,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment?.id}/reversal`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				reversalDate: "2026-03-26",
+				manualAmount: -500,
+			});
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "CANCELED",
+			});
+
+		const reversedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment?.id,
+				},
+				select: {
+					status: true,
+					paymentDate: true,
+				},
+			});
+
+		expect(reversedInstallment?.status).toBe("REVERSED");
+		expect(reversedInstallment?.paymentDate).not.toBeNull();
 	});
 
 	it("should fail when installment patch makes commission total percentage non-positive", async () => {

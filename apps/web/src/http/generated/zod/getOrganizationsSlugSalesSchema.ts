@@ -57,6 +57,7 @@ export const getOrganizationsSlugSales200Schema = z.object({
         pending: z.int().min(0).max(9007199254740991),
         paid: z.int().min(0).max(9007199254740991),
         canceled: z.int().min(0).max(9007199254740991),
+        reversed: z.int().min(0).max(9007199254740991),
       }),
     }),
   ),

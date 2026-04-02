@@ -36,6 +36,7 @@ export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmenti
     PENDING: "PENDING",
     PAID: "PAID",
     CANCELED: "CANCELED",
+    REVERSED: "REVERSED",
   } as const;
 
 export type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationRequestStatusEnumKey =
@@ -50,7 +51,7 @@ export type PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid
      */
     percentage?: number;
     /**
-     * @minLength 0
+     * @minLength -9007199254740991
      * @maxLength 9007199254740991
      * @type integer | undefined
      */

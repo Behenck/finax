@@ -1,7 +1,7 @@
 import { format, parse } from "date-fns";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Undo2 } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
 	AlertDialog,
@@ -49,10 +49,12 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useProductCommissionReversalRules } from "@/hooks/commissions";
 import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import {
 	useDeleteSaleCommissionInstallment,
 	usePatchSaleCommissionInstallmentStatus,
+	useReverseSaleCommissionInstallment,
 	useSaleCommissionInstallments,
 	useUpdateSaleCommissionInstallment,
 } from "@/hooks/sales";
@@ -90,6 +92,19 @@ type InstallmentEditState = {
 	paymentDate: string;
 };
 
+type InstallmentReversalState = {
+	installment: SaleInstallmentRow;
+	reversalDate: string;
+	mode: "AUTO" | "MANUAL";
+	calculationStatus: "LOADING" | "READY" | "ERROR";
+	calculationError: string | null;
+	hasManualOverride: boolean;
+	manualAmount: string;
+	rulePercentage: number | null;
+	totalPaidAmount: number | null;
+	calculatedAmount: number | null;
+};
+
 const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	SaleCommissionInstallmentStatus,
 	string
@@ -98,6 +113,8 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 		"bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
 	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
 	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
+	REVERSED:
+		"bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
 function formatDate(value: string) {
@@ -114,9 +131,24 @@ function getTodayDateInputValue() {
 	return format(new Date(), "yyyy-MM-dd");
 }
 
+function formatCentsToDecimalInput(valueInCents: number) {
+	return (valueInCents / 100).toFixed(2);
+}
+
+function formatInstallmentAmountInput(value: string, forceNegative: boolean) {
+	const formattedValue = formatCurrencyBRL(value).replace(/^-/, "");
+
+	if (!forceNegative) {
+		return formattedValue;
+	}
+
+	return `-${formattedValue}`;
+}
+
 interface SaleInstallmentsPanelProps {
 	saleId: string;
 	saleStatus: SaleStatus;
+	saleProductId: string;
 	saleCommissionId?: string;
 	enabled?: boolean;
 }
@@ -124,6 +156,7 @@ interface SaleInstallmentsPanelProps {
 export function SaleInstallmentsPanel({
 	saleId,
 	saleStatus,
+	saleProductId,
 	saleCommissionId,
 	enabled = true,
 }: SaleInstallmentsPanelProps) {
@@ -135,6 +168,8 @@ export function SaleInstallmentsPanel({
 		useState<InstallmentStatusAction | null>(null);
 	const [editingInstallment, setEditingInstallment] =
 		useState<InstallmentEditState | null>(null);
+	const [reversalState, setReversalState] =
+		useState<InstallmentReversalState | null>(null);
 	const [installmentToDelete, setInstallmentToDelete] =
 		useState<SaleInstallmentRow | null>(null);
 
@@ -146,8 +181,18 @@ export function SaleInstallmentsPanel({
 		usePatchSaleCommissionInstallmentStatus();
 	const { mutateAsync: updateInstallment, isPending: isUpdatingInstallment } =
 		useUpdateSaleCommissionInstallment();
+	const { mutateAsync: reverseInstallment, isPending: isReversingInstallment } =
+		useReverseSaleCommissionInstallment();
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
+	const {
+		data: productReversalRulesData,
+		isLoading: isLoadingProductReversalRules,
+		isError: isProductReversalRulesError,
+	} = useProductCommissionReversalRules(saleProductId, {
+		enabled: enabled && Boolean(saleProductId),
+		includeInherited: true,
+	});
 
 	const canChangeInstallmentStatus = ability.can(
 		"access",
@@ -191,6 +236,9 @@ export function SaleInstallmentsPanel({
 			canceled: filteredInstallments.filter(
 				(installment) => installment.status === "CANCELED",
 			).length,
+			reversed: filteredInstallments.filter(
+				(installment) => installment.status === "REVERSED",
+			).length,
 		}),
 		[filteredInstallments],
 	);
@@ -199,7 +247,7 @@ export function SaleInstallmentsPanel({
 		() =>
 			showZeroValueInstallments
 				? filteredInstallments
-				: filteredInstallments.filter((installment) => installment.amount > 0),
+				: filteredInstallments.filter((installment) => installment.amount !== 0),
 		[filteredInstallments, showZeroValueInstallments],
 	);
 	const installmentsByBeneficiary = useMemo(() => {
@@ -244,6 +292,15 @@ export function SaleInstallmentsPanel({
 
 		return installmentsByBeneficiary[0]?.key ?? "";
 	}, [activeBeneficiaryTab, installmentsByBeneficiary]);
+	const productReversalRules = productReversalRulesData?.rules ?? [];
+	const parsedReversalAmount =
+		reversalState?.manualAmount.trim().length
+			? Number(reversalState.manualAmount.replace(",", ".").trim())
+			: Number.NaN;
+	const isReversalAmountInvalid =
+		!Number.isFinite(parsedReversalAmount) || parsedReversalAmount === 0;
+	const shouldForceNegativeEditAmount =
+		editingInstallment?.status === "REVERSED";
 
 	function requestInstallmentStatusChange(
 		installment: SaleInstallmentRow,
@@ -260,6 +317,112 @@ export function SaleInstallmentsPanel({
 			amount: formatCurrencyBRL(installment.amount / 100),
 		});
 	}
+
+	function requestInstallmentReversal(installment: SaleInstallmentRow) {
+		if (!canChangeInstallmentStatus || !canUpdateInstallmentsBySaleStatus) {
+			return;
+		}
+
+		setReversalState({
+			installment,
+			reversalDate: getTodayDateInputValue(),
+			mode: "MANUAL",
+			calculationStatus: "LOADING",
+			calculationError: null,
+			hasManualOverride: false,
+			manualAmount: "",
+			rulePercentage: null,
+			totalPaidAmount: null,
+			calculatedAmount: null,
+		});
+	}
+
+	useEffect(() => {
+		if (!reversalState || reversalState.calculationStatus !== "LOADING") {
+			return;
+		}
+
+		if (isLoadingProductReversalRules) {
+			return;
+		}
+
+		if (isProductReversalRulesError) {
+			setReversalState((current) =>
+				current
+					? {
+							...current,
+							mode: "MANUAL",
+							calculationStatus: "ERROR",
+							calculationError:
+								"Não foi possível carregar as regras de estorno do produto.",
+						}
+					: current,
+			);
+			return;
+		}
+
+		const matchedRule = productReversalRules.find(
+			(rule) =>
+				rule.installmentNumber === reversalState.installment.installmentNumber,
+		);
+
+		if (!matchedRule) {
+			setReversalState((current) =>
+				current
+					? {
+							...current,
+							mode: "MANUAL",
+							calculationStatus: "READY",
+							calculationError: null,
+							rulePercentage: null,
+							totalPaidAmount: null,
+							calculatedAmount: null,
+						}
+					: current,
+			);
+			return;
+		}
+
+		const totalPaidAmount = filteredInstallments
+			.filter(
+				(row) =>
+					row.saleCommissionId === reversalState.installment.saleCommissionId &&
+					row.status === "PAID" &&
+					row.amount > 0,
+			)
+			.reduce((sum, row) => sum + row.amount, 0);
+		const calculatedAmount = -Math.round(
+			(totalPaidAmount * matchedRule.percentage) / 100,
+		);
+
+		setReversalState((current) => {
+			if (!current) {
+				return current;
+			}
+
+			const shouldUseCalculatedAmount =
+				!current.hasManualOverride && current.manualAmount.trim().length === 0;
+
+			return {
+				...current,
+				mode: "AUTO",
+				calculationStatus: "READY",
+				calculationError: null,
+				manualAmount: shouldUseCalculatedAmount
+					? formatCentsToDecimalInput(calculatedAmount)
+					: current.manualAmount,
+				rulePercentage: matchedRule.percentage,
+				totalPaidAmount,
+				calculatedAmount,
+			};
+		});
+	}, [
+		filteredInstallments,
+		isLoadingProductReversalRules,
+		isProductReversalRulesError,
+		productReversalRules,
+		reversalState,
+	]);
 
 	function requestInstallmentEdition(installment: SaleInstallmentRow) {
 		setEditingInstallment({
@@ -312,17 +475,28 @@ export function SaleInstallmentsPanel({
 			return;
 		}
 
-		try {
-			await updateInstallment({
-				saleId,
-				installmentId: editingInstallment.installment.id,
-				data: {
-					percentage: parsedPercentage,
-					amount: parseBRLCurrencyToCents(editingInstallment.amount),
-					status: editingInstallment.status,
-					expectedPaymentDate: editingInstallment.expectedPaymentDate,
+	try {
+		const parsedAmount = parseBRLCurrencyToCents(editingInstallment.amount);
+		if (editingInstallment.status === "REVERSED" && parsedAmount >= 0) {
+			toast.error("Para parcela estornada, o valor deve ser negativo.");
+			return;
+		}
+		if (editingInstallment.status !== "REVERSED" && parsedAmount < 0) {
+			toast.error("Valor negativo só é permitido para parcela estornada.");
+			return;
+		}
+
+		await updateInstallment({
+			saleId,
+			installmentId: editingInstallment.installment.id,
+			data: {
+				percentage: parsedPercentage,
+				amount: parsedAmount,
+				status: editingInstallment.status,
+				expectedPaymentDate: editingInstallment.expectedPaymentDate,
 					paymentDate:
-						editingInstallment.status === "PAID"
+						editingInstallment.status === "PAID" ||
+						editingInstallment.status === "REVERSED"
 							? editingInstallment.paymentDate || null
 							: null,
 				},
@@ -349,13 +523,63 @@ export function SaleInstallmentsPanel({
 		}
 	}
 
+	function parseManualAmountToCents(value: string) {
+		const normalizedValue = value.replace(",", ".").trim();
+		const parsedValue = Number(normalizedValue);
+		if (Number.isNaN(parsedValue) || !Number.isFinite(parsedValue)) {
+			return null;
+		}
+
+		return Math.round(parsedValue * 100);
+	}
+
+	async function handleConfirmInstallmentReversal() {
+		if (!reversalState) {
+			return;
+		}
+
+		if (!reversalState.reversalDate) {
+			toast.error("Informe a data do estorno.");
+			return;
+		}
+
+		const parsedManualAmount = parseManualAmountToCents(
+			reversalState.manualAmount,
+		);
+		if (parsedManualAmount === null) {
+			toast.error("Informe um valor válido para o estorno.");
+			return;
+		}
+		if (parsedManualAmount === 0) {
+			toast.error("O valor do estorno deve ser diferente de zero.");
+			return;
+		}
+		if (parsedManualAmount > 0) {
+			toast.error("O valor do estorno deve ser negativo.");
+			return;
+		}
+
+		try {
+			await reverseInstallment({
+				saleId,
+				installmentId: reversalState.installment.id,
+				reversalDate: reversalState.reversalDate,
+				manualAmount: parsedManualAmount,
+			});
+			setReversalState(null);
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
 	return (
 		<>
 			<div className="space-y-4">
 				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 					<p className="text-sm text-muted-foreground">
 						Resumo: {summary.paid}/{summary.total} pagas, {summary.pending}{" "}
-						pendentes, {summary.canceled} canceladas.
+						pendentes, {summary.canceled} canceladas, {summary.reversed}{" "}
+						estornadas.
 					</p>
 					<div className="flex items-center gap-2">
 						<Switch
@@ -441,6 +665,11 @@ export function SaleInstallmentsPanel({
 																(status) => status !== installment.status,
 															)
 														: [];
+												const canReverseInstallment =
+													canUpdateInstallmentsBySaleStatus &&
+													canChangeInstallmentStatus &&
+													(installment.status === "PENDING" ||
+														installment.status === "PAID");
 
 												return (
 													<TableRow key={installment.id}>
@@ -471,7 +700,8 @@ export function SaleInstallmentsPanel({
 															{formatDate(installment.expectedPaymentDate)}
 														</TableCell>
 														<TableCell>
-															{installment.status === "PAID" &&
+															{(installment.status === "PAID" ||
+																installment.status === "REVERSED") &&
 															installment.paymentDate
 																? formatDate(installment.paymentDate)
 																: "—"}
@@ -501,6 +731,7 @@ export function SaleInstallmentsPanel({
 																			disabled={
 																				isPatchingStatus ||
 																				isUpdatingInstallment ||
+																				isReversingInstallment ||
 																				isDeletingInstallment
 																			}
 																		>
@@ -529,7 +760,8 @@ export function SaleInstallmentsPanel({
 																		))}
 																		{statusActions.length > 0 &&
 																		(canEditInstallment ||
-																			canDeleteInstallment) ? (
+																			canDeleteInstallment ||
+																			canReverseInstallment) ? (
 																			<DropdownMenuSeparator />
 																		) : null}
 																		{canEditInstallment ? (
@@ -543,6 +775,19 @@ export function SaleInstallmentsPanel({
 																			>
 																				<Pencil className="size-4" />
 																				Editar parcela
+																			</DropdownMenuItem>
+																		) : null}
+																		{canReverseInstallment ? (
+																			<DropdownMenuItem
+																				onSelect={(event) => {
+																					event.preventDefault();
+																					requestInstallmentReversal(
+																						installment,
+																					);
+																				}}
+																			>
+																				<Undo2 className="size-4" />
+																				Estornar parcela
 																			</DropdownMenuItem>
 																		) : null}
 																		{canDeleteInstallment ? (
@@ -657,6 +902,150 @@ export function SaleInstallmentsPanel({
 			</AlertDialog>
 
 			<Dialog
+				open={Boolean(reversalState)}
+				onOpenChange={(open) => {
+					if (!open) {
+						setReversalState(null);
+					}
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Estornar parcela</DialogTitle>
+						<DialogDescription>
+							Confirme o estorno da parcela{" "}
+							{reversalState
+								? `P${reversalState.installment.installmentNumber}`
+								: ""}
+							.
+						</DialogDescription>
+					</DialogHeader>
+
+					<div className="space-y-4">
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Data do estorno</p>
+							<CalendarDateInput
+								value={reversalState?.reversalDate ?? ""}
+								onChange={(value) => {
+									setReversalState((current) =>
+										current
+											? {
+													...current,
+													reversalDate: value,
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
+
+						{reversalState?.calculationStatus === "LOADING" ? (
+							<div className="space-y-2 rounded-md border p-3">
+								<p className="text-sm font-medium">
+									Calculando regra automática...
+								</p>
+								<div className="h-3 w-4/5 animate-pulse rounded bg-muted" />
+								<div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+							</div>
+						) : null}
+
+						{reversalState?.calculationStatus === "ERROR" ? (
+							<div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3">
+								<p className="text-sm font-medium text-amber-700 dark:text-amber-300">
+									Não foi possível calcular automaticamente.
+								</p>
+								<p className="text-xs text-amber-700 dark:text-amber-300">
+									{reversalState.calculationError ??
+										"Preencha o valor manualmente para continuar."}
+								</p>
+							</div>
+						) : null}
+
+						{reversalState?.mode === "AUTO" ? (
+							<div className="space-y-2 rounded-md border p-3">
+								<p className="text-sm font-medium">
+									Regra automática do produto
+								</p>
+								<p className="text-sm text-muted-foreground">
+									Parcela {reversalState.installment.installmentNumber}:{" "}
+									{reversalState.rulePercentage ?? 0}% sobre o total pago
+									positivo acumulado.
+								</p>
+								<p className="text-sm text-muted-foreground">
+									Total pago positivo:{" "}
+									{formatCurrencyBRL(
+										(reversalState.totalPaidAmount ?? 0) / 100,
+									)}
+								</p>
+								<p className="text-sm font-medium">
+									Valor do estorno:{" "}
+									{formatCurrencyBRL(
+										(reversalState.calculatedAmount ?? 0) / 100,
+									)}
+								</p>
+								{(reversalState.calculatedAmount ?? 0) === 0 ? (
+									<p className="text-destructive text-xs">
+										O valor sugerido ficou zerado. Ajuste o valor para
+										continuar.
+									</p>
+								) : null}
+							</div>
+						) : null}
+
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Valor do estorno (R$)</p>
+							<Input
+								type="number"
+								step="0.01"
+								placeholder={
+									reversalState?.calculationStatus === "LOADING"
+										? "Carregando valor sugerido..."
+										: "-130.00"
+								}
+								value={reversalState?.manualAmount ?? ""}
+								onChange={(event) => {
+									setReversalState((current) =>
+										current
+											? {
+													...current,
+													hasManualOverride: true,
+													manualAmount: event.target.value,
+												}
+											: current,
+									);
+								}}
+							/>
+							{reversalState?.calculationStatus === "LOADING" &&
+							!reversalState.manualAmount ? (
+								<div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+							) : null}
+							<p className="text-muted-foreground text-xs">
+								Informe um valor negativo para estorno (ex.: -130.00).
+							</p>
+						</div>
+					</div>
+
+					<DialogFooter>
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => setReversalState(null)}
+							disabled={isReversingInstallment}
+						>
+							Cancelar
+						</Button>
+						<Button
+							type="button"
+							onClick={handleConfirmInstallmentReversal}
+							disabled={isReversingInstallment || isReversalAmountInvalid}
+						>
+							{isReversingInstallment ? "Estornando..." : "Confirmar estorno"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog
 				open={Boolean(editingInstallment)}
 				onOpenChange={(open) => {
 					if (!open) {
@@ -704,7 +1093,10 @@ export function SaleInstallmentsPanel({
 											current
 												? {
 														...current,
-														amount: formatCurrencyBRL(event.target.value),
+														amount: formatInstallmentAmountInput(
+															event.target.value,
+															current.status === "REVERSED",
+														),
 													}
 												: current,
 										);
@@ -724,6 +1116,10 @@ export function SaleInstallmentsPanel({
 												? {
 														...current,
 														status: value as SaleCommissionInstallmentStatus,
+														amount: formatInstallmentAmountInput(
+															current.amount,
+															value === "REVERSED",
+														),
 													}
 												: current,
 										);
@@ -736,6 +1132,7 @@ export function SaleInstallmentsPanel({
 										<SelectItem value="PENDING">Pendente</SelectItem>
 										<SelectItem value="PAID">Paga</SelectItem>
 										<SelectItem value="CANCELED">Cancelada</SelectItem>
+										<SelectItem value="REVERSED">Estornada</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -757,9 +1154,20 @@ export function SaleInstallmentsPanel({
 							</div>
 						</div>
 
-						{editingInstallment?.status === "PAID" ? (
+						{shouldForceNegativeEditAmount ? (
+							<p className="text-muted-foreground text-xs">
+								Para status estornada, o valor deve permanecer negativo.
+							</p>
+						) : null}
+
+						{editingInstallment?.status === "PAID" ||
+						editingInstallment?.status === "REVERSED" ? (
 							<div className="space-y-1">
-								<p className="text-sm font-medium">Data de pagamento</p>
+								<p className="text-sm font-medium">
+									{editingInstallment.status === "REVERSED"
+										? "Data do estorno"
+										: "Data de pagamento"}
+								</p>
 								<CalendarDateInput
 									value={editingInstallment.paymentDate}
 									onChange={(value) => {

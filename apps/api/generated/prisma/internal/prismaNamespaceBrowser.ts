@@ -74,6 +74,7 @@ export const ModelName = {
   Partner: 'Partner',
   Seller: 'Seller',
   Product: 'Product',
+  ProductCommissionReversalRule: 'ProductCommissionReversalRule',
   ProductSaleField: 'ProductSaleField',
   ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
@@ -472,6 +473,18 @@ export const ProductScalarFieldEnum = {
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProductCommissionReversalRuleScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductCommissionReversalRuleScalarFieldEnum = (typeof ProductCommissionReversalRuleScalarFieldEnum)[keyof typeof ProductCommissionReversalRuleScalarFieldEnum]
 
 
 export const ProductSaleFieldScalarFieldEnum = {

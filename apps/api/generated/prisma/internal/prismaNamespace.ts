@@ -407,6 +407,7 @@ export const ModelName = {
   Partner: 'Partner',
   Seller: 'Seller',
   Product: 'Product',
+  ProductCommissionReversalRule: 'ProductCommissionReversalRule',
   ProductSaleField: 'ProductSaleField',
   ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2143,6 +2144,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductCommissionReversalRule: {
+      payload: Prisma.$ProductCommissionReversalRulePayload<ExtArgs>
+      fields: Prisma.ProductCommissionReversalRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductCommissionReversalRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductCommissionReversalRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        findFirst: {
+          args: Prisma.ProductCommissionReversalRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductCommissionReversalRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        findMany: {
+          args: Prisma.ProductCommissionReversalRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>[]
+        }
+        create: {
+          args: Prisma.ProductCommissionReversalRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        createMany: {
+          args: Prisma.ProductCommissionReversalRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductCommissionReversalRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>[]
+        }
+        delete: {
+          args: Prisma.ProductCommissionReversalRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        update: {
+          args: Prisma.ProductCommissionReversalRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductCommissionReversalRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductCommissionReversalRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductCommissionReversalRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductCommissionReversalRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductCommissionReversalRulePayload>
+        }
+        aggregate: {
+          args: Prisma.ProductCommissionReversalRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductCommissionReversalRule>
+        }
+        groupBy: {
+          args: Prisma.ProductCommissionReversalRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductCommissionReversalRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductCommissionReversalRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductCommissionReversalRuleCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductSaleField: {
       payload: Prisma.$ProductSaleFieldPayload<ExtArgs>
       fields: Prisma.ProductSaleFieldFieldRefs
@@ -3659,6 +3734,18 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+export const ProductCommissionReversalRuleScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductCommissionReversalRuleScalarFieldEnum = (typeof ProductCommissionReversalRuleScalarFieldEnum)[keyof typeof ProductCommissionReversalRuleScalarFieldEnum]
+
+
 export const ProductSaleFieldScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -4639,6 +4726,7 @@ export type GlobalOmitConfig = {
   partner?: Prisma.PartnerOmit
   seller?: Prisma.SellerOmit
   product?: Prisma.ProductOmit
+  productCommissionReversalRule?: Prisma.ProductCommissionReversalRuleOmit
   productSaleField?: Prisma.ProductSaleFieldOmit
   productSaleFieldOption?: Prisma.ProductSaleFieldOptionOmit
   productCommissionScenario?: Prisma.ProductCommissionScenarioOmit

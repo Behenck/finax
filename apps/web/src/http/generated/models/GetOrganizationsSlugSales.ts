@@ -180,6 +180,12 @@ export type GetOrganizationsSlugSales200 = {
        * @type integer
        */
       canceled: number;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      reversed: number;
     };
   }[];
 };

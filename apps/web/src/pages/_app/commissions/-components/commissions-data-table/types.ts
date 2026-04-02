@@ -25,6 +25,19 @@ export type InstallmentEditState = {
 	paymentDate: string;
 };
 
+export type InstallmentReversalAction = {
+	installment: CommissionInstallmentRow;
+	reversalDate: string;
+	mode: "AUTO" | "MANUAL";
+	calculationStatus: "LOADING" | "READY" | "ERROR";
+	calculationError: string | null;
+	hasManualOverride: boolean;
+	manualAmount: string;
+	rulePercentage: number | null;
+	totalPaidAmount: number | null;
+	calculatedAmount: number | null;
+};
+
 export type InstallmentSummaryBucket = {
 	count: number;
 	amount: number;
@@ -35,6 +48,7 @@ export type InstallmentDirectionSummary = {
 	pending: InstallmentSummaryBucket;
 	paid: InstallmentSummaryBucket;
 	canceled: InstallmentSummaryBucket;
+	reversed: InstallmentSummaryBucket;
 };
 
 export type SelectedInstallment = {

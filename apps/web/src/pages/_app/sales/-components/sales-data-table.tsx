@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { useQueries } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
@@ -61,6 +61,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
 	Select,
 	SelectContent,
@@ -68,7 +69,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
 	TableBody,
 	TableCell,
@@ -78,13 +78,13 @@ import {
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
 import { entityFilterParser, textFilterParser } from "@/hooks/filters/parsers";
-import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
 	useDeleteSale,
 	useDeleteSalesBulk,
 	usePatchSalesStatusBulk,
 } from "@/hooks/sales";
 import { persistSaleNavigationContext } from "@/hooks/sales/use-sale-navigation";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
 	type GetOrganizationsSlugSales200,
 	type GetOrganizationsSlugSalesSaleid200,
@@ -104,8 +104,8 @@ import {
 	SaleStatusSchema,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
-import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { formatSaleDynamicFieldValue } from "./sale-dynamic-fields";
+import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
 
@@ -276,10 +276,7 @@ function resolveSaleDynamicFieldDisplayValue(
 		return "vazio";
 	}
 
-	const value = Object.prototype.hasOwnProperty.call(
-		saleDetail.dynamicFieldValues,
-		fieldId,
-	)
+	const value = Object.hasOwn(saleDetail.dynamicFieldValues, fieldId)
 		? saleDetail.dynamicFieldValues[fieldId]
 		: null;
 
@@ -1874,6 +1871,7 @@ export function SalesDataTable({
 					}}
 					saleId={installmentsDrawerSale.id}
 					saleStatus={installmentsDrawerSale.status as SaleStatus}
+					saleProductId={installmentsDrawerSale.product.id}
 				/>
 			) : null}
 		</div>

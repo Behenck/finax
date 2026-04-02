@@ -504,6 +504,10 @@ describe("sales dashboard", () => {
 					count: 1,
 					amount: 5_000,
 				},
+				reversed: {
+					count: 0,
+					amount: 0,
+				},
 			},
 			OUTCOME: {
 				total: {
@@ -521,6 +525,10 @@ describe("sales dashboard", () => {
 				canceled: {
 					count: 1,
 					amount: 9_000,
+				},
+				reversed: {
+					count: 0,
+					amount: 0,
 				},
 			},
 			netAmount: -22_000,
@@ -543,6 +551,10 @@ describe("sales dashboard", () => {
 					count: 0,
 					amount: 0,
 				},
+				reversed: {
+					count: 0,
+					amount: 0,
+				},
 			},
 			OUTCOME: {
 				total: {
@@ -558,6 +570,10 @@ describe("sales dashboard", () => {
 					amount: 4_000,
 				},
 				canceled: {
+					count: 0,
+					amount: 0,
+				},
+				reversed: {
 					count: 0,
 					amount: 0,
 				},

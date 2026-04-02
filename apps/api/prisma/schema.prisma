@@ -678,6 +678,7 @@ model Product {
   salesTransactionCostCenter CostCenter? @relation("ProductSalesTransactionCostCenter", fields: [salesTransactionCostCenterId], references: [id], onDelete: SetNull)
 
   commissionScenarios ProductCommissionScenario[]
+  commissionReversalRules ProductCommissionReversalRule[]
 
   @@unique([organizationId, parentId, name])
   @@index([organizationId])
@@ -686,6 +687,22 @@ model Product {
   @@index([salesTransactionCategoryId])
   @@index([salesTransactionCostCenterId])
   @@map("products")
+}
+
+model ProductCommissionReversalRule {
+  id                String @id @default(uuid())
+  productId         String @map("product_id")
+  installmentNumber Int    @map("installment_number")
+  percentage        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, installmentNumber])
+  @@index([productId])
+  @@map("product_commission_reversal_rules")
 }
 
 enum SaleDynamicFieldType {
@@ -906,6 +923,7 @@ enum SaleCommissionInstallmentStatus {
   PENDING
   PAID
   CANCELED
+  REVERSED
 }
 
 enum SaleHistoryAction {

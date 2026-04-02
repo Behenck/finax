@@ -19,7 +19,9 @@ export const getOrganizationsSlugCommissionsInstallmentsQueryParamsSchema =
     unitId: z.optional(z.uuid()),
     productId: z.optional(z.uuid()),
     direction: z.optional(z.enum(["INCOME", "OUTCOME"])),
-    status: z.enum(["ALL", "PENDING", "PAID", "CANCELED"]).default("ALL"),
+    status: z
+      .enum(["ALL", "PENDING", "PAID", "CANCELED", "REVERSED"])
+      .default("ALL"),
     expectedFrom: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
     expectedTo: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   });
@@ -68,8 +70,8 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
       beneficiaryLabel: z.nullable(z.string()),
       beneficiaryKey: z.string().min(1),
       percentage: z.number().min(0).max(100),
-      amount: z.int().min(0).max(9007199254740991),
-      status: z.enum(["PENDING", "PAID", "CANCELED"]),
+      amount: z.int().min(-9007199254740991).max(9007199254740991),
+      status: z.enum(["PENDING", "PAID", "CANCELED", "REVERSED"]),
       expectedPaymentDate: z.iso.datetime(),
       paymentDate: z.nullable(z.iso.datetime()),
     }),
@@ -84,37 +86,45 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
     INCOME: z.object({
       total: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       pending: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       paid: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       canceled: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
+      }),
+      reversed: z.object({
+        count: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
     }),
     OUTCOME: z.object({
       total: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       pending: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       paid: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
       canceled: z.object({
         count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
+      }),
+      reversed: z.object({
+        count: z.int().min(0).max(9007199254740991),
+        amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
     }),
   }),

@@ -81,6 +81,7 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME = {
 	PENDING: "bg-amber-500/15 text-amber-700 border-amber-500/30",
 	PAID: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
 	CANCELED: "bg-slate-500/15 text-slate-700 border-slate-500/30",
+	REVERSED: "bg-sky-500/15 text-sky-700 border-sky-500/30",
 } as const;
 
 type WizardStep = "UPLOAD" | "MAPPING" | "PREVIEW" | "RESULT";
@@ -92,7 +93,8 @@ type PreviewStatusFilter =
 	| "ERROR"
 	| "SYSTEM_PENDING"
 	| "SYSTEM_PAID"
-	| "SYSTEM_CANCELED";
+	| "SYSTEM_CANCELED"
+	| "SYSTEM_REVERSED";
 type EditingRowValues = {
 	saleDate: string;
 	group: string;
@@ -165,6 +167,10 @@ function getInstallmentStatusLabel(
 		return "Cancelada";
 	}
 
+	if (status === "REVERSED") {
+		return "Estornada";
+	}
+
 	return "-";
 }
 
@@ -207,6 +213,10 @@ function getStatusFilterLabel(value: PreviewStatusFilter) {
 		return "Sistema: Paga";
 	}
 
+	if (value === "SYSTEM_REVERSED") {
+		return "Sistema: Estornada";
+	}
+
 	return "Sistema: Cancelada";
 }
 
@@ -228,6 +238,10 @@ function matchesStatusFilter(
 
 	if (filter === "SYSTEM_CANCELED") {
 		return row.installmentStatus === "CANCELED";
+	}
+
+	if (filter === "SYSTEM_REVERSED") {
+		return row.installmentStatus === "REVERSED";
 	}
 
 	return row.status === filter;
@@ -1134,6 +1148,7 @@ export function CommissionReceiptImportWizard({
 														"SYSTEM_PENDING",
 														"SYSTEM_PAID",
 														"SYSTEM_CANCELED",
+														"SYSTEM_REVERSED",
 													] as const
 												).map((value) => (
 													<SelectItem key={value} value={value}>

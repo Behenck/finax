@@ -64,7 +64,7 @@ export interface CommissionReceiptImportPreviewRow {
 	saleStatus: string | null;
 	installmentId: string | null;
 	installmentNumber: number | null;
-	installmentStatus: "PENDING" | "PAID" | "CANCELED" | null;
+	installmentStatus: "PENDING" | "PAID" | "CANCELED" | "REVERSED" | null;
 	installmentAmount: number | null;
 }
 

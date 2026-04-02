@@ -14,5 +14,6 @@ export * from "./use-sale-imports";
 export * from "./use-sale-navigation";
 export * from "./use-sales";
 export * from "./use-sales-dashboard";
+export * from "./use-reverse-sale-commission-installment";
 export * from "./use-update-sale";
 export * from "./use-update-sale-commission-installment";
