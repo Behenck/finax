@@ -9,6 +9,7 @@ import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { ForbiddenError } from "../_errors/forbidden-error";
 import {
+	recalculatePersistedSalePendingCommissionsAmounts,
 	recalculatePersistedSaleCommissionsAmounts,
 	replaceSaleCommissions,
 	resolveSaleCommissionsData,
@@ -20,12 +21,40 @@ import {
 	parseSaleDynamicFieldValuesJson,
 } from "./sale-dynamic-fields";
 import {
+	buildSaleHistoryDiff,
+	createSaleHistoryEvent,
 	createSaleDiffHistoryEvent,
 	loadSaleHistorySnapshot,
+	type SaleHistoryChange,
 } from "./sale-history";
 import { resolveSaleResponsibleData } from "./sale-responsible";
 import { parseSaleDateInput, UpdateSaleBodySchema } from "./sale-schemas";
 import { syncPendingSaleTransactionFromSale } from "./sale-transactions";
+
+const INSTALLMENT_HISTORY_PATH_REGEX =
+	/^commissions\[\d+\]\.installments\[\d+\]\./;
+
+function compactChangesForPendingInstallmentsUpdate(params: {
+	changes: SaleHistoryChange[];
+	updatedPendingInstallmentsCount: number;
+}) {
+	const compactedChanges = params.changes.filter(
+		(change) => !INSTALLMENT_HISTORY_PATH_REGEX.test(change.path),
+	);
+
+	if (params.updatedPendingInstallmentsCount <= 0) {
+		return compactedChanges;
+	}
+
+	return [
+		...compactedChanges,
+		{
+			path: "sale.pendingCommissionInstallmentsUpdatedCount",
+			before: null,
+			after: params.updatedPendingInstallmentsCount,
+		},
+	];
+}
 
 export async function updateSale(app: FastifyInstance) {
 	app
@@ -152,6 +181,25 @@ export async function updateSale(app: FastifyInstance) {
 						`You don't have permission to access "sales.commissions.update".`,
 					);
 				}
+				const isCompletedSaleWithPersistedCommissionsAmountChange =
+					data.commissions === undefined &&
+					hasPersistedCommissions &&
+					isChangingTotalAmount &&
+					sale.status === "COMPLETED";
+				if (
+					isCompletedSaleWithPersistedCommissionsAmountChange &&
+					data.applyValueChangeToCommissions === undefined
+				) {
+					throw new BadRequestError(
+						"applyValueChangeToCommissions is required when changing totalAmount on a COMPLETED sale with commissions",
+					);
+				}
+				const shouldApplyAmountChangeToPendingCommissions =
+					isCompletedSaleWithPersistedCommissionsAmountChange &&
+					data.applyValueChangeToCommissions === true;
+				const shouldSkipPersistedCommissionsRecalculation =
+					isCompletedSaleWithPersistedCommissionsAmountChange &&
+					data.applyValueChangeToCommissions === false;
 
 				const customer = await prisma.customer.findFirst({
 					where: {
@@ -254,6 +302,8 @@ export async function updateSale(app: FastifyInstance) {
 
 				await db(() =>
 					prisma.$transaction(async (tx) => {
+						let updatedPendingInstallmentsCount = 0;
+
 						await tx.sale.update({
 							where: {
 								id: saleId,
@@ -276,7 +326,14 @@ export async function updateSale(app: FastifyInstance) {
 
 						if (resolvedCommissions !== undefined) {
 							await replaceSaleCommissions(tx, saleId, resolvedCommissions);
-						} else {
+						} else if (shouldApplyAmountChangeToPendingCommissions) {
+							updatedPendingInstallmentsCount =
+								await recalculatePersistedSalePendingCommissionsAmounts(
+									tx,
+									saleId,
+									data.totalAmount,
+								);
+						} else if (!shouldSkipPersistedCommissionsRecalculation) {
 							await recalculatePersistedSaleCommissionsAmounts(
 								tx,
 								saleId,
@@ -301,14 +358,29 @@ export async function updateSale(app: FastifyInstance) {
 							throw new BadRequestError("Sale not found");
 						}
 
-						await createSaleDiffHistoryEvent(tx, {
-							saleId,
-							organizationId: organization.id,
-							actorId,
-							action: SaleHistoryAction.UPDATED,
-							beforeSnapshot,
-							afterSnapshot,
-						});
+						if (shouldApplyAmountChangeToPendingCommissions) {
+							const changes = compactChangesForPendingInstallmentsUpdate({
+								changes: buildSaleHistoryDiff(beforeSnapshot, afterSnapshot),
+								updatedPendingInstallmentsCount,
+							});
+
+							await createSaleHistoryEvent(tx, {
+								saleId,
+								organizationId: organization.id,
+								actorId,
+								action: SaleHistoryAction.UPDATED,
+								changes,
+							});
+						} else {
+							await createSaleDiffHistoryEvent(tx, {
+								saleId,
+								organizationId: organization.id,
+								actorId,
+								action: SaleHistoryAction.UPDATED,
+								beforeSnapshot,
+								afterSnapshot,
+							});
+						}
 					}),
 				);
 

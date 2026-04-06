@@ -43,6 +43,11 @@ const commissionReversalRuleSchema = z.object({
 		}),
 });
 
+const productCommissionReversalModeSchema = z.enum([
+	"INSTALLMENT_BY_NUMBER",
+	"TOTAL_PAID_PERCENTAGE",
+]);
+
 const productCommissionSchema = z
 	.object({
 		recipientType: z.enum([
@@ -223,6 +228,8 @@ export const productSchema = z
 		salesTransactionCostCenterId: z.uuid().optional(),
 		scenarios: z.array(productCommissionScenarioSchema),
 		saleFields: z.array(productSaleFieldSchema),
+		commissionReversalMode: productCommissionReversalModeSchema.nullable(),
+		commissionReversalTotalPercentage: totalPercentageSchema.optional(),
 		commissionReversalRules: z.array(commissionReversalRuleSchema),
 	})
 	.superRefine((data, ctx) => {
@@ -333,6 +340,58 @@ export const productSchema = z
 				});
 			}
 			reversalRuleInstallments.add(rule.installmentNumber);
+		}
+
+		if (data.commissionReversalMode === "TOTAL_PAID_PERCENTAGE") {
+			if (
+				data.commissionReversalTotalPercentage === undefined ||
+				Number.isNaN(data.commissionReversalTotalPercentage)
+			) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Informe o percentual total para o estorno automático.",
+					path: ["commissionReversalTotalPercentage"],
+				});
+			}
+
+			if (data.commissionReversalRules.length > 0) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Remova as regras por parcela no modo total pago.",
+					path: ["commissionReversalRules"],
+				});
+			}
+		}
+
+		if (data.commissionReversalMode === "INSTALLMENT_BY_NUMBER") {
+			if (data.commissionReversalTotalPercentage !== undefined) {
+				ctx.addIssue({
+					code: "custom",
+					message:
+						"Percentual total só é permitido no modo total já pago.",
+					path: ["commissionReversalTotalPercentage"],
+				});
+			}
+		}
+
+		if (data.commissionReversalMode === null) {
+			if (data.commissionReversalRules.length > 0) {
+				ctx.addIssue({
+					code: "custom",
+					message:
+						"Remova as regras por parcela para deixar sem cenário local.",
+					path: ["commissionReversalRules"],
+				});
+			}
+
+			if (data.commissionReversalTotalPercentage !== undefined) {
+				ctx.addIssue({
+					code: "custom",
+					message:
+						"Remova o percentual total para deixar sem cenário local.",
+					path: ["commissionReversalTotalPercentage"],
+				});
+			}
 		}
 	});
 

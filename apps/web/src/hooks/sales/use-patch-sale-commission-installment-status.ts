@@ -24,6 +24,7 @@ interface PatchSaleCommissionInstallmentStatusInput {
 	installmentId: string;
 	status: PatchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidStatusMutationRequestStatusEnumKey;
 	paymentDate?: string;
+	reversalDate?: string;
 	amount?: number;
 	silent?: boolean;
 }
@@ -38,6 +39,7 @@ export function usePatchSaleCommissionInstallmentStatus() {
 			installmentId,
 			status,
 			paymentDate,
+			reversalDate,
 			amount,
 		}: PatchSaleCommissionInstallmentStatusInput) => {
 			if (!organization?.slug) {
@@ -52,6 +54,7 @@ export function usePatchSaleCommissionInstallmentStatus() {
 					data: {
 						status,
 						paymentDate,
+						reversalDate,
 						amount,
 					},
 				},

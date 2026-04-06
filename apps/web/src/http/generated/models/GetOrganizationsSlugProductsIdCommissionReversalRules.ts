@@ -22,10 +22,28 @@ export type GetOrganizationsSlugProductsIdCommissionReversalRulesQueryParams = {
   includeInherited?: boolean;
 };
 
+export const getOrganizationsSlugProductsIdCommissionReversalRules200ModeEnum =
+  {
+    INSTALLMENT_BY_NUMBER: "INSTALLMENT_BY_NUMBER",
+    TOTAL_PAID_PERCENTAGE: "TOTAL_PAID_PERCENTAGE",
+  } as const;
+
+export type GetOrganizationsSlugProductsIdCommissionReversalRules200ModeEnumKey =
+  (typeof getOrganizationsSlugProductsIdCommissionReversalRules200ModeEnum)[keyof typeof getOrganizationsSlugProductsIdCommissionReversalRules200ModeEnum];
+
 /**
  * @description Default Response
  */
 export type GetOrganizationsSlugProductsIdCommissionReversalRules200 = {
+  /**
+   * @type string
+   */
+  mode: GetOrganizationsSlugProductsIdCommissionReversalRules200ModeEnumKey | null;
+  /**
+   * @maxLength 100
+   * @type number
+   */
+  totalPaidPercentage: number | null;
   /**
    * @type array
    */

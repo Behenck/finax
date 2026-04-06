@@ -113,6 +113,15 @@ describe("sale update page actions", () => {
 		expect(screen.getByText("Venda em massa")).toBeInTheDocument();
 		expect(screen.getByText("Editar")).toBeInTheDocument();
 		expect(screen.getByText("Duplicar")).toBeInTheDocument();
+		await user.click(screen.getByText("Duplicar"));
+		expect(await screen.findByText("Duplicar venda")).toBeInTheDocument();
+		await user.click(screen.getByRole("button", { name: "Duplicar" }));
+		expect(mocks.navigateMock).toHaveBeenCalledWith({
+			to: "/sales/create",
+			search: {
+				duplicateSaleId: "sale-1",
+			},
+		});
 		expect(screen.getByTestId("sale-form")).toBeInTheDocument();
 	});
 });

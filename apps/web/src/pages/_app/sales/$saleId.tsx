@@ -363,7 +363,7 @@ export function SaleDetailsPage() {
 				</div>
 			</header>
 
-			<Card className="p-6 space-y-4">
+			<Card className="p-6 space-y-3">
 				<div className="">
 					<p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
 						Produto
@@ -556,6 +556,13 @@ export function SaleDetailsPage() {
 			</Card>
 
 			<Card className="p-6 space-y-4">
+				<h2 className="font-semibold">Observação</h2>
+				<p className="text-sm text-muted-foreground">
+					{sale.notes ?? "Sem observações."}
+				</p>
+			</Card>
+
+			<Card className="p-6 space-y-4">
 				<h2 className="font-semibold">Histórico de alterações</h2>
 
 				{isHistoryLoading ? (
@@ -625,13 +632,6 @@ export function SaleDetailsPage() {
 						})}
 					</div>
 				)}
-			</Card>
-
-			<Card className="p-6 space-y-3">
-				<h2 className="font-semibold">Observação</h2>
-				<p className="text-sm text-muted-foreground">
-					{sale.notes ?? "Sem observações."}
-				</p>
 			</Card>
 
 			{installmentsDrawerState ? (

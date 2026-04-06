@@ -26,12 +26,30 @@ export type PutOrganizationsSlugProductsIdCommissionReversalRules204EnumKey =
 export type PutOrganizationsSlugProductsIdCommissionReversalRules204 =
   PutOrganizationsSlugProductsIdCommissionReversalRules204EnumKey | null;
 
+export const putOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestModeEnum =
+  {
+    INSTALLMENT_BY_NUMBER: "INSTALLMENT_BY_NUMBER",
+    TOTAL_PAID_PERCENTAGE: "TOTAL_PAID_PERCENTAGE",
+  } as const;
+
+export type PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestModeEnumKey =
+  (typeof putOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestModeEnum)[keyof typeof putOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestModeEnum];
+
 export type PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest =
   {
     /**
-     * @type array
+     * @type string
      */
-    rules: {
+    mode?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestModeEnumKey | null;
+    /**
+     * @maxLength 100
+     * @type number
+     */
+    totalPaidPercentage?: number | null;
+    /**
+     * @type array | undefined
+     */
+    rules?: {
       /**
        * @minLength 1
        * @maxLength 9007199254740991

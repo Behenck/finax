@@ -116,7 +116,8 @@ function calculateInstallmentAmountsFromScaled({
 
 function composeScaledPercentages(baseScaled: number, dependentScaled: number) {
 	return Math.round(
-		(baseScaled * dependentScaled) / COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR,
+		(baseScaled * dependentScaled) /
+			COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR,
 	);
 }
 
@@ -432,9 +433,8 @@ export async function resolveSaleCommissionsData(
 		const direction =
 			commission.direction ??
 			deriveSaleCommissionDirectionFromRecipientType(commission.recipientType);
-		const totalPercentageScaled = toScaledPercentage(commission.totalPercentage);
-		const installmentPercentagesScaled = commission.installments.map((installment) =>
-			toScaledPercentage(installment.percentage),
+		const totalPercentageScaled = toScaledPercentage(
+			commission.totalPercentage,
 		);
 		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
 		const baseCommissionIndex =
@@ -597,7 +597,8 @@ export async function replaceSaleCommissions(
 			},
 		});
 
-		createdCommissionIdsBySortOrder[commission.sortOrder] = createdCommission.id;
+		createdCommissionIdsBySortOrder[commission.sortOrder] =
+			createdCommission.id;
 	}
 
 	for (const commission of commissions) {
@@ -611,7 +612,8 @@ export async function replaceSaleCommissions(
 		}
 
 		const commissionId = createdCommissionIdsBySortOrder[commission.sortOrder];
-		const baseCommissionId = createdCommissionIdsBySortOrder[baseCommissionIndex];
+		const baseCommissionId =
+			createdCommissionIdsBySortOrder[baseCommissionIndex];
 		if (!commissionId || !baseCommissionId) {
 			throw new BadRequestError("Invalid base commission reference");
 		}
@@ -703,6 +705,120 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 			});
 		}
 	}
+}
+
+export async function recalculatePersistedSalePendingCommissionsAmounts(
+	tx: Prisma.TransactionClient,
+	saleId: string,
+	saleTotalAmount: number,
+) {
+	const commissions = await tx.saleCommission.findMany({
+		where: {
+			saleId,
+		},
+		orderBy: {
+			sortOrder: "asc",
+		},
+		select: {
+			id: true,
+			calculationBase: true,
+			baseCommissionId: true,
+			sortOrder: true,
+			totalPercentage: true,
+			installments: {
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
+					id: true,
+					percentage: true,
+					amount: true,
+					status: true,
+				},
+			},
+		},
+	});
+
+	const commissionIndexById = new Map<string, number>();
+	for (const [index, commission] of commissions.entries()) {
+		commissionIndexById.set(commission.id, index);
+	}
+
+	const effectivePercentagesByCommissionIndex =
+		resolveEffectiveCommissionsScaledPercentages(
+			commissions.map((commission) => ({
+				calculationBase: commission.calculationBase,
+				baseCommissionIndex: commission.baseCommissionId
+					? commissionIndexById.get(commission.baseCommissionId)
+					: undefined,
+				totalPercentageScaled: commission.totalPercentage,
+				installmentPercentagesScaled: commission.installments.map(
+					(installment) => installment.percentage,
+				),
+			})),
+		);
+
+	let updatedInstallmentsCount = 0;
+
+	for (const [commissionIndex, commission] of commissions.entries()) {
+		if (commission.installments.length === 0) {
+			continue;
+		}
+
+		const effectivePercentages =
+			effectivePercentagesByCommissionIndex[commissionIndex];
+		const effectiveInstallmentsScaled =
+			effectivePercentages?.installmentsScaled ??
+			commission.installments.map((installment) => installment.percentage);
+		const pendingInstallments = commission.installments
+			.map((installment, installmentIndex) => ({
+				...installment,
+				installmentIndex,
+			}))
+			.filter(
+				(installment) =>
+					installment.status === SaleCommissionInstallmentStatus.PENDING,
+			);
+
+		if (pendingInstallments.length === 0) {
+			continue;
+		}
+
+		const pendingInstallmentsScaled = pendingInstallments.map(
+			(installment) =>
+				effectiveInstallmentsScaled[installment.installmentIndex] ?? 0,
+		);
+		const pendingTotalScaled = pendingInstallmentsScaled.reduce(
+			(sum, installmentScaled) => sum + installmentScaled,
+			0,
+		);
+		const pendingAmounts = calculateInstallmentAmountsFromScaled({
+			totalAmount: saleTotalAmount,
+			totalPercentageScaled: pendingTotalScaled,
+			installmentPercentagesScaled: pendingInstallmentsScaled,
+		});
+
+		for (const [pendingIndex, installment] of pendingInstallments.entries()) {
+			const nextAmount = pendingAmounts[pendingIndex] ?? 0;
+
+			if (installment.amount === nextAmount) {
+				continue;
+			}
+
+			await tx.saleCommissionInstallment.update({
+				where: {
+					id: installment.id,
+				},
+				data: {
+					amount: nextAmount,
+				},
+			});
+
+			updatedInstallmentsCount += 1;
+		}
+	}
+
+	return updatedInstallmentsCount;
 }
 
 export async function syncSaleCommissionTotalPercentage(
@@ -881,13 +997,13 @@ export async function loadSaleCommissions(
 					},
 					visibilityWhere,
 				],
-		  }
+			}
 		: {
 				saleId,
 				sale: {
 					organizationId,
 				},
-		  };
+			};
 
 	const commissions = await prisma.saleCommission.findMany({
 		where,
@@ -982,8 +1098,7 @@ export async function loadSaleCommissions(
 			direction: commission.direction,
 			calculationBase: commission.calculationBase,
 			baseCommissionIndex:
-				commission.calculationBase === "COMMISSION" &&
-				commission.baseCommission
+				commission.calculationBase === "COMMISSION" && commission.baseCommission
 					? commission.baseCommission.sortOrder
 					: undefined,
 			beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
@@ -1018,7 +1133,7 @@ export async function loadSaleCommissionInstallments(
 					},
 					visibilityWhere,
 				],
-		  }
+			}
 		: {
 				saleCommission: {
 					saleId,
@@ -1026,7 +1141,7 @@ export async function loadSaleCommissionInstallments(
 						organizationId,
 					},
 				},
-		  };
+			};
 
 	const installments = await prisma.saleCommissionInstallment.findMany({
 		where,
@@ -1039,16 +1154,25 @@ export async function loadSaleCommissionInstallments(
 			{
 				installmentNumber: "asc",
 			},
+			{
+				createdAt: "asc",
+			},
 		],
 		select: {
 			id: true,
 			saleCommissionId: true,
+			originInstallmentId: true,
 			installmentNumber: true,
 			percentage: true,
 			amount: true,
 			status: true,
 			expectedPaymentDate: true,
 			paymentDate: true,
+			originInstallment: {
+				select: {
+					installmentNumber: true,
+				},
+			},
 			saleCommission: {
 				select: {
 					recipientType: true,
@@ -1123,6 +1247,9 @@ export async function loadSaleCommissionInstallments(
 		return {
 			id: installment.id,
 			saleCommissionId: installment.saleCommissionId,
+			originInstallmentId: installment.originInstallmentId,
+			originInstallmentNumber:
+				installment.originInstallment?.installmentNumber ?? null,
 			recipientType: installment.saleCommission.recipientType,
 			sourceType: installment.saleCommission.sourceType,
 			direction: installment.saleCommission.direction,
@@ -1554,12 +1681,18 @@ export async function loadOrganizationCommissionInstallments({
 			select: {
 				id: true,
 				saleCommissionId: true,
+				originInstallmentId: true,
 				installmentNumber: true,
 				percentage: true,
 				amount: true,
 				status: true,
 				expectedPaymentDate: true,
 				paymentDate: true,
+				originInstallment: {
+					select: {
+						installmentNumber: true,
+					},
+				},
 				saleCommission: {
 					select: {
 						saleId: true,
@@ -1641,19 +1774,19 @@ export async function loadOrganizationCommissionInstallments({
 					},
 				},
 			},
-			}),
-			loadOrganizationInstallmentsSummaryByDirection({
-				organizationId,
-				q,
-				companyId,
-				unitId,
-				productId,
-				status,
-				expectedFrom,
-				expectedTo,
-				visibilityWhere,
-			}),
-		]);
+		}),
+		loadOrganizationInstallmentsSummaryByDirection({
+			organizationId,
+			q,
+			companyId,
+			unitId,
+			productId,
+			status,
+			expectedFrom,
+			expectedTo,
+			visibilityWhere,
+		}),
+	]);
 
 	return {
 		items: installments.map((installment) => {
@@ -1686,6 +1819,9 @@ export async function loadOrganizationCommissionInstallments({
 				company: installment.saleCommission.sale.company,
 				unit: installment.saleCommission.sale.unit,
 				saleCommissionId: installment.saleCommissionId,
+				originInstallmentId: installment.originInstallmentId,
+				originInstallmentNumber:
+					installment.originInstallment?.installmentNumber ?? null,
 				installmentNumber: installment.installmentNumber,
 				recipientType: installment.saleCommission.recipientType,
 				sourceType: installment.saleCommission.sourceType,

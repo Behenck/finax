@@ -44,6 +44,10 @@ export type PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidR
      * @type integer | undefined
      */
     manualAmount?: number;
+    /**
+     * @type boolean | undefined
+     */
+    cancelPendingInstallments?: boolean;
   };
 
 export type PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalMutationResponse =

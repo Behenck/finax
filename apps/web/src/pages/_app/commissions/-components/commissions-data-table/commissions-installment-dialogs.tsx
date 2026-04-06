@@ -27,13 +27,16 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { SaleCommissionInstallmentStatus } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import type {
+	BulkInstallmentStatus,
 	CommissionInstallmentRow,
 	InstallmentEditState,
 	InstallmentPayAction,
 	InstallmentReversalAction,
+	InstallmentReversalUndoAction,
 } from "./types";
 
 function formatInstallmentAmountInput(value: string, forceNegative: boolean) {
@@ -52,11 +55,13 @@ interface CommissionsInstallmentDialogsProps {
 	canChangeInstallmentStatus: boolean;
 	canEditInstallment: boolean;
 	canDeleteInstallment: boolean;
-	isBulkPaymentDialogOpen: boolean;
-	onBulkPaymentDialogOpenChange: (open: boolean) => void;
-	bulkPaymentDate: string;
-	onBulkPaymentDateChange: (value: string) => void;
-	onConfirmBulkPayment: () => void;
+	isBulkStatusDialogOpen: boolean;
+	onBulkStatusDialogOpenChange: (open: boolean) => void;
+	bulkStatus: BulkInstallmentStatus;
+	onBulkStatusChange: (value: BulkInstallmentStatus) => void;
+	bulkStatusDate: string;
+	onBulkStatusDateChange: (value: string) => void;
+	onConfirmBulkStatusChange: () => void;
 	isPaymentActionPending: boolean;
 	payAction: InstallmentPayAction | null;
 	onPayActionChange: Dispatch<SetStateAction<InstallmentPayAction | null>>;
@@ -68,6 +73,12 @@ interface CommissionsInstallmentDialogsProps {
 	>;
 	onConfirmInstallmentReversal: () => void;
 	isReversingInstallment: boolean;
+	reversalUndoAction: InstallmentReversalUndoAction | null;
+	onReversalUndoActionChange: Dispatch<
+		SetStateAction<InstallmentReversalUndoAction | null>
+	>;
+	onConfirmInstallmentReversalUndo: () => void;
+	isUndoingInstallmentReversal: boolean;
 	editingInstallment: InstallmentEditState | null;
 	onEditingInstallmentChange: Dispatch<
 		SetStateAction<InstallmentEditState | null>
@@ -86,11 +97,13 @@ export function CommissionsInstallmentDialogs({
 	canChangeInstallmentStatus,
 	canEditInstallment,
 	canDeleteInstallment,
-	isBulkPaymentDialogOpen,
-	onBulkPaymentDialogOpenChange,
-	bulkPaymentDate,
-	onBulkPaymentDateChange,
-	onConfirmBulkPayment,
+	isBulkStatusDialogOpen,
+	onBulkStatusDialogOpenChange,
+	bulkStatus,
+	onBulkStatusChange,
+	bulkStatusDate,
+	onBulkStatusDateChange,
+	onConfirmBulkStatusChange,
 	isPaymentActionPending,
 	payAction,
 	onPayActionChange,
@@ -100,6 +113,10 @@ export function CommissionsInstallmentDialogs({
 	onReversalActionChange,
 	onConfirmInstallmentReversal,
 	isReversingInstallment,
+	reversalUndoAction,
+	onReversalUndoActionChange,
+	onConfirmInstallmentReversalUndo,
+	isUndoingInstallmentReversal,
 	editingInstallment,
 	onEditingInstallmentChange,
 	onConfirmInstallmentEdition,
@@ -109,10 +126,9 @@ export function CommissionsInstallmentDialogs({
 	onConfirmInstallmentDelete,
 	isDeletingInstallment,
 }: CommissionsInstallmentDialogsProps) {
-	const parsedReversalAmount =
-		reversalAction?.manualAmount.trim().length
-			? Number(reversalAction.manualAmount.replace(",", ".").trim())
-			: Number.NaN;
+	const parsedReversalAmount = reversalAction?.manualAmount.trim().length
+		? Number(reversalAction.manualAmount.replace(",", ".").trim())
+		: Number.NaN;
 	const isReversalAmountInvalid =
 		!Number.isFinite(parsedReversalAmount) || parsedReversalAmount === 0;
 	const shouldForceNegativeEditAmount =
@@ -121,14 +137,15 @@ export function CommissionsInstallmentDialogs({
 	return (
 		<>
 			<Dialog
-				open={isBulkPaymentDialogOpen}
-				onOpenChange={onBulkPaymentDialogOpenChange}
+				open={isBulkStatusDialogOpen}
+				onOpenChange={onBulkStatusDialogOpenChange}
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Pagar parcelas selecionadas</DialogTitle>
+						<DialogTitle>Alterar status em lote</DialogTitle>
 						<DialogDescription>
-							Pagamento em lote para {selectedInstallmentsCount} parcela(s).
+							Atualize o status de {selectedInstallmentsCount} parcela(s)
+							selecionada(s).
 						</DialogDescription>
 					</DialogHeader>
 
@@ -138,37 +155,101 @@ export function CommissionsInstallmentDialogs({
 							{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
 						</p>
 						<div className="space-y-1">
-							<p className="text-sm font-medium">Data de pagamento</p>
-							<CalendarDateInput
-								value={bulkPaymentDate}
-								onChange={onBulkPaymentDateChange}
-							/>
+							<p className="text-sm font-medium">Novo status</p>
+							<Select
+								value={bulkStatus}
+								onValueChange={(value) =>
+									onBulkStatusChange(value as BulkInstallmentStatus)
+								}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="Selecione o status" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="PENDING">Pendente</SelectItem>
+									<SelectItem value="PAID">Paga</SelectItem>
+									<SelectItem value="CANCELED">Cancelada</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
+						{bulkStatus === "PAID" || bulkStatus === "CANCELED" ? (
+							<div className="space-y-1">
+								<p className="text-sm font-medium">
+									{bulkStatus === "PAID"
+										? "Data de pagamento"
+										: "Data de cancelamento"}
+								</p>
+								<CalendarDateInput
+									value={bulkStatusDate}
+									onChange={onBulkStatusDateChange}
+								/>
+							</div>
+						) : null}
 					</div>
 
 					<DialogFooter>
 						<Button
 							type="button"
 							variant="outline"
-							onClick={() => onBulkPaymentDialogOpenChange(false)}
+							onClick={() => onBulkStatusDialogOpenChange(false)}
 							disabled={isPaymentActionPending}
 						>
 							Cancelar
 						</Button>
 						<Button
 							type="button"
-							onClick={onConfirmBulkPayment}
+							onClick={onConfirmBulkStatusChange}
 							disabled={
 								isPaymentActionPending ||
 								selectedInstallmentsCount === 0 ||
 								!canChangeInstallmentStatus
 							}
 						>
-							{isPaymentActionPending ? "Pagando..." : "Confirmar pagamento"}
+							{isPaymentActionPending ? "Salvando..." : "Confirmar alteração"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
+
+			<AlertDialog
+				open={Boolean(reversalUndoAction)}
+				onOpenChange={(open) => {
+					if (!open) {
+						onReversalUndoActionChange(null);
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Reverter estorno</AlertDialogTitle>
+						<AlertDialogDescription>
+							Confirmar a reversão do estorno da parcela{" "}
+							{reversalUndoAction
+								? `P${reversalUndoAction.installment.installmentNumber}`
+								: ""}
+							?{" "}
+							{reversalUndoAction?.installment.originInstallmentId
+								? "O sistema vai remover este movimento e restaurar parcelas canceladas automaticamente, quando houver."
+								: "O sistema vai restaurar status, valor e data originais."}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isUndoingInstallmentReversal}>
+							Cancelar
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={onConfirmInstallmentReversalUndo}
+							disabled={
+								isUndoingInstallmentReversal || !canChangeInstallmentStatus
+							}
+						>
+							{isUndoingInstallmentReversal
+								? "Revertendo..."
+								: "Confirmar reversão"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
 			<AlertDialog
 				open={Boolean(payAction)}
@@ -280,6 +361,34 @@ export function CommissionsInstallmentDialogs({
 								}}
 							/>
 						</div>
+
+						{(reversalAction?.pendingFutureInstallmentsCount ?? 0) > 0 ? (
+							<div className="flex items-start gap-3 rounded-md border p-3">
+								<Checkbox
+									checked={reversalAction?.cancelPendingInstallments ?? false}
+									aria-label="Cancelar parcelas pendentes seguintes"
+									onCheckedChange={(checked) => {
+										onReversalActionChange((current) =>
+											current
+												? {
+														...current,
+														cancelPendingInstallments: Boolean(checked),
+													}
+												: current,
+										);
+									}}
+								/>
+								<div className="space-y-1">
+									<p className="text-sm font-medium">
+										Cancelar parcelas pendentes seguintes
+									</p>
+									<p className="text-xs text-muted-foreground">
+										{reversalAction?.pendingFutureInstallmentsCount} parcela(s)
+										pendente(s) futura(s) da mesma comissão serão cancelada(s).
+									</p>
+								</div>
+							</div>
+						) : null}
 
 						{reversalAction?.calculationStatus === "LOADING" ? (
 							<div className="space-y-2 rounded-md border p-3">
@@ -452,20 +561,25 @@ export function CommissionsInstallmentDialogs({
 								<p className="text-sm font-medium">Status</p>
 								<Select
 									value={editingInstallment?.status}
-									onValueChange={(value) => {
-										onEditingInstallmentChange((current) =>
-											current
-												? {
-														...current,
-														status: value as SaleCommissionInstallmentStatus,
-														amount: formatInstallmentAmountInput(
-															current.amount,
-															value === "REVERSED",
-														),
-													}
-												: current,
-										);
-									}}
+										onValueChange={(value) => {
+											onEditingInstallmentChange((current) =>
+												current
+													? {
+															...current,
+															status: value as SaleCommissionInstallmentStatus,
+															amount: formatInstallmentAmountInput(
+																current.amount,
+																value === "REVERSED",
+															),
+															reversalDate:
+																value === "CANCELED" &&
+																!current.reversalDate
+																	? current.paymentDate
+																	: current.reversalDate,
+														}
+													: current,
+											);
+										}}
 								>
 									<SelectTrigger className="w-full">
 										<SelectValue placeholder="Selecione" />
@@ -503,21 +617,30 @@ export function CommissionsInstallmentDialogs({
 						) : null}
 
 						{editingInstallment?.status === "PAID" ||
-						editingInstallment?.status === "REVERSED" ? (
+						editingInstallment?.status === "REVERSED" ||
+						editingInstallment?.status === "CANCELED" ? (
 							<div className="space-y-1">
 								<p className="text-sm font-medium">
 									{editingInstallment.status === "REVERSED"
 										? "Data do estorno"
+										: editingInstallment.status === "CANCELED"
+											? "Data do estorno"
 										: "Data de pagamento"}
 								</p>
 								<CalendarDateInput
-									value={editingInstallment.paymentDate}
+									value={
+										editingInstallment.status === "CANCELED"
+											? editingInstallment.reversalDate
+											: editingInstallment.paymentDate
+									}
 									onChange={(value) => {
 										onEditingInstallmentChange((current) =>
 											current
 												? {
 														...current,
-														paymentDate: value,
+														...(current.status === "CANCELED"
+															? { reversalDate: value }
+															: { paymentDate: value }),
 													}
 												: current,
 										);

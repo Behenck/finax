@@ -101,7 +101,8 @@ export function isCommissionReceiptPreviewRowReady(
 	return (
 		row.status === "READY" &&
 		(row.action === "MARK_AS_PAID" ||
-			row.action === "UPDATE_AMOUNT_AND_MARK_AS_PAID")
+			row.action === "UPDATE_AMOUNT_AND_MARK_AS_PAID" ||
+			row.action === "REVERSE_INSTALLMENT")
 	);
 }
 

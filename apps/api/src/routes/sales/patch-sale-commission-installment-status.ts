@@ -18,6 +18,7 @@ import {
 	PatchSaleCommissionInstallmentStatusBodySchema,
 	parseSaleDateInput,
 } from "./sale-schemas";
+import { applyInstallmentCancellationWithAutomaticReversal } from "./sale-commission-cancellation";
 
 function getCurrentDateUtc() {
 	const now = new Date();
@@ -52,7 +53,7 @@ export async function patchSaleCommissionInstallmentStatus(
 			},
 			async (request, reply) => {
 				const { slug, saleId, installmentId } = request.params;
-				const { status, paymentDate, amount } = request.body;
+				const { status, paymentDate, reversalDate, amount } = request.body;
 				const actorId = await request.getCurrentUserId();
 				const { organization, membership } = await request.getUserMembership(slug);
 				const canViewAllCommissions = await request.hasPermission(
@@ -121,8 +122,23 @@ export async function patchSaleCommissionInstallmentStatus(
 					},
 					select: {
 						id: true,
+						originInstallmentId: true,
+						saleCommissionId: true,
+						installmentNumber: true,
+						percentage: true,
+						amount: true,
+						expectedPaymentDate: true,
 						status: true,
 						paymentDate: true,
+						saleCommission: {
+							select: {
+								sale: {
+									select: {
+										productId: true,
+									},
+								},
+							},
+						},
 					},
 				});
 
@@ -132,24 +148,52 @@ export async function patchSaleCommissionInstallmentStatus(
 
 				await db(() =>
 					prisma.$transaction(async (tx) => {
-						await tx.saleCommissionInstallment.update({
-							where: {
-								id: installment.id,
-							},
-							data: {
-								status,
-								paymentDate:
-									status === "PAID"
-										? paymentDate
+						if (status === "CANCELED") {
+							if (!reversalDate) {
+								throw new BadRequestError(
+									"reversalDate is required when status is CANCELED",
+								);
+							}
+
+							await applyInstallmentCancellationWithAutomaticReversal({
+								tx,
+								organizationId: organization.id,
+								targetInstallment: {
+									id: installment.id,
+									originInstallmentId: installment.originInstallmentId,
+									saleCommissionId: installment.saleCommissionId,
+									installmentNumber: installment.installmentNumber,
+									percentage: installment.percentage,
+									amount: installment.amount,
+									status: installment.status,
+									expectedPaymentDate: installment.expectedPaymentDate,
+									paymentDate: installment.paymentDate,
+									productId: installment.saleCommission.sale.productId,
+								},
+								reversalDate,
+								targetAmount: amount,
+							});
+						} else {
+							await tx.saleCommissionInstallment.update({
+								where: {
+									id: installment.id,
+								},
+								data: {
+									status,
+									paymentDate:
+										paymentDate
 											? parseSaleDateInput(paymentDate)
 											: installment.status === "PAID" &&
 													installment.paymentDate
 												? installment.paymentDate
-												: getCurrentDateUtc()
-										: null,
-								...(amount === undefined ? {} : { amount }),
-							},
-						});
+												: getCurrentDateUtc(),
+									...(amount === undefined ? {} : { amount }),
+									reversedFromStatus: null,
+									reversedFromAmount: null,
+									reversedFromPaymentDate: null,
+								},
+							});
+						}
 
 						const afterSnapshot = await loadSaleHistorySnapshot(
 							tx,

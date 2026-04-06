@@ -44,7 +44,7 @@ export function putOrganizationsSlugProductsIdCommissionReversalRulesMutationOpt
     {
       slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
       id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-      data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+      data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
     },
     TContext
   >({
@@ -72,7 +72,7 @@ export function usePutOrganizationsSlugProductsIdCommissionReversalRules<
       {
         slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
         id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-        data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+        data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
       },
       TContext
     > & { client?: QueryClient };
@@ -96,7 +96,7 @@ export function usePutOrganizationsSlugProductsIdCommissionReversalRules<
       {
         slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
         id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-        data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+        data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
       },
       TContext
     >;
@@ -107,7 +107,7 @@ export function usePutOrganizationsSlugProductsIdCommissionReversalRules<
     {
       slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
       id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-      data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+      data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
     },
     TContext
   >(
@@ -123,7 +123,7 @@ export function usePutOrganizationsSlugProductsIdCommissionReversalRules<
     {
       slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
       id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-      data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+      data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
     },
     TContext
   >;

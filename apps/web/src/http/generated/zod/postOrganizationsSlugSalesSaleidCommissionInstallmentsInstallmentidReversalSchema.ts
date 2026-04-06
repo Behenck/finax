@@ -22,6 +22,7 @@ export const postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid
   z.object({
     reversalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     manualAmount: z.optional(z.int().min(-9007199254740991).max(-1)),
+    cancelPendingInstallments: z.optional(z.boolean()),
   });
 
 export const postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalMutationResponseSchema =

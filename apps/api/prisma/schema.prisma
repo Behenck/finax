@@ -665,6 +665,8 @@ model Product {
   sortOrder                      Int     @default(0) @map("sort_order")
   salesTransactionCategoryId     String? @map("sales_transaction_category_id")
   salesTransactionCostCenterId   String? @map("sales_transaction_cost_center_id")
+  commissionReversalMode         ProductCommissionReversalMode? @map("commission_reversal_mode")
+  commissionReversalTotalPercentage Int? @map("commission_reversal_total_percentage")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -687,6 +689,11 @@ model Product {
   @@index([salesTransactionCategoryId])
   @@index([salesTransactionCostCenterId])
   @@map("products")
+}
+
+enum ProductCommissionReversalMode {
+  INSTALLMENT_BY_NUMBER
+  TOTAL_PAID_PERCENTAGE
 }
 
 model ProductCommissionReversalRule {
@@ -1089,19 +1096,26 @@ model SaleCommission {
 model SaleCommissionInstallment {
   id                String @id @default(uuid())
   saleCommissionId  String @map("sale_commission_id")
+  originInstallmentId String? @map("origin_installment_id")
   installmentNumber Int    @map("installment_number")
   percentage        Int
   amount            Int
   status            SaleCommissionInstallmentStatus @default(PENDING)
   expectedPaymentDate DateTime @map("expected_payment_date") @db.Date
   paymentDate       DateTime? @map("payment_date") @db.Date
+  reversedFromStatus SaleCommissionInstallmentStatus? @map("reversed_from_status")
+  reversedFromAmount Int? @map("reversed_from_amount")
+  reversedFromPaymentDate DateTime? @map("reversed_from_payment_date") @db.Date
 
   createdAt DateTime @default(now()) @map("created_at")
 
   saleCommission SaleCommission @relation(fields: [saleCommissionId], references: [id], onDelete: Cascade)
+  originInstallment SaleCommissionInstallment? @relation("SaleCommissionInstallmentReversalOrigin", fields: [originInstallmentId], references: [id], onDelete: SetNull)
+  reversalInstallments SaleCommissionInstallment[] @relation("SaleCommissionInstallmentReversalOrigin")
 
-  @@unique([saleCommissionId, installmentNumber])
+  @@index([saleCommissionId, installmentNumber])
   @@index([saleCommissionId])
+  @@index([originInstallmentId])
   @@index([saleCommissionId, status])
   @@index([expectedPaymentDate])
   @@map("sale_commission_installments")

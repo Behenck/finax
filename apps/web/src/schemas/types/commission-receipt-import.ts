@@ -48,6 +48,7 @@ export type CommissionReceiptImportRowStatus =
 export type CommissionReceiptImportRowAction =
 	| "MARK_AS_PAID"
 	| "UPDATE_AMOUNT_AND_MARK_AS_PAID"
+	| "REVERSE_INSTALLMENT"
 	| "NONE";
 
 export interface CommissionReceiptImportPreviewRow {

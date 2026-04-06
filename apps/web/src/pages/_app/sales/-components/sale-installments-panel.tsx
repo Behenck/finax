@@ -1,8 +1,18 @@
 import { format, parse } from "date-fns";
-import { MoreHorizontal, Pencil, Trash2, Undo2 } from "lucide-react";
+import {
+	CheckCheck,
+	CheckCircle2,
+	MoreHorizontal,
+	Pencil,
+	RotateCcw,
+	Trash2,
+	Undo2,
+} from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { resolveErrorMessage } from "@/errors";
+import { normalizeApiError } from "@/errors/api-error";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -16,6 +26,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -51,11 +62,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProductCommissionReversalRules } from "@/hooks/commissions";
 import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
+import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
 	useDeleteSaleCommissionInstallment,
+	usePatchCommissionInstallmentsStatusBulk,
 	usePatchSaleCommissionInstallmentStatus,
 	useReverseSaleCommissionInstallment,
 	useSaleCommissionInstallments,
+	useUndoSaleCommissionInstallmentReversal,
 	useUpdateSaleCommissionInstallment,
 } from "@/hooks/sales";
 import type { GetOrganizationsSlugSalesSaleidCommissionInstallments200 } from "@/http/generated";
@@ -76,9 +90,16 @@ import {
 type SaleInstallmentRow =
 	GetOrganizationsSlugSalesSaleidCommissionInstallments200["installments"][number];
 
-type InstallmentStatusAction = {
+type BulkInstallmentStatus = "PENDING" | "PAID" | "CANCELED";
+
+type SelectedInstallment = {
+	id: string;
+	amount: number;
+	status: SaleCommissionInstallmentStatus;
+};
+
+type InstallmentPayAction = {
 	installment: SaleInstallmentRow;
-	nextStatus: "PAID" | "CANCELED";
 	paymentDate: string;
 	amount: string;
 };
@@ -90,11 +111,14 @@ type InstallmentEditState = {
 	status: SaleCommissionInstallmentStatus;
 	expectedPaymentDate: string;
 	paymentDate: string;
+	reversalDate: string;
 };
 
 type InstallmentReversalState = {
 	installment: SaleInstallmentRow;
 	reversalDate: string;
+	cancelPendingInstallments: boolean;
+	pendingFutureInstallmentsCount: number;
 	mode: "AUTO" | "MANUAL";
 	calculationStatus: "LOADING" | "READY" | "ERROR";
 	calculationError: string | null;
@@ -113,8 +137,7 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 		"bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border-yellow-500/30",
 	PAID: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
 	CANCELED: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/30",
-	REVERSED:
-		"bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
+	REVERSED: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
 function formatDate(value: string) {
@@ -164,14 +187,24 @@ export function SaleInstallmentsPanel({
 	const [showZeroValueInstallments, setShowZeroValueInstallments] =
 		useQueryState("showZeroInstallments", showZeroInstallmentsParser);
 	const [activeBeneficiaryTab, setActiveBeneficiaryTab] = useState("");
-	const [statusAction, setStatusAction] =
-		useState<InstallmentStatusAction | null>(null);
+	const [payAction, setPayAction] = useState<InstallmentPayAction | null>(null);
 	const [editingInstallment, setEditingInstallment] =
 		useState<InstallmentEditState | null>(null);
 	const [reversalState, setReversalState] =
 		useState<InstallmentReversalState | null>(null);
+	const [reversalUndoInstallment, setReversalUndoInstallment] =
+		useState<SaleInstallmentRow | null>(null);
 	const [installmentToDelete, setInstallmentToDelete] =
 		useState<SaleInstallmentRow | null>(null);
+	const [selectedInstallmentsById, setSelectedInstallmentsById] = useState(
+		() => new Map<string, SelectedInstallment>(),
+	);
+	const [isBulkStatusDialogOpen, setIsBulkStatusDialogOpen] = useState(false);
+	const [bulkStatus, setBulkStatus] = useState<BulkInstallmentStatus>("PAID");
+	const [bulkStatusDate, setBulkStatusDate] = useState(
+		getTodayDateInputValue(),
+	);
+	const [isApplyingBulkStatus, setIsApplyingBulkStatus] = useState(false);
 
 	const { data, isLoading, isError, refetch } = useSaleCommissionInstallments(
 		saleId,
@@ -183,6 +216,14 @@ export function SaleInstallmentsPanel({
 		useUpdateSaleCommissionInstallment();
 	const { mutateAsync: reverseInstallment, isPending: isReversingInstallment } =
 		useReverseSaleCommissionInstallment();
+	const {
+		mutateAsync: undoInstallmentReversal,
+		isPending: isUndoingInstallmentReversal,
+	} = useUndoSaleCommissionInstallmentReversal();
+	const {
+		mutateAsync: patchInstallmentsStatusBulk,
+		isPending: isPatchingBulkStatus,
+	} = usePatchCommissionInstallmentsStatusBulk();
 	const { mutateAsync: deleteInstallment, isPending: isDeletingInstallment } =
 		useDeleteSaleCommissionInstallment();
 	const {
@@ -208,9 +249,6 @@ export function SaleInstallmentsPanel({
 	);
 	const canUpdateInstallmentsBySaleStatus =
 		saleStatus === "APPROVED" || saleStatus === "COMPLETED";
-	const canOpenInstallmentActions =
-		canUpdateInstallmentsBySaleStatus &&
-		(canChangeInstallmentStatus || canEditInstallment || canDeleteInstallment);
 	const installments = useMemo(
 		() => data?.installments ?? [],
 		[data?.installments],
@@ -224,6 +262,32 @@ export function SaleInstallmentsPanel({
 				: installments,
 		[installments, saleCommissionId],
 	);
+	const reversalAmountByOriginInstallmentId = useMemo(() => {
+		const map = new Map<string, number>();
+
+		for (const installment of filteredInstallments) {
+			if (!installment.originInstallmentId) {
+				continue;
+			}
+
+			map.set(
+				installment.originInstallmentId,
+				(map.get(installment.originInstallmentId) ?? 0) + installment.amount,
+			);
+		}
+
+		return map;
+	}, [filteredInstallments]);
+
+	function resolveDisplayInstallmentAmount(installment: SaleInstallmentRow) {
+		if (installment.originInstallmentId) {
+			return installment.amount;
+		}
+
+		const totalReversedAmount =
+			reversalAmountByOriginInstallmentId.get(installment.id) ?? 0;
+		return installment.amount + totalReversedAmount;
+	}
 	const summary = useMemo(
 		() => ({
 			total: filteredInstallments.length,
@@ -247,7 +311,9 @@ export function SaleInstallmentsPanel({
 		() =>
 			showZeroValueInstallments
 				? filteredInstallments
-				: filteredInstallments.filter((installment) => installment.amount !== 0),
+				: filteredInstallments.filter(
+						(installment) => installment.amount !== 0,
+					),
 		[filteredInstallments, showZeroValueInstallments],
 	);
 	const installmentsByBeneficiary = useMemo(() => {
@@ -292,28 +358,195 @@ export function SaleInstallmentsPanel({
 
 		return installmentsByBeneficiary[0]?.key ?? "";
 	}, [activeBeneficiaryTab, installmentsByBeneficiary]);
+	const canBulkStatusInstallments =
+		canUpdateInstallmentsBySaleStatus && canChangeInstallmentStatus;
+	const selectableInstallmentIds = useMemo(() => {
+		if (!canBulkStatusInstallments) {
+			return new Set<string>();
+		}
+
+		return new Set(
+			visibleInstallments
+				.filter((installment) => installment.status !== "REVERSED")
+				.map((installment) => installment.id),
+		);
+	}, [canBulkStatusInstallments, visibleInstallments]);
+	const visibleInstallmentsById = useMemo(
+		() =>
+			new Map(
+				visibleInstallments.map((installment) => [installment.id, installment]),
+			),
+		[visibleInstallments],
+	);
+	const selectedInstallments = useMemo(
+		() => Array.from(selectedInstallmentsById.values()),
+		[selectedInstallmentsById],
+	);
+	const selectedInstallmentsTotalAmount = useMemo(
+		() =>
+			selectedInstallments.reduce(
+				(sum, installment) => sum + installment.amount,
+				0,
+			),
+		[selectedInstallments],
+	);
+	const activeGroupInstallments = useMemo(
+		() =>
+			installmentsByBeneficiary.find(
+				(group) => group.key === activeBeneficiaryTabValue,
+			)?.installments ?? [],
+		[activeBeneficiaryTabValue, installmentsByBeneficiary],
+	);
+	const installmentsMultiSelect = useCheckboxMultiSelect<string>({
+		visibleIds: activeGroupInstallments.map((installment) => installment.id),
+		isSelectable: (installmentId) =>
+			selectableInstallmentIds.has(installmentId),
+		toggleOne: handleInstallmentCheckedChange,
+		toggleMany: toggleVisibleInstallments,
+		onClearSelection: clearSelectedInstallments,
+		enabled: canBulkStatusInstallments,
+	});
 	const productReversalRules = productReversalRulesData?.rules ?? [];
-	const parsedReversalAmount =
-		reversalState?.manualAmount.trim().length
-			? Number(reversalState.manualAmount.replace(",", ".").trim())
-			: Number.NaN;
+	const productReversalMode = productReversalRulesData?.mode ?? null;
+	const productReversalTotalPercentage =
+		productReversalRulesData?.totalPaidPercentage ?? null;
+	const parsedReversalAmount = reversalState?.manualAmount.trim().length
+		? Number(reversalState.manualAmount.replace(",", ".").trim())
+		: Number.NaN;
 	const isReversalAmountInvalid =
 		!Number.isFinite(parsedReversalAmount) || parsedReversalAmount === 0;
 	const shouldForceNegativeEditAmount =
 		editingInstallment?.status === "REVERSED";
+	useEffect(() => {
+		setSelectedInstallmentsById((current) => {
+			if (current.size === 0) {
+				return current;
+			}
 
-	function requestInstallmentStatusChange(
+			let hasChanges = false;
+			const next = new Map<string, SelectedInstallment>();
+
+			for (const [installmentId, selectedInstallment] of current) {
+				const installment = visibleInstallmentsById.get(installmentId);
+				if (!installment || !selectableInstallmentIds.has(installmentId)) {
+					hasChanges = true;
+					continue;
+				}
+
+				const nextSelectedInstallment: SelectedInstallment = {
+					id: installmentId,
+					amount: installment.amount,
+					status: installment.status,
+				};
+				if (
+					selectedInstallment.amount !== nextSelectedInstallment.amount ||
+					selectedInstallment.status !== nextSelectedInstallment.status
+				) {
+					hasChanges = true;
+				}
+
+				next.set(installmentId, nextSelectedInstallment);
+			}
+
+			if (!hasChanges && next.size === current.size) {
+				return current;
+			}
+
+			return next;
+		});
+	}, [selectableInstallmentIds, visibleInstallmentsById]);
+
+	function clearSelectedInstallments() {
+		setSelectedInstallmentsById(new Map());
+	}
+
+	function toggleInstallmentSelection(
 		installment: SaleInstallmentRow,
-		nextStatus: "PAID" | "CANCELED",
+		checked: boolean,
 	) {
-		setStatusAction({
+		if (
+			!canBulkStatusInstallments ||
+			!selectableInstallmentIds.has(installment.id)
+		) {
+			return;
+		}
+
+		setSelectedInstallmentsById((current) => {
+			const next = new Map(current);
+
+			if (checked) {
+				next.set(installment.id, {
+					id: installment.id,
+					amount: installment.amount,
+					status: installment.status,
+				});
+			} else {
+				next.delete(installment.id);
+			}
+
+			return next;
+		});
+	}
+
+	function handleInstallmentCheckedChange(
+		installmentId: string,
+		checked: boolean,
+	) {
+		const installment = visibleInstallmentsById.get(installmentId);
+		if (!installment) {
+			return;
+		}
+
+		toggleInstallmentSelection(installment, checked);
+	}
+
+	function toggleVisibleInstallments(
+		installmentIds: string[],
+		checked: boolean,
+	) {
+		if (!canBulkStatusInstallments) {
+			return;
+		}
+
+		setSelectedInstallmentsById((current) => {
+			const next = new Map(current);
+
+			for (const installmentId of installmentIds) {
+				const installment = visibleInstallmentsById.get(installmentId);
+				if (!installment || !selectableInstallmentIds.has(installmentId)) {
+					continue;
+				}
+
+				if (checked) {
+					next.set(installment.id, {
+						id: installment.id,
+						amount: installment.amount,
+						status: installment.status,
+					});
+				} else {
+					next.delete(installment.id);
+				}
+			}
+
+			return next;
+		});
+	}
+
+	function toggleGroupSelection(
+		groupInstallments: SaleInstallmentRow[],
+		checked: boolean,
+	) {
+		toggleVisibleInstallments(
+			groupInstallments.map((installment) => installment.id),
+			checked,
+		);
+	}
+
+	function requestInstallmentPayment(installment: SaleInstallmentRow) {
+		setPayAction({
 			installment,
-			nextStatus,
 			paymentDate:
-				nextStatus === "PAID"
-					? toDateInputValue(installment.paymentDate) ||
-						getTodayDateInputValue()
-					: "",
+				toDateInputValue(installment.paymentDate) || getTodayDateInputValue(),
 			amount: formatCurrencyBRL(installment.amount / 100),
 		});
 	}
@@ -322,10 +555,25 @@ export function SaleInstallmentsPanel({
 		if (!canChangeInstallmentStatus || !canUpdateInstallmentsBySaleStatus) {
 			return;
 		}
+		if (installment.originInstallmentId) {
+			toast.error(
+				"Selecione uma parcela base para estornar. Movimentos de estorno não podem ser estornados novamente.",
+			);
+			return;
+		}
+
+		const pendingFutureInstallmentsCount = filteredInstallments.filter(
+			(row) =>
+				row.saleCommissionId === installment.saleCommissionId &&
+				row.installmentNumber > installment.installmentNumber &&
+				row.status === "PENDING",
+		).length;
 
 		setReversalState({
 			installment,
 			reversalDate: getTodayDateInputValue(),
+			cancelPendingInstallments: pendingFutureInstallmentsCount > 0,
+			pendingFutureInstallmentsCount,
 			mode: "MANUAL",
 			calculationStatus: "LOADING",
 			calculationError: null,
@@ -335,6 +583,23 @@ export function SaleInstallmentsPanel({
 			totalPaidAmount: null,
 			calculatedAmount: null,
 		});
+	}
+
+	function requestInstallmentReversalUndo(installment: SaleInstallmentRow) {
+		if (!canChangeInstallmentStatus || !canUpdateInstallmentsBySaleStatus) {
+			return;
+		}
+
+		setReversalUndoInstallment(installment);
+	}
+
+	function openBulkStatusDialog() {
+		if (!canBulkStatusInstallments || selectedInstallments.length === 0) {
+			return;
+		}
+
+		setBulkStatusDate(getTodayDateInputValue());
+		setIsBulkStatusDialogOpen(true);
 	}
 
 	useEffect(() => {
@@ -361,28 +626,6 @@ export function SaleInstallmentsPanel({
 			return;
 		}
 
-		const matchedRule = productReversalRules.find(
-			(rule) =>
-				rule.installmentNumber === reversalState.installment.installmentNumber,
-		);
-
-		if (!matchedRule) {
-			setReversalState((current) =>
-				current
-					? {
-							...current,
-							mode: "MANUAL",
-							calculationStatus: "READY",
-							calculationError: null,
-							rulePercentage: null,
-							totalPaidAmount: null,
-							calculatedAmount: null,
-						}
-					: current,
-			);
-			return;
-		}
-
 		const totalPaidAmount = filteredInstallments
 			.filter(
 				(row) =>
@@ -391,36 +634,95 @@ export function SaleInstallmentsPanel({
 					row.amount > 0,
 			)
 			.reduce((sum, row) => sum + row.amount, 0);
-		const calculatedAmount = -Math.round(
-			(totalPaidAmount * matchedRule.percentage) / 100,
+
+		if (
+			productReversalMode === "TOTAL_PAID_PERCENTAGE" &&
+			productReversalTotalPercentage !== null
+		) {
+			const calculatedAmount = -Math.round(
+				(totalPaidAmount * productReversalTotalPercentage) / 100,
+			);
+
+			setReversalState((current) => {
+				if (!current) {
+					return current;
+				}
+
+				const shouldUseCalculatedAmount =
+					!current.hasManualOverride &&
+					current.manualAmount.trim().length === 0;
+
+				return {
+					...current,
+					mode: "AUTO",
+					calculationStatus: "READY",
+					calculationError: null,
+					manualAmount: shouldUseCalculatedAmount
+						? formatCentsToDecimalInput(calculatedAmount)
+						: current.manualAmount,
+					rulePercentage: productReversalTotalPercentage,
+					totalPaidAmount,
+					calculatedAmount,
+				};
+			});
+			return;
+		}
+
+		const matchedRule = productReversalRules.find(
+			(rule) =>
+				rule.installmentNumber === reversalState.installment.installmentNumber,
 		);
 
-		setReversalState((current) => {
-			if (!current) {
-				return current;
-			}
+		if (matchedRule) {
+			const calculatedAmount = -Math.round(
+				(totalPaidAmount * matchedRule.percentage) / 100,
+			);
 
-			const shouldUseCalculatedAmount =
-				!current.hasManualOverride && current.manualAmount.trim().length === 0;
+			setReversalState((current) => {
+				if (!current) {
+					return current;
+				}
 
-			return {
-				...current,
-				mode: "AUTO",
-				calculationStatus: "READY",
-				calculationError: null,
-				manualAmount: shouldUseCalculatedAmount
-					? formatCentsToDecimalInput(calculatedAmount)
-					: current.manualAmount,
-				rulePercentage: matchedRule.percentage,
-				totalPaidAmount,
-				calculatedAmount,
-			};
-		});
+				const shouldUseCalculatedAmount =
+					!current.hasManualOverride &&
+					current.manualAmount.trim().length === 0;
+
+				return {
+					...current,
+					mode: "AUTO",
+					calculationStatus: "READY",
+					calculationError: null,
+					manualAmount: shouldUseCalculatedAmount
+						? formatCentsToDecimalInput(calculatedAmount)
+						: current.manualAmount,
+					rulePercentage: matchedRule.percentage,
+					totalPaidAmount,
+					calculatedAmount,
+				};
+			});
+			return;
+		}
+
+		setReversalState((current) =>
+			current
+				? {
+						...current,
+						mode: "MANUAL",
+						calculationStatus: "READY",
+						calculationError: null,
+						rulePercentage: null,
+						totalPaidAmount: null,
+						calculatedAmount: null,
+					}
+				: current,
+		);
 	}, [
 		filteredInstallments,
 		isLoadingProductReversalRules,
 		isProductReversalRulesError,
+		productReversalMode,
 		productReversalRules,
+		productReversalTotalPercentage,
 		reversalState,
 	]);
 
@@ -432,28 +734,121 @@ export function SaleInstallmentsPanel({
 			status: installment.status,
 			expectedPaymentDate: toDateInputValue(installment.expectedPaymentDate),
 			paymentDate: toDateInputValue(installment.paymentDate),
+			reversalDate:
+				toDateInputValue(installment.paymentDate) || getTodayDateInputValue(),
 		});
 	}
 
-	async function handleConfirmInstallmentStatusChange() {
-		if (!statusAction) {
+	async function handleConfirmInstallmentPayment() {
+		if (!payAction) {
+			return;
+		}
+
+		if (!payAction.paymentDate) {
+			toast.error("Informe a data de pagamento.");
 			return;
 		}
 
 		try {
 			await patchInstallmentStatus({
 				saleId,
-				installmentId: statusAction.installment.id,
-				status: statusAction.nextStatus,
-				amount: parseBRLCurrencyToCents(statusAction.amount),
-				paymentDate:
-					statusAction.nextStatus === "PAID"
-						? statusAction.paymentDate || undefined
-						: undefined,
+				installmentId: payAction.installment.id,
+				status: "PAID",
+				amount: parseBRLCurrencyToCents(payAction.amount),
+				paymentDate: payAction.paymentDate || undefined,
 			});
-			setStatusAction(null);
+			setPayAction(null);
 		} catch {
 			// erro tratado no hook
+		}
+	}
+
+	async function handlePayInstallmentToday(installment: SaleInstallmentRow) {
+		try {
+			await patchInstallmentStatus({
+				saleId,
+				installmentId: installment.id,
+				status: "PAID",
+				paymentDate: getTodayDateInputValue(),
+				amount: installment.amount,
+			});
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
+	async function handleConfirmBulkStatusChange() {
+		if (!canBulkStatusInstallments) {
+			return;
+		}
+
+		if (selectedInstallments.length === 0) {
+			setIsBulkStatusDialogOpen(false);
+			return;
+		}
+
+		if (
+			(bulkStatus === "PAID" || bulkStatus === "CANCELED") &&
+			!bulkStatusDate
+		) {
+			toast.error(
+				bulkStatus === "PAID"
+					? "Informe a data de pagamento."
+					: "Informe a data de cancelamento.",
+			);
+			return;
+		}
+
+		setIsApplyingBulkStatus(true);
+
+		try {
+			const response = await patchInstallmentsStatusBulk({
+				installmentIds: selectedInstallments.map(
+					(installment) => installment.id,
+				),
+				saleIds: [saleId],
+				status: bulkStatus,
+				paymentDate:
+					bulkStatus === "PAID" ? bulkStatusDate || undefined : undefined,
+				reversalDate:
+					bulkStatus === "CANCELED" ? bulkStatusDate || undefined : undefined,
+				silent: true,
+			});
+
+			const skippedIds = new Set(
+				response.skipped.map((item) => item.installmentId),
+			);
+			const updatedIds = selectedInstallments
+				.filter((installment) => !skippedIds.has(installment.id))
+				.map((installment) => installment.id);
+
+			if (updatedIds.length > 0) {
+				setSelectedInstallmentsById((current) => {
+					const next = new Map(current);
+
+					for (const installmentId of updatedIds) {
+						next.delete(installmentId);
+					}
+
+					return next;
+				});
+				toast.success(`${updatedIds.length} parcela(s) atualizada(s).`);
+			}
+
+			if (response.skipped.length > 0) {
+				toast.warning(
+					`${response.skipped.length} parcela(s) não puderam ser atualizadas.`,
+				);
+			}
+			if (updatedIds.length === 0 && response.skipped.length === 0) {
+				toast.info("Nenhuma parcela foi atualizada.");
+			}
+
+			setIsBulkStatusDialogOpen(false);
+		} catch (error) {
+			toast.error(resolveErrorMessage(normalizeApiError(error)));
+		} finally {
+			setIsApplyingBulkStatus(false);
 		}
 	}
 
@@ -475,30 +870,42 @@ export function SaleInstallmentsPanel({
 			return;
 		}
 
-	try {
-		const parsedAmount = parseBRLCurrencyToCents(editingInstallment.amount);
-		if (editingInstallment.status === "REVERSED" && parsedAmount >= 0) {
-			toast.error("Para parcela estornada, o valor deve ser negativo.");
-			return;
-		}
-		if (editingInstallment.status !== "REVERSED" && parsedAmount < 0) {
-			toast.error("Valor negativo só é permitido para parcela estornada.");
+		if (
+			editingInstallment.status === "CANCELED" &&
+			!editingInstallment.reversalDate
+		) {
+			toast.error("Informe a data do estorno.");
 			return;
 		}
 
-		await updateInstallment({
-			saleId,
-			installmentId: editingInstallment.installment.id,
-			data: {
-				percentage: parsedPercentage,
-				amount: parsedAmount,
-				status: editingInstallment.status,
-				expectedPaymentDate: editingInstallment.expectedPaymentDate,
+		try {
+			const parsedAmount = parseBRLCurrencyToCents(editingInstallment.amount);
+			if (editingInstallment.status === "REVERSED" && parsedAmount >= 0) {
+				toast.error("Para parcela estornada, o valor deve ser negativo.");
+				return;
+			}
+			if (editingInstallment.status !== "REVERSED" && parsedAmount < 0) {
+				toast.error("Valor negativo só é permitido para parcela estornada.");
+				return;
+			}
+
+			await updateInstallment({
+				saleId,
+				installmentId: editingInstallment.installment.id,
+				data: {
+					percentage: parsedPercentage,
+					amount: parsedAmount,
+					status: editingInstallment.status,
+					expectedPaymentDate: editingInstallment.expectedPaymentDate,
 					paymentDate:
 						editingInstallment.status === "PAID" ||
 						editingInstallment.status === "REVERSED"
 							? editingInstallment.paymentDate || null
 							: null,
+					reversalDate:
+						editingInstallment.status === "CANCELED"
+							? editingInstallment.reversalDate || undefined
+							: undefined,
 				},
 			});
 			setEditingInstallment(null);
@@ -543,34 +950,79 @@ export function SaleInstallmentsPanel({
 			return;
 		}
 
-		const parsedManualAmount = parseManualAmountToCents(
-			reversalState.manualAmount,
-		);
-		if (parsedManualAmount === null) {
-			toast.error("Informe um valor válido para o estorno.");
-			return;
-		}
-		if (parsedManualAmount === 0) {
-			toast.error("O valor do estorno deve ser diferente de zero.");
-			return;
-		}
-		if (parsedManualAmount > 0) {
-			toast.error("O valor do estorno deve ser negativo.");
-			return;
+		const shouldSendManualAmount =
+			reversalState.mode === "MANUAL" || reversalState.hasManualOverride;
+		let parsedManualAmount: number | undefined;
+
+		if (shouldSendManualAmount) {
+			const parsedAmount = parseManualAmountToCents(reversalState.manualAmount);
+			if (parsedAmount === null) {
+				toast.error("Informe um valor válido para o estorno.");
+				return;
+			}
+			if (parsedAmount === 0) {
+				toast.error("O valor do estorno deve ser diferente de zero.");
+				return;
+			}
+			if (parsedAmount > 0) {
+				toast.error("O valor do estorno deve ser negativo.");
+				return;
+			}
+
+			parsedManualAmount = parsedAmount;
 		}
 
 		try {
-			await reverseInstallment({
+			const payload: {
+				saleId: string;
+				installmentId: string;
+				reversalDate: string;
+				cancelPendingInstallments: boolean;
+				manualAmount?: number;
+			} = {
 				saleId,
 				installmentId: reversalState.installment.id,
 				reversalDate: reversalState.reversalDate,
-				manualAmount: parsedManualAmount,
+				cancelPendingInstallments: reversalState.cancelPendingInstallments,
+			};
+
+			if (parsedManualAmount !== undefined) {
+				payload.manualAmount = parsedManualAmount;
+			}
+
+			await reverseInstallment({
+				...payload,
 			});
 			setReversalState(null);
 		} catch {
 			// erro tratado no hook
 		}
 	}
+
+	async function handleConfirmInstallmentReversalUndo() {
+		if (!reversalUndoInstallment) {
+			return;
+		}
+
+		try {
+			await undoInstallmentReversal({
+				saleId,
+				installmentId: reversalUndoInstallment.id,
+			});
+			setReversalUndoInstallment(null);
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
+	const isBulkStatusPending = isApplyingBulkStatus || isPatchingBulkStatus;
+	const isAnyInstallmentActionPending =
+		isPatchingStatus ||
+		isBulkStatusPending ||
+		isUpdatingInstallment ||
+		isReversingInstallment ||
+		isUndoingInstallmentReversal ||
+		isDeletingInstallment;
 
 	return (
 		<>
@@ -595,6 +1047,22 @@ export function SaleInstallmentsPanel({
 						</label>
 					</div>
 				</div>
+
+				{canBulkStatusInstallments && selectedInstallments.length > 0 ? (
+					<div className="flex flex-col gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4 md:flex-row md:items-center md:justify-between">
+						<p className="text-sm text-emerald-700 dark:text-emerald-300">
+							{selectedInstallments.length} parcela(s) selecionada(s) · total{" "}
+							{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
+						</p>
+						<Button
+							type="button"
+							disabled={isAnyInstallmentActionPending}
+							onClick={openBulkStatusDialog}
+						>
+							Alterar status em lote
+						</Button>
+					</div>
+				) : null}
 
 				{isLoading ? (
 					<p className="text-sm text-muted-foreground">
@@ -637,214 +1105,404 @@ export function SaleInstallmentsPanel({
 							))}
 						</TabsList>
 
-						{installmentsByBeneficiary.map((group) => (
-							<TabsContent key={group.key} value={group.key} className="pt-2">
-								<div className="rounded-md border overflow-hidden">
-									<Table>
-										<TableHeader>
-											<TableRow>
-												<TableHead>Parcela</TableHead>
-												<TableHead>%</TableHead>
-												<TableHead>Valor</TableHead>
-												<TableHead>Status</TableHead>
-												<TableHead>Previsão</TableHead>
-												<TableHead>Pagamento</TableHead>
-												<TableHead>Direção</TableHead>
-												<TableHead>Origem</TableHead>
-												<TableHead className="w-[90px] text-right">
-													Ações
-												</TableHead>
-											</TableRow>
-										</TableHeader>
-										<TableBody>
-											{group.installments.map((installment) => {
-												const statusActions =
-													canUpdateInstallmentsBySaleStatus &&
-													canChangeInstallmentStatus
-														? (["PAID", "CANCELED"] as const).filter(
-																(status) => status !== installment.status,
-															)
-														: [];
-												const canReverseInstallment =
-													canUpdateInstallmentsBySaleStatus &&
-													canChangeInstallmentStatus &&
-													(installment.status === "PENDING" ||
-														installment.status === "PAID");
+						{installmentsByBeneficiary.map((group) => {
+							const selectableInstallmentsInGroup = group.installments.filter(
+								(installment) => selectableInstallmentIds.has(installment.id),
+							);
+							const allGroupSelected =
+								selectableInstallmentsInGroup.length > 0 &&
+								selectableInstallmentsInGroup.every((installment) =>
+									selectedInstallmentsById.has(installment.id),
+								);
+							const someGroupSelected =
+								!allGroupSelected &&
+								selectableInstallmentsInGroup.some((installment) =>
+									selectedInstallmentsById.has(installment.id),
+								);
 
-												return (
-													<TableRow key={installment.id}>
-														<TableCell>
-															P{installment.installmentNumber}
-														</TableCell>
-														<TableCell>{installment.percentage}%</TableCell>
-														<TableCell>
-															{formatCurrencyBRL(installment.amount / 100)}
-														</TableCell>
-														<TableCell>
-															<Badge
-																variant="outline"
-																className={
-																	INSTALLMENT_STATUS_BADGE_CLASSNAME[
-																		installment.status
-																	]
-																}
-															>
+							return (
+								<TabsContent key={group.key} value={group.key} className="pt-2">
+									<div className="rounded-md border overflow-hidden">
+										<Table>
+											<TableHeader>
+												<TableRow>
+													<TableHead className="w-[42px]">
+														<Checkbox
+															checked={
+																allGroupSelected
+																	? true
+																	: someGroupSelected
+																		? "indeterminate"
+																		: false
+															}
+															onCheckedChange={(checked) =>
+																toggleGroupSelection(
+																	group.installments,
+																	Boolean(checked),
+																)
+															}
+															disabled={
+																selectableInstallmentsInGroup.length === 0 ||
+																isAnyInstallmentActionPending
+															}
+															aria-label={`Selecionar parcelas do beneficiário ${group.label}`}
+														/>
+													</TableHead>
+													<TableHead>Parcela</TableHead>
+													<TableHead>%</TableHead>
+													<TableHead>Valor</TableHead>
+													<TableHead>Status</TableHead>
+													<TableHead>Previsão</TableHead>
+													<TableHead>Pagamento</TableHead>
+													<TableHead>Direção</TableHead>
+													<TableHead>Origem</TableHead>
+													<TableHead className="w-[90px] text-right">
+														Ações
+													</TableHead>
+												</TableRow>
+											</TableHeader>
+											<TableBody>
+												{group.installments.map((installment) => {
+													const isReversalMovement = Boolean(
+														installment.originInstallmentId,
+													);
+													const isSelected = selectedInstallmentsById.has(
+														installment.id,
+													);
+													const canBulkStatusInstallment =
+														selectableInstallmentIds.has(installment.id);
+													const displayAmount =
+														resolveDisplayInstallmentAmount(installment);
+													const hasLinkedReversal =
+														!isReversalMovement &&
+														displayAmount !== installment.amount;
+													const canPayRowAction =
+														canUpdateInstallmentsBySaleStatus &&
+														canChangeInstallmentStatus &&
+														installment.status === "PENDING";
+													const canEditRowAction =
+														canUpdateInstallmentsBySaleStatus &&
+														canEditInstallment;
+													const canDeleteRowAction =
+														canUpdateInstallmentsBySaleStatus &&
+														canDeleteInstallment;
+													const canReverseRowAction =
+														canUpdateInstallmentsBySaleStatus &&
+														canChangeInstallmentStatus &&
+														!isReversalMovement &&
+														(installment.status === "PENDING" ||
+															installment.status === "PAID");
+													const canUndoReversalRowAction =
+														canUpdateInstallmentsBySaleStatus &&
+														canChangeInstallmentStatus &&
+														installment.status === "REVERSED";
+													const canOpenRowActions =
+														canPayRowAction ||
+														canEditRowAction ||
+														canDeleteRowAction ||
+														canReverseRowAction ||
+														canUndoReversalRowAction;
+
+													return (
+														<TableRow key={installment.id}>
+															<TableCell>
+																<Checkbox
+																	checked={isSelected}
+																	onClick={(event) =>
+																		installmentsMultiSelect.onCheckboxClick(
+																			installment.id,
+																			event,
+																		)
+																	}
+																	onCheckedChange={(checked) =>
+																		installmentsMultiSelect.onCheckboxCheckedChange(
+																			installment.id,
+																			Boolean(checked),
+																		)
+																	}
+																	disabled={
+																		!canBulkStatusInstallment ||
+																		isAnyInstallmentActionPending
+																	}
+																	aria-label={`Selecionar parcela ${installment.installmentNumber}`}
+																/>
+															</TableCell>
+															<TableCell>
+																P{installment.installmentNumber}
+															</TableCell>
+															<TableCell>{installment.percentage}%</TableCell>
+															<TableCell>
+																<p>{formatCurrencyBRL(displayAmount / 100)}</p>
+																{hasLinkedReversal ? (
+																	<p className="text-xs text-muted-foreground">
+																		Valor base:{" "}
+																		{formatCurrencyBRL(
+																			installment.amount / 100,
+																		)}
+																	</p>
+																) : null}
+															</TableCell>
+															<TableCell>
+																<Badge
+																	variant="outline"
+																	className={
+																		INSTALLMENT_STATUS_BADGE_CLASSNAME[
+																			installment.status
+																		]
+																	}
+																>
+																	{
+																		SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
+																			installment.status
+																		]
+																	}
+																</Badge>
+															</TableCell>
+															<TableCell>
+																{formatDate(installment.expectedPaymentDate)}
+															</TableCell>
+															<TableCell>
+																{(installment.status === "PAID" ||
+																	installment.status === "REVERSED") &&
+																installment.paymentDate
+																	? formatDate(installment.paymentDate)
+																	: "—"}
+															</TableCell>
+															<TableCell>
 																{
-																	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																		installment.status
+																	SALE_COMMISSION_DIRECTION_LABEL[
+																		installment.direction
 																	]
 																}
-															</Badge>
-														</TableCell>
-														<TableCell>
-															{formatDate(installment.expectedPaymentDate)}
-														</TableCell>
-														<TableCell>
-															{(installment.status === "PAID" ||
-																installment.status === "REVERSED") &&
-															installment.paymentDate
-																? formatDate(installment.paymentDate)
-																: "—"}
-														</TableCell>
-														<TableCell>
-															{
-																SALE_COMMISSION_DIRECTION_LABEL[
-																	installment.direction
-																]
-															}
-														</TableCell>
-														<TableCell>
-															{
-																SALE_COMMISSION_SOURCE_TYPE_LABEL[
-																	installment.sourceType
-																]
-															}
-														</TableCell>
-														<TableCell className="text-right">
-															{canOpenInstallmentActions ? (
-																<DropdownMenu>
-																	<DropdownMenuTrigger asChild>
-																		<Button
-																			type="button"
-																			variant="ghost"
-																			size="icon"
-																			disabled={
-																				isPatchingStatus ||
-																				isUpdatingInstallment ||
-																				isReversingInstallment ||
-																				isDeletingInstallment
-																			}
-																		>
-																			<MoreHorizontal className="size-4" />
-																		</Button>
-																	</DropdownMenuTrigger>
-																	<DropdownMenuContent align="end">
-																		{statusActions.map((actionStatus) => (
-																			<DropdownMenuItem
-																				key={`${installment.id}-${actionStatus}`}
-																				onSelect={(event) => {
-																					event.preventDefault();
-																					requestInstallmentStatusChange(
-																						installment,
-																						actionStatus,
-																					);
-																				}}
+															</TableCell>
+															<TableCell>
+																{
+																	SALE_COMMISSION_SOURCE_TYPE_LABEL[
+																		installment.sourceType
+																	]
+																}
+																{isReversalMovement ? (
+																	<p className="text-xs text-muted-foreground">
+																		Estorno da parcela P
+																		{installment.originInstallmentNumber ??
+																			installment.installmentNumber}
+																	</p>
+																) : null}
+															</TableCell>
+															<TableCell className="text-right">
+																{canOpenRowActions ? (
+																	<DropdownMenu>
+																		<DropdownMenuTrigger asChild>
+																			<Button
+																				type="button"
+																				variant="ghost"
+																				size="icon"
+																				disabled={isAnyInstallmentActionPending}
 																			>
-																				Marcar como{" "}
-																				{
-																					SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																						actionStatus
-																					]
-																				}
-																			</DropdownMenuItem>
-																		))}
-																		{statusActions.length > 0 &&
-																		(canEditInstallment ||
-																			canDeleteInstallment ||
-																			canReverseInstallment) ? (
-																			<DropdownMenuSeparator />
-																		) : null}
-																		{canEditInstallment ? (
-																			<DropdownMenuItem
-																				onSelect={(event) => {
-																					event.preventDefault();
-																					requestInstallmentEdition(
-																						installment,
-																					);
-																				}}
-																			>
-																				<Pencil className="size-4" />
-																				Editar parcela
-																			</DropdownMenuItem>
-																		) : null}
-																		{canReverseInstallment ? (
-																			<DropdownMenuItem
-																				onSelect={(event) => {
-																					event.preventDefault();
-																					requestInstallmentReversal(
-																						installment,
-																					);
-																				}}
-																			>
-																				<Undo2 className="size-4" />
-																				Estornar parcela
-																			</DropdownMenuItem>
-																		) : null}
-																		{canDeleteInstallment ? (
-																			<DropdownMenuItem
-																				variant="destructive"
-																				onSelect={(event) => {
-																					event.preventDefault();
-																					setInstallmentToDelete(installment);
-																				}}
-																			>
-																				<Trash2 className="size-4" />
-																				Excluir parcela
-																			</DropdownMenuItem>
-																		) : null}
-																	</DropdownMenuContent>
-																</DropdownMenu>
-															) : (
-																<span className="text-xs text-muted-foreground">
-																	—
-																</span>
-															)}
-														</TableCell>
-													</TableRow>
-												);
-											})}
-										</TableBody>
-									</Table>
-								</div>
-							</TabsContent>
-						))}
+																				<MoreHorizontal className="size-4" />
+																			</Button>
+																		</DropdownMenuTrigger>
+																		<DropdownMenuContent align="end">
+																			{canPayRowAction ? (
+																				<DropdownMenuItem
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						requestInstallmentPayment(
+																							installment,
+																						);
+																					}}
+																				>
+																					<CheckCircle2 className="size-4" />
+																					Pagar parcela
+																				</DropdownMenuItem>
+																			) : null}
+																			{canPayRowAction ? (
+																				<DropdownMenuItem
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						void handlePayInstallmentToday(
+																							installment,
+																						);
+																					}}
+																				>
+																					<CheckCheck className="size-4" />
+																					Pagar hoje
+																				</DropdownMenuItem>
+																			) : null}
+																			{canPayRowAction &&
+																			(canEditRowAction ||
+																				canDeleteRowAction ||
+																				canReverseRowAction ||
+																				canUndoReversalRowAction) ? (
+																				<DropdownMenuSeparator />
+																			) : null}
+																			{canEditRowAction ? (
+																				<DropdownMenuItem
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						requestInstallmentEdition(
+																							installment,
+																						);
+																					}}
+																				>
+																					<Pencil className="size-4" />
+																					Editar parcela
+																				</DropdownMenuItem>
+																			) : null}
+																			{canReverseRowAction ? (
+																				<DropdownMenuItem
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						requestInstallmentReversal(
+																							installment,
+																						);
+																					}}
+																				>
+																					<Undo2 className="size-4" />
+																					Estornar parcela
+																				</DropdownMenuItem>
+																			) : null}
+																			{canUndoReversalRowAction ? (
+																				<DropdownMenuItem
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						requestInstallmentReversalUndo(
+																							installment,
+																						);
+																					}}
+																				>
+																					<RotateCcw className="size-4" />
+																					Reverter estorno
+																				</DropdownMenuItem>
+																			) : null}
+																			{canDeleteRowAction ? (
+																				<DropdownMenuItem
+																					variant="destructive"
+																					onSelect={(event) => {
+																						event.preventDefault();
+																						setInstallmentToDelete(installment);
+																					}}
+																				>
+																					<Trash2 className="size-4" />
+																					Excluir parcela
+																				</DropdownMenuItem>
+																			) : null}
+																		</DropdownMenuContent>
+																	</DropdownMenu>
+																) : (
+																	<span className="text-xs text-muted-foreground">
+																		—
+																	</span>
+																)}
+															</TableCell>
+														</TableRow>
+													);
+												})}
+											</TableBody>
+										</Table>
+									</div>
+								</TabsContent>
+							);
+						})}
 					</Tabs>
 				)}
 			</div>
 
+			<Dialog
+				open={isBulkStatusDialogOpen}
+				onOpenChange={(open) => {
+					setIsBulkStatusDialogOpen(open);
+					if (open) {
+						setBulkStatusDate(getTodayDateInputValue());
+					}
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Alterar status em lote</DialogTitle>
+						<DialogDescription>
+							Atualize o status de {selectedInstallments.length} parcela(s)
+							selecionada(s).
+						</DialogDescription>
+					</DialogHeader>
+
+					<div className="space-y-3">
+						<p className="text-sm text-muted-foreground">
+							Total selecionado:{" "}
+							{formatCurrencyBRL(selectedInstallmentsTotalAmount / 100)}
+						</p>
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Novo status</p>
+							<Select
+								value={bulkStatus}
+								onValueChange={(value) =>
+									setBulkStatus(value as BulkInstallmentStatus)
+								}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="Selecione o status" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="PENDING">Pendente</SelectItem>
+									<SelectItem value="PAID">Paga</SelectItem>
+									<SelectItem value="CANCELED">Cancelada</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
+
+						{bulkStatus === "PAID" || bulkStatus === "CANCELED" ? (
+							<div className="space-y-1">
+								<p className="text-sm font-medium">
+									{bulkStatus === "PAID"
+										? "Data de pagamento"
+										: "Data de cancelamento"}
+								</p>
+								<CalendarDateInput
+									value={bulkStatusDate}
+									onChange={setBulkStatusDate}
+								/>
+							</div>
+						) : null}
+					</div>
+
+					<DialogFooter>
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => setIsBulkStatusDialogOpen(false)}
+							disabled={isBulkStatusPending}
+						>
+							Cancelar
+						</Button>
+						<Button
+							type="button"
+							onClick={handleConfirmBulkStatusChange}
+							disabled={
+								isBulkStatusPending ||
+								selectedInstallments.length === 0 ||
+								!canBulkStatusInstallments
+							}
+						>
+							{isBulkStatusPending ? "Salvando..." : "Confirmar alteração"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
 			<AlertDialog
-				open={Boolean(statusAction)}
+				open={Boolean(payAction)}
 				onOpenChange={(open) => {
 					if (!open) {
-						setStatusAction(null);
+						setPayAction(null);
 					}
 				}}
 			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Atualizar status da parcela</AlertDialogTitle>
+						<AlertDialogTitle>Marcar parcela como paga</AlertDialogTitle>
 						<AlertDialogDescription>
-							Confirmar alteração da parcela{" "}
-							{statusAction
-								? `P${statusAction.installment.installmentNumber}`
-								: ""}{" "}
-							para{" "}
-							{statusAction
-								? SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-										statusAction.nextStatus
-									]
-								: ""}
-							?
+							Confirmar pagamento da parcela{" "}
+							{payAction ? `P${payAction.installment.installmentNumber}` : ""}?
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 
@@ -853,9 +1511,9 @@ export function SaleInstallmentsPanel({
 							<p className="text-sm font-medium">Valor da parcela</p>
 							<Input
 								placeholder="R$ 0,00"
-								value={statusAction?.amount ?? ""}
+								value={payAction?.amount ?? ""}
 								onChange={(event) => {
-									setStatusAction((current) =>
+									setPayAction((current) =>
 										current
 											? {
 													...current,
@@ -867,24 +1525,22 @@ export function SaleInstallmentsPanel({
 							/>
 						</div>
 
-						{statusAction?.nextStatus === "PAID" ? (
-							<div className="space-y-1">
-								<p className="text-sm font-medium">Data de pagamento</p>
-								<CalendarDateInput
-									value={statusAction.paymentDate}
-									onChange={(value) => {
-										setStatusAction((current) =>
-											current
-												? {
-														...current,
-														paymentDate: value,
-													}
-												: current,
-										);
-									}}
-								/>
-							</div>
-						) : null}
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Data de pagamento</p>
+							<CalendarDateInput
+								value={payAction?.paymentDate ?? ""}
+								onChange={(value) => {
+									setPayAction((current) =>
+										current
+											? {
+													...current,
+													paymentDate: value,
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
 					</div>
 
 					<AlertDialogFooter>
@@ -892,10 +1548,48 @@ export function SaleInstallmentsPanel({
 							Cancelar
 						</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={handleConfirmInstallmentStatusChange}
+							onClick={handleConfirmInstallmentPayment}
 							disabled={isPatchingStatus}
 						>
-							{isPatchingStatus ? "Salvando..." : "Confirmar"}
+							{isPatchingStatus ? "Salvando..." : "Confirmar pagamento"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			<AlertDialog
+				open={Boolean(reversalUndoInstallment)}
+				onOpenChange={(open) => {
+					if (!open) {
+						setReversalUndoInstallment(null);
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Reverter estorno</AlertDialogTitle>
+						<AlertDialogDescription>
+							Confirmar a reversão do estorno da parcela{" "}
+							{reversalUndoInstallment
+								? `P${reversalUndoInstallment.installmentNumber}`
+								: ""}
+							?{" "}
+							{reversalUndoInstallment?.originInstallmentId
+								? "O sistema vai remover este movimento e restaurar parcelas canceladas automaticamente, quando houver."
+								: "O sistema vai restaurar status, valor e data originais."}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isUndoingInstallmentReversal}>
+							Cancelar
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleConfirmInstallmentReversalUndo}
+							disabled={isUndoingInstallmentReversal}
+						>
+							{isUndoingInstallmentReversal
+								? "Revertendo..."
+								: "Confirmar reversão"}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
@@ -938,6 +1632,34 @@ export function SaleInstallmentsPanel({
 								}}
 							/>
 						</div>
+
+						{(reversalState?.pendingFutureInstallmentsCount ?? 0) > 0 ? (
+							<div className="flex items-start gap-3 rounded-md border p-3">
+								<Checkbox
+									checked={reversalState?.cancelPendingInstallments ?? false}
+									aria-label="Cancelar parcelas pendentes seguintes"
+									onCheckedChange={(checked) => {
+										setReversalState((current) =>
+											current
+												? {
+														...current,
+														cancelPendingInstallments: Boolean(checked),
+													}
+												: current,
+										);
+									}}
+								/>
+								<div className="space-y-1">
+									<p className="text-sm font-medium">
+										Cancelar parcelas pendentes seguintes
+									</p>
+									<p className="text-xs text-muted-foreground">
+										{reversalState?.pendingFutureInstallmentsCount} parcela(s)
+										pendente(s) futura(s) da mesma comissão serão cancelada(s).
+									</p>
+								</div>
+							</div>
+						) : null}
 
 						{reversalState?.calculationStatus === "LOADING" ? (
 							<div className="space-y-2 rounded-md border p-3">
@@ -1120,6 +1842,10 @@ export function SaleInstallmentsPanel({
 															current.amount,
 															value === "REVERSED",
 														),
+														reversalDate:
+															value === "CANCELED" && !current.reversalDate
+																? getTodayDateInputValue()
+																: current.reversalDate,
 													}
 												: current,
 										);
@@ -1161,21 +1887,30 @@ export function SaleInstallmentsPanel({
 						) : null}
 
 						{editingInstallment?.status === "PAID" ||
-						editingInstallment?.status === "REVERSED" ? (
+						editingInstallment?.status === "REVERSED" ||
+						editingInstallment?.status === "CANCELED" ? (
 							<div className="space-y-1">
 								<p className="text-sm font-medium">
 									{editingInstallment.status === "REVERSED"
 										? "Data do estorno"
-										: "Data de pagamento"}
+										: editingInstallment.status === "CANCELED"
+											? "Data do estorno"
+											: "Data de pagamento"}
 								</p>
 								<CalendarDateInput
-									value={editingInstallment.paymentDate}
+									value={
+										editingInstallment.status === "CANCELED"
+											? editingInstallment.reversalDate
+											: editingInstallment.paymentDate
+									}
 									onChange={(value) => {
 										setEditingInstallment((current) =>
 											current
 												? {
 														...current,
-														paymentDate: value,
+														...(current.status === "CANCELED"
+															? { reversalDate: value }
+															: { paymentDate: value }),
 													}
 												: current,
 										);

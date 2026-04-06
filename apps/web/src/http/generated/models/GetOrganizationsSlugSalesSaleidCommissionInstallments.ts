@@ -69,6 +69,16 @@ export type GetOrganizationsSlugSalesSaleidCommissionInstallments200 = {
      */
     saleCommissionId: string;
     /**
+     * @type string, uuid
+     */
+    originInstallmentId: string | null;
+    /**
+     * @minLength 1
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    originInstallmentNumber: number | null;
+    /**
      * @type string
      */
     recipientType: InstallmentsRecipientTypeEnumKey;

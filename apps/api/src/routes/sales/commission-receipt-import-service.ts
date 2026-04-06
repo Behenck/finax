@@ -383,6 +383,7 @@ function parseInputText(rawValue: unknown) {
 
 type SaleInstallmentCandidate = {
 	id: string;
+	originInstallmentId: string | null;
 	saleCommissionId: string;
 	installmentNumber: number;
 	status: SaleCommissionInstallmentStatus;
@@ -489,6 +490,7 @@ export async function buildCommissionReceiptImportPreview(params: {
 								installments: {
 									select: {
 										id: true,
+										originInstallmentId: true,
 										installmentNumber: true,
 										status: true,
 										amount: true,
@@ -531,6 +533,7 @@ export async function buildCommissionReceiptImportPreview(params: {
 			incomeInstallments: sale.commissions.flatMap((commission) =>
 				commission.installments.map((installment) => ({
 					id: installment.id,
+					originInstallmentId: installment.originInstallmentId,
 					saleCommissionId: commission.id,
 					installmentNumber: installment.installmentNumber,
 					status: installment.status,
@@ -643,21 +646,6 @@ export async function buildCommissionReceiptImportPreview(params: {
 			});
 		}
 
-		if (receivedAmount < 0) {
-			return createPreviewRow({
-				rowNumber,
-				status: "ATTENTION",
-				action: "NONE",
-				reason:
-					"Valor negativo identificado (possível estorno). Ajuste manual necessário.",
-				saleDate,
-				groupValue,
-				quotaValue,
-				installmentText,
-				receivedAmount,
-			});
-		}
-
 		const normalizedGroupValue = normalizeMatchValue(groupValue);
 		const normalizedQuotaValue = normalizeMatchValue(quotaValue);
 		const matchKey = buildMatchKey(
@@ -720,7 +708,9 @@ export async function buildCommissionReceiptImportPreview(params: {
 		}
 
 		const matchedInstallments = sale.incomeInstallments.filter(
-			(installment) => installment.installmentNumber === installmentNumber,
+			(installment) =>
+				installment.installmentNumber === installmentNumber &&
+				installment.originInstallmentId === null,
 		);
 
 		if (matchedInstallments.length === 0) {
@@ -761,12 +751,141 @@ export async function buildCommissionReceiptImportPreview(params: {
 
 		const [installment] = matchedInstallments;
 
+		if (receivedAmount < 0) {
+			if (installment.status === SaleCommissionInstallmentStatus.REVERSED) {
+				return createPreviewRow({
+					rowNumber,
+					status: "ATTENTION",
+					action: "NONE",
+					reason:
+						"Parcela já está estornada no sistema. Revise manualmente antes de aplicar novo estorno.",
+					saleDate,
+					groupValue,
+					quotaValue,
+					installmentText,
+					receivedAmount,
+					saleId: sale.id,
+					saleStatus: sale.status,
+					installmentId: installment.id,
+					installmentNumber: installment.installmentNumber,
+					installmentStatus: installment.status,
+					installmentAmount: installment.amount,
+				});
+			}
+
+			if (
+				installment.status !== SaleCommissionInstallmentStatus.PENDING &&
+				installment.status !== SaleCommissionInstallmentStatus.PAID
+			) {
+				return createPreviewRow({
+					rowNumber,
+					status: "ATTENTION",
+					action: "NONE",
+					reason: "Status da parcela não permite estorno automático.",
+					saleDate,
+					groupValue,
+					quotaValue,
+					installmentText,
+					receivedAmount,
+					saleId: sale.id,
+					saleStatus: sale.status,
+					installmentId: installment.id,
+					installmentNumber: installment.installmentNumber,
+					installmentStatus: installment.status,
+					installmentAmount: installment.amount,
+				});
+			}
+
+			const hasLaterPaidInstallment = sale.incomeInstallments.some(
+				(candidate) =>
+					candidate.originInstallmentId === null &&
+					candidate.installmentNumber > installment.installmentNumber &&
+					candidate.status === SaleCommissionInstallmentStatus.PAID,
+			);
+
+			if (hasLaterPaidInstallment) {
+				return createPreviewRow({
+					rowNumber,
+					status: "ATTENTION",
+					action: "NONE",
+					reason:
+						"Não é possível estornar esta parcela porque existe parcela posterior já paga.",
+					saleDate,
+					groupValue,
+					quotaValue,
+					installmentText,
+					receivedAmount,
+					saleId: sale.id,
+					saleStatus: sale.status,
+					installmentId: installment.id,
+					installmentNumber: installment.installmentNumber,
+					installmentStatus: installment.status,
+					installmentAmount: installment.amount,
+				});
+			}
+
+			const existingReversedAmountAbsolute = sale.incomeInstallments
+				.filter(
+					(candidate) =>
+						candidate.originInstallmentId === installment.id &&
+						candidate.status === SaleCommissionInstallmentStatus.REVERSED,
+				)
+				.reduce((sum, candidate) => sum + Math.abs(candidate.amount), 0);
+				const nextReversalAmountAbsolute = Math.abs(receivedAmount);
+				if (
+					existingReversedAmountAbsolute + nextReversalAmountAbsolute >
+					installment.amount
+				) {
+				return createPreviewRow({
+					rowNumber,
+					status: "ATTENTION",
+					action: "NONE",
+					reason: "Valor de estorno excede o valor disponível da parcela base.",
+					saleDate,
+					groupValue,
+					quotaValue,
+					installmentText,
+					receivedAmount,
+					saleId: sale.id,
+					saleStatus: sale.status,
+					installmentId: installment.id,
+					installmentNumber: installment.installmentNumber,
+					installmentStatus: installment.status,
+					installmentAmount: installment.amount,
+					});
+				}
+
+				const isFullDirectReversal =
+					existingReversedAmountAbsolute === 0 &&
+					nextReversalAmountAbsolute === installment.amount;
+
+				return createPreviewRow({
+					rowNumber,
+					status: "READY",
+					action: "REVERSE_INSTALLMENT",
+					reason: isFullDirectReversal
+						? "Linha pronta para estornar totalmente a parcela base diretamente."
+						: "Linha pronta para criar movimento de estorno parcial da parcela base.",
+					saleDate,
+					groupValue,
+					quotaValue,
+					installmentText,
+				receivedAmount,
+				saleId: sale.id,
+				saleStatus: sale.status,
+				installmentId: installment.id,
+				installmentNumber: installment.installmentNumber,
+				installmentStatus: installment.status,
+				installmentAmount: installment.amount,
+			});
+		}
+
 		if (installment.status !== SaleCommissionInstallmentStatus.PENDING) {
 			return createPreviewRow({
 				rowNumber,
 				status: "NO_ACTION",
 				action: "NONE",
-				reason: "Parcela já está paga ou cancelada.",
+				reason: "Parcela já está paga, cancelada ou estornada.",
 				saleDate,
 				groupValue,
 				quotaValue,

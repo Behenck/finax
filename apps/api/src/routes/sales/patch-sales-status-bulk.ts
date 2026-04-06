@@ -126,6 +126,7 @@ export async function patchSalesStatusBulk(app: FastifyInstance) {
 									},
 									data: {
 										status: SaleCommissionInstallmentStatus.CANCELED,
+										amount: 0,
 										paymentDate: null,
 									},
 								});

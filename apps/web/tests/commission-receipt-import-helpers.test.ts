@@ -114,6 +114,26 @@ describe("commission receipt import helpers", () => {
 
 		expect(
 			isCommissionReceiptPreviewRowReady({
+				rowNumber: 11,
+				status: "READY",
+				action: "REVERSE_INSTALLMENT",
+				reason: "ok",
+				saleDate: null,
+				groupValue: null,
+				quotaValue: null,
+				installmentText: null,
+				receivedAmount: null,
+				saleId: null,
+				saleStatus: null,
+				installmentId: null,
+				installmentNumber: null,
+				installmentStatus: null,
+				installmentAmount: null,
+			}),
+		).toBe(true);
+
+		expect(
+			isCommissionReceiptPreviewRowReady({
 				rowNumber: 2,
 				status: "ATTENTION",
 				action: "NONE",
@@ -173,6 +193,26 @@ describe("commission receipt import helpers", () => {
 				installmentAmount: null,
 			}),
 		).toBe(false);
+
+		expect(
+			shouldAutoSelectCommissionReceiptPreviewRow({
+				rowNumber: 3,
+				status: "READY",
+				action: "REVERSE_INSTALLMENT",
+				reason: "ok",
+				saleDate: null,
+				groupValue: null,
+				quotaValue: null,
+				installmentText: null,
+				receivedAmount: null,
+				saleId: null,
+				saleStatus: null,
+				installmentId: null,
+				installmentNumber: null,
+				installmentStatus: null,
+				installmentAmount: null,
+			}),
+		).toBe(false);
 	});
 
 	it("should build result rows with before/after comparison for applied actions", () => {
@@ -190,6 +230,13 @@ describe("commission receipt import helpers", () => {
 					installmentAmount: 24_000,
 					receivedAmount: 28_000,
 				}),
+				createPreviewRow({
+					rowNumber: 3,
+					action: "REVERSE_INSTALLMENT",
+					installmentStatus: "PAID",
+					installmentAmount: 20_000,
+					receivedAmount: -13_000,
+				}),
 			],
 			applyRows: [
 				{
@@ -205,6 +252,13 @@ describe("commission receipt import helpers", () => {
 					reason: "Parcela atualizada e marcada como paga com sucesso.",
 					installmentId: "installment-id-2",
 					saleId: "sale-id-2",
+				},
+				{
+					rowNumber: 3,
+					result: "APPLIED",
+					reason: "Movimento de estorno criado com sucesso.",
+					installmentId: "installment-id-3",
+					saleId: "sale-id-3",
 				},
 			],
 			importDate: "2026-03-15",
@@ -229,6 +283,16 @@ describe("commission receipt import helpers", () => {
 			appliedPaymentDate: "2026-03-15",
 			statusChanged: true,
 			amountChanged: true,
+		});
+		expect(rows[2]).toMatchObject({
+			rowNumber: 3,
+			beforeStatus: "PAID",
+			afterStatus: "PAID",
+			beforeAmount: 20_000,
+			afterAmount: 20_000,
+			appliedPaymentDate: "2026-03-15",
+			statusChanged: false,
+			amountChanged: false,
 		});
 	});
 

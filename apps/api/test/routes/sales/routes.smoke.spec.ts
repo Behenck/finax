@@ -106,6 +106,17 @@ describe("sales routes smoke", () => {
 		expect(response.statusCode).not.toBe(405);
 	});
 
+	it("PATCH /organizations/:slug/commissions/installments/status/bulk should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/commissions/installments/status/bulk",
+		);
+		const agent = request(app.server);
+		const response = await agent.patch(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
 	it("PATCH /organizations/:slug/sales/:saleId/commission-installments/:installmentId/status should be registered", async () => {
 		const url = fillPathParams(
 			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/status",
@@ -273,6 +284,17 @@ describe("sales routes smoke", () => {
 	it("POST /organizations/:slug/commissions/receipts/imports/apply should be registered", async () => {
 		const url = fillPathParams(
 			"/organizations/:slug/commissions/receipts/imports/apply",
+		);
+		const agent = request(app.server);
+		const response = await agent.post(url).send({});
+
+		expect(response.statusCode).not.toBe(404);
+		expect(response.statusCode).not.toBe(405);
+	});
+
+	it("POST /organizations/:slug/sales/:saleId/commission-installments/:installmentId/reversal/undo should be registered", async () => {
+		const url = fillPathParams(
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/reversal/undo",
 		);
 		const agent = request(app.server);
 		const response = await agent.post(url).send({});

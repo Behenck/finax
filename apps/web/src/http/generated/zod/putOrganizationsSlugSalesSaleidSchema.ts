@@ -58,6 +58,7 @@ export const putOrganizationsSlugSalesSaleidMutationRequestSchema = z.object({
       }),
     ),
   ),
+  applyValueChangeToCommissions: z.optional(z.boolean()),
 });
 
 export const putOrganizationsSlugSalesSaleidMutationResponseSchema = z.lazy(

@@ -106,8 +106,7 @@ async function denyPermission(params: {
 
 	await prisma.memberPermissionOverride.upsert({
 		where: {
-			organizationId_memberId_permissionId: {
-				organizationId: params.organizationId,
+			memberId_permissionId: {
 				memberId: params.memberId,
 				permissionId: permission.id,
 			},
@@ -230,6 +229,7 @@ function buildSalePayload(params: {
 	fixture: Fixture;
 	totalAmount?: number;
 	commissions?: CommissionInput[];
+	applyValueChangeToCommissions?: boolean;
 }) {
 	const payload: {
 		saleDate: string;
@@ -241,6 +241,7 @@ function buildSalePayload(params: {
 		unitId?: string;
 		notes?: string;
 		commissions?: CommissionInput[];
+		applyValueChangeToCommissions?: boolean;
 	} = {
 		saleDate: "2026-03-04",
 		customerId: params.fixture.customer.id,
@@ -257,6 +258,11 @@ function buildSalePayload(params: {
 
 	if (params.commissions !== undefined) {
 		payload.commissions = params.commissions;
+	}
+
+	if (params.applyValueChangeToCommissions !== undefined) {
+		payload.applyValueChangeToCommissions =
+			params.applyValueChangeToCommissions;
 	}
 
 	return payload;
@@ -286,6 +292,7 @@ async function updateSale(params: {
 	saleId: string;
 	totalAmount?: number;
 	commissions?: CommissionInput[];
+	applyValueChangeToCommissions?: boolean;
 }) {
 	return request(app.server)
 		.put(`/organizations/${params.fixture.org.slug}/sales/${params.saleId}`)
@@ -295,6 +302,7 @@ async function updateSale(params: {
 				fixture: params.fixture,
 				totalAmount: params.totalAmount,
 				commissions: params.commissions,
+				applyValueChangeToCommissions: params.applyValueChangeToCommissions,
 			}),
 		);
 }
@@ -487,6 +495,7 @@ describe("sales commissions permission split", () => {
 			token: fixture.token,
 			saleId,
 			totalAmount: 130_000,
+			applyValueChangeToCommissions: true,
 		});
 
 		expect(updateResponse.statusCode).toBe(204);
@@ -525,6 +534,7 @@ describe("sales commissions permission split", () => {
 			token: fixture.token,
 			saleId,
 			totalAmount: 130_000,
+			applyValueChangeToCommissions: true,
 		});
 
 		expect(updateResponse.statusCode).toBe(403);

@@ -233,6 +233,8 @@ export function ProductForm({
 				: (duplicateSalesTransactionCostCenterId ?? undefined),
 			scenarios: [],
 			saleFields: [],
+			commissionReversalMode: null,
+			commissionReversalTotalPercentage: undefined,
 			commissionReversalRules: [],
 		},
 	});
@@ -278,6 +280,10 @@ export function ProductForm({
 
 	const scenarioValues = useWatch({ control, name: "scenarios" }) ?? [];
 	const saleFieldValues = useWatch({ control, name: "saleFields" }) ?? [];
+	const commissionReversalMode = useWatch({
+		control,
+		name: "commissionReversalMode",
+	});
 
 	const [activeScenarioTab, setActiveScenarioTab] = useState("");
 	const [activeProductConfigTab, setActiveProductConfigTab] = useState(
@@ -450,6 +456,11 @@ export function ProductForm({
 					isDefault: option.isDefault,
 				})),
 			})),
+			commissionReversalMode: commissionReversalRulesData?.mode ?? null,
+			commissionReversalTotalPercentage:
+				commissionReversalRulesData?.mode === "TOTAL_PAID_PERCENTAGE"
+					? (commissionReversalRulesData.totalPaidPercentage ?? undefined)
+					: undefined,
 			commissionReversalRules: (commissionReversalRulesData?.rules ?? []).map(
 				(rule) => ({
 					installmentNumber: rule.installmentNumber,
@@ -562,6 +573,45 @@ export function ProductForm({
 
 	const handleRemoveCommissionReversalRule = (ruleIndex: number) => {
 		removeCommissionReversalRule(ruleIndex);
+	};
+
+	const handleCommissionReversalModeChange = (
+		value: "NONE" | "INSTALLMENT_BY_NUMBER" | "TOTAL_PAID_PERCENTAGE",
+	) => {
+		if (value === "NONE") {
+			setValue("commissionReversalMode", null, {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+			setValue("commissionReversalTotalPercentage", undefined, {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+			setValue("commissionReversalRules", [], {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+			return;
+		}
+
+		setValue("commissionReversalMode", value, {
+			shouldDirty: true,
+			shouldValidate: true,
+		});
+
+		if (value === "TOTAL_PAID_PERCENTAGE") {
+			setValue("commissionReversalRules", [], {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+		}
+
+		if (value === "INSTALLMENT_BY_NUMBER") {
+			setValue("commissionReversalTotalPercentage", undefined, {
+				shouldDirty: true,
+				shouldValidate: true,
+			});
+		}
 	};
 
 	const handleMoveSaleField = (fromIndex: number, toIndex: number) => {
@@ -701,10 +751,17 @@ export function ProductForm({
 
 	const saveProductCommissionReversalRules = async (
 		productId: string,
+		commissionReversalMode: ProductFormData["commissionReversalMode"],
+		commissionReversalTotalPercentage: ProductFormData["commissionReversalTotalPercentage"],
 		commissionReversalRules: ProductFormData["commissionReversalRules"],
 	) => {
 		await replaceCommissionReversalRules({
 			productId,
+			mode: commissionReversalMode,
+			totalPaidPercentage:
+				commissionReversalMode === "TOTAL_PAID_PERCENTAGE"
+					? commissionReversalTotalPercentage ?? null
+					: null,
 			rules: commissionReversalRules.map((rule) => ({
 				installmentNumber: rule.installmentNumber,
 				percentage: rule.percentage,
@@ -772,6 +829,8 @@ export function ProductForm({
 				await saveProductSaleFields(createdProductId, data.saleFields);
 				await saveProductCommissionReversalRules(
 					createdProductId,
+					data.commissionReversalMode,
+					data.commissionReversalTotalPercentage,
 					data.commissionReversalRules,
 				);
 				await invalidateProductCommissionScenarios(createdProductId);
@@ -824,6 +883,8 @@ export function ProductForm({
 			await saveProductSaleFields(initialData.id, data.saleFields);
 			await saveProductCommissionReversalRules(
 				initialData.id,
+				data.commissionReversalMode,
+				data.commissionReversalTotalPercentage,
 				data.commissionReversalRules,
 			);
 			await invalidateProductCommissionScenarios(initialData.id);
@@ -1175,26 +1236,39 @@ export function ProductForm({
 
 				<TabsContent value="reversal-rules" className="space-y-4">
 					<Card className="space-y-4 p-4">
-						<div className="flex items-center justify-between gap-3">
-							<div className="space-y-1">
-								<p className="text-sm font-medium">
-									Regra de estorno por parcela
-								</p>
-								<p className="text-muted-foreground text-xs">
-									Defina o percentual de estorno por número da parcela do
-									produto.
-								</p>
-							</div>
-							<Button
-								type="button"
-								variant="outline"
-								className="font-normal"
-								onClick={handleAddCommissionReversalRule}
+						<Field className="gap-1">
+							<FieldLabel>Modo de estorno automático</FieldLabel>
+							<Select
+								value={commissionReversalMode ?? "NONE"}
+								onValueChange={(value) =>
+									handleCommissionReversalModeChange(
+										value as
+											| "NONE"
+											| "INSTALLMENT_BY_NUMBER"
+											| "TOTAL_PAID_PERCENTAGE",
+									)
+								}
 							>
-								<CirclePlus />
-								Adicionar regra
-							</Button>
-						</div>
+								<SelectTrigger>
+									<SelectValue placeholder="Selecione o modo" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="NONE">
+										Sem cenário local (herdar do produto pai)
+									</SelectItem>
+									<SelectItem value="INSTALLMENT_BY_NUMBER">
+										Por número da parcela
+									</SelectItem>
+									<SelectItem value="TOTAL_PAID_PERCENTAGE">
+										Percentual único sobre total pago
+									</SelectItem>
+								</SelectContent>
+							</Select>
+							<p className="text-muted-foreground text-xs">
+								Se não houver cenário local, o sistema usa o primeiro produto
+								pai com configuração válida.
+							</p>
+						</Field>
 
 						{shouldLoadSourceProductData && isLoadingCommissionReversalRules ? (
 							<p className="text-muted-foreground text-sm">
@@ -1215,77 +1289,138 @@ export function ProductForm({
 									</p>
 								) : null}
 							</div>
-						) : commissionReversalRuleFields.length === 0 ? (
-							<p className="text-muted-foreground text-sm">
-								Sem regra cadastrada. Ao estornar, o valor será manual quando
-								não houver regra para a parcela.
-							</p>
-						) : (
+						) : commissionReversalMode === "INSTALLMENT_BY_NUMBER" ? (
 							<div className="space-y-3">
-								{commissionReversalRuleFields.map((ruleField, ruleIndex) => (
-									<div
-										key={ruleField.id}
-										className="grid gap-3 rounded-md border p-3 md:grid-cols-[180px_200px_auto]"
-									>
-										<Field className="gap-1">
-											<FieldLabel>Parcela</FieldLabel>
-											<Input
-												type="number"
-												min={1}
-												step={1}
-												{...register(
-													`commissionReversalRules.${ruleIndex}.installmentNumber`,
-													{
-														valueAsNumber: true,
-													},
-												)}
-											/>
-											<FormFieldError
-												error={
-													errors.commissionReversalRules?.[ruleIndex]
-														?.installmentNumber
-												}
-											/>
-										</Field>
-
-										<Field className="gap-1">
-											<FieldLabel>% Estorno</FieldLabel>
-											<Input
-												type="number"
-												min={0.0001}
-												max={100}
-												step={0.0001}
-												{...register(
-													`commissionReversalRules.${ruleIndex}.percentage`,
-													{
-														valueAsNumber: true,
-													},
-												)}
-											/>
-											<FormFieldError
-												error={
-													errors.commissionReversalRules?.[ruleIndex]
-														?.percentage
-												}
-											/>
-										</Field>
-
-										<div className="flex items-end justify-end">
-											<Button
-												type="button"
-												variant="outline"
-												size="icon"
-												aria-label="Remover regra"
-												onClick={() =>
-													handleRemoveCommissionReversalRule(ruleIndex)
-												}
-											>
-												<Trash2 className="size-4" />
-											</Button>
-										</div>
+								<div className="flex items-center justify-between gap-3">
+									<div className="space-y-1">
+										<p className="text-sm font-medium">
+											Regras por número da parcela
+										</p>
+										<p className="text-muted-foreground text-xs">
+											Defina o percentual de estorno por parcela do produto.
+										</p>
 									</div>
-								))}
+									<Button
+										type="button"
+										variant="outline"
+										className="font-normal"
+										onClick={handleAddCommissionReversalRule}
+									>
+										<CirclePlus />
+										Adicionar regra
+									</Button>
+								</div>
+
+								{commissionReversalRuleFields.length === 0 ? (
+									<p className="text-muted-foreground text-sm">
+										Sem regra cadastrada. Ao estornar, o valor será manual para
+										esta parcela.
+									</p>
+								) : (
+									<div className="space-y-3">
+										{commissionReversalRuleFields.map((ruleField, ruleIndex) => (
+											<div
+												key={ruleField.id}
+												className="grid gap-3 rounded-md border p-3 md:grid-cols-[180px_200px_auto]"
+											>
+												<Field className="gap-1">
+													<FieldLabel>Parcela</FieldLabel>
+													<Input
+														type="number"
+														min={1}
+														step={1}
+														{...register(
+															`commissionReversalRules.${ruleIndex}.installmentNumber`,
+															{
+																valueAsNumber: true,
+															},
+														)}
+													/>
+													<FormFieldError
+														error={
+															errors.commissionReversalRules?.[ruleIndex]
+																?.installmentNumber
+														}
+													/>
+												</Field>
+
+												<Field className="gap-1">
+													<FieldLabel>% Estorno</FieldLabel>
+													<Input
+														type="number"
+														min={0.0001}
+														max={100}
+														step={0.0001}
+														{...register(
+															`commissionReversalRules.${ruleIndex}.percentage`,
+															{
+																valueAsNumber: true,
+															},
+														)}
+													/>
+													<FormFieldError
+														error={
+															errors.commissionReversalRules?.[ruleIndex]
+																?.percentage
+														}
+													/>
+												</Field>
+
+												<div className="flex items-end justify-end">
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														aria-label="Remover regra"
+														onClick={() =>
+															handleRemoveCommissionReversalRule(ruleIndex)
+														}
+													>
+														<Trash2 className="size-4" />
+													</Button>
+												</div>
+											</div>
+										))}
+									</div>
+								)}
 							</div>
+						) : commissionReversalMode === "TOTAL_PAID_PERCENTAGE" ? (
+							<div className="space-y-3">
+								<div className="space-y-1">
+									<p className="text-sm font-medium">
+										Percentual total sobre valor pago
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Usa um percentual único sobre o total positivo pago da
+										comissão.
+									</p>
+								</div>
+
+								<Field className="max-w-[280px] gap-1">
+									<FieldLabel>% Estorno total</FieldLabel>
+									<Input
+										type="number"
+										min={0.0001}
+										max={100}
+										step={0.0001}
+										{...register("commissionReversalTotalPercentage", {
+											setValueAs: (value) =>
+												value === "" || value === null || value === undefined
+													? undefined
+													: Number(value),
+										})}
+									/>
+									<FormFieldError
+										error={errors.commissionReversalTotalPercentage}
+									/>
+								</Field>
+							</div>
+						) : (
+							<p className="text-muted-foreground text-sm">
+								Sem cenário local configurado. O estorno automático usará a
+								configuração herdada do produto pai quando existir; caso
+								contrário, o valor será manual.
+							</p>
 						)}
 
 						{commissionReversalRulesFormErrorMessage ? (

@@ -5,6 +5,7 @@ import {
 	Eye,
 	MoreHorizontal,
 	Pencil,
+	RotateCcw,
 	Trash2,
 	Undo2,
 } from "lucide-react";
@@ -60,6 +61,7 @@ import type {
 import {
 	buildProductOptions,
 	buildProductPathMap,
+	canBulkChangeInstallmentStatus,
 	canPayInstallment,
 	canUpdateInstallments,
 	formatDate,
@@ -194,6 +196,32 @@ export function CommissionsDataTable() {
 	}, [currentPage, data?.pagination.totalPages, setPage]);
 
 	const installments = useMemo(() => data?.items ?? [], [data?.items]);
+	const reversalAmountByOriginInstallmentId = useMemo(() => {
+		const map = new Map<string, number>();
+
+		for (const installment of installments) {
+			if (!installment.originInstallmentId) {
+				continue;
+			}
+
+			map.set(
+				installment.originInstallmentId,
+				(map.get(installment.originInstallmentId) ?? 0) + installment.amount,
+			);
+		}
+
+		return map;
+	}, [installments]);
+
+	function resolveDisplayInstallmentAmount(installment: CommissionInstallmentRow) {
+		if (installment.originInstallmentId) {
+			return installment.amount;
+		}
+
+		const totalReversedAmount =
+			reversalAmountByOriginInstallmentId.get(installment.id) ?? 0;
+		return installment.amount + totalReversedAmount;
+	}
 	const summaryByDirection = data?.summaryByDirection;
 	const paySummary = resolveDirectionSummary(summaryByDirection, "OUTCOME");
 	const receiveSummary = resolveDirectionSummary(summaryByDirection, "INCOME");
@@ -221,7 +249,9 @@ export function CommissionsDataTable() {
 
 	const eligibleInstallmentsOnPage = useMemo(
 		() =>
-			canChangeInstallmentStatus ? installments.filter(canPayInstallment) : [],
+			canChangeInstallmentStatus
+				? installments.filter(canBulkChangeInstallmentStatus)
+				: [],
 		[canChangeInstallmentStatus, installments],
 	);
 	const allPageSelected =
@@ -299,6 +329,7 @@ export function CommissionsDataTable() {
 					id: installment.id,
 					saleId: installment.saleId,
 					amount: installment.amount,
+					status: installment.status,
 				});
 			} else {
 				next.delete(installment.id);
@@ -322,6 +353,7 @@ export function CommissionsDataTable() {
 						id: installment.id,
 						saleId: installment.saleId,
 						amount: installment.amount,
+						status: installment.status,
 					});
 				} else {
 					next.delete(installment.id);
@@ -366,6 +398,7 @@ export function CommissionsDataTable() {
 						id: installment.id,
 						saleId: installment.saleId,
 						amount: installment.amount,
+						status: installment.status,
 					});
 				} else {
 					next.delete(installment.id);
@@ -393,31 +426,37 @@ export function CommissionsDataTable() {
 		setEditingInstallment,
 		reversalAction,
 		setReversalAction,
+		reversalUndoAction,
+		setReversalUndoAction,
 		installmentToDelete,
 		setInstallmentToDelete,
-		isBulkPaymentDialogOpen,
-		setIsBulkPaymentDialogOpen,
-		bulkPaymentDate,
-		setBulkPaymentDate,
+		isBulkStatusDialogOpen,
+		setIsBulkStatusDialogOpen,
+		bulkStatus,
+		setBulkStatus,
+		bulkStatusDate,
+		setBulkStatusDate,
 		isPaymentActionPending,
 		isPreparingReversal,
 		isPatchingStatus,
 		isUpdatingInstallment,
 		isReversingInstallment,
+		isUndoingInstallmentReversal,
 		isDeletingInstallment,
 		requestInstallmentPayment,
 		requestInstallmentEdition,
 		requestInstallmentReversal,
+		requestInstallmentReversalUndo,
 		requestInstallmentDelete,
 		handleConfirmInstallmentPayment,
 		handlePayInstallmentToday,
-		handleConfirmBulkPayment,
-		handlePaySelectedToday,
+		handleConfirmBulkStatusChange,
 		handleConfirmInstallmentEdition,
 		handleConfirmInstallmentReversal,
+		handleConfirmInstallmentReversalUndo,
 		handleConfirmInstallmentDelete,
-		openBulkPaymentDialog,
-		resetBulkPaymentDate,
+		openBulkStatusDialog,
+		resetBulkStatusDate,
 	} = useCommissionsInstallmentActions({
 		canChangeInstallmentStatus,
 		canEditInstallment,
@@ -430,6 +469,7 @@ export function CommissionsDataTable() {
 		isPatchingStatus ||
 		isUpdatingInstallment ||
 		isReversingInstallment ||
+		isUndoingInstallmentReversal ||
 		isDeletingInstallment ||
 		isPreparingReversal ||
 		isPaymentActionPending;
@@ -494,19 +534,10 @@ export function CommissionsDataTable() {
 						<div className="flex flex-col gap-2 md:flex-row">
 							<Button
 								type="button"
-								variant="outline"
 								disabled={isPaymentActionPending}
-								onClick={() => void handlePaySelectedToday()}
+								onClick={openBulkStatusDialog}
 							>
-								<CheckCheck className="size-4" />
-								{isPaymentActionPending ? "Processando..." : "Pagar hoje"}
-							</Button>
-							<Button
-								type="button"
-								disabled={isPaymentActionPending}
-								onClick={openBulkPaymentDialog}
-							>
-								Pagar selecionadas
+								Alterar status em lote
 							</Button>
 						</div>
 					</div>
@@ -566,6 +597,12 @@ export function CommissionsDataTable() {
 											const canEditRow = canUpdateInstallments(
 												installment.saleStatus as SaleStatus,
 											);
+											const isReversalMovement = Boolean(
+												installment.originInstallmentId,
+											);
+											const canBulkStatusRow =
+												canBulkChangeInstallmentStatus(installment) &&
+												canChangeInstallmentStatus;
 											const canPayRow = canPayInstallment(installment);
 											const canChangeStatusRow =
 												canPayRow && canChangeInstallmentStatus;
@@ -575,19 +612,30 @@ export function CommissionsDataTable() {
 											const canReverseRow =
 												canEditRow &&
 												canChangeInstallmentStatus &&
+												!isReversalMovement &&
 												(installment.status === "PENDING" ||
 													installment.status === "PAID");
+											const canUndoReversalRow =
+												canEditRow &&
+												canChangeInstallmentStatus &&
+												installment.status === "REVERSED";
 											const canOpenRowActions =
 												canChangeStatusRow ||
 												canEditRowAction ||
 												canReverseRow ||
+												canUndoReversalRow ||
 												canDeleteRowAction;
-											const isSelected = selectedInstallmentsById.has(
-												installment.id,
-											);
-											const productLabel =
-												productPathById.get(installment.product.id) ??
-												installment.product.name;
+										const isSelected = selectedInstallmentsById.has(
+											installment.id,
+										);
+										const displayAmount =
+											resolveDisplayInstallmentAmount(installment);
+										const hasLinkedReversal =
+											!installment.originInstallmentId &&
+											displayAmount !== installment.amount;
+										const productLabel =
+											productPathById.get(installment.product.id) ??
+											installment.product.name;
 
 											return (
 												<Card key={installment.id} className="space-y-3 p-4">
@@ -614,7 +662,7 @@ export function CommissionsDataTable() {
 																	Boolean(checked),
 																)
 															}
-															disabled={!canChangeStatusRow}
+															disabled={!canBulkStatusRow}
 															aria-label={`Selecionar parcela ${installment.installmentNumber}`}
 														/>
 													</div>
@@ -635,9 +683,15 @@ export function CommissionsDataTable() {
 															}
 														</Badge>
 														<p className="text-sm font-semibold">
-															{formatCurrencyBRL(installment.amount / 100)}
+															{formatCurrencyBRL(displayAmount / 100)}
 														</p>
 													</div>
+													{hasLinkedReversal ? (
+														<p className="text-xs text-muted-foreground">
+															Valor base:{" "}
+															{formatCurrencyBRL(installment.amount / 100)}
+														</p>
+													) : null}
 
 													<div className="grid grid-cols-2 gap-2 text-xs">
 														<div className="space-y-0.5">
@@ -674,6 +728,13 @@ export function CommissionsDataTable() {
 																	]
 																}
 															</p>
+															{isReversalMovement ? (
+																<p className="text-muted-foreground">
+																	Estorno da parcela P
+																	{installment.originInstallmentNumber ??
+																		installment.installmentNumber}
+																</p>
+															) : null}
 														</div>
 													</div>
 
@@ -762,6 +823,19 @@ export function CommissionsDataTable() {
 																	Estornar parcela
 																</DropdownMenuItem>
 																<DropdownMenuItem
+																	disabled={!canUndoReversalRow}
+																	onSelect={(event) => {
+																		event.preventDefault();
+																		if (!canUndoReversalRow) {
+																			return;
+																		}
+																		requestInstallmentReversalUndo(installment);
+																	}}
+																>
+																	<RotateCcw className="size-4" />
+																	Reverter estorno
+																</DropdownMenuItem>
+																<DropdownMenuItem
 																	variant="destructive"
 																	disabled={!canDeleteRowAction}
 																	onSelect={(event) => {
@@ -835,6 +909,12 @@ export function CommissionsDataTable() {
 													const canEditRow = canUpdateInstallments(
 														installment.saleStatus as SaleStatus,
 													);
+													const isReversalMovement = Boolean(
+														installment.originInstallmentId,
+													);
+													const canBulkStatusRow =
+														canBulkChangeInstallmentStatus(installment) &&
+														canChangeInstallmentStatus;
 													const canPayRow = canPayInstallment(installment);
 													const canChangeStatusRow =
 														canPayRow && canChangeInstallmentStatus;
@@ -845,16 +925,27 @@ export function CommissionsDataTable() {
 													const canReverseRow =
 														canEditRow &&
 														canChangeInstallmentStatus &&
+														!isReversalMovement &&
 														(installment.status === "PENDING" ||
 															installment.status === "PAID");
+													const canUndoReversalRow =
+														canEditRow &&
+														canChangeInstallmentStatus &&
+														installment.status === "REVERSED";
 													const canOpenRowActions =
 														canChangeStatusRow ||
 														canEditRowAction ||
 														canReverseRow ||
+														canUndoReversalRow ||
 														canDeleteRowAction;
 													const isSelected = selectedInstallmentsById.has(
 														installment.id,
 													);
+													const displayAmount =
+														resolveDisplayInstallmentAmount(installment);
+													const hasLinkedReversal =
+														!installment.originInstallmentId &&
+														displayAmount !== installment.amount;
 													const productLabel =
 														productPathById.get(installment.product.id) ??
 														installment.product.name;
@@ -876,7 +967,7 @@ export function CommissionsDataTable() {
 																			Boolean(checked),
 																		)
 																	}
-																	disabled={!canChangeStatusRow}
+																	disabled={!canBulkStatusRow}
 																	aria-label={`Selecionar parcela ${installment.installmentNumber}`}
 																/>
 															</TableCell>
@@ -934,7 +1025,13 @@ export function CommissionsDataTable() {
 																</p>
 															</TableCell>
 															<TableCell>
-																{formatCurrencyBRL(installment.amount / 100)}
+																<p>{formatCurrencyBRL(displayAmount / 100)}</p>
+																{hasLinkedReversal ? (
+																	<p className="text-xs text-muted-foreground">
+																		Valor base:{" "}
+																		{formatCurrencyBRL(installment.amount / 100)}
+																	</p>
+																) : null}
 															</TableCell>
 															<TableCell>{installment.percentage}%</TableCell>
 															<TableCell>
@@ -943,6 +1040,13 @@ export function CommissionsDataTable() {
 																		installment.sourceType
 																	]
 																}
+																{isReversalMovement ? (
+																	<p className="text-xs text-muted-foreground">
+																		Estorno da parcela P
+																		{installment.originInstallmentNumber ??
+																			installment.installmentNumber}
+																	</p>
+																) : null}
 															</TableCell>
 															{canPerformInstallmentActions ? (
 																<TableCell className="text-right">
@@ -1034,6 +1138,21 @@ export function CommissionsDataTable() {
 																				Estornar parcela
 																			</DropdownMenuItem>
 																			<DropdownMenuItem
+																				disabled={!canUndoReversalRow}
+																				onSelect={(event) => {
+																					event.preventDefault();
+																					if (!canUndoReversalRow) {
+																						return;
+																					}
+																					requestInstallmentReversalUndo(
+																						installment,
+																					);
+																				}}
+																			>
+																				<RotateCcw className="size-4" />
+																				Reverter estorno
+																			</DropdownMenuItem>
+																			<DropdownMenuItem
 																				variant="destructive"
 																				disabled={!canDeleteRowAction}
 																				onSelect={(event) => {
@@ -1098,16 +1217,18 @@ export function CommissionsDataTable() {
 				canChangeInstallmentStatus={canChangeInstallmentStatus}
 				canEditInstallment={canEditInstallment}
 				canDeleteInstallment={canDeleteInstallment}
-				isBulkPaymentDialogOpen={isBulkPaymentDialogOpen}
-				onBulkPaymentDialogOpenChange={(open) => {
-					setIsBulkPaymentDialogOpen(open);
+				isBulkStatusDialogOpen={isBulkStatusDialogOpen}
+				onBulkStatusDialogOpenChange={(open) => {
+					setIsBulkStatusDialogOpen(open);
 					if (open) {
-						resetBulkPaymentDate();
+						resetBulkStatusDate();
 					}
 				}}
-				bulkPaymentDate={bulkPaymentDate}
-				onBulkPaymentDateChange={setBulkPaymentDate}
-				onConfirmBulkPayment={handleConfirmBulkPayment}
+				bulkStatus={bulkStatus}
+				onBulkStatusChange={setBulkStatus}
+				bulkStatusDate={bulkStatusDate}
+				onBulkStatusDateChange={setBulkStatusDate}
+				onConfirmBulkStatusChange={handleConfirmBulkStatusChange}
 				isPaymentActionPending={isPaymentActionPending}
 				payAction={payAction}
 				onPayActionChange={setPayAction}
@@ -1117,6 +1238,10 @@ export function CommissionsDataTable() {
 				onReversalActionChange={setReversalAction}
 				onConfirmInstallmentReversal={handleConfirmInstallmentReversal}
 				isReversingInstallment={isReversingInstallment}
+				reversalUndoAction={reversalUndoAction}
+				onReversalUndoActionChange={setReversalUndoAction}
+				onConfirmInstallmentReversalUndo={handleConfirmInstallmentReversalUndo}
+				isUndoingInstallmentReversal={isUndoingInstallmentReversal}
 				editingInstallment={editingInstallment}
 				onEditingInstallmentChange={setEditingInstallment}
 				onConfirmInstallmentEdition={handleConfirmInstallmentEdition}

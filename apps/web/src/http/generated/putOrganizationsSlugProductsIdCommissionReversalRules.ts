@@ -37,7 +37,7 @@ export async function putOrganizationsSlugProductsIdCommissionReversalRules(
   }: {
     slug: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["slug"];
     id: PutOrganizationsSlugProductsIdCommissionReversalRulesPathParams["id"];
-    data: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
+    data?: PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest;
   },
   config: Partial<
     RequestConfig<PutOrganizationsSlugProductsIdCommissionReversalRulesMutationRequest>

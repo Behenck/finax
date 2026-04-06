@@ -10,13 +10,13 @@ export type PatchOrganizationsSlugTransactionsPaymentBulkPathParams = {
   slug: string;
 };
 
-export const skippedReasonEnum = {
+export const skippedReasonEnum2 = {
   ALREADY_PAID: "ALREADY_PAID",
   CANCELED: "CANCELED",
 } as const;
 
-export type SkippedReasonEnumKey =
-  (typeof skippedReasonEnum)[keyof typeof skippedReasonEnum];
+export type SkippedReasonEnum2Key =
+  (typeof skippedReasonEnum2)[keyof typeof skippedReasonEnum2];
 
 /**
  * @description Default Response
@@ -39,7 +39,7 @@ export type PatchOrganizationsSlugTransactionsPaymentBulk200 = {
     /**
      * @type string
      */
-    reason: SkippedReasonEnumKey;
+    reason: SkippedReasonEnum2Key;
   }[];
 };
 

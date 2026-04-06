@@ -17,10 +17,12 @@ import { getSales } from "./get-sales";
 import { getSalesDashboard } from "./get-sales-dashboard";
 import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
+import { patchCommissionInstallmentsStatusBulk } from "./patch-commission-installments-status-bulk";
 import { patchSaleStatus } from "./patch-sale-status";
 import { patchSalesDeleteBulk } from "./patch-sales-delete-bulk";
 import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
 import { postSaleCommissionInstallmentReversal } from "./post-sale-commission-installment-reversal";
+import { postSaleCommissionInstallmentReversalUndo } from "./post-sale-commission-installment-reversal-undo";
 import { postCommissionReceiptImportApply } from "./post-commission-receipt-import-apply";
 import { postCommissionReceiptImportPreview } from "./post-commission-receipt-import-preview";
 import { postSalesBatch } from "./post-sales-batch";
@@ -61,7 +63,23 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 
 	if (
 		routeUrl ===
+			"/organizations/:slug/commissions/installments/status/bulk" &&
+		method === "PATCH"
+	) {
+		return "sales.commissions.installments.status.change" as const;
+	}
+
+	if (
+		routeUrl ===
 			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/reversal" &&
+		method === "POST"
+	) {
+		return "sales.commissions.installments.status.change" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/commission-installments/:installmentId/reversal/undo" &&
 		method === "POST"
 	) {
 		return "sales.commissions.installments.status.change" as const;
@@ -146,7 +164,9 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(patchSalesDeleteBulk);
 	await app.register(getSaleCommissionInstallments);
 	await app.register(patchSaleCommissionInstallmentStatus);
+	await app.register(patchCommissionInstallmentsStatusBulk);
 	await app.register(postSaleCommissionInstallmentReversal);
+	await app.register(postSaleCommissionInstallmentReversalUndo);
 	await app.register(patchSaleCommissionInstallment);
 	await app.register(deleteSaleCommissionInstallment);
 	await app.register(getCommissionReceiptImportTemplates);

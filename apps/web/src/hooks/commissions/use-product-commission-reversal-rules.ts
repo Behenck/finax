@@ -10,6 +10,16 @@ export type ProductCommissionReversalRule = {
 	percentage: number;
 };
 
+export type ProductCommissionReversalMode =
+	| "INSTALLMENT_BY_NUMBER"
+	| "TOTAL_PAID_PERCENTAGE";
+
+export type ProductCommissionReversalRulesResponse = {
+	mode: ProductCommissionReversalMode | null;
+	totalPaidPercentage: number | null;
+	rules: ProductCommissionReversalRule[];
+};
+
 function buildProductCommissionReversalRulesQueryKey(
 	slug: string,
 	productId: string,
@@ -41,9 +51,7 @@ export function useProductCommissionReversalRules(
 			includeInherited,
 		),
 		queryFn: async () => {
-			const response = await api.get<{
-				rules: ProductCommissionReversalRule[];
-			}>(
+			const response = await api.get<ProductCommissionReversalRulesResponse>(
 				`/organizations/${slug}/products/${productId}/commission-reversal-rules`,
 				{
 					params: includeInherited ? { includeInherited: true } : undefined,
@@ -60,6 +68,8 @@ export function useProductCommissionReversalRules(
 
 interface ReplaceProductCommissionReversalRulesInput {
 	productId: string;
+	mode: ProductCommissionReversalMode | null;
+	totalPaidPercentage?: number | null;
 	rules: ProductCommissionReversalRule[];
 	silent?: boolean;
 }
@@ -71,6 +81,8 @@ export function useReplaceProductCommissionReversalRules() {
 	return useMutation({
 		mutationFn: async ({
 			productId,
+			mode,
+			totalPaidPercentage,
 			rules,
 		}: ReplaceProductCommissionReversalRulesInput) => {
 			if (!organization?.slug) {
@@ -80,6 +92,11 @@ export function useReplaceProductCommissionReversalRules() {
 			await api.put(
 				`/organizations/${organization.slug}/products/${productId}/commission-reversal-rules`,
 				{
+					mode,
+					totalPaidPercentage:
+						mode === "TOTAL_PAID_PERCENTAGE"
+							? totalPaidPercentage ?? null
+							: undefined,
 					rules,
 				},
 			);

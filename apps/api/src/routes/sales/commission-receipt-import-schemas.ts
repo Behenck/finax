@@ -94,6 +94,7 @@ export const CommissionReceiptImportRowStatusSchema = z.enum([
 export const CommissionReceiptImportRowActionSchema = z.enum([
 	"MARK_AS_PAID",
 	"UPDATE_AMOUNT_AND_MARK_AS_PAID",
+	"REVERSE_INSTALLMENT",
 	"NONE",
 ]);
 

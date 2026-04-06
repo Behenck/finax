@@ -54,6 +54,7 @@ describe("product commission reversal rules", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
+				mode: "INSTALLMENT_BY_NUMBER",
 				rules: [
 					{
 						installmentNumber: 1,
@@ -80,6 +81,8 @@ describe("product commission reversal rules", () => {
 
 		expect(getResponse.statusCode).toBe(200);
 		expect(getResponse.body).toEqual({
+			mode: "INSTALLMENT_BY_NUMBER",
+			totalPaidPercentage: null,
 			rules: [
 				{
 					installmentNumber: 1,
@@ -106,6 +109,7 @@ describe("product commission reversal rules", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
+				mode: "INSTALLMENT_BY_NUMBER",
 				rules: [
 					{
 						installmentNumber: 1,
@@ -130,6 +134,7 @@ describe("product commission reversal rules", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
+				mode: "INSTALLMENT_BY_NUMBER",
 				rules: [
 					{
 						installmentNumber: 1,
@@ -144,6 +149,7 @@ describe("product commission reversal rules", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
+				mode: "INSTALLMENT_BY_NUMBER",
 				rules: [
 					{
 						installmentNumber: 3,
@@ -162,6 +168,8 @@ describe("product commission reversal rules", () => {
 
 		expect(getResponse.statusCode).toBe(200);
 		expect(getResponse.body).toEqual({
+			mode: "INSTALLMENT_BY_NUMBER",
+			totalPaidPercentage: null,
 			rules: [
 				{
 					installmentNumber: 3,
@@ -198,6 +206,7 @@ describe("product commission reversal rules", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
+				mode: "INSTALLMENT_BY_NUMBER",
 				rules: [
 					{
 						installmentNumber: 1,
@@ -220,6 +229,8 @@ describe("product commission reversal rules", () => {
 
 		expect(directGetResponse.statusCode).toBe(200);
 		expect(directGetResponse.body).toEqual({
+			mode: null,
+			totalPaidPercentage: null,
 			rules: [],
 		});
 
@@ -231,6 +242,8 @@ describe("product commission reversal rules", () => {
 
 		expect(inheritedGetResponse.statusCode).toBe(200);
 		expect(inheritedGetResponse.body).toEqual({
+			mode: "INSTALLMENT_BY_NUMBER",
+			totalPaidPercentage: null,
 			rules: [
 				{
 					installmentNumber: 1,
@@ -241,6 +254,36 @@ describe("product commission reversal rules", () => {
 					percentage: 70,
 				},
 			],
+		});
+	});
+
+	it("should save and fetch total-paid percentage reversal mode", async () => {
+		const fixture = await createFixture();
+
+		const saveResponse = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-reversal-rules`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				mode: "TOTAL_PAID_PERCENTAGE",
+				totalPaidPercentage: 62.5,
+				rules: [],
+			});
+
+		expect(saveResponse.statusCode).toBe(204);
+
+		const getResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-reversal-rules`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(getResponse.statusCode).toBe(200);
+		expect(getResponse.body).toEqual({
+			mode: "TOTAL_PAID_PERCENTAGE",
+			totalPaidPercentage: 62.5,
+			rules: [],
 		});
 	});
 });

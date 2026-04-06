@@ -34,6 +34,8 @@ const INSTALLMENT_PATH_REGEX =
 
 const SALE_FIELD_LABEL: Record<string, string> = {
 	totalAmount: "valor total",
+	pendingCommissionInstallmentsUpdatedCount:
+		"parcelas pendentes de comissão atualizadas",
 	status: "status",
 	saleDate: "data da venda",
 	notes: "observação",
@@ -422,6 +424,16 @@ function formatSaleChange(change: SaleHistoryChange, field: string) {
 	switch (field) {
 		case "totalAmount":
 			return `Valor total alterado de ${beforeValue} para ${afterValue}.`;
+		case "pendingCommissionInstallmentsUpdatedCount": {
+			const updatedInstallmentsCount =
+				typeof change.after === "number" ? change.after : null;
+
+			if (updatedInstallmentsCount && updatedInstallmentsCount > 0) {
+				return `Parcelas pendentes de comissão foram atualizadas (${updatedInstallmentsCount}).`;
+			}
+
+			return "Parcelas pendentes de comissão foram atualizadas.";
+		}
 		case "status":
 			return `Status alterado de ${beforeValue} para ${afterValue}.`;
 		case "saleDate":

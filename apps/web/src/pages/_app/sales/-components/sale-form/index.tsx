@@ -4,6 +4,16 @@ import { useNavigate } from "@tanstack/react-router";
 import { format, startOfDay } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useApp } from "@/context/app-context";
@@ -12,6 +22,7 @@ import {
 	useSaleFormOptions,
 	useUpdateSale,
 } from "@/hooks/sales";
+import type { PutOrganizationsSlugSalesSaleidMutationRequest } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
 import {
 	type SaleFormData,
@@ -145,6 +156,12 @@ export function SaleForm({
 		useState(false);
 	const [isEditCustomerDialogOpen, setIsEditCustomerDialogOpen] =
 		useState(false);
+	const [
+		completedAmountChangeConfirmation,
+		setCompletedAmountChangeConfirmation,
+	] = useState<{
+		payload: PutOrganizationsSlugSalesSaleidMutationRequest;
+	} | null>(null);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
 		resolver: zodResolver(saleSchema),
@@ -709,6 +726,37 @@ export function SaleForm({
 
 	const isPending = isCreatingSale || isUpdatingSale;
 
+	async function submitSaleUpdate(
+		payload: PutOrganizationsSlugSalesSaleidMutationRequest,
+	) {
+		if (!initialSale) {
+			return;
+		}
+
+		await updateSale({
+			saleId: initialSale.id,
+			data: payload,
+		});
+	}
+
+	async function handleConfirmCompletedAmountChange(
+		applyValueChangeToCommissions: boolean,
+	) {
+		if (!completedAmountChangeConfirmation) {
+			return;
+		}
+
+		try {
+			await submitSaleUpdate({
+				...completedAmountChangeConfirmation.payload,
+				applyValueChangeToCommissions,
+			});
+			setCompletedAmountChangeConfirmation(null);
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
 	async function onSubmit(data: SaleFormData) {
 		const commissions = isCommissionEditable
 			? (data.commissions ?? []).map((commission) => {
@@ -751,7 +799,7 @@ export function SaleForm({
 			data.dynamicFields ?? {},
 		);
 
-		const payload = {
+		const payload: PutOrganizationsSlugSalesSaleidMutationRequest = {
 			saleDate: format(data.saleDate, "yyyy-MM-dd"),
 			customerId: data.customerId,
 			productId: data.productId,
@@ -783,16 +831,23 @@ export function SaleForm({
 				return;
 			}
 
-			await updateSale({
-				saleId: initialSale.id,
-				data: payload,
-			});
-			await navigate({
-				to: "/sales/$saleId",
-				params: {
-					saleId: initialSale.id,
-				},
-			});
+			const hasPersistedCommissions = (initialSale.commissions?.length ?? 0) > 0;
+			const isCompletedSale = initialSale.status === "COMPLETED";
+			const isChangingTotalAmount = payload.totalAmount !== initialSale.totalAmount;
+			const shouldConfirmCompletedValueChange =
+				isCompletedSale &&
+				hasPersistedCommissions &&
+				isChangingTotalAmount &&
+				payload.commissions === undefined;
+
+			if (shouldConfirmCompletedValueChange) {
+				setCompletedAmountChangeConfirmation({
+					payload,
+				});
+				return;
+			}
+
+			await submitSaleUpdate(payload);
 		} catch {
 			// erro tratado nos hooks de mutation
 		}
@@ -820,7 +875,8 @@ export function SaleForm({
 	}
 
 	return (
-		<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+		<>
+			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 			<ProductSection
 				control={control}
 				rootProducts={rootProductsForSelect}
@@ -920,6 +976,47 @@ export function SaleForm({
 				isLoadingOptions={isLoadingOptions}
 				isDynamicFieldsLoading={isDynamicFieldsLoading}
 			/>
-		</form>
+			</form>
+
+			<AlertDialog
+				open={Boolean(completedAmountChangeConfirmation)}
+				onOpenChange={(open) => {
+					if (!open) {
+						setCompletedAmountChangeConfirmation(null);
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							Aplicar alteração de valor nas comissões?
+						</AlertDialogTitle>
+						<AlertDialogDescription>
+							A venda já está concluída. Você quer aplicar o novo valor apenas
+							nas parcelas de comissão pendentes? Parcelas pagas, canceladas e
+							estornadas não serão alteradas.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
+						<AlertDialogAction
+							type="button"
+							variant="outline"
+							onClick={() => void handleConfirmCompletedAmountChange(false)}
+							disabled={isPending}
+						>
+							Não aplicar
+						</AlertDialogAction>
+						<AlertDialogAction
+							type="button"
+							onClick={() => void handleConfirmCompletedAmountChange(true)}
+							disabled={isPending}
+						>
+							Aplicar nas pendentes
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 }

@@ -20,6 +20,10 @@ export const getOrganizationsSlugSalesSaleidCommissionInstallments200Schema =
       z.object({
         id: z.uuid(),
         saleCommissionId: z.uuid(),
+        originInstallmentId: z.nullable(z.uuid()),
+        originInstallmentNumber: z.nullable(
+          z.int().min(1).max(9007199254740991),
+        ),
         recipientType: z.enum([
           "COMPANY",
           "UNIT",

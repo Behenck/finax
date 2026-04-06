@@ -20,6 +20,7 @@ import {
 	parseSaleDateInput,
 	toScaledPercentage,
 } from "./sale-schemas";
+import { applyInstallmentCancellationWithAutomaticReversal } from "./sale-commission-cancellation";
 
 function getCurrentDateUtc() {
 	const now = new Date();
@@ -123,10 +124,23 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 							},
 							select: {
 								id: true,
+								originInstallmentId: true,
 								saleCommissionId: true,
+								installmentNumber: true,
+								percentage: true,
+								expectedPaymentDate: true,
 								status: true,
 								amount: true,
 								paymentDate: true,
+								saleCommission: {
+									select: {
+										sale: {
+											select: {
+												productId: true,
+											},
+										},
+									},
+								},
 							},
 						});
 
@@ -149,6 +163,70 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 							throw new BadRequestError(
 								"Negative amount is only allowed for reversed installments",
 							);
+						}
+
+						if (data.status === "CANCELED") {
+							if (!data.reversalDate) {
+								throw new BadRequestError(
+									"reversalDate is required when status is CANCELED",
+								);
+							}
+
+							const nextPercentage =
+								data.percentage === undefined
+									? installment.percentage
+									: toScaledPercentage(data.percentage);
+							const nextExpectedPaymentDate =
+								data.expectedPaymentDate === undefined
+									? installment.expectedPaymentDate
+									: parseSaleDateInput(data.expectedPaymentDate);
+
+							await applyInstallmentCancellationWithAutomaticReversal({
+								tx,
+								organizationId: organization.id,
+								targetInstallment: {
+									id: installment.id,
+									originInstallmentId: installment.originInstallmentId,
+									saleCommissionId: installment.saleCommissionId,
+									installmentNumber: installment.installmentNumber,
+									percentage: installment.percentage,
+									amount: installment.amount,
+									status: installment.status,
+									expectedPaymentDate: installment.expectedPaymentDate,
+									paymentDate: installment.paymentDate,
+									productId: installment.saleCommission.sale.productId,
+								},
+								reversalDate: data.reversalDate,
+								targetAmount: finalAmount,
+								targetPercentage: nextPercentage,
+								targetExpectedPaymentDate: nextExpectedPaymentDate,
+							});
+
+							await syncSaleCommissionTotalPercentage(
+								tx,
+								installment.saleCommissionId,
+							);
+
+							const afterSnapshot = await loadSaleHistorySnapshot(
+								tx,
+								saleId,
+								organization.id,
+							);
+
+							if (!afterSnapshot) {
+								throw new BadRequestError("Sale not found");
+							}
+
+							await createSaleDiffHistoryEvent(tx, {
+								saleId,
+								organizationId: organization.id,
+								actorId,
+								action: SaleHistoryAction.COMMISSION_INSTALLMENT_UPDATED,
+								beforeSnapshot,
+								afterSnapshot,
+							});
+
+							return;
 						}
 
 						const nextPaymentDate =
@@ -180,6 +258,13 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 											),
 										}),
 								paymentDate: nextPaymentDate,
+								...(finalStatus === "REVERSED"
+									? {}
+									: {
+											reversedFromStatus: null,
+											reversedFromAmount: null,
+											reversedFromPaymentDate: null,
+										}),
 							},
 						});
 

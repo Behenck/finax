@@ -22,6 +22,7 @@ export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmenti
   z.object({
     status: z.enum(["PAID", "CANCELED"]),
     paymentDate: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+    reversalDate: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
     amount: z.optional(z.int().min(0).max(9007199254740991)),
   });
 

@@ -15,6 +15,7 @@ interface ReverseSaleCommissionInstallmentInput {
 	installmentId: string;
 	reversalDate: string;
 	manualAmount?: number;
+	cancelPendingInstallments?: boolean;
 	silent?: boolean;
 }
 
@@ -28,6 +29,7 @@ export function useReverseSaleCommissionInstallment() {
 			installmentId,
 			reversalDate,
 			manualAmount,
+			cancelPendingInstallments,
 		}: ReverseSaleCommissionInstallmentInput) => {
 			if (!organization?.slug) {
 				throw new Error("Organização não encontrada");
@@ -38,6 +40,7 @@ export function useReverseSaleCommissionInstallment() {
 				{
 					reversalDate,
 					manualAmount,
+					cancelPendingInstallments,
 				},
 			);
 		},

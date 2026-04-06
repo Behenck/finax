@@ -2,6 +2,7 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey,
 	getOrganizationsSlugSalesQueryKey,
 	getOrganizationsSlugSalesSaleidQueryKey,
 	putOrganizationsSlugSalesSaleid,
@@ -48,6 +49,13 @@ export function useUpdateSale() {
 						saleId: variables.saleId,
 					}),
 				}),
+				queryClient.invalidateQueries({
+					queryKey:
+						getOrganizationsSlugSalesSaleidCommissionInstallmentsQueryKey({
+							slug: organization.slug,
+							saleId: variables.saleId,
+						}),
+				}),
 			]);
 
 			toast.success("Venda atualizada com sucesso.");
@@ -58,4 +66,3 @@ export function useUpdateSale() {
 		},
 	});
 }
-

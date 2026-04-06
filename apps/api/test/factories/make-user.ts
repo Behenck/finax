@@ -6,6 +6,9 @@ import { Role } from "generated/prisma/enums"
 export async function makeUser() {
   const password = "123456"
   const passwordHash = await hash(password, 6)
+  const orgName = faker.company.name()
+  const slugBase = faker.helpers.slugify(orgName).toLowerCase()
+  const uniqueSuffix = `${Date.now()}${Math.floor(Math.random() * 100000)}`
 
   const user = await prisma.user.create({
     data: {
@@ -23,8 +26,8 @@ export async function makeUser() {
 
   const org = await prisma.organization.create({
     data: {
-      name: faker.company.name(),
-      slug: faker.helpers.slugify(faker.company.name()).toLowerCase(),
+      name: orgName,
+      slug: `${slugBase}-${uniqueSuffix}`,
       ownerId: user.id,
       members: {
         create: {

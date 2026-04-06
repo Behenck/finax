@@ -28,6 +28,7 @@ export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmenti
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .nullish(),
+    reversalDate: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   });
 
 export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidMutationResponseSchema =

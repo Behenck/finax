@@ -23,11 +23,14 @@ export type InstallmentEditState = {
 	status: SaleCommissionInstallmentStatus;
 	expectedPaymentDate: string;
 	paymentDate: string;
+	reversalDate: string;
 };
 
 export type InstallmentReversalAction = {
 	installment: CommissionInstallmentRow;
 	reversalDate: string;
+	cancelPendingInstallments: boolean;
+	pendingFutureInstallmentsCount: number;
 	mode: "AUTO" | "MANUAL";
 	calculationStatus: "LOADING" | "READY" | "ERROR";
 	calculationError: string | null;
@@ -36,6 +39,10 @@ export type InstallmentReversalAction = {
 	rulePercentage: number | null;
 	totalPaidAmount: number | null;
 	calculatedAmount: number | null;
+};
+
+export type InstallmentReversalUndoAction = {
+	installment: CommissionInstallmentRow;
 };
 
 export type InstallmentSummaryBucket = {
@@ -55,9 +62,12 @@ export type SelectedInstallment = {
 	id: string;
 	saleId: string;
 	amount: number;
+	status: SaleCommissionInstallmentStatus;
 };
 
 export type ProductOption = {
 	id: string;
 	label: string;
 };
+
+export type BulkInstallmentStatus = "PENDING" | "PAID" | "CANCELED";

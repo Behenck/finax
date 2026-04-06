@@ -28,10 +28,12 @@ export type AggregateProduct = {
 
 export type ProductAvgAggregateOutputType = {
   sortOrder: number | null
+  commissionReversalTotalPercentage: number | null
 }
 
 export type ProductSumAggregateOutputType = {
   sortOrder: number | null
+  commissionReversalTotalPercentage: number | null
 }
 
 export type ProductMinAggregateOutputType = {
@@ -44,6 +46,8 @@ export type ProductMinAggregateOutputType = {
   sortOrder: number | null
   salesTransactionCategoryId: string | null
   salesTransactionCostCenterId: string | null
+  commissionReversalMode: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +62,8 @@ export type ProductMaxAggregateOutputType = {
   sortOrder: number | null
   salesTransactionCategoryId: string | null
   salesTransactionCostCenterId: string | null
+  commissionReversalMode: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +78,8 @@ export type ProductCountAggregateOutputType = {
   sortOrder: number
   salesTransactionCategoryId: number
   salesTransactionCostCenterId: number
+  commissionReversalMode: number
+  commissionReversalTotalPercentage: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,10 +88,12 @@ export type ProductCountAggregateOutputType = {
 
 export type ProductAvgAggregateInputType = {
   sortOrder?: true
+  commissionReversalTotalPercentage?: true
 }
 
 export type ProductSumAggregateInputType = {
   sortOrder?: true
+  commissionReversalTotalPercentage?: true
 }
 
 export type ProductMinAggregateInputType = {
@@ -96,6 +106,8 @@ export type ProductMinAggregateInputType = {
   sortOrder?: true
   salesTransactionCategoryId?: true
   salesTransactionCostCenterId?: true
+  commissionReversalMode?: true
+  commissionReversalTotalPercentage?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +122,8 @@ export type ProductMaxAggregateInputType = {
   sortOrder?: true
   salesTransactionCategoryId?: true
   salesTransactionCostCenterId?: true
+  commissionReversalMode?: true
+  commissionReversalTotalPercentage?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +138,8 @@ export type ProductCountAggregateInputType = {
   sortOrder?: true
   salesTransactionCategoryId?: true
   salesTransactionCostCenterId?: true
+  commissionReversalMode?: true
+  commissionReversalTotalPercentage?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +241,8 @@ export type ProductGroupByOutputType = {
   sortOrder: number
   salesTransactionCategoryId: string | null
   salesTransactionCostCenterId: string | null
+  commissionReversalMode: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage: number | null
   createdAt: Date
   updatedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -262,6 +280,8 @@ export type ProductWhereInput = {
   sortOrder?: Prisma.IntFilter<"Product"> | number
   salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
+  commissionReversalMode?: Prisma.EnumProductCommissionReversalModeNullableFilter<"Product"> | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.IntNullableFilter<"Product"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -285,6 +305,8 @@ export type ProductOrderByWithRelationInput = {
   sortOrder?: Prisma.SortOrder
   salesTransactionCategoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   salesTransactionCostCenterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionReversalMode?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -312,6 +334,8 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   sortOrder?: Prisma.IntFilter<"Product"> | number
   salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
+  commissionReversalMode?: Prisma.EnumProductCommissionReversalModeNullableFilter<"Product"> | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.IntNullableFilter<"Product"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -335,6 +359,8 @@ export type ProductOrderByWithAggregationInput = {
   sortOrder?: Prisma.SortOrder
   salesTransactionCategoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   salesTransactionCostCenterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionReversalMode?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -357,6 +383,8 @@ export type ProductScalarWhereWithAggregatesInput = {
   sortOrder?: Prisma.IntWithAggregatesFilter<"Product"> | number
   salesTransactionCategoryId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   salesTransactionCostCenterId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  commissionReversalMode?: Prisma.EnumProductCommissionReversalModeNullableWithAggregatesFilter<"Product"> | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -367,6 +395,8 @@ export type ProductCreateInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -390,6 +420,8 @@ export type ProductUncheckedCreateInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -405,6 +437,8 @@ export type ProductUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -428,6 +462,8 @@ export type ProductUncheckedUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -447,6 +483,8 @@ export type ProductCreateManyInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -457,6 +495,8 @@ export type ProductUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -471,6 +511,8 @@ export type ProductUncheckedUpdateManyInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -506,12 +548,15 @@ export type ProductCountOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   salesTransactionCategoryId?: Prisma.SortOrder
   salesTransactionCostCenterId?: Prisma.SortOrder
+  commissionReversalMode?: Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProductAvgOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrder
 }
 
 export type ProductMaxOrderByAggregateInput = {
@@ -524,6 +569,8 @@ export type ProductMaxOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   salesTransactionCategoryId?: Prisma.SortOrder
   salesTransactionCostCenterId?: Prisma.SortOrder
+  commissionReversalMode?: Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -538,12 +585,15 @@ export type ProductMinOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   salesTransactionCategoryId?: Prisma.SortOrder
   salesTransactionCostCenterId?: Prisma.SortOrder
+  commissionReversalMode?: Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProductSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
+  commissionReversalTotalPercentage?: Prisma.SortOrder
 }
 
 export type ProductScalarRelationFilter = {
@@ -705,6 +755,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput = {
+  set?: $Enums.ProductCommissionReversalMode | null
+}
+
 export type ProductUpdateOneWithoutChildrenNestedInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutChildrenInput, Prisma.ProductUncheckedCreateWithoutChildrenInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutChildrenInput
@@ -805,6 +859,8 @@ export type ProductCreateWithoutOrganizationInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
@@ -826,6 +882,8 @@ export type ProductUncheckedCreateWithoutOrganizationInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -874,6 +932,8 @@ export type ProductScalarWhereInput = {
   sortOrder?: Prisma.IntFilter<"Product"> | number
   salesTransactionCategoryId?: Prisma.StringNullableFilter<"Product"> | string | null
   salesTransactionCostCenterId?: Prisma.StringNullableFilter<"Product"> | string | null
+  commissionReversalMode?: Prisma.EnumProductCommissionReversalModeNullableFilter<"Product"> | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.IntNullableFilter<"Product"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
 }
@@ -884,6 +944,8 @@ export type ProductCreateWithoutSalesTransactionCategoryInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -905,6 +967,8 @@ export type ProductUncheckedCreateWithoutSalesTransactionCategoryInput = {
   isActive?: boolean
   sortOrder?: number
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -946,6 +1010,8 @@ export type ProductCreateWithoutSalesTransactionCostCenterInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -967,6 +1033,8 @@ export type ProductUncheckedCreateWithoutSalesTransactionCostCenterInput = {
   isActive?: boolean
   sortOrder?: number
   salesTransactionCategoryId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1008,6 +1076,8 @@ export type ProductCreateWithoutChildrenInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1030,6 +1100,8 @@ export type ProductUncheckedCreateWithoutChildrenInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
@@ -1049,6 +1121,8 @@ export type ProductCreateWithoutParentInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1070,6 +1144,8 @@ export type ProductUncheckedCreateWithoutParentInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1106,6 +1182,8 @@ export type ProductUpdateWithoutChildrenInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1128,6 +1206,8 @@ export type ProductUncheckedUpdateWithoutChildrenInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
@@ -1158,6 +1238,8 @@ export type ProductCreateWithoutCommissionReversalRulesInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1180,6 +1262,8 @@ export type ProductUncheckedCreateWithoutCommissionReversalRulesInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1210,6 +1294,8 @@ export type ProductUpdateWithoutCommissionReversalRulesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1232,6 +1318,8 @@ export type ProductUncheckedUpdateWithoutCommissionReversalRulesInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1246,6 +1334,8 @@ export type ProductCreateWithoutSaleFieldsInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1268,6 +1358,8 @@ export type ProductUncheckedCreateWithoutSaleFieldsInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1298,6 +1390,8 @@ export type ProductUpdateWithoutSaleFieldsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1320,6 +1414,8 @@ export type ProductUncheckedUpdateWithoutSaleFieldsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1334,6 +1430,8 @@ export type ProductCreateWithoutCommissionScenariosInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1356,6 +1454,8 @@ export type ProductUncheckedCreateWithoutCommissionScenariosInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1386,6 +1486,8 @@ export type ProductUpdateWithoutCommissionScenariosInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1408,6 +1510,8 @@ export type ProductUncheckedUpdateWithoutCommissionScenariosInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1422,6 +1526,8 @@ export type ProductCreateWithoutSalesInput = {
   description?: string | null
   isActive?: boolean
   sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
@@ -1444,6 +1550,8 @@ export type ProductUncheckedCreateWithoutSalesInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
@@ -1474,6 +1582,8 @@ export type ProductUpdateWithoutSalesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1496,6 +1606,8 @@ export type ProductUncheckedUpdateWithoutSalesInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1513,6 +1625,8 @@ export type ProductCreateManyOrganizationInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1523,6 +1637,8 @@ export type ProductUpdateWithoutOrganizationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
@@ -1544,6 +1660,8 @@ export type ProductUncheckedUpdateWithoutOrganizationInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1562,6 +1680,8 @@ export type ProductUncheckedUpdateManyWithoutOrganizationInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1575,6 +1695,8 @@ export type ProductCreateManySalesTransactionCategoryInput = {
   isActive?: boolean
   sortOrder?: number
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1585,6 +1707,8 @@ export type ProductUpdateWithoutSalesTransactionCategoryInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1606,6 +1730,8 @@ export type ProductUncheckedUpdateWithoutSalesTransactionCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1624,6 +1750,8 @@ export type ProductUncheckedUpdateManyWithoutSalesTransactionCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1637,6 +1765,8 @@ export type ProductCreateManySalesTransactionCostCenterInput = {
   isActive?: boolean
   sortOrder?: number
   salesTransactionCategoryId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1647,6 +1777,8 @@ export type ProductUpdateWithoutSalesTransactionCostCenterInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1668,6 +1800,8 @@ export type ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1686,6 +1820,8 @@ export type ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1699,6 +1835,8 @@ export type ProductCreateManyParentInput = {
   sortOrder?: number
   salesTransactionCategoryId?: string | null
   salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1709,6 +1847,8 @@ export type ProductUpdateWithoutParentInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
@@ -1730,6 +1870,8 @@ export type ProductUncheckedUpdateWithoutParentInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
@@ -1748,6 +1890,8 @@ export type ProductUncheckedUpdateManyWithoutParentInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1829,6 +1973,8 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sortOrder?: boolean
   salesTransactionCategoryId?: boolean
   salesTransactionCostCenterId?: boolean
+  commissionReversalMode?: boolean
+  commissionReversalTotalPercentage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1853,6 +1999,8 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sortOrder?: boolean
   salesTransactionCategoryId?: boolean
   salesTransactionCostCenterId?: boolean
+  commissionReversalMode?: boolean
+  commissionReversalTotalPercentage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1871,6 +2019,8 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sortOrder?: boolean
   salesTransactionCategoryId?: boolean
   salesTransactionCostCenterId?: boolean
+  commissionReversalMode?: boolean
+  commissionReversalTotalPercentage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1889,11 +2039,13 @@ export type ProductSelectScalar = {
   sortOrder?: boolean
   salesTransactionCategoryId?: boolean
   salesTransactionCostCenterId?: boolean
+  commissionReversalMode?: boolean
+  commissionReversalTotalPercentage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "parentId" | "name" | "description" | "isActive" | "sortOrder" | "salesTransactionCategoryId" | "salesTransactionCostCenterId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "parentId" | "name" | "description" | "isActive" | "sortOrder" | "salesTransactionCategoryId" | "salesTransactionCostCenterId" | "commissionReversalMode" | "commissionReversalTotalPercentage" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.Product$parentArgs<ExtArgs>
@@ -1942,6 +2094,8 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sortOrder: number
     salesTransactionCategoryId: string | null
     salesTransactionCostCenterId: string | null
+    commissionReversalMode: $Enums.ProductCommissionReversalMode | null
+    commissionReversalTotalPercentage: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -2385,6 +2539,8 @@ export interface ProductFieldRefs {
   readonly sortOrder: Prisma.FieldRef<"Product", 'Int'>
   readonly salesTransactionCategoryId: Prisma.FieldRef<"Product", 'String'>
   readonly salesTransactionCostCenterId: Prisma.FieldRef<"Product", 'String'>
+  readonly commissionReversalMode: Prisma.FieldRef<"Product", 'ProductCommissionReversalMode'>
+  readonly commissionReversalTotalPercentage: Prisma.FieldRef<"Product", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }

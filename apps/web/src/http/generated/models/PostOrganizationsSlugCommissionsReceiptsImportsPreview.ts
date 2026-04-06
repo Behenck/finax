@@ -23,6 +23,7 @@ export type RowsStatusEnumKey =
 export const rowsActionEnum = {
   MARK_AS_PAID: "MARK_AS_PAID",
   UPDATE_AMOUNT_AND_MARK_AS_PAID: "UPDATE_AMOUNT_AND_MARK_AS_PAID",
+  REVERSE_INSTALLMENT: "REVERSE_INSTALLMENT",
   NONE: "NONE",
 } as const;
 

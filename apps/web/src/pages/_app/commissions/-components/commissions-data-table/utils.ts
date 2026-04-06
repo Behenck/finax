@@ -97,6 +97,17 @@ export function canPayInstallment(installment: CommissionInstallmentRow) {
 	);
 }
 
+export function canBulkChangeInstallmentStatus(
+	installment: CommissionInstallmentRow,
+) {
+	return (
+		(installment.status === "PENDING" ||
+			installment.status === "PAID" ||
+			installment.status === "CANCELED") &&
+		canUpdateInstallments(installment.saleStatus as SaleStatus)
+	);
+}
+
 export function resolveDirectionSummary(
 	summaryByDirection:
 		| GetOrganizationsSlugCommissionsInstallments200["summaryByDirection"]

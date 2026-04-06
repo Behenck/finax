@@ -38,7 +38,8 @@ export async function replaceProductCommissionReversalRules(
 			},
 			async (request, reply) => {
 				const { slug, id } = request.params;
-				const { rules } = request.body;
+				const { mode: incomingMode, totalPaidPercentage, rules } = request.body;
+				const mode = incomingMode ?? null;
 
 				try {
 					const organization = await prisma.organization.findUnique({
@@ -72,7 +73,7 @@ export async function replaceProductCommissionReversalRules(
 								},
 							});
 
-							if (rules.length > 0) {
+							if (mode === "INSTALLMENT_BY_NUMBER" && rules.length > 0) {
 								await tx.productCommissionReversalRule.createMany({
 									data: rules.map((rule) => ({
 										productId: product.id,
@@ -81,6 +82,19 @@ export async function replaceProductCommissionReversalRules(
 									})),
 								});
 							}
+
+							await tx.product.update({
+								where: {
+									id: product.id,
+								},
+								data: {
+									commissionReversalMode: mode,
+									commissionReversalTotalPercentage:
+										mode === "TOTAL_PAID_PERCENTAGE"
+											? toScaledReversalPercentage(totalPaidPercentage ?? 0)
+											: null,
+								},
+							});
 						}),
 					);
 

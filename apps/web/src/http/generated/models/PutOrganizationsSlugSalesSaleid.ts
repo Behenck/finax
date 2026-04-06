@@ -181,6 +181,10 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
       percentage: number;
     }[];
   }[];
+  /**
+   * @type boolean | undefined
+   */
+  applyValueChangeToCommissions?: boolean;
 };
 
 export type PutOrganizationsSlugSalesSaleidMutationResponse =

@@ -29,6 +29,7 @@ export const postOrganizationsSlugCommissionsReceiptsImportsPreview200Schema =
         action: z.enum([
           "MARK_AS_PAID",
           "UPDATE_AMOUNT_AND_MARK_AS_PAID",
+          "REVERSE_INSTALLMENT",
           "NONE",
         ]),
         reason: z.string(),

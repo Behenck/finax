@@ -59,6 +59,18 @@ describe("sale-history-presenter", () => {
 		expect(statusSentence).toBe("Status alterado de Pendente para Aprovada.");
 	});
 
+	it("should format summarized pending installments update change", () => {
+		const sentence = formatSaleHistoryChange({
+			path: "sale.pendingCommissionInstallmentsUpdatedCount",
+			before: null,
+			after: 3,
+		});
+
+		expect(sentence).toBe(
+			"Parcelas pendentes de comissão foram atualizadas (3).",
+		);
+	});
+
 	it("should format dynamic field changes with human label", () => {
 		const sentence = formatSaleHistoryChange({
 			path: "sale.dynamicFieldValues.field-grupo",

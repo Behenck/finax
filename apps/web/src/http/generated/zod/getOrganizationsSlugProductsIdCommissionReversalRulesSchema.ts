@@ -21,6 +21,10 @@ export const getOrganizationsSlugProductsIdCommissionReversalRulesQueryParamsSch
  */
 export const getOrganizationsSlugProductsIdCommissionReversalRules200Schema =
   z.object({
+    mode: z.nullable(
+      z.enum(["INSTALLMENT_BY_NUMBER", "TOTAL_PAID_PERCENTAGE"]),
+    ),
+    totalPaidPercentage: z.nullable(z.number().max(100).gt(0)),
     rules: z.array(
       z.object({
         installmentNumber: z.int().min(1).max(9007199254740991),

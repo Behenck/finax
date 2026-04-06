@@ -193,6 +193,30 @@ async function createSaleWithIncomeInstallment(params: {
 	};
 }
 
+async function findLatestInstallmentReversalMovement(
+	originInstallmentId: string,
+) {
+	return prisma.saleCommissionInstallment.findFirst({
+		where: {
+			originInstallmentId,
+			status: SaleCommissionInstallmentStatus.REVERSED,
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+		select: {
+			id: true,
+			originInstallmentId: true,
+			status: true,
+			amount: true,
+			paymentDate: true,
+			reversedFromStatus: true,
+			reversedFromAmount: true,
+			reversedFromPaymentDate: true,
+		},
+	});
+}
+
 describe("commission receipt import", () => {
 	beforeAll(async () => {
 		app = await createTestApp();
@@ -463,9 +487,13 @@ describe("commission receipt import", () => {
 			);
 
 		expect(response.statusCode).toBe(200);
-		expect(response.body.summary.readyRows).toBe(1);
-		expect(response.body.summary.attentionRows).toBe(3);
+		expect(response.body.summary.readyRows).toBe(2);
+		expect(response.body.summary.attentionRows).toBe(2);
 		expect(response.body.summary.noActionRows).toBe(2);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "READY",
+			action: "REVERSE_INSTALLMENT",
+		});
 		expect(response.body.rows[1]).toMatchObject({
 			status: "READY",
 			action: "UPDATE_AMOUNT_AND_MARK_AS_PAID",
@@ -473,13 +501,150 @@ describe("commission receipt import", () => {
 		expect(
 			response.body.rows.map((row: { status: string }) => row.status),
 		).toEqual([
-			"ATTENTION",
+			"READY",
 			"READY",
 			"ATTENTION",
 			"ATTENTION",
 			"NO_ACTION",
 			"NO_ACTION",
 		]);
+	});
+
+	it("should mark ATTENTION for negative row targeting an already reversed installment", async () => {
+		const fixture = await createFixture();
+		await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "Grupo Já Estornado",
+			quota: "305",
+			amount: -9_000,
+			installmentStatus: SaleCommissionInstallmentStatus.REVERSED,
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "Grupo Já Estornado",
+							Cota: "305",
+							Parcela: "1",
+							Valor: "-20,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.summary.attentionRows).toBe(1);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "ATTENTION",
+			action: "NONE",
+			installmentStatus: "REVERSED",
+		});
+	});
+
+	it("should mark ATTENTION when reversal amount exceeds remaining base amount", async () => {
+		const fixture = await createFixture();
+		const created = await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "Grupo Limite Estorno",
+			quota: "801",
+			amount: 10_000,
+			installmentStatus: SaleCommissionInstallmentStatus.PENDING,
+		});
+
+		await prisma.saleCommissionInstallment.create({
+			data: {
+				saleCommissionId: created.commission.id,
+				originInstallmentId: created.installment.id,
+				installmentNumber: created.installment.installmentNumber,
+				percentage: created.installment.percentage,
+				amount: -7_000,
+				status: SaleCommissionInstallmentStatus.REVERSED,
+				expectedPaymentDate: created.installment.expectedPaymentDate,
+				paymentDate: new Date(`${IMPORT_DATE}T00:00:00.000Z`),
+			},
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "Grupo Limite Estorno",
+							Cota: "801",
+							Parcela: "1",
+							Valor: "-40,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "ATTENTION",
+			action: "NONE",
+		});
+		expect(response.body.rows[0].reason).toContain("excede");
+	});
+
+	it("should mark READY for direct full reversal on base installment", async () => {
+		const fixture = await createFixture();
+		await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "Grupo Estorno Total Preview",
+			quota: "802",
+			amount: 5_000,
+			installmentStatus: SaleCommissionInstallmentStatus.PENDING,
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "Grupo Estorno Total Preview",
+							Cota: "802",
+							Parcela: "1",
+							Valor: "-50,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "READY",
+			action: "REVERSE_INSTALLMENT",
+		});
+		expect(response.body.rows[0].reason).toContain("estornar totalmente");
 	});
 
 	it("should apply selected READY rows with paymentDate = importDate and keep installment amount", async () => {
@@ -683,6 +848,165 @@ describe("commission receipt import", () => {
 		expect(updatedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
 			IMPORT_DATE,
 		);
+	});
+
+	it("should apply selected negative READY row by creating linked reversal movement", async () => {
+		const fixture = await createFixture();
+		const created = await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "Grupo Estorno Importação",
+			quota: "750",
+			amount: 24_000,
+			installmentStatus: SaleCommissionInstallmentStatus.PENDING,
+		});
+
+		const applyResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/apply`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "Grupo Estorno Importação",
+							Cota: "750",
+							Parcela: "01/01",
+							Valor: "-50,00",
+						},
+					],
+				}),
+				selectedRowNumbers: [1],
+			});
+
+		expect(applyResponse.statusCode).toBe(200);
+		expect(applyResponse.body).toMatchObject({
+			requested: 1,
+			applied: 1,
+			skipped: 0,
+		});
+		expect(applyResponse.body.results[0]).toMatchObject({
+			rowNumber: 1,
+			result: "APPLIED",
+			reason: "Movimento de estorno criado com sucesso.",
+		});
+
+		const updatedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: created.installment.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+				},
+			});
+		const reversalMovement = await findLatestInstallmentReversalMovement(
+			created.installment.id,
+		);
+
+		expect(updatedInstallment?.status).toBe(
+			SaleCommissionInstallmentStatus.PENDING,
+		);
+		expect(updatedInstallment?.amount).toBe(24_000);
+		expect(updatedInstallment?.paymentDate).toBeNull();
+		expect(reversalMovement?.status).toBe(
+			SaleCommissionInstallmentStatus.REVERSED,
+		);
+		expect(reversalMovement?.originInstallmentId).toBe(created.installment.id);
+		expect(reversalMovement?.amount).toBe(-5_000);
+		expect(reversalMovement?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			IMPORT_DATE,
+		);
+		expect(reversalMovement?.reversedFromStatus).toBeNull();
+		expect(reversalMovement?.reversedFromAmount).toBeNull();
+		expect(reversalMovement?.reversedFromPaymentDate).toBeNull();
+	});
+
+	it("should apply selected negative READY row by reversing base installment directly on full amount", async () => {
+		const fixture = await createFixture();
+		const created = await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "Grupo Estorno Total Importação",
+			quota: "751",
+			amount: 24_000,
+			installmentStatus: SaleCommissionInstallmentStatus.PENDING,
+		});
+
+		const applyResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/apply`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "Grupo Estorno Total Importação",
+							Cota: "751",
+							Parcela: "01/01",
+							Valor: "-240,00",
+						},
+					],
+				}),
+				selectedRowNumbers: [1],
+			});
+
+		expect(applyResponse.statusCode).toBe(200);
+		expect(applyResponse.body).toMatchObject({
+			requested: 1,
+			applied: 1,
+			skipped: 0,
+		});
+		expect(applyResponse.body.results[0]).toMatchObject({
+			rowNumber: 1,
+			result: "APPLIED",
+			reason: "Parcela estornada diretamente com sucesso.",
+			installmentId: created.installment.id,
+		});
+
+		const updatedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: created.installment.id,
+				},
+				select: {
+					status: true,
+					amount: true,
+					paymentDate: true,
+					reversedFromStatus: true,
+					reversedFromAmount: true,
+					reversedFromPaymentDate: true,
+				},
+			});
+		const reversalMovement = await findLatestInstallmentReversalMovement(
+			created.installment.id,
+		);
+
+		expect(updatedInstallment?.status).toBe(
+			SaleCommissionInstallmentStatus.REVERSED,
+		);
+		expect(updatedInstallment?.amount).toBe(-24_000);
+		expect(updatedInstallment?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			IMPORT_DATE,
+		);
+		expect(updatedInstallment?.reversedFromStatus).toBe(
+			SaleCommissionInstallmentStatus.PENDING,
+		);
+		expect(updatedInstallment?.reversedFromAmount).toBe(24_000);
+		expect(updatedInstallment?.reversedFromPaymentDate).toBeNull();
+		expect(reversalMovement).toBeNull();
 	});
 
 	it("should skip row on apply when installment changed after preview", async () => {

@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
+	SaleCommissionInstallmentStatus,
 	SaleCommissionDirection,
 	SaleHistoryAction,
 	SaleStatus,
@@ -120,7 +121,8 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 							if (
 								previewRow.status !== "READY" ||
 								(previewRow.action !== "MARK_AS_PAID" &&
-									previewRow.action !== "UPDATE_AMOUNT_AND_MARK_AS_PAID") ||
+									previewRow.action !== "UPDATE_AMOUNT_AND_MARK_AS_PAID" &&
+									previewRow.action !== "REVERSE_INSTALLMENT") ||
 								!previewRow.installmentId ||
 								!previewRow.saleId ||
 								!previewRow.saleDate
@@ -135,13 +137,19 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 								continue;
 							}
 
-							const shouldUpdateAmount =
+							const isUpdateAndMarkAsPaid =
 								previewRow.action === "UPDATE_AMOUNT_AND_MARK_AS_PAID";
+							const isReverseInstallment =
+								previewRow.action === "REVERSE_INSTALLMENT";
+							const shouldUpdateAmount = isUpdateAndMarkAsPaid;
 							const amountToApply = shouldUpdateAmount
 								? previewRow.receivedAmount
 								: null;
+							const reversalAmountToApply = isReverseInstallment
+								? previewRow.receivedAmount
+								: null;
 
-							if (shouldUpdateAmount && amountToApply === null) {
+							if (isUpdateAndMarkAsPaid && amountToApply === null) {
 								results.push({
 									rowNumber,
 									result: "SKIPPED",
@@ -153,12 +161,56 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 								continue;
 							}
 
+							if (
+								isUpdateAndMarkAsPaid &&
+								amountToApply !== null &&
+								amountToApply <= 0
+							) {
+								results.push({
+									rowNumber,
+									result: "SKIPPED",
+									reason:
+										"Linha não está pronta para atualização de valor positivo.",
+									installmentId: previewRow.installmentId,
+									saleId: previewRow.saleId,
+								});
+								continue;
+							}
+
+							if (
+								isReverseInstallment &&
+								(reversalAmountToApply === null || reversalAmountToApply >= 0)
+							) {
+								results.push({
+									rowNumber,
+									result: "SKIPPED",
+									reason:
+										"Linha não está pronta para aplicar estorno com valor negativo.",
+									installmentId: previewRow.installmentId,
+									saleId: previewRow.saleId,
+								});
+								continue;
+							}
+
 							const previewSaleDate = parseSaleDateInput(previewRow.saleDate);
+							const installmentStatusFilter = isReverseInstallment
+								? {
+										in: [
+											SaleCommissionInstallmentStatus.PENDING,
+											SaleCommissionInstallmentStatus.PAID,
+										],
+									}
+								: SaleCommissionInstallmentStatus.PENDING;
 
 							const installment = await tx.saleCommissionInstallment.findFirst({
 								where: {
 									id: previewRow.installmentId,
-									status: "PENDING",
+									status: installmentStatusFilter,
+									...(isReverseInstallment
+										? {
+												originInstallmentId: null,
+											}
+										: {}),
 									saleCommission: {
 										saleId: previewRow.saleId,
 										direction: SaleCommissionDirection.INCOME,
@@ -173,6 +225,14 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 								},
 								select: {
 									id: true,
+									originInstallmentId: true,
+									installmentNumber: true,
+									percentage: true,
+									status: true,
+									amount: true,
+									expectedPaymentDate: true,
+									paymentDate: true,
+									saleCommissionId: true,
 									saleCommission: {
 										select: {
 											saleId: true,
@@ -210,16 +270,132 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 								continue;
 							}
 
-							await tx.saleCommissionInstallment.update({
-								where: {
-									id: installment.id,
-								},
-								data: {
-									...(amountToApply === null ? {} : { amount: amountToApply }),
-									status: "PAID",
-									paymentDate: importDate,
-								},
-							});
+							let appliedInstallmentId = installment.id;
+							let isDirectBaseReversalApplied = false;
+
+							if (isReverseInstallment) {
+								if (installment.originInstallmentId) {
+									results.push({
+										rowNumber,
+										result: "SKIPPED",
+										reason:
+											"Linha mudou entre prévia e confirmação. Atualize a prévia.",
+										installmentId: previewRow.installmentId,
+										saleId: previewRow.saleId,
+									});
+									continue;
+								}
+
+								const hasLaterPaidInstallment =
+									(await tx.saleCommissionInstallment.count({
+										where: {
+											saleCommissionId: installment.saleCommissionId,
+											originInstallmentId: null,
+											installmentNumber: {
+												gt: installment.installmentNumber,
+											},
+											status: SaleCommissionInstallmentStatus.PAID,
+										},
+									})) > 0;
+
+								if (hasLaterPaidInstallment) {
+									results.push({
+										rowNumber,
+										result: "SKIPPED",
+										reason:
+											"Não é possível estornar esta parcela porque existe parcela posterior já paga.",
+										installmentId: installment.id,
+										saleId: installment.saleCommission.saleId,
+									});
+									continue;
+								}
+
+								const existingReversedAggregate =
+									await tx.saleCommissionInstallment.aggregate({
+										where: {
+											originInstallmentId: installment.id,
+											status: SaleCommissionInstallmentStatus.REVERSED,
+										},
+										_sum: {
+											amount: true,
+										},
+									});
+								const existingReversedAmountAbsolute = Math.abs(
+									existingReversedAggregate._sum.amount ?? 0,
+								);
+								const nextReversalAmountAbsolute = Math.abs(
+									reversalAmountToApply ?? 0,
+								);
+								if (
+									existingReversedAmountAbsolute + nextReversalAmountAbsolute >
+									installment.amount
+								) {
+									results.push({
+										rowNumber,
+										result: "SKIPPED",
+										reason:
+											"Valor de estorno excede o valor disponível da parcela base.",
+										installmentId: installment.id,
+										saleId: installment.saleCommission.saleId,
+									});
+									continue;
+								}
+
+								const isFullDirectReversal =
+									existingReversedAmountAbsolute === 0 &&
+									nextReversalAmountAbsolute === installment.amount;
+
+								if (isFullDirectReversal) {
+									await tx.saleCommissionInstallment.update({
+										where: {
+											id: installment.id,
+										},
+										data: {
+											status: SaleCommissionInstallmentStatus.REVERSED,
+											amount: reversalAmountToApply ?? 0,
+											paymentDate: importDate,
+											reversedFromStatus: installment.status,
+											reversedFromAmount: installment.amount,
+											reversedFromPaymentDate: installment.paymentDate,
+										},
+									});
+									isDirectBaseReversalApplied = true;
+								} else {
+									const createdReversalInstallment =
+										await tx.saleCommissionInstallment.create({
+											data: {
+												saleCommissionId: installment.saleCommissionId,
+												originInstallmentId: installment.id,
+												installmentNumber: installment.installmentNumber,
+												percentage: installment.percentage,
+												amount: reversalAmountToApply ?? 0,
+												status: SaleCommissionInstallmentStatus.REVERSED,
+												expectedPaymentDate: installment.expectedPaymentDate,
+												paymentDate: importDate,
+											},
+											select: {
+												id: true,
+											},
+										});
+									appliedInstallmentId = createdReversalInstallment.id;
+								}
+							} else {
+								await tx.saleCommissionInstallment.update({
+									where: {
+										id: installment.id,
+									},
+									data: {
+										...(amountToApply === null
+											? {}
+											: { amount: amountToApply }),
+										status: "PAID",
+										paymentDate: importDate,
+										reversedFromStatus: null,
+										reversedFromAmount: null,
+										reversedFromPaymentDate: null,
+									},
+								});
+							}
 
 							const afterSnapshot = await loadSaleHistorySnapshot(
 								tx,
@@ -232,9 +408,10 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 									saleId: installment.saleCommission.saleId,
 									organizationId: organization.id,
 									actorId,
-									action: shouldUpdateAmount
-										? SaleHistoryAction.COMMISSION_INSTALLMENT_UPDATED
-										: SaleHistoryAction.COMMISSION_INSTALLMENT_STATUS_UPDATED,
+									action:
+										shouldUpdateAmount || isReverseInstallment
+											? SaleHistoryAction.COMMISSION_INSTALLMENT_UPDATED
+											: SaleHistoryAction.COMMISSION_INSTALLMENT_STATUS_UPDATED,
 									beforeSnapshot,
 									afterSnapshot,
 								});
@@ -244,10 +421,14 @@ export async function postCommissionReceiptImportApply(app: FastifyInstance) {
 							results.push({
 								rowNumber,
 								result: "APPLIED",
-								reason: shouldUpdateAmount
-									? "Parcela atualizada e marcada como paga com sucesso."
-									: "Parcela marcada como paga com sucesso.",
-								installmentId: installment.id,
+								reason: isReverseInstallment
+									? isDirectBaseReversalApplied
+										? "Parcela estornada diretamente com sucesso."
+										: "Movimento de estorno criado com sucesso."
+									: shouldUpdateAmount
+										? "Parcela atualizada e marcada como paga com sucesso."
+										: "Parcela marcada como paga com sucesso.",
+								installmentId: appliedInstallmentId,
 								saleId: installment.saleCommission.saleId,
 							});
 						}

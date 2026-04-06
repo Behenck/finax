@@ -20,11 +20,15 @@ export const putOrganizationsSlugProductsIdCommissionReversalRules204Schema = z
 
 export const putOrganizationsSlugProductsIdCommissionReversalRulesMutationRequestSchema =
   z.object({
-    rules: z.array(
-      z.object({
-        installmentNumber: z.int().min(1).max(9007199254740991),
-        percentage: z.number().max(100).gt(0),
-      }),
+    mode: z.enum(["INSTALLMENT_BY_NUMBER", "TOTAL_PAID_PERCENTAGE"]).nullish(),
+    totalPaidPercentage: z.number().max(100).gt(0).nullish(),
+    rules: z.optional(
+      z.array(
+        z.object({
+          installmentNumber: z.int().min(1).max(9007199254740991),
+          percentage: z.number().max(100).gt(0),
+        }),
+      ),
     ),
   });
 

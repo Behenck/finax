@@ -250,6 +250,8 @@ export const SaleCommissionInstallmentsSummarySchema = z.object({
 export const SaleCommissionInstallmentRowSchema = z.object({
 	id: z.uuid(),
 	saleCommissionId: z.uuid(),
+	originInstallmentId: z.uuid().nullable(),
+	originInstallmentNumber: z.number().int().min(1).nullable(),
 	recipientType: SaleCommissionRecipientTypeSchema,
 	sourceType: SaleCommissionSourceTypeSchema,
 	direction: SaleCommissionDirectionSchema,
@@ -306,6 +308,8 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 	company: SaleContextEntitySchema,
 	unit: SaleContextEntitySchema.nullable(),
 	saleCommissionId: z.uuid(),
+	originInstallmentId: z.uuid().nullable(),
+	originInstallmentNumber: z.number().int().min(1).nullable(),
 	installmentNumber: z.number().int().min(1),
 	recipientType: SaleCommissionRecipientTypeSchema,
 	sourceType: SaleCommissionSourceTypeSchema,
@@ -509,7 +513,9 @@ export const CreateSaleBatchResponseSchema = z.object({
 	createdCount: z.number().int().nonnegative(),
 });
 
-export const UpdateSaleBodySchema = CreateSaleBodySchema;
+export const UpdateSaleBodySchema = CreateSaleBodySchema.extend({
+	applyValueChangeToCommissions: z.boolean().optional(),
+});
 
 export const PatchSaleStatusBodySchema = z
 	.object({
@@ -526,6 +532,58 @@ export const PatchSalesStatusBulkBodySchema = z
 
 export const PatchSalesStatusBulkResponseSchema = z.object({
 	updated: z.number().int().nonnegative(),
+});
+
+export const PatchCommissionInstallmentsStatusBulkBodySchema = z
+	.object({
+		installmentIds: z.array(z.uuid()).min(1).max(100),
+		status: z.enum([
+			SaleCommissionInstallmentStatus.PENDING,
+			SaleCommissionInstallmentStatus.PAID,
+			SaleCommissionInstallmentStatus.CANCELED,
+		] as const),
+		paymentDate: SaleDateInputSchema.optional(),
+		reversalDate: SaleDateInputSchema.optional(),
+	})
+	.strict()
+	.superRefine((value, ctx) => {
+		if (
+			value.status === SaleCommissionInstallmentStatus.PAID &&
+			!value.paymentDate
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["paymentDate"],
+				message: "paymentDate is required when status is PAID",
+			});
+		}
+
+		if (
+			value.status === SaleCommissionInstallmentStatus.CANCELED &&
+			!value.reversalDate
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["reversalDate"],
+				message: "reversalDate is required when status is CANCELED",
+			});
+		}
+	});
+
+export const PatchCommissionInstallmentsStatusBulkSkippedReasonSchema = z.enum([
+	"INVALID_STATUS_TRANSITION",
+	"REVERSED_NOT_ALLOWED",
+	"SALE_NOT_EDITABLE",
+]);
+
+export const PatchCommissionInstallmentsStatusBulkResponseSchema = z.object({
+	updatedCount: z.number().int().nonnegative(),
+	skipped: z.array(
+		z.object({
+			installmentId: z.uuid(),
+			reason: PatchCommissionInstallmentsStatusBulkSkippedReasonSchema,
+		}),
+	),
 });
 
 export const PatchSalesDeleteBulkBodySchema = z
@@ -545,9 +603,22 @@ export const PatchSaleCommissionInstallmentStatusBodySchema = z
 			SaleCommissionInstallmentStatus.CANCELED,
 		] as const),
 		paymentDate: SaleDateInputSchema.optional(),
+		reversalDate: SaleDateInputSchema.optional(),
 		amount: z.number().int().nonnegative().optional(),
 	})
-	.strict();
+	.strict()
+	.superRefine((value, ctx) => {
+		if (
+			value.status === SaleCommissionInstallmentStatus.CANCELED &&
+			!value.reversalDate
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["reversalDate"],
+				message: "reversalDate is required when status is CANCELED",
+			});
+		}
+	});
 
 export const PatchSaleCommissionInstallmentBodySchema = z
 	.object({
@@ -556,10 +627,27 @@ export const PatchSaleCommissionInstallmentBodySchema = z
 		status: SaleCommissionInstallmentStatusSchema.optional(),
 		expectedPaymentDate: SaleDateInputSchema.optional(),
 		paymentDate: SaleDateInputSchema.nullable().optional(),
+		reversalDate: SaleDateInputSchema.optional(),
 	})
 	.strict()
-	.refine((value) => Object.keys(value).length > 0, {
-		message: "At least one field must be provided",
+	.superRefine((value, ctx) => {
+		if (Object.keys(value).length === 0) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "At least one field must be provided",
+			});
+		}
+
+		if (
+			value.status === SaleCommissionInstallmentStatus.CANCELED &&
+			!value.reversalDate
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["reversalDate"],
+				message: "reversalDate is required when status is CANCELED",
+			});
+		}
 	});
 
 const NamedEntitySchema = z.object({
@@ -661,6 +749,12 @@ export type SaleDynamicFieldValues = z.infer<
 export type PatchSaleStatusBody = z.infer<typeof PatchSaleStatusBodySchema>;
 export type PatchSalesStatusBulkBody = z.infer<
 	typeof PatchSalesStatusBulkBodySchema
+>;
+export type PatchCommissionInstallmentsStatusBulkBody = z.infer<
+	typeof PatchCommissionInstallmentsStatusBulkBodySchema
+>;
+export type PatchCommissionInstallmentsStatusBulkSkippedReason = z.infer<
+	typeof PatchCommissionInstallmentsStatusBulkSkippedReasonSchema
 >;
 export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 	typeof PatchSaleCommissionInstallmentStatusBodySchema

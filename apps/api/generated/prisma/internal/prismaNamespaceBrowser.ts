@@ -468,6 +468,8 @@ export const ProductScalarFieldEnum = {
   sortOrder: 'sortOrder',
   salesTransactionCategoryId: 'salesTransactionCategoryId',
   salesTransactionCostCenterId: 'salesTransactionCostCenterId',
+  commissionReversalMode: 'commissionReversalMode',
+  commissionReversalTotalPercentage: 'commissionReversalTotalPercentage',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -671,12 +673,16 @@ export type SaleCommissionScalarFieldEnum = (typeof SaleCommissionScalarFieldEnu
 export const SaleCommissionInstallmentScalarFieldEnum = {
   id: 'id',
   saleCommissionId: 'saleCommissionId',
+  originInstallmentId: 'originInstallmentId',
   installmentNumber: 'installmentNumber',
   percentage: 'percentage',
   amount: 'amount',
   status: 'status',
   expectedPaymentDate: 'expectedPaymentDate',
   paymentDate: 'paymentDate',
+  reversedFromStatus: 'reversedFromStatus',
+  reversedFromAmount: 'reversedFromAmount',
+  reversedFromPaymentDate: 'reversedFromPaymentDate',
   createdAt: 'createdAt'
 } as const
 

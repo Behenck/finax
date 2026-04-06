@@ -156,6 +156,14 @@ export const SellerDocumentType = {
 export type SellerDocumentType = (typeof SellerDocumentType)[keyof typeof SellerDocumentType]
 
 
+export const ProductCommissionReversalMode = {
+  INSTALLMENT_BY_NUMBER: 'INSTALLMENT_BY_NUMBER',
+  TOTAL_PAID_PERCENTAGE: 'TOTAL_PAID_PERCENTAGE'
+} as const
+
+export type ProductCommissionReversalMode = (typeof ProductCommissionReversalMode)[keyof typeof ProductCommissionReversalMode]
+
+
 export const SaleDynamicFieldType = {
   TEXT: 'TEXT',
   NUMBER: 'NUMBER',
