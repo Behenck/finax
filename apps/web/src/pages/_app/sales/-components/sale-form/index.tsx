@@ -15,6 +15,8 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { CalendarDateInput } from "@/components/ui/calendar-date-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { useApp } from "@/context/app-context";
 import {
@@ -161,6 +163,10 @@ export function SaleForm({
 		setCompletedAmountChangeConfirmation,
 	] = useState<{
 		payload: PutOrganizationsSlugSalesSaleidMutationRequest;
+		canReversePaidInstallmentsOnReduction: boolean;
+		applyPendingInstallments: boolean;
+		applyPendingAndReversePaid: boolean;
+		paidInstallmentsReversalDate: string;
 	} | null>(null);
 
 	const form = useForm<SaleFormInput, unknown, SaleFormData>({
@@ -739,17 +745,33 @@ export function SaleForm({
 		});
 	}
 
-	async function handleConfirmCompletedAmountChange(
-		applyValueChangeToCommissions: boolean,
-	) {
+	async function handleConfirmCompletedAmountChange() {
 		if (!completedAmountChangeConfirmation) {
 			return;
 		}
 
 		try {
+			const shouldApplyValueChangeToCommissions =
+				completedAmountChangeConfirmation.applyPendingInstallments ||
+				completedAmountChangeConfirmation.applyPendingAndReversePaid;
+			const payloadWithDecision: PutOrganizationsSlugSalesSaleidMutationRequest =
+				{
+					...completedAmountChangeConfirmation.payload,
+					applyValueChangeToCommissions: shouldApplyValueChangeToCommissions,
+					reversePaidInstallmentsOnReduction:
+						completedAmountChangeConfirmation.applyPendingAndReversePaid,
+				};
+
+			if (
+				completedAmountChangeConfirmation.applyPendingAndReversePaid &&
+				completedAmountChangeConfirmation.paidInstallmentsReversalDate
+			) {
+				payloadWithDecision.paidInstallmentsReversalDate =
+					completedAmountChangeConfirmation.paidInstallmentsReversalDate;
+			}
+
 			await submitSaleUpdate({
-				...completedAmountChangeConfirmation.payload,
-				applyValueChangeToCommissions,
+				...payloadWithDecision,
 			});
 			setCompletedAmountChangeConfirmation(null);
 		} catch {
@@ -831,9 +853,18 @@ export function SaleForm({
 				return;
 			}
 
-			const hasPersistedCommissions = (initialSale.commissions?.length ?? 0) > 0;
+			const hasPersistedCommissions =
+				(initialSale.commissions?.length ?? 0) > 0;
 			const isCompletedSale = initialSale.status === "COMPLETED";
-			const isChangingTotalAmount = payload.totalAmount !== initialSale.totalAmount;
+			const isChangingTotalAmount =
+				payload.totalAmount !== initialSale.totalAmount;
+			const isReducingTotalAmount =
+				payload.totalAmount < initialSale.totalAmount;
+			const hasPaidInstallments = initialSale.commissions.some((commission) =>
+				commission.installments.some(
+					(installment) => installment.status === "PAID",
+				),
+			);
 			const shouldConfirmCompletedValueChange =
 				isCompletedSale &&
 				hasPersistedCommissions &&
@@ -843,6 +874,11 @@ export function SaleForm({
 			if (shouldConfirmCompletedValueChange) {
 				setCompletedAmountChangeConfirmation({
 					payload,
+					canReversePaidInstallmentsOnReduction:
+						isReducingTotalAmount && hasPaidInstallments,
+					applyPendingInstallments: true,
+					applyPendingAndReversePaid: false,
+					paidInstallmentsReversalDate: "",
 				});
 				return;
 			}
@@ -877,105 +913,105 @@ export function SaleForm({
 	return (
 		<>
 			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-			<ProductSection
-				control={control}
-				rootProducts={rootProductsForSelect}
-				hierarchicalProducts={hierarchicalProductsForSelect}
-				isLoadingOptions={isLoadingOptions}
-			/>
-			<SaleDataSection control={control} />
-			<CustomerSection
-				control={control}
-				customersForSelect={customersForSelect}
-				selectedCustomer={selectedCustomer}
-				customerQuery={customerQuery}
-				isQueryingCustomers={isQueryingCustomers}
-				isLoadingOptions={isLoadingOptions}
-				isCustomerLocked={isCustomerLocked}
-				isCreatingQuickCustomer={isCreatingQuickCustomer}
-				onCustomerQueryChange={handleCustomerQueryChange}
-				onSelectCustomer={handleSelectCustomer}
-				onOpenEditSelectedCustomer={handleOpenSelectedCustomerEdit}
-				onUnlockCustomer={() => setIsCustomerLocked(false)}
-				onOpenQuickCustomerDialog={() => setIsCreateCustomerDialogOpen(true)}
-			/>
-			<ClassificationSection
-				control={control}
-				companies={companiesForSelect}
-				companyUnits={companyUnits}
-				responsibles={responsibles}
-				selectedCompanyId={selectedCompanyId}
-				selectedResponsibleType={selectedResponsibleType}
-				isLoadingOptions={isLoadingOptions}
-			/>
-			<DynamicFieldsSection
-				control={control}
-				selectedProductId={selectedProductId}
-				isDynamicFieldsLoading={isDynamicFieldsLoading}
-				dynamicFieldSchema={dynamicFieldSchema}
-			/>
-			<CommissionsSection
-				isCommissionEditable={isCommissionEditable}
-				isCommissionAccessDenied={!canManageCommissionsByMode}
-				isInstallmentsSectionVisible={isInstallmentsSectionVisible}
-				initialSaleId={initialSale?.id}
-				initialSaleStatus={
-					(initialSale?.status as SaleStatus | undefined) ?? "PENDING"
-				}
-				selectedProductId={selectedProductId}
-				hasSelectedProduct={hasSelectedProduct}
-				hasRequestedCommissionForCurrentProduct={
-					hasRequestedCommissionForCurrentProduct
-				}
-				hasLoadedCommissionForCurrentProduct={
-					hasLoadedCommissionForCurrentProduct
-				}
-				isCommissionScenariosFetching={commissionScenariosQuery.isFetching}
-				isCommissionScenariosError={commissionScenariosQuery.isError}
-				matchedCommissionScenarioName={matchedCommissionScenario?.name}
-				commissionFields={commissionFields}
-				control={control}
-				setValue={setValue}
-				getValues={getValues}
-				onFetchCommissionScenarios={handleFetchCommissionScenarios}
-				onAddManualCommission={handleAddManualCommission}
-				onRemoveCommission={handleRemoveCommission}
-				onRemovePulledCommissions={handleRemovePulledCommissions}
-				onInstallmentCountChange={handleInstallmentCountChange}
-				pulledCommissionsCount={pulledCommissionsCount}
-				companyOptions={companyOptions}
-				unitOptions={unitOptions}
-				sellerOptions={sellerOptionsForCommissions}
-				partnerOptions={partnerOptionsForCommissions}
-				supervisorOptions={supervisorOptionsForCommissions}
-				saleTotalAmountInCents={saleTotalAmountInCents}
-				commissionsError={errors.commissions}
-			/>
-			<NotesSection register={register} notesError={errors.notes} />
-			<QuickCustomerDialog
-				open={isCreateCustomerDialogOpen}
-				onOpenChange={(open) => {
-					setIsCreateCustomerDialogOpen(open);
-					if (!open) {
-						quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+				<ProductSection
+					control={control}
+					rootProducts={rootProductsForSelect}
+					hierarchicalProducts={hierarchicalProductsForSelect}
+					isLoadingOptions={isLoadingOptions}
+				/>
+				<SaleDataSection control={control} />
+				<CustomerSection
+					control={control}
+					customersForSelect={customersForSelect}
+					selectedCustomer={selectedCustomer}
+					customerQuery={customerQuery}
+					isQueryingCustomers={isQueryingCustomers}
+					isLoadingOptions={isLoadingOptions}
+					isCustomerLocked={isCustomerLocked}
+					isCreatingQuickCustomer={isCreatingQuickCustomer}
+					onCustomerQueryChange={handleCustomerQueryChange}
+					onSelectCustomer={handleSelectCustomer}
+					onOpenEditSelectedCustomer={handleOpenSelectedCustomerEdit}
+					onUnlockCustomer={() => setIsCustomerLocked(false)}
+					onOpenQuickCustomerDialog={() => setIsCreateCustomerDialogOpen(true)}
+				/>
+				<ClassificationSection
+					control={control}
+					companies={companiesForSelect}
+					companyUnits={companyUnits}
+					responsibles={responsibles}
+					selectedCompanyId={selectedCompanyId}
+					selectedResponsibleType={selectedResponsibleType}
+					isLoadingOptions={isLoadingOptions}
+				/>
+				<DynamicFieldsSection
+					control={control}
+					selectedProductId={selectedProductId}
+					isDynamicFieldsLoading={isDynamicFieldsLoading}
+					dynamicFieldSchema={dynamicFieldSchema}
+				/>
+				<CommissionsSection
+					isCommissionEditable={isCommissionEditable}
+					isCommissionAccessDenied={!canManageCommissionsByMode}
+					isInstallmentsSectionVisible={isInstallmentsSectionVisible}
+					initialSaleId={initialSale?.id}
+					initialSaleStatus={
+						(initialSale?.status as SaleStatus | undefined) ?? "PENDING"
 					}
-				}}
-				form={quickCustomerForm}
-				isPending={isCreatingQuickCustomer}
-				onSubmit={handleQuickCustomerCreate}
-			/>
-			<EditSelectedCustomerDialog
-				open={isEditCustomerDialogOpen}
-				customerId={selectedCustomerId || undefined}
-				onOpenChange={setIsEditCustomerDialogOpen}
-				onUpdated={handleSelectedCustomerUpdated}
-			/>
-			<SubmitActions
-				mode={mode}
-				isPending={isPending}
-				isLoadingOptions={isLoadingOptions}
-				isDynamicFieldsLoading={isDynamicFieldsLoading}
-			/>
+					selectedProductId={selectedProductId}
+					hasSelectedProduct={hasSelectedProduct}
+					hasRequestedCommissionForCurrentProduct={
+						hasRequestedCommissionForCurrentProduct
+					}
+					hasLoadedCommissionForCurrentProduct={
+						hasLoadedCommissionForCurrentProduct
+					}
+					isCommissionScenariosFetching={commissionScenariosQuery.isFetching}
+					isCommissionScenariosError={commissionScenariosQuery.isError}
+					matchedCommissionScenarioName={matchedCommissionScenario?.name}
+					commissionFields={commissionFields}
+					control={control}
+					setValue={setValue}
+					getValues={getValues}
+					onFetchCommissionScenarios={handleFetchCommissionScenarios}
+					onAddManualCommission={handleAddManualCommission}
+					onRemoveCommission={handleRemoveCommission}
+					onRemovePulledCommissions={handleRemovePulledCommissions}
+					onInstallmentCountChange={handleInstallmentCountChange}
+					pulledCommissionsCount={pulledCommissionsCount}
+					companyOptions={companyOptions}
+					unitOptions={unitOptions}
+					sellerOptions={sellerOptionsForCommissions}
+					partnerOptions={partnerOptionsForCommissions}
+					supervisorOptions={supervisorOptionsForCommissions}
+					saleTotalAmountInCents={saleTotalAmountInCents}
+					commissionsError={errors.commissions}
+				/>
+				<NotesSection register={register} notesError={errors.notes} />
+				<QuickCustomerDialog
+					open={isCreateCustomerDialogOpen}
+					onOpenChange={(open) => {
+						setIsCreateCustomerDialogOpen(open);
+						if (!open) {
+							quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+						}
+					}}
+					form={quickCustomerForm}
+					isPending={isCreatingQuickCustomer}
+					onSubmit={handleQuickCustomerCreate}
+				/>
+				<EditSelectedCustomerDialog
+					open={isEditCustomerDialogOpen}
+					customerId={selectedCustomerId || undefined}
+					onOpenChange={setIsEditCustomerDialogOpen}
+					onUpdated={handleSelectedCustomerUpdated}
+				/>
+				<SubmitActions
+					mode={mode}
+					isPending={isPending}
+					isLoadingOptions={isLoadingOptions}
+					isDynamicFieldsLoading={isDynamicFieldsLoading}
+				/>
 			</form>
 
 			<AlertDialog
@@ -986,33 +1022,131 @@ export function SaleForm({
 					}
 				}}
 			>
-				<AlertDialogContent>
+				<AlertDialogContent className="sm:max-w-xl">
 					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Aplicar alteração de valor nas comissões?
-						</AlertDialogTitle>
+						<AlertDialogTitle>Atualizar comissões?</AlertDialogTitle>
 						<AlertDialogDescription>
-							A venda já está concluída. Você quer aplicar o novo valor apenas
-							nas parcelas de comissão pendentes? Parcelas pagas, canceladas e
-							estornadas não serão alteradas.
+							A venda já está concluída. Defina como deseja aplicar nas
+							comissões.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
+
+					<div className="space-y-2 rounded-md border p-3">
+						<div className="flex items-start gap-3">
+							<Checkbox
+								id="apply-pending-installments"
+								checked={
+									completedAmountChangeConfirmation?.applyPendingInstallments ??
+									false
+								}
+								aria-label="Aplicar nas pendentes"
+								disabled={isPending}
+								onCheckedChange={(checked) => {
+									setCompletedAmountChangeConfirmation((current) =>
+										current
+											? {
+													...current,
+													applyPendingInstallments: Boolean(checked),
+													applyPendingAndReversePaid: Boolean(checked)
+														? false
+														: current.applyPendingAndReversePaid,
+												}
+											: current,
+									);
+								}}
+							/>
+							<div className="space-y-1">
+								<label
+									htmlFor="apply-pending-installments"
+									className="cursor-pointer text-sm font-medium"
+								>
+									Aplicar nas pendentes
+								</label>
+								<p className="text-xs text-muted-foreground">
+									Recalcula apenas parcelas pendentes.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					{completedAmountChangeConfirmation?.canReversePaidInstallmentsOnReduction ? (
+						<div className="space-y-3 rounded-md border p-3">
+							<div className="flex items-start gap-3">
+								<Checkbox
+									id="apply-pending-and-reverse-paid"
+									checked={
+										completedAmountChangeConfirmation?.applyPendingAndReversePaid ??
+										false
+									}
+									aria-label="Aplicar com estorno"
+									disabled={isPending}
+									onCheckedChange={(checked) => {
+										setCompletedAmountChangeConfirmation((current) =>
+											current
+												? {
+														...current,
+														applyPendingAndReversePaid: Boolean(checked),
+														applyPendingInstallments: Boolean(checked)
+															? false
+															: current.applyPendingInstallments,
+													}
+												: current,
+										);
+									}}
+								/>
+								<div className="space-y-1">
+									<label
+										htmlFor="apply-pending-and-reverse-paid"
+										className="cursor-pointer text-sm font-medium"
+									>
+										Aplicar com estorno
+									</label>
+									<p className="text-xs text-muted-foreground">
+										Recalcula pendentes e cria estorno para pagas.
+									</p>
+								</div>
+							</div>
+
+							{completedAmountChangeConfirmation.applyPendingAndReversePaid ? (
+								<div className="space-y-2">
+									<p className="text-sm font-medium">
+										Data dos estornos (opcional)
+									</p>
+									<CalendarDateInput
+										value={
+											completedAmountChangeConfirmation.paidInstallmentsReversalDate
+										}
+										onChange={(value) =>
+											setCompletedAmountChangeConfirmation((current) =>
+												current
+													? {
+															...current,
+															paidInstallmentsReversalDate: value,
+														}
+													: current,
+											)
+										}
+										disabled={isPending}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Se não informar, será usada a data de hoje.
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					<AlertDialogFooter className="grid grid-cols-1 gap-2">
+						<AlertDialogCancel className="w-full" disabled={isPending}>
+							Voltar
+						</AlertDialogCancel>
 						<AlertDialogAction
 							type="button"
-							variant="outline"
-							onClick={() => void handleConfirmCompletedAmountChange(false)}
+							className="w-full whitespace-normal text-center"
+							onClick={() => void handleConfirmCompletedAmountChange()}
 							disabled={isPending}
 						>
-							Não aplicar
-						</AlertDialogAction>
-						<AlertDialogAction
-							type="button"
-							onClick={() => void handleConfirmCompletedAmountChange(true)}
-							disabled={isPending}
-						>
-							Aplicar nas pendentes
+							Salvar alteração
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

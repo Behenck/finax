@@ -17,10 +17,12 @@ let app: Awaited<ReturnType<typeof createTestApp>>;
 async function createFixture() {
 	const { user, org } = await makeUser();
 
-	const loginResponse = await request(app.server).post("/sessions/password").send({
-		email: user.email,
-		password: user.password,
-	});
+	const loginResponse = await request(app.server)
+		.post("/sessions/password")
+		.send({
+			email: user.email,
+			password: user.password,
+		});
 	expect(loginResponse.statusCode).toBe(200);
 
 	const token = loginResponse.body.accessToken as string;
@@ -267,7 +269,9 @@ describe("sales import", () => {
 				parentProductId: fixture.productA.id,
 			},
 		});
-		expect(listResponse.body.templates[0].mapping.dynamicByProduct).toHaveLength(1);
+		expect(
+			listResponse.body.templates[0].mapping.dynamicByProduct,
+		).toHaveLength(1);
 
 		const updateResponse = await request(app.server)
 			.put(
@@ -724,6 +728,57 @@ describe("sales import", () => {
 		expect(response.statusCode).toBe(400);
 	});
 
+	it("should ignore unavailable dynamic fields while importing sales", async () => {
+		const fixture = await createFixture();
+		const mapping = buildBaseMapping(fixture, {
+			selectedProductId: fixture.productB.id,
+			dynamicByProduct: [
+				{
+					productId: fixture.productB.id,
+					fields: [
+						{
+							fieldId: fixture.dynamicFieldA.id,
+							columnKey: "custom_a",
+						},
+					],
+				},
+			],
+		});
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/imports`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				fileType: "CSV",
+				headerSignature: "sha256:ignore-unavailable-dynamic-fields",
+				rows: [
+					{
+						data_venda: "2026-03-15",
+						valor_total: "1000",
+						produto: fixture.productB.name,
+						cliente_nome: "Cliente 01",
+						cliente_documento: "39053344705",
+						custom_a: "campo obsoleto",
+					},
+				],
+				mapping,
+			});
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.importedRows).toBe(1);
+		expect(response.body.failedRows).toBe(0);
+
+		const importedSale = await prisma.sale.findUnique({
+			where: { id: response.body.createdSaleIds[0] },
+			select: {
+				productId: true,
+				dynamicFieldValues: true,
+			},
+		});
+		expect(importedSale?.productId).toBe(fixture.productB.id);
+		expect(importedSale?.dynamicFieldValues).toEqual({});
+	});
+
 	it("should keep legacy templates compatible by inferring selected product from mapping", async () => {
 		const fixture = await createFixture();
 		const headerSignature = "sha256:legacy-template";
@@ -778,9 +833,9 @@ describe("sales import", () => {
 		expect(listResponse.body.templates[0].fixedValues.parentProductId).toBe(
 			fixture.productA.id,
 		);
-		expect(listResponse.body.templates[0].mapping.dynamicByProduct).toHaveLength(
-			1,
-		);
+		expect(
+			listResponse.body.templates[0].mapping.dynamicByProduct,
+		).toHaveLength(1);
 		expect(
 			listResponse.body.templates[0].mapping.dynamicByProduct[0].productId,
 		).toBe(fixture.productA.id);

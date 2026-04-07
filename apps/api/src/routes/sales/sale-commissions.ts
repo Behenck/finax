@@ -646,12 +646,15 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 			calculationBase: true,
 			baseCommissionId: true,
 			sortOrder: true,
-			totalPercentage: true,
-			installments: {
-				orderBy: {
-					installmentNumber: "asc",
-				},
-				select: {
+				totalPercentage: true,
+				installments: {
+					where: {
+						originInstallmentId: null,
+					},
+					orderBy: {
+						installmentNumber: "asc",
+					},
+					select: {
 					id: true,
 					percentage: true,
 				},
@@ -724,12 +727,15 @@ export async function recalculatePersistedSalePendingCommissionsAmounts(
 			calculationBase: true,
 			baseCommissionId: true,
 			sortOrder: true,
-			totalPercentage: true,
-			installments: {
-				orderBy: {
-					installmentNumber: "asc",
-				},
-				select: {
+				totalPercentage: true,
+				installments: {
+					where: {
+						originInstallmentId: null,
+					},
+					orderBy: {
+						installmentNumber: "asc",
+					},
+					select: {
 					id: true,
 					percentage: true,
 					amount: true,
@@ -819,6 +825,192 @@ export async function recalculatePersistedSalePendingCommissionsAmounts(
 	}
 
 	return updatedInstallmentsCount;
+}
+
+export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
+	tx: Prisma.TransactionClient,
+	params: {
+		saleId: string;
+		saleTotalAmount: number;
+		reversalDate?: string;
+	},
+) {
+	const { saleId, saleTotalAmount, reversalDate } = params;
+	const commissions = await tx.saleCommission.findMany({
+		where: {
+			saleId,
+		},
+		orderBy: {
+			sortOrder: "asc",
+		},
+		select: {
+			id: true,
+			calculationBase: true,
+			baseCommissionId: true,
+			sortOrder: true,
+				totalPercentage: true,
+				installments: {
+					where: {
+						originInstallmentId: null,
+					},
+					orderBy: {
+						installmentNumber: "asc",
+					},
+					select: {
+					id: true,
+					originInstallmentId: true,
+					installmentNumber: true,
+					percentage: true,
+					amount: true,
+					status: true,
+					expectedPaymentDate: true,
+				},
+			},
+		},
+	});
+
+	const commissionIndexById = new Map<string, number>();
+	for (const [index, commission] of commissions.entries()) {
+		commissionIndexById.set(commission.id, index);
+	}
+
+	const effectivePercentagesByCommissionIndex =
+		resolveEffectiveCommissionsScaledPercentages(
+			commissions.map((commission) => ({
+				calculationBase: commission.calculationBase,
+				baseCommissionIndex: commission.baseCommissionId
+					? commissionIndexById.get(commission.baseCommissionId)
+					: undefined,
+				totalPercentageScaled: commission.totalPercentage,
+				installmentPercentagesScaled: commission.installments.map(
+					(installment) => installment.percentage,
+				),
+			})),
+		);
+
+	const paidInstallmentCandidates: Array<{
+		installmentId: string;
+		saleCommissionId: string;
+		installmentNumber: number;
+		percentage: number;
+		expectedPaymentDate: Date;
+		desiredReversalAmountAbsolute: number;
+	}> = [];
+
+	for (const [commissionIndex, commission] of commissions.entries()) {
+		if (commission.installments.length === 0) {
+			continue;
+		}
+
+		const effectivePercentages =
+			effectivePercentagesByCommissionIndex[commissionIndex];
+		const installmentTargetAmounts = calculateInstallmentAmountsFromScaled({
+			totalAmount: saleTotalAmount,
+			totalPercentageScaled:
+				effectivePercentages?.totalScaled ?? commission.totalPercentage,
+			installmentPercentagesScaled:
+				effectivePercentages?.installmentsScaled ??
+				commission.installments.map((installment) => installment.percentage),
+		});
+
+		for (const [installmentIndex, installment] of commission.installments.entries()) {
+			if (
+				installment.status !== SaleCommissionInstallmentStatus.PAID ||
+				installment.originInstallmentId !== null
+			) {
+				continue;
+			}
+
+			const installmentTargetAmount = installmentTargetAmounts[installmentIndex] ?? 0;
+			const desiredReversalAmountAbsolute = Math.max(
+				0,
+				installment.amount - installmentTargetAmount,
+			);
+
+			if (desiredReversalAmountAbsolute <= 0) {
+				continue;
+			}
+
+			paidInstallmentCandidates.push({
+				installmentId: installment.id,
+				saleCommissionId: commission.id,
+				installmentNumber: installment.installmentNumber,
+				percentage: installment.percentage,
+				expectedPaymentDate: installment.expectedPaymentDate,
+				desiredReversalAmountAbsolute,
+			});
+		}
+	}
+
+	if (paidInstallmentCandidates.length === 0) {
+		return 0;
+	}
+
+	const paidInstallmentIds = paidInstallmentCandidates.map(
+		(candidate) => candidate.installmentId,
+	);
+	const existingReversedByOrigin =
+		await tx.saleCommissionInstallment.groupBy({
+			by: ["originInstallmentId"],
+			where: {
+				originInstallmentId: {
+					in: paidInstallmentIds,
+				},
+				status: SaleCommissionInstallmentStatus.REVERSED,
+			},
+			_sum: {
+				amount: true,
+			},
+		});
+	const existingReversedAmountAbsoluteByOriginInstallmentId = new Map<
+		string,
+		number
+	>();
+	for (const reversedGroup of existingReversedByOrigin) {
+		if (!reversedGroup.originInstallmentId) {
+			continue;
+		}
+
+		existingReversedAmountAbsoluteByOriginInstallmentId.set(
+			reversedGroup.originInstallmentId,
+			Math.abs(reversedGroup._sum.amount ?? 0),
+		);
+	}
+
+	const resolvedReversalDate = parseSaleDateInput(
+		reversalDate ?? new Date().toISOString().slice(0, 10),
+	);
+
+	let createdReversalsCount = 0;
+	for (const candidate of paidInstallmentCandidates) {
+		const existingReversedAmountAbsolute =
+			existingReversedAmountAbsoluteByOriginInstallmentId.get(
+				candidate.installmentId,
+			) ?? 0;
+		const reversalDeltaAmountAbsolute =
+			candidate.desiredReversalAmountAbsolute - existingReversedAmountAbsolute;
+
+		if (reversalDeltaAmountAbsolute <= 0) {
+			continue;
+		}
+
+		await tx.saleCommissionInstallment.create({
+			data: {
+				saleCommissionId: candidate.saleCommissionId,
+				originInstallmentId: candidate.installmentId,
+				installmentNumber: candidate.installmentNumber,
+				percentage: candidate.percentage,
+				amount: -reversalDeltaAmountAbsolute,
+				status: SaleCommissionInstallmentStatus.REVERSED,
+				expectedPaymentDate: candidate.expectedPaymentDate,
+				paymentDate: resolvedReversalDate,
+			},
+		});
+
+		createdReversalsCount += 1;
+	}
+
+	return createdReversalsCount;
 }
 
 export async function syncSaleCommissionTotalPercentage(

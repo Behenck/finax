@@ -36,6 +36,8 @@ const SALE_FIELD_LABEL: Record<string, string> = {
 	totalAmount: "valor total",
 	pendingCommissionInstallmentsUpdatedCount:
 		"parcelas pendentes de comissão atualizadas",
+	paidCommissionInstallmentsReversedCount:
+		"parcelas pagas de comissão estornadas",
 	status: "status",
 	saleDate: "data da venda",
 	notes: "observação",
@@ -433,6 +435,16 @@ function formatSaleChange(change: SaleHistoryChange, field: string) {
 			}
 
 			return "Parcelas pendentes de comissão foram atualizadas.";
+		}
+		case "paidCommissionInstallmentsReversedCount": {
+			const reversedInstallmentsCount =
+				typeof change.after === "number" ? change.after : null;
+
+			if (reversedInstallmentsCount && reversedInstallmentsCount > 0) {
+				return `Parcelas pagas de comissão foram estornadas (${reversedInstallmentsCount}).`;
+			}
+
+			return "Parcelas pagas de comissão foram estornadas.";
 		}
 		case "status":
 			return `Status alterado de ${beforeValue} para ${afterValue}.`;

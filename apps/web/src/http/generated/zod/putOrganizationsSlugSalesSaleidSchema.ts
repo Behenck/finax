@@ -59,6 +59,10 @@ export const putOrganizationsSlugSalesSaleidMutationRequestSchema = z.object({
     ),
   ),
   applyValueChangeToCommissions: z.optional(z.boolean()),
+  reversePaidInstallmentsOnReduction: z.optional(z.boolean()),
+  paidInstallmentsReversalDate: z.optional(
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  ),
 });
 
 export const putOrganizationsSlugSalesSaleidMutationResponseSchema = z.lazy(

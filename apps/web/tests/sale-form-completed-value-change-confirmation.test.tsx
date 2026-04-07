@@ -230,7 +230,11 @@ vi.mock(
 	}),
 );
 
-function buildInitialSale(): SaleDetail {
+function buildInitialSale(params?: {
+	withPaidInstallment?: boolean;
+}): SaleDetail {
+	const withPaidInstallment = params?.withPaidInstallment ?? false;
+
 	return {
 		id: "sale-1",
 		organizationId: "org-1",
@@ -286,14 +290,35 @@ function buildInitialSale(): SaleDetail {
 				totalAmount: 1_000,
 				sortOrder: 0,
 				installments: [
-					{
-						installmentNumber: 1,
-						percentage: 1,
-						amount: 1_000,
-						status: "PENDING",
-						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
-						paymentDate: null,
-					},
+					...(withPaidInstallment
+						? [
+								{
+									installmentNumber: 1,
+									percentage: 0.5,
+									amount: 500,
+									status: "PAID" as const,
+									expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+									paymentDate: "2026-03-15T00:00:00.000Z",
+								},
+								{
+									installmentNumber: 2,
+									percentage: 0.5,
+									amount: 500,
+									status: "PENDING" as const,
+									expectedPaymentDate: "2026-04-10T00:00:00.000Z",
+									paymentDate: null,
+								},
+							]
+						: [
+								{
+									installmentNumber: 1,
+									percentage: 1,
+									amount: 1_000,
+									status: "PENDING" as const,
+									expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+									paymentDate: null,
+								},
+							]),
 				],
 			},
 		],
@@ -316,8 +341,8 @@ function createWrapper() {
 	};
 }
 
-function renderSaleForm() {
-	return render(<SaleForm mode="UPDATE" initialSale={buildInitialSale()} />, {
+function renderSaleForm(initialSale = buildInitialSale()) {
+	return render(<SaleForm mode="UPDATE" initialSale={initialSale} />, {
 		wrapper: createWrapper(),
 	});
 }
@@ -341,13 +366,17 @@ describe("sale-form completed value change confirmation", () => {
 
 		await user.click(screen.getByRole("button", { name: "Salvar" }));
 
-		expect(
-			await screen.findByText("Aplicar alteração de valor nas comissões?"),
-		).toBeInTheDocument();
+		expect(await screen.findByText("Atualizar comissões?")).toBeInTheDocument();
 		expect(mocks.updateSaleMock).not.toHaveBeenCalled();
 
+		expect(
+			await screen.findByRole("checkbox", {
+				name: "Aplicar nas pendentes",
+			}),
+		).toBeChecked();
+
 		await user.click(
-			await screen.findByRole("button", { name: "Aplicar nas pendentes" }),
+			await screen.findByRole("button", { name: "Salvar alteração" }),
 		);
 
 		await waitFor(() => {
@@ -371,7 +400,14 @@ describe("sale-form completed value change confirmation", () => {
 		await user.type(totalAmountInput, "2000");
 
 		await user.click(screen.getByRole("button", { name: "Salvar" }));
-		await user.click(await screen.findByRole("button", { name: "Não aplicar" }));
+		await user.click(
+			await screen.findByRole("checkbox", {
+				name: "Aplicar nas pendentes",
+			}),
+		);
+		await user.click(
+			await screen.findByRole("button", { name: "Salvar alteração" }),
+		);
 
 		await waitFor(() => {
 			expect(mocks.updateSaleMock).toHaveBeenCalledWith({
@@ -382,5 +418,72 @@ describe("sale-form completed value change confirmation", () => {
 				}),
 			});
 		});
+	});
+
+	it("shows paid reversal option on reduction and sends reversal fields", async () => {
+		const user = userEvent.setup();
+
+		renderSaleForm(buildInitialSale({ withPaidInstallment: true }));
+
+		const totalAmountInput = screen.getByLabelText("Total amount");
+		await user.clear(totalAmountInput);
+		await user.type(totalAmountInput, "500");
+
+		await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+		expect(
+			await screen.findByRole("checkbox", {
+				name: "Aplicar com estorno",
+			}),
+		).toBeInTheDocument();
+
+		await user.click(
+			await screen.findByRole("checkbox", {
+				name: "Aplicar com estorno",
+			}),
+		);
+		expect(
+			screen.getByRole("checkbox", { name: "Aplicar nas pendentes" }),
+		).not.toBeChecked();
+
+		const reversalDateInput = await screen.findByPlaceholderText("dd/mm/aaaa");
+		await user.type(reversalDateInput, "02/04/2026");
+
+		await user.click(
+			await screen.findByRole("button", { name: "Salvar alteração" }),
+		);
+
+		await waitFor(() => {
+			expect(mocks.updateSaleMock).toHaveBeenCalledWith({
+				saleId: "sale-1",
+				data: expect.objectContaining({
+					totalAmount: 50_000,
+					applyValueChangeToCommissions: true,
+					reversePaidInstallmentsOnReduction: true,
+					paidInstallmentsReversalDate: "2026-04-02",
+				}),
+			});
+		});
+	});
+
+	it("does not show paid reversal option when amount is increased", async () => {
+		const user = userEvent.setup();
+
+		renderSaleForm(buildInitialSale({ withPaidInstallment: true }));
+
+		const totalAmountInput = screen.getByLabelText("Total amount");
+		await user.clear(totalAmountInput);
+		await user.type(totalAmountInput, "2000");
+
+		await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+		expect(
+			await screen.findByRole("checkbox", { name: "Aplicar nas pendentes" }),
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole("checkbox", {
+				name: "Aplicar com estorno",
+			}),
+		).not.toBeInTheDocument();
 	});
 });

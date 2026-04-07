@@ -71,6 +71,16 @@ describe("sale-history-presenter", () => {
 		);
 	});
 
+	it("should format summarized paid installments reversal change", () => {
+		const sentence = formatSaleHistoryChange({
+			path: "sale.paidCommissionInstallmentsReversedCount",
+			before: null,
+			after: 2,
+		});
+
+		expect(sentence).toBe("Parcelas pagas de comissão foram estornadas (2).");
+	});
+
 	it("should format dynamic field changes with human label", () => {
 		const sentence = formatSaleHistoryChange({
 			path: "sale.dynamicFieldValues.field-grupo",

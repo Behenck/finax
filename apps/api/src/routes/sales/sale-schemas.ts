@@ -515,6 +515,8 @@ export const CreateSaleBatchResponseSchema = z.object({
 
 export const UpdateSaleBodySchema = CreateSaleBodySchema.extend({
 	applyValueChangeToCommissions: z.boolean().optional(),
+	reversePaidInstallmentsOnReduction: z.boolean().optional(),
+	paidInstallmentsReversalDate: SaleDateInputSchema.optional(),
 });
 
 export const PatchSaleStatusBodySchema = z

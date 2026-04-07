@@ -185,6 +185,15 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
    * @type boolean | undefined
    */
   applyValueChangeToCommissions?: boolean;
+  /**
+   * @type boolean | undefined
+   */
+  reversePaidInstallmentsOnReduction?: boolean;
+  /**
+   * @pattern ^\d{4}-\d{2}-\d{2}$
+   * @type string | undefined
+   */
+  paidInstallmentsReversalDate?: string;
 };
 
 export type PutOrganizationsSlugSalesSaleidMutationResponse =

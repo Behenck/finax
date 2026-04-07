@@ -2344,6 +2344,470 @@ describe("sales crud", () => {
 		expect(installmentsAfter).toEqual(installmentsBefore);
 	});
 
+	it(
+		"should create reversal movements for paid installments when reducing completed sale amount with reversePaidInstallmentsOnReduction",
+		async () => {
+			const fixture = await createFixture();
+			const saleId = await createSaleUsingApi(
+				fixture,
+				buildCreatePayload(fixture, {
+					totalAmount: 100_000,
+					commissions: [
+						{
+							sourceType: "PULLED",
+							recipientType: "SELLER",
+							beneficiaryId: fixture.seller.id,
+							startDate: "2026-03-10",
+							totalPercentage: 1,
+							installments: [
+								{
+									installmentNumber: 1,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 2,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 3,
+									percentage: 0.25,
+								},
+								{
+									installmentNumber: 4,
+									percentage: 0.25,
+								},
+							],
+						},
+					],
+				}),
+			);
+
+			await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+			await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+			const installmentsBefore = await prisma.saleCommissionInstallment.findMany({
+				where: {
+					saleCommission: {
+						saleId,
+						recipientType: "SELLER",
+					},
+					originInstallmentId: null,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
+					id: true,
+					installmentNumber: true,
+				},
+			});
+
+			const firstInstallmentId = installmentsBefore[0]?.id;
+			const secondInstallmentId = installmentsBefore[1]?.id;
+			expect(firstInstallmentId).toBeDefined();
+			expect(secondInstallmentId).toBeDefined();
+
+			const firstPaidResponse = await request(app.server)
+				.patch(
+					`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${firstInstallmentId}/status`,
+				)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					status: "PAID",
+					paymentDate: "2026-03-20",
+				});
+			expect(firstPaidResponse.statusCode).toBe(204);
+
+			const secondPaidResponse = await request(app.server)
+				.patch(
+					`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${secondInstallmentId}/status`,
+				)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					status: "PAID",
+					paymentDate: "2026-03-21",
+				});
+			expect(secondPaidResponse.statusCode).toBe(204);
+
+			const updateResponse = await request(app.server)
+				.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					...buildCreatePayload(fixture, {
+						totalAmount: 50_000,
+					}),
+					applyValueChangeToCommissions: true,
+					reversePaidInstallmentsOnReduction: true,
+					paidInstallmentsReversalDate: "2026-04-02",
+				});
+			expect(updateResponse.statusCode).toBe(204);
+
+			const baseInstallmentsAfter = await prisma.saleCommissionInstallment.findMany({
+				where: {
+					saleCommission: {
+						saleId,
+						recipientType: "SELLER",
+					},
+					originInstallmentId: null,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
+					id: true,
+					installmentNumber: true,
+					status: true,
+					amount: true,
+				},
+			});
+			const reversalMovements = await prisma.saleCommissionInstallment.findMany({
+				where: {
+					originInstallmentId: {
+						in: [firstInstallmentId, secondInstallmentId].filter(
+							(value): value is string => Boolean(value),
+						),
+					},
+					status: "REVERSED",
+				},
+				orderBy: [
+					{
+						originInstallmentId: "asc",
+					},
+					{
+						createdAt: "asc",
+					},
+				],
+				select: {
+					originInstallmentId: true,
+					amount: true,
+					paymentDate: true,
+				},
+			});
+
+			expect(baseInstallmentsAfter.map((installment) => installment.status)).toEqual(
+				["PAID", "PAID", "PENDING", "PENDING"],
+			);
+			expect(baseInstallmentsAfter.map((installment) => installment.amount)).toEqual(
+				[250, 250, 125, 125],
+			);
+			expect(reversalMovements).toHaveLength(2);
+			expect(reversalMovements.map((movement) => movement.amount)).toEqual([
+				-125, -125,
+			]);
+			expect(
+				reversalMovements.every(
+					(movement) =>
+						movement.paymentDate?.toISOString().slice(0, 10) === "2026-04-02",
+				),
+			).toBe(true);
+
+			const history = await getSaleHistoryEvents(fixture, saleId);
+			const updateEvent = history[0];
+			expect(updateEvent?.action).toBe("UPDATED");
+			expect(
+				updateEvent?.changes.some(
+					(change) =>
+						change.path === "sale.totalAmount" &&
+						change.before === 100_000 &&
+						change.after === 50_000,
+				),
+			).toBe(true);
+			expect(
+				updateEvent?.changes.some(
+					(change) =>
+						change.path === "sale.pendingCommissionInstallmentsUpdatedCount" &&
+						change.after === 2,
+				),
+			).toBe(true);
+			expect(
+				updateEvent?.changes.some(
+					(change) =>
+						change.path === "sale.paidCommissionInstallmentsReversedCount" &&
+						change.after === 2,
+				),
+			).toBe(true);
+			expect(
+				updateEvent?.changes.some((change) =>
+					/^commissions\[\d+\]\.installments\[\d+\]\./.test(change.path),
+				),
+			).toBe(false);
+		},
+		15_000,
+	);
+
+	it("should use today as reversal date when reducing completed sale amount with reversePaidInstallmentsOnReduction and no date", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				totalAmount: 100_000,
+				commissions: [
+					{
+						sourceType: "PULLED",
+						recipientType: "SELLER",
+						beneficiaryId: fixture.seller.id,
+						startDate: "2026-03-10",
+						totalPercentage: 1,
+						installments: [
+							{
+								installmentNumber: 1,
+								percentage: 0.5,
+							},
+							{
+								installmentNumber: 2,
+								percentage: 0.5,
+							},
+						],
+					},
+				],
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const baseInstallments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				originInstallmentId: null,
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+			},
+		});
+		const paidInstallmentId = baseInstallments[0]?.id;
+		expect(paidInstallmentId).toBeDefined();
+
+		const markPaidResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${paidInstallmentId}/status`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "PAID",
+				paymentDate: "2026-03-20",
+			});
+		expect(markPaidResponse.statusCode).toBe(204);
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...buildCreatePayload(fixture, {
+					totalAmount: 50_000,
+				}),
+				applyValueChangeToCommissions: true,
+				reversePaidInstallmentsOnReduction: true,
+			});
+		expect(updateResponse.statusCode).toBe(204);
+
+		const createdReversal = await prisma.saleCommissionInstallment.findFirst({
+			where: {
+				originInstallmentId: paidInstallmentId,
+				status: "REVERSED",
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			select: {
+				amount: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(createdReversal?.amount).toBe(-250);
+		expect(createdReversal?.paymentDate?.toISOString().slice(0, 10)).toBe(
+			new Date().toISOString().slice(0, 10),
+		);
+	});
+
+	it(
+		"should create only reversal delta for paid installments when existing reversal movements already exist",
+		async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				totalAmount: 100_000,
+				commissions: [
+					{
+						sourceType: "PULLED",
+						recipientType: "SELLER",
+						beneficiaryId: fixture.seller.id,
+						startDate: "2026-03-10",
+						totalPercentage: 1,
+						installments: [
+							{
+								installmentNumber: 1,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 2,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 3,
+								percentage: 0.25,
+							},
+							{
+								installmentNumber: 4,
+								percentage: 0.25,
+							},
+						],
+					},
+				],
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const baseInstallments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+					recipientType: "SELLER",
+				},
+				originInstallmentId: null,
+			},
+			orderBy: {
+				installmentNumber: "asc",
+			},
+			select: {
+				id: true,
+				installmentNumber: true,
+			},
+		});
+		const firstInstallmentId = baseInstallments[0]?.id;
+		const secondInstallmentId = baseInstallments[1]?.id;
+		expect(firstInstallmentId).toBeDefined();
+		expect(secondInstallmentId).toBeDefined();
+
+		for (const installmentId of [firstInstallmentId, secondInstallmentId]) {
+			const markPaidResponse = await request(app.server)
+				.patch(
+					`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installmentId}/status`,
+				)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					status: "PAID",
+					paymentDate: "2026-03-20",
+				});
+			expect(markPaidResponse.statusCode).toBe(204);
+		}
+
+		const firstReductionResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...buildCreatePayload(fixture, {
+					totalAmount: 60_000,
+				}),
+				applyValueChangeToCommissions: true,
+				reversePaidInstallmentsOnReduction: true,
+				paidInstallmentsReversalDate: "2026-04-03",
+			});
+		expect(firstReductionResponse.statusCode).toBe(204);
+
+		const secondReductionResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...buildCreatePayload(fixture, {
+					totalAmount: 40_000,
+				}),
+				applyValueChangeToCommissions: true,
+				reversePaidInstallmentsOnReduction: true,
+				paidInstallmentsReversalDate: "2026-04-04",
+			});
+		expect(secondReductionResponse.statusCode).toBe(204);
+
+		const reversalMovements = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				originInstallmentId: {
+					in: [firstInstallmentId, secondInstallmentId].filter(
+						(value): value is string => Boolean(value),
+					),
+				},
+				status: "REVERSED",
+			},
+			orderBy: {
+				createdAt: "asc",
+			},
+			select: {
+				originInstallmentId: true,
+				amount: true,
+			},
+		});
+
+		const reversalSummaryByOrigin = reversalMovements.reduce(
+			(summary, movement) => {
+				if (!movement.originInstallmentId) {
+					return summary;
+				}
+
+				const current = summary.get(movement.originInstallmentId) ?? {
+					count: 0,
+					sumAmount: 0,
+				};
+				summary.set(movement.originInstallmentId, {
+					count: current.count + 1,
+					sumAmount: current.sumAmount + movement.amount,
+				});
+
+				return summary;
+			},
+			new Map<string, { count: number; sumAmount: number }>(),
+		);
+
+		expect(reversalSummaryByOrigin.get(firstInstallmentId ?? "")).toEqual({
+			count: 2,
+			sumAmount: -150,
+		});
+		expect(reversalSummaryByOrigin.get(secondInstallmentId ?? "")).toEqual({
+			count: 2,
+			sumAmount: -150,
+		});
+		},
+		15_000,
+	);
+
+	it("should reject reversePaidInstallmentsOnReduction when applyValueChangeToCommissions is false", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				totalAmount: 100_000,
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				...buildCreatePayload(fixture, {
+					totalAmount: 80_000,
+				}),
+				applyValueChangeToCommissions: false,
+				reversePaidInstallmentsOnReduction: true,
+			});
+
+		expect(updateResponse.statusCode).toBe(400);
+		expect(updateResponse.body.message).toBe(
+			"reversePaidInstallmentsOnReduction can only be used when applyValueChangeToCommissions is true",
+		);
+	});
+
 	it("should rebalance only pending installments on completed sale amount change when applyValueChangeToCommissions is true and keep summarized history", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(

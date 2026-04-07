@@ -165,9 +165,14 @@ export async function assertTemplateMappingBelongsToOrganization(
 	params: {
 		mapping: SaleImportTemplateMapping;
 		selectedProductId: string;
+		allowUnavailableDynamicFields?: boolean;
 	},
 ) {
-	const { mapping, selectedProductId } = params;
+	const {
+		mapping,
+		selectedProductId,
+		allowUnavailableDynamicFields = false,
+	} = params;
 
 	if (mapping.dynamicByProduct.length > 1) {
 		throw new BadRequestError(
@@ -208,6 +213,10 @@ export async function assertTemplateMappingBelongsToOrganization(
 
 		for (const fieldMapping of productMapping.fields) {
 			if (!dynamicFieldsById.has(fieldMapping.fieldId)) {
+				if (allowUnavailableDynamicFields) {
+					continue;
+				}
+
 				throw new BadRequestError(
 					`Dynamic field ${fieldMapping.fieldId} is not available for product ${product.id}`,
 				);

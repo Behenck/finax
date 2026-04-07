@@ -356,6 +356,7 @@ export async function postSalesImport(app: FastifyInstance) {
 						dynamicByProduct: data.mapping.dynamicByProduct,
 					},
 					selectedProductId: data.mapping.fixedValues.parentProductId,
+					allowUnavailableDynamicFields: true,
 				});
 
 				const responsibleData = await resolveImportResponsibleData({
@@ -376,7 +377,8 @@ export async function postSalesImport(app: FastifyInstance) {
 					},
 				});
 
-				const selectedImportProductId = data.mapping.fixedValues.parentProductId;
+				const selectedImportProductId =
+					data.mapping.fixedValues.parentProductId;
 				const productResolver = buildProductResolver(activeProducts, {
 					parentProductId: selectedImportProductId,
 				});

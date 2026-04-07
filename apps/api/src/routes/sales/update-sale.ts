@@ -9,6 +9,7 @@ import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { ForbiddenError } from "../_errors/forbidden-error";
 import {
+	createReversalMovementsForPaidInstallmentsOnSaleReduction,
 	recalculatePersistedSalePendingCommissionsAmounts,
 	recalculatePersistedSaleCommissionsAmounts,
 	replaceSaleCommissions,
@@ -37,23 +38,31 @@ const INSTALLMENT_HISTORY_PATH_REGEX =
 function compactChangesForPendingInstallmentsUpdate(params: {
 	changes: SaleHistoryChange[];
 	updatedPendingInstallmentsCount: number;
+	createdPaidInstallmentReversalsCount: number;
 }) {
 	const compactedChanges = params.changes.filter(
 		(change) => !INSTALLMENT_HISTORY_PATH_REGEX.test(change.path),
 	);
 
-	if (params.updatedPendingInstallmentsCount <= 0) {
-		return compactedChanges;
-	}
+	const summaryChanges: SaleHistoryChange[] = [];
 
-	return [
-		...compactedChanges,
-		{
+	if (params.updatedPendingInstallmentsCount > 0) {
+		summaryChanges.push({
 			path: "sale.pendingCommissionInstallmentsUpdatedCount",
 			before: null,
 			after: params.updatedPendingInstallmentsCount,
-		},
-	];
+		});
+	}
+
+	if (params.createdPaidInstallmentReversalsCount > 0) {
+		summaryChanges.push({
+			path: "sale.paidCommissionInstallmentsReversedCount",
+			before: null,
+			after: params.createdPaidInstallmentReversalsCount,
+		});
+	}
+
+	return [...compactedChanges, ...summaryChanges];
 }
 
 export async function updateSale(app: FastifyInstance) {
@@ -194,12 +203,33 @@ export async function updateSale(app: FastifyInstance) {
 						"applyValueChangeToCommissions is required when changing totalAmount on a COMPLETED sale with commissions",
 					);
 				}
-				const shouldApplyAmountChangeToPendingCommissions =
-					isCompletedSaleWithPersistedCommissionsAmountChange &&
-					data.applyValueChangeToCommissions === true;
-				const shouldSkipPersistedCommissionsRecalculation =
-					isCompletedSaleWithPersistedCommissionsAmountChange &&
-					data.applyValueChangeToCommissions === false;
+					const shouldApplyAmountChangeToPendingCommissions =
+						isCompletedSaleWithPersistedCommissionsAmountChange &&
+						data.applyValueChangeToCommissions === true;
+					const shouldSkipPersistedCommissionsRecalculation =
+						isCompletedSaleWithPersistedCommissionsAmountChange &&
+						data.applyValueChangeToCommissions === false;
+					if (
+						data.reversePaidInstallmentsOnReduction === true &&
+						!shouldApplyAmountChangeToPendingCommissions
+					) {
+						throw new BadRequestError(
+							"reversePaidInstallmentsOnReduction can only be used when applyValueChangeToCommissions is true",
+						);
+					}
+					if (
+						data.paidInstallmentsReversalDate &&
+						data.reversePaidInstallmentsOnReduction !== true
+					) {
+						throw new BadRequestError(
+							"paidInstallmentsReversalDate can only be used when reversePaidInstallmentsOnReduction is true",
+						);
+					}
+					const isReducingSaleTotalAmount = data.totalAmount < sale.totalAmount;
+					const shouldCreateReversalMovementsForPaidInstallments =
+						shouldApplyAmountChangeToPendingCommissions &&
+						isReducingSaleTotalAmount &&
+						data.reversePaidInstallmentsOnReduction === true;
 
 				const customer = await prisma.customer.findFirst({
 					where: {
@@ -300,9 +330,10 @@ export async function updateSale(app: FastifyInstance) {
 								data.totalAmount,
 							);
 
-				await db(() =>
-					prisma.$transaction(async (tx) => {
-						let updatedPendingInstallmentsCount = 0;
+					await db(() =>
+						prisma.$transaction(async (tx) => {
+							let updatedPendingInstallmentsCount = 0;
+							let createdPaidInstallmentReversalsCount = 0;
 
 						await tx.sale.update({
 							where: {
@@ -324,20 +355,32 @@ export async function updateSale(app: FastifyInstance) {
 							},
 						});
 
-						if (resolvedCommissions !== undefined) {
-							await replaceSaleCommissions(tx, saleId, resolvedCommissions);
-						} else if (shouldApplyAmountChangeToPendingCommissions) {
-							updatedPendingInstallmentsCount =
-								await recalculatePersistedSalePendingCommissionsAmounts(
+							if (resolvedCommissions !== undefined) {
+								await replaceSaleCommissions(tx, saleId, resolvedCommissions);
+							} else if (shouldApplyAmountChangeToPendingCommissions) {
+								updatedPendingInstallmentsCount =
+									await recalculatePersistedSalePendingCommissionsAmounts(
+										tx,
+										saleId,
+										data.totalAmount,
+									);
+
+								if (shouldCreateReversalMovementsForPaidInstallments) {
+									createdPaidInstallmentReversalsCount =
+										await createReversalMovementsForPaidInstallmentsOnSaleReduction(
+											tx,
+											{
+												saleId,
+												saleTotalAmount: data.totalAmount,
+												reversalDate: data.paidInstallmentsReversalDate,
+											},
+										);
+								}
+							} else if (!shouldSkipPersistedCommissionsRecalculation) {
+								await recalculatePersistedSaleCommissionsAmounts(
 									tx,
 									saleId,
 									data.totalAmount,
-								);
-						} else if (!shouldSkipPersistedCommissionsRecalculation) {
-							await recalculatePersistedSaleCommissionsAmounts(
-								tx,
-								saleId,
-								data.totalAmount,
 							);
 						}
 
@@ -358,11 +401,12 @@ export async function updateSale(app: FastifyInstance) {
 							throw new BadRequestError("Sale not found");
 						}
 
-						if (shouldApplyAmountChangeToPendingCommissions) {
-							const changes = compactChangesForPendingInstallmentsUpdate({
-								changes: buildSaleHistoryDiff(beforeSnapshot, afterSnapshot),
-								updatedPendingInstallmentsCount,
-							});
+							if (shouldApplyAmountChangeToPendingCommissions) {
+								const changes = compactChangesForPendingInstallmentsUpdate({
+									changes: buildSaleHistoryDiff(beforeSnapshot, afterSnapshot),
+									updatedPendingInstallmentsCount,
+									createdPaidInstallmentReversalsCount,
+								});
 
 							await createSaleHistoryEvent(tx, {
 								saleId,
