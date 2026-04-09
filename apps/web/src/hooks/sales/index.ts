@@ -1,6 +1,7 @@
 export * from "./use-create-sale";
 export * from "./use-create-sale-delinquency";
 export * from "./use-create-sales-batch";
+export * from "./use-customer-sales-delinquency-bulk-actions";
 export * from "./use-delete-sale";
 export * from "./use-delete-sale-delinquency";
 export * from "./use-delete-sale-commission-installment";

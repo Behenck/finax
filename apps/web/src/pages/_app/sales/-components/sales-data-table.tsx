@@ -141,8 +141,16 @@ const SALE_STATUS_FILTER_VALUES = [
 	"COMPLETED",
 	"CANCELED",
 ] as const;
+const SALE_RESPONSIBLE_TYPE_FILTER_VALUES = ["ALL", "SELLER", "PARTNER"] as const;
 
 type SaleStatusFilter = (typeof SALE_STATUS_FILTER_VALUES)[number];
+type SaleResponsibleTypeFilter =
+	(typeof SALE_RESPONSIBLE_TYPE_FILTER_VALUES)[number];
+
+type ResponsibleFilterOption = {
+	id: string;
+	name: string;
+};
 
 const SALE_STATUS_SORT_PRIORITY: Record<SaleStatus, number> = {
 	PENDING: 0,
@@ -152,6 +160,11 @@ const SALE_STATUS_SORT_PRIORITY: Record<SaleStatus, number> = {
 };
 
 const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
+	.withDefault("ALL")
+	.withOptions({ history: "replace" });
+const saleResponsibleTypeFilterParser = parseAsStringLiteral(
+	SALE_RESPONSIBLE_TYPE_FILTER_VALUES,
+)
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
 
@@ -299,6 +312,7 @@ interface SalesDataTableProps {
 	sales: SaleRow[];
 	isLoading: boolean;
 	isError: boolean;
+	showFilters: boolean;
 	onRetry: () => void;
 }
 
@@ -477,6 +491,7 @@ export function SalesDataTable({
 	sales,
 	isLoading,
 	isError,
+	showFilters,
 	onRetry,
 }: SalesDataTableProps) {
 	const ability = useAbility();
@@ -541,6 +556,14 @@ export function SalesDataTable({
 		"status",
 		saleStatusFilterParser,
 	);
+	const [responsibleTypeFilter, setResponsibleTypeFilter] = useQueryState(
+		"responsibleType",
+		saleResponsibleTypeFilterParser,
+	);
+	const [responsibleIdFilter, setResponsibleIdFilter] = useQueryState(
+		"responsibleId",
+		entityFilterParser,
+	);
 	const [page, setPage] = useQueryState("page", pageParser);
 	const { mutateAsync: patchSalesStatusBulk, isPending: isBulkStatusPending } =
 		usePatchSalesStatusBulk();
@@ -596,6 +619,8 @@ export function SalesDataTable({
 			status?: SaleStatusFilter;
 			companyId?: string;
 			unitId?: string;
+			responsibleType?: SaleResponsibleTypeFilter;
+			responsibleId?: string;
 			page?: number;
 		}>(SALES_FILTERS_STORAGE_KEY, {});
 
@@ -619,6 +644,23 @@ export function SalesDataTable({
 			void setUnitIdFilter(storedFilters.unitId);
 		}
 
+		if (
+			responsibleTypeFilter === "ALL" &&
+			storedFilters.responsibleType &&
+			storedFilters.responsibleType !== "ALL"
+		) {
+			void setResponsibleTypeFilter(storedFilters.responsibleType);
+		}
+
+		if (
+			!responsibleIdFilter &&
+			storedFilters.responsibleId &&
+			storedFilters.responsibleType &&
+			storedFilters.responsibleType !== "ALL"
+		) {
+			void setResponsibleIdFilter(storedFilters.responsibleId);
+		}
+
 		if (page === 1 && storedFilters.page && storedFilters.page > 1) {
 			void setPage(storedFilters.page);
 		}
@@ -629,8 +671,12 @@ export function SalesDataTable({
 		setCompanyIdFilter,
 		setGlobalFilter,
 		setPage,
+		setResponsibleIdFilter,
+		setResponsibleTypeFilter,
 		setStatusFilter,
 		setUnitIdFilter,
+		responsibleIdFilter,
+		responsibleTypeFilter,
 		statusFilter,
 		unitIdFilter,
 	]);
@@ -649,10 +695,20 @@ export function SalesDataTable({
 				status: statusFilter,
 				companyId: companyIdFilter,
 				unitId: unitIdFilter,
+				responsibleType: responsibleTypeFilter,
+				responsibleId: responsibleIdFilter,
 				page: currentPage,
 			}),
 		);
-	}, [companyIdFilter, currentPage, globalFilter, statusFilter, unitIdFilter]);
+	}, [
+		companyIdFilter,
+		currentPage,
+		globalFilter,
+		responsibleIdFilter,
+		responsibleTypeFilter,
+		statusFilter,
+		unitIdFilter,
+	]);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
@@ -702,6 +758,86 @@ export function SalesDataTable({
 		unitIdFilter,
 		unitsBySelectedCompany,
 	]);
+	const sellerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(
+		() => {
+			const optionsMap = new Map<string, string>();
+
+			for (const sale of sales) {
+				if (sale.responsible?.type !== "SELLER") {
+					continue;
+				}
+
+				optionsMap.set(sale.responsible.id, sale.responsible.name);
+			}
+
+			return Array.from(optionsMap.entries())
+				.map(([id, name]) => ({ id, name }))
+				.sort((optionA, optionB) =>
+					optionA.name.localeCompare(optionB.name, "pt-BR"),
+				);
+		},
+		[sales],
+	);
+	const partnerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(
+		() => {
+			const optionsMap = new Map<string, string>();
+
+			for (const sale of sales) {
+				if (sale.responsible?.type !== "PARTNER") {
+					continue;
+				}
+
+				optionsMap.set(sale.responsible.id, sale.responsible.name);
+			}
+
+			return Array.from(optionsMap.entries())
+				.map(([id, name]) => ({ id, name }))
+				.sort((optionA, optionB) =>
+					optionA.name.localeCompare(optionB.name, "pt-BR"),
+				);
+		},
+		[sales],
+	);
+	const responsibleOptions = useMemo<ResponsibleFilterOption[]>(
+		() =>
+			responsibleTypeFilter === "SELLER"
+				? sellerResponsibleOptions
+				: responsibleTypeFilter === "PARTNER"
+					? partnerResponsibleOptions
+					: [],
+		[partnerResponsibleOptions, responsibleTypeFilter, sellerResponsibleOptions],
+	);
+
+	useEffect(() => {
+		if (responsibleTypeFilter === "ALL") {
+			if (!responsibleIdFilter) {
+				return;
+			}
+
+			void setResponsibleIdFilter("");
+			void setPage(1);
+			return;
+		}
+
+		if (!responsibleIdFilter) {
+			return;
+		}
+
+		const responsibleExists = responsibleOptions.some(
+			(responsibleOption) => responsibleOption.id === responsibleIdFilter,
+		);
+		if (!responsibleExists) {
+			void setResponsibleIdFilter("");
+			void setPage(1);
+		}
+	}, [
+		responsibleIdFilter,
+		responsibleOptions,
+		responsibleTypeFilter,
+		setPage,
+		setResponsibleIdFilter,
+	]);
+
 	const productPathById = useMemo(
 		() =>
 			buildProductPathMap(
@@ -715,9 +851,27 @@ export function SalesDataTable({
 				const matchesCompany =
 					!companyIdFilter || sale.company.id === companyIdFilter;
 				const matchesUnit = !unitIdFilter || sale.unit?.id === unitIdFilter;
-				return matchesCompany && matchesUnit;
+				const matchesResponsibleType =
+					responsibleTypeFilter === "ALL"
+						? true
+						: sale.responsible?.type === responsibleTypeFilter;
+				const matchesResponsibleId =
+					!responsibleIdFilter || sale.responsible?.id === responsibleIdFilter;
+
+				return (
+					matchesCompany &&
+					matchesUnit &&
+					matchesResponsibleType &&
+					matchesResponsibleId
+				);
 			}),
-		[companyIdFilter, sales, unitIdFilter],
+		[
+			companyIdFilter,
+			responsibleIdFilter,
+			responsibleTypeFilter,
+			sales,
+			unitIdFilter,
+		],
 	);
 	const tableData = useMemo<SaleTableRow[]>(
 		() =>
@@ -1426,6 +1580,8 @@ export function SalesDataTable({
 		void setStatusFilter("ALL");
 		void setCompanyIdFilter("");
 		void setUnitIdFilter("");
+		void setResponsibleTypeFilter("ALL");
+		void setResponsibleIdFilter("");
 		void setPage(1);
 	}
 
@@ -1472,101 +1628,169 @@ export function SalesDataTable({
 
 	return (
 		<div className="w-full min-w-0 space-y-4">
-			<FilterPanel className="lg:grid-cols-4 xl:grid-cols-6 xl:items-end">
-				<div className="space-y-1 xl:col-span-2">
-					<p className="text-xs text-muted-foreground">Busca</p>
-					<Input
-						placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
-						value={globalFilter}
-						onChange={(event) => {
-							void setGlobalFilter(event.target.value);
-							void setPage(1);
-						}}
-						className="w-full"
-					/>
-				</div>
+			{showFilters ? (
+				<FilterPanel className="lg:grid-cols-4 xl:grid-cols-8 xl:items-end">
+					<div className="space-y-1 xl:col-span-2">
+						<p className="text-xs text-muted-foreground">Busca</p>
+						<Input
+							placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
+							value={globalFilter}
+							onChange={(event) => {
+								void setGlobalFilter(event.target.value);
+								void setPage(1);
+							}}
+							className="w-full"
+						/>
+					</div>
 
-				<div className="space-y-1">
-					<p className="text-xs text-muted-foreground">Empresa</p>
-					<Select
-						value={companyIdFilter || "ALL"}
-						onValueChange={(value) => {
-							void setCompanyIdFilter(value === "ALL" ? "" : value);
-							void setUnitIdFilter("");
-							void setPage(1);
-						}}
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Empresa</p>
+						<Select
+							value={companyIdFilter || "ALL"}
+							onValueChange={(value) => {
+								void setCompanyIdFilter(value === "ALL" ? "" : value);
+								void setUnitIdFilter("");
+								void setPage(1);
+							}}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Todas as empresas" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todas as empresas</SelectItem>
+								{companies.map((company) => (
+									<SelectItem key={company.id} value={company.id}>
+										{company.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Unidade</p>
+						<Select
+							value={unitIdFilter || "ALL"}
+							onValueChange={(value) => {
+								void setUnitIdFilter(value === "ALL" ? "" : value);
+								void setPage(1);
+							}}
+							disabled={!companyIdFilter}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Todas as unidades" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todas as unidades</SelectItem>
+								{unitsBySelectedCompany.map((unit) => (
+									<SelectItem key={unit.id} value={unit.id}>
+										{unit.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Status</p>
+						<Select
+							value={statusFilter}
+							onValueChange={(value) => {
+								void setStatusFilter(value as SaleStatusFilter);
+								void setPage(1);
+							}}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Status" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todos os status</SelectItem>
+								{SaleStatusSchema.options.map((status) => (
+									<SelectItem key={status} value={status}>
+										{SALE_STATUS_LABEL[status]}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Tipo de responsável</p>
+						<Select
+							value={responsibleTypeFilter}
+							onValueChange={(value) => {
+								void setResponsibleTypeFilter(value as SaleResponsibleTypeFilter);
+								void setResponsibleIdFilter("");
+								void setPage(1);
+							}}
+						>
+							<SelectTrigger className="w-full" aria-label="Tipo de responsável">
+								<SelectValue placeholder="Todos" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">Todos</SelectItem>
+								<SelectItem value="SELLER">Vendedor</SelectItem>
+								<SelectItem value="PARTNER">Parceiro</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
+					{responsibleTypeFilter !== "ALL" ? (
+						<div className="space-y-1">
+							<p className="text-xs text-muted-foreground">
+								{responsibleTypeFilter === "SELLER" ? "Vendedor" : "Parceiro"}
+							</p>
+							<Select
+								value={responsibleIdFilter || "ALL"}
+								onValueChange={(value) => {
+									void setResponsibleIdFilter(value === "ALL" ? "" : value);
+									void setPage(1);
+								}}
+							>
+								<SelectTrigger
+									className="w-full"
+									aria-label={
+										responsibleTypeFilter === "SELLER" ? "Vendedor" : "Parceiro"
+									}
+								>
+									<SelectValue
+										placeholder={
+											responsibleTypeFilter === "SELLER"
+												? "Todos os vendedores"
+												: "Todos os parceiros"
+										}
+									/>
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="ALL">
+										{responsibleTypeFilter === "SELLER"
+											? "Todos os vendedores"
+											: "Todos os parceiros"}
+									</SelectItem>
+									{responsibleOptions.map((responsibleOption) => (
+										<SelectItem
+											key={responsibleOption.id}
+											value={responsibleOption.id}
+										>
+											{responsibleOption.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					) : null}
+
+					<Button
+						type="button"
+						variant="outline"
+						className="w-full xl:justify-self-stretch"
+						onClick={clearFilters}
 					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Todas as empresas" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ALL">Todas as empresas</SelectItem>
-							{companies.map((company) => (
-								<SelectItem key={company.id} value={company.id}>
-									{company.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-
-				<div className="space-y-1">
-					<p className="text-xs text-muted-foreground">Unidade</p>
-					<Select
-						value={unitIdFilter || "ALL"}
-						onValueChange={(value) => {
-							void setUnitIdFilter(value === "ALL" ? "" : value);
-							void setPage(1);
-						}}
-						disabled={!companyIdFilter}
-					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Todas as unidades" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ALL">Todas as unidades</SelectItem>
-							{unitsBySelectedCompany.map((unit) => (
-								<SelectItem key={unit.id} value={unit.id}>
-									{unit.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-
-				<div className="space-y-1">
-					<p className="text-xs text-muted-foreground">Status</p>
-					<Select
-						value={statusFilter}
-						onValueChange={(value) => {
-							void setStatusFilter(value as SaleStatusFilter);
-							void setPage(1);
-						}}
-					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Status" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ALL">Todos os status</SelectItem>
-							{SaleStatusSchema.options.map((status) => (
-								<SelectItem key={status} value={status}>
-									{SALE_STATUS_LABEL[status]}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-
-				<Button
-					type="button"
-					variant="outline"
-					className="w-full xl:justify-self-stretch"
-					onClick={clearFilters}
-				>
-					<RefreshCcw className="size-4" />
-					Limpar
-				</Button>
-			</FilterPanel>
+						<RefreshCcw className="size-4" />
+						Limpar
+					</Button>
+				</FilterPanel>
+			) : null}
 
 			{selectedSaleIds.length > 0 && canUseBulkActions ? (
 				<div className="flex flex-col gap-3 rounded-md border border-blue-500/30 bg-blue-500/10 p-4 md:flex-row md:items-center md:justify-between">

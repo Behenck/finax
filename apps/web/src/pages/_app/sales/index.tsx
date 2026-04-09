@@ -10,18 +10,63 @@ import { PageHeader } from "@/components/page-header";
 import { useSales } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardPlus, FileSpreadsheet, Plus, TriangleAlert } from "lucide-react";
+import {
+	ClipboardPlus,
+	FileSpreadsheet,
+	Funnel,
+	Plus,
+	TriangleAlert,
+} from "lucide-react";
+import { useState } from "react";
 import { SalesDataTable } from "./-components/sales-data-table";
+
+const SALES_FILTERS_STORAGE_KEY = "finax:sales:list:filters";
+
+function hasActiveStoredSalesFilters() {
+	if (typeof window === "undefined") {
+		return false;
+	}
+
+	try {
+		const rawValue = window.localStorage.getItem(SALES_FILTERS_STORAGE_KEY);
+		if (!rawValue) {
+			return false;
+		}
+
+		const storedFilters = JSON.parse(rawValue) as {
+			q?: string;
+			status?: string;
+			companyId?: string;
+			unitId?: string;
+			responsibleType?: string;
+			responsibleId?: string;
+		};
+
+		return Boolean(
+			(storedFilters.q ?? "").trim() ||
+				(storedFilters.status ?? "ALL") !== "ALL" ||
+				(storedFilters.companyId ?? "").trim() ||
+				(storedFilters.unitId ?? "").trim() ||
+				(storedFilters.responsibleType ?? "ALL") !== "ALL" ||
+				(storedFilters.responsibleId ?? "").trim(),
+		);
+	} catch {
+		return false;
+	}
+}
 
 export const Route = createFileRoute("/_app/sales/")({
 	component: SalesPage,
 });
 
-function SalesPage() {
+export function SalesPage() {
 	const ability = useAbility();
 	const canViewSales = ability.can("access", "sales.view");
 	const canCreateSales = ability.can("access", "sales.create");
 	const canManageSalesImports = ability.can("access", "sales.import.manage");
+	const [isFiltersVisible, setIsFiltersVisible] = useState(() =>
+		hasActiveStoredSalesFilters(),
+	);
 	const { data, isLoading, isError, refetch } = useSales();
 	const sales = data?.sales ?? [];
 
@@ -47,6 +92,15 @@ function SalesPage() {
 								<TriangleAlert className="size-4" />
 								Inadimplência
 							</Link>
+						</Button>
+						<Button
+							type="button"
+							variant="outline"
+							className="w-full sm:w-auto"
+							onClick={() => setIsFiltersVisible((currentValue) => !currentValue)}
+						>
+							<Funnel className="size-4" />
+							Filtro
 						</Button>
 						{canManageSalesImports ? (
 							<Button asChild variant="outline" className="w-full sm:w-auto">
@@ -88,6 +142,7 @@ function SalesPage() {
 				sales={sales}
 				isLoading={isLoading}
 				isError={isError}
+				showFilters={isFiltersVisible}
 				onRetry={() => refetch()}
 			/>
 		</main>
