@@ -175,6 +175,9 @@ export async function postSalesBatch(app: FastifyInstance) {
 				const responsibleData = await resolveSaleResponsibleData(
 					organization.id,
 					data.responsible,
+					{
+						allowInactivePartner: true,
+					},
 				);
 
 				const organizationProducts = await prisma.product.findMany({

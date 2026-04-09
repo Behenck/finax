@@ -47,6 +47,8 @@ interface SidebarChildItem {
 	title: string;
 	url: string;
 	icon: LucideIcon;
+	match?: "exact" | "prefix";
+	dashboardView?: "commercial" | "operational" | "partners";
 	requiredPermission?: string;
 	requiredAnyPermissions?: string[];
 }
@@ -83,11 +85,32 @@ export function AppSidebar() {
 
 	const items: SidebarItem[] = [
 		{
-			type: "leaf",
+			type: "group",
 			title: "Dashboard",
-			url: "/",
 			icon: Home,
-			match: "exact",
+			children: [
+				{
+					title: "Comercial",
+					url: "/",
+					icon: Home,
+					match: "exact",
+					dashboardView: "commercial",
+				},
+				{
+					title: "Operacional",
+					url: "/",
+					icon: Building2,
+					match: "exact",
+					dashboardView: "operational",
+				},
+				{
+					title: "Parceiros",
+					url: "/",
+					icon: UserRound,
+					match: "exact",
+					dashboardView: "partners",
+				},
+			],
 		},
 		{
 			type: "group",
@@ -243,26 +266,66 @@ export function AppSidebar() {
 		},
 		[pathname],
 	);
+	const dashboardView = React.useMemo(() => {
+		const dashboardSearchValue = (location.search as { dashboard?: unknown })
+			?.dashboard;
+		if (
+			dashboardSearchValue === "commercial" ||
+			dashboardSearchValue === "operational" ||
+			dashboardSearchValue === "partners"
+		) {
+			return dashboardSearchValue;
+		}
+
+		return "commercial";
+	}, [location.search]);
+	const isChildActive = React.useCallback(
+		(child: SidebarChildItem) => {
+			if (child.dashboardView) {
+				return (
+					isPathActive(child.url, child.match ?? "exact") &&
+					dashboardView === child.dashboardView
+				);
+			}
+
+			return isPathActive(child.url, child.match);
+		},
+		[dashboardView, isPathActive],
+	);
+
+	const dashboardItem = visibleItems.find(
+		(item): item is SidebarGroupItem =>
+			item.type === "group" && item.title === "Dashboard",
+	);
+	const isDashboardActive =
+		dashboardItem?.children.some((child) => isChildActive(child)) ?? false;
+	const [isDashboardOpen, setIsDashboardOpen] =
+		React.useState<boolean>(isDashboardActive);
 
 	const registersItem = visibleItems.find(
 		(item): item is SidebarGroupItem =>
 			item.type === "group" && item.title === "Cadastros",
 	);
 	const isRegistersActive =
-		registersItem?.children.some((child) => isPathActive(child.url)) ?? false;
+		registersItem?.children.some((child) => isChildActive(child)) ?? false;
 	const [isRegistersOpen, setIsRegistersOpen] =
 		React.useState<boolean>(isRegistersActive);
 
 	React.useEffect(() => {
 		if (isCollapsed) {
+			setIsDashboardOpen(false);
 			setIsRegistersOpen(false);
 			return;
+		}
+
+		if (isDashboardActive) {
+			setIsDashboardOpen(true);
 		}
 
 		if (isRegistersActive) {
 			setIsRegistersOpen(true);
 		}
-	}, [isCollapsed, isRegistersActive]);
+	}, [isCollapsed, isDashboardActive, isRegistersActive]);
 
 	React.useEffect(() => {
 		if (!isMobile) {
@@ -332,17 +395,25 @@ export function AppSidebar() {
 							return (
 								<Collapsible
 									key={item.title}
-									open={isRegistersOpen}
-									onOpenChange={setIsRegistersOpen}
+									open={item.title === "Dashboard" ? isDashboardOpen : isRegistersOpen}
+									onOpenChange={
+										item.title === "Dashboard"
+											? setIsDashboardOpen
+											: setIsRegistersOpen
+									}
 								>
 									<SidebarMenuItem>
 										<CollapsibleTrigger asChild>
 											<SidebarMenuButton
-												isActive={isRegistersActive}
+												isActive={
+													item.title === "Dashboard"
+														? isDashboardActive
+														: isRegistersActive
+												}
 												tooltip={
 													isCollapsed
-														? "Expanda a sidebar para acessar Cadastros"
-														: "Cadastros"
+														? `Expanda a sidebar para acessar ${item.title}`
+														: item.title
 												}
 												className="h-9 cursor-pointer rounded-lg px-3 text-sidebar-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
 												onClick={(event) => {
@@ -363,16 +434,23 @@ export function AppSidebar() {
 
 										<CollapsibleContent className="group-data-[collapsible=icon]:hidden">
 											<SidebarMenuSub>
-												{item.children.map((child) => (
-													<SidebarMenuSubItem key={child.title}>
-														<SidebarMenuSubButton
-															asChild
-															isActive={isPathActive(child.url)}
-														>
-															<Link to={child.url} className="h-8 px-2">
-																<child.icon className="size-4" />
-																<span>{child.title}</span>
-															</Link>
+													{item.children.map((child) => (
+														<SidebarMenuSubItem key={child.title}>
+															<SidebarMenuSubButton
+																asChild
+																isActive={isChildActive(child)}
+															>
+																<Link
+																	to={
+																		child.dashboardView
+																			? `${child.url}?dashboard=${child.dashboardView}`
+																			: child.url
+																	}
+																	className="h-8 px-2"
+																>
+																	<child.icon className="size-4" />
+																	<span>{child.title}</span>
+																</Link>
 														</SidebarMenuSubButton>
 													</SidebarMenuSubItem>
 												))}

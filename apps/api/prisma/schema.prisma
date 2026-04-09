@@ -30,6 +30,8 @@ model User {
   recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
   createdSales        Sale[]         @relation("SaleCreatedBy")
   saleHistoryEvents   SaleHistoryEvent[] @relation("SaleHistoryActor")
+  createdSaleDelinquencies SaleDelinquency[] @relation("SaleDelinquencyCreatedBy")
+  resolvedSaleDelinquencies SaleDelinquency[] @relation("SaleDelinquencyResolvedBy")
   saleImportTemplates SaleImportTemplate[] @relation("SaleImportTemplateCreatedBy")
   saleImportAudits    SaleImportAudit[]    @relation("SaleImportAuditActor")
   supervisedPartners  Partner[]      @relation("PartnerSupervisor")
@@ -208,6 +210,7 @@ model Organization {
   sellers               Seller[]
   products              Product[]
   sales                 Sale[]
+  saleDelinquencies     SaleDelinquency[]
   saleHistoryEvents     SaleHistoryEvent[]
   saleImportTemplates   SaleImportTemplate[]
   saleImportAudits      SaleImportAudit[]
@@ -937,6 +940,9 @@ enum SaleHistoryAction {
   CREATED
   UPDATED
   STATUS_CHANGED
+  DELINQUENCY_CREATED
+  DELINQUENCY_RESOLVED
+  DELINQUENCY_DELETED
   COMMISSION_INSTALLMENT_UPDATED
   COMMISSION_INSTALLMENT_STATUS_UPDATED
   COMMISSION_INSTALLMENT_DELETED
@@ -970,6 +976,7 @@ model Sale {
   product      Product      @relation(fields: [productId], references: [id])
   createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
   commissions  SaleCommission[]
+  saleDelinquencies SaleDelinquency[]
   historyEvents SaleHistoryEvent[]
   transaction  Transaction? @relation("SaleTransaction")
 
@@ -1002,6 +1009,30 @@ model SaleHistoryEvent {
   @@index([organizationId, saleId, createdAt])
   @@index([actorId])
   @@map("sale_history_events")
+}
+
+model SaleDelinquency {
+  id             String   @id @default(uuid())
+  saleId         String   @map("sale_id")
+  organizationId String   @map("organization_id")
+  dueDate        DateTime @map("due_date") @db.Date
+  resolvedAt     DateTime? @map("resolved_at")
+  createdById    String   @map("created_by_id")
+  resolvedById   String?  @map("resolved_by_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sale         Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation("SaleDelinquencyCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  resolvedBy   User?        @relation("SaleDelinquencyResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@index([organizationId, saleId])
+  @@index([organizationId, resolvedAt])
+  @@index([saleId, resolvedAt, dueDate])
+  @@map("sale_delinquencies")
 }
 
 model SaleImportTemplate {

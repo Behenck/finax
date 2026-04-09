@@ -120,6 +120,54 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
           .min(1),
       }),
     ),
+    delinquencySummary: z.object({
+      hasOpen: z.boolean(),
+      openCount: z.int().min(0).max(9007199254740991),
+      oldestDueDate: z.nullable(z.iso.datetime()),
+      latestDueDate: z.nullable(z.iso.datetime()),
+    }),
+    openDelinquencies: z.array(
+      z.object({
+        id: z.uuid(),
+        dueDate: z.iso.datetime(),
+        resolvedAt: z.nullable(z.iso.datetime()),
+        createdAt: z.iso.datetime(),
+        updatedAt: z.iso.datetime(),
+        createdBy: z.object({
+          id: z.uuid(),
+          name: z.nullable(z.string()),
+          avatarUrl: z.nullable(z.string()),
+        }),
+        resolvedBy: z.nullable(
+          z.object({
+            id: z.uuid(),
+            name: z.nullable(z.string()),
+            avatarUrl: z.nullable(z.string()),
+          }),
+        ),
+      }),
+    ),
+    delinquencyHistory: z.array(
+      z.object({
+        id: z.uuid(),
+        dueDate: z.iso.datetime(),
+        resolvedAt: z.nullable(z.iso.datetime()),
+        createdAt: z.iso.datetime(),
+        updatedAt: z.iso.datetime(),
+        createdBy: z.object({
+          id: z.uuid(),
+          name: z.nullable(z.string()),
+          avatarUrl: z.nullable(z.string()),
+        }),
+        resolvedBy: z.nullable(
+          z.object({
+            id: z.uuid(),
+            name: z.nullable(z.string()),
+            avatarUrl: z.nullable(z.string()),
+          }),
+        ),
+      }),
+    ),
   }),
 });
 

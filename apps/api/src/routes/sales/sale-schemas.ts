@@ -8,6 +8,7 @@ import {
 	SaleHistoryAction,
 	SaleStatus,
 } from "generated/prisma/enums";
+import { format } from "date-fns";
 import z from "zod";
 
 export const saleResponsibleTypeValues = ["SELLER", "PARTNER"] as const;
@@ -357,6 +358,47 @@ export const GetSalesDashboardQuerySchema = z
 	})
 	.strict();
 
+const PartnerSalesDashboardPartnerIdsQuerySchema = z
+	.union([z.string(), z.array(z.string())])
+	.optional()
+	.transform((value) => {
+		if (!value) {
+			return undefined;
+		}
+
+		const values = Array.isArray(value) ? value : [value];
+		const normalizedValues = values
+			.flatMap((item) => item.split(","))
+			.map((item) => item.trim())
+			.filter(Boolean);
+
+		return normalizedValues.length > 0 ? normalizedValues : undefined;
+	})
+	.pipe(z.array(z.uuid()).optional());
+
+export const GetPartnerSalesDashboardQuerySchema = z
+	.object({
+		startDate: SaleDateInputSchema,
+		endDate: SaleDateInputSchema,
+		inactiveMonths: z.coerce.number().int().min(1).max(24).default(3),
+		supervisorId: z.uuid().optional(),
+		partnerIds: PartnerSalesDashboardPartnerIdsQuerySchema,
+		dynamicFieldId: z.uuid().optional(),
+		productBreakdownDepth: z
+			.enum(["FIRST_LEVEL", "ALL_LEVELS"] as const)
+			.default("FIRST_LEVEL"),
+	})
+	.strict()
+	.superRefine((value, ctx) => {
+		if (value.startDate > value.endDate) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["endDate"],
+				message: "endDate must be greater than or equal to startDate",
+			});
+		}
+	});
+
 const SalesDashboardPeriodRangeSchema = z.object({
 	month: SaleMonthInputSchema,
 	from: z.date(),
@@ -394,6 +436,247 @@ const SalesDashboardCommissionsPeriodSchema = z.object({
 	INCOME: CommissionInstallmentDirectionSummarySchema,
 	OUTCOME: CommissionInstallmentDirectionSummarySchema,
 	netAmount: z.number().int(),
+});
+
+const PartnerSalesDashboardDateRangeSchema = z.object({
+	from: z.date(),
+	to: z.date(),
+});
+
+const PartnerSalesDashboardSummarySchema = z.object({
+	totalPartners: z.number().int().nonnegative(),
+	activePartners: z.number().int().nonnegative(),
+	inactivePartners: z.number().int().nonnegative(),
+	producingPartners: z.number().int().nonnegative(),
+	producingPartnersRatePct: z.number().min(0).max(100),
+	partnersWithoutProduction: z.number().int().nonnegative(),
+	totalSales: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	averageTicket: z.number().int().nonnegative(),
+	averageTicketPerProducingPartner: z.number().int().nonnegative(),
+	commissionReceivedAmount: z.number().int().nonnegative(),
+	commissionPendingAmount: z.number().int().nonnegative(),
+	netRevenueAmount: z.number().int(),
+	delinquentSalesCount: z.number().int().nonnegative(),
+	delinquentGrossAmount: z.number().int().nonnegative(),
+	delinquencyRateByCountPct: z.number().min(0).max(100),
+	delinquencyRateByAmountPct: z.number().min(0).max(100),
+});
+
+const PartnerSalesDashboardSupervisorSummarySchema = z.object({
+	id: z.uuid(),
+	name: z.string().nullable(),
+});
+
+const PartnerSalesDashboardPartnerFilterItemSchema = z.object({
+	id: z.uuid(),
+	name: z.string(),
+	status: z.enum(["ACTIVE", "INACTIVE"] as const),
+	supervisorId: z.uuid().nullable(),
+	supervisorName: z.string().nullable(),
+});
+
+const PartnerSalesDashboardTimelineGranularitySchema = z.enum([
+	"DAY",
+	"MONTH",
+] as const);
+
+const PartnerSalesDashboardTimelineItemSchema = z.object({
+	label: z.string(),
+	date: z.date(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardRankingItemSchema = z.object({
+	partnerId: z.uuid(),
+	partnerName: z.string(),
+	status: z.enum(["ACTIVE", "INACTIVE"] as const),
+	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	averageTicket: z.number().int().nonnegative(),
+	commissionReceivedAmount: z.number().int().nonnegative(),
+	netRevenueAmount: z.number().int(),
+	delinquentSalesCount: z.number().int().nonnegative(),
+	delinquentGrossAmount: z.number().int().nonnegative(),
+	delinquencyRateByCountPct: z.number().min(0).max(100),
+	delinquencyRateByAmountPct: z.number().min(0).max(100),
+	lastSaleDate: z.date().nullable(),
+});
+
+const PartnerSalesDashboardDynamicFieldTypeSchema = z.enum([
+	"SELECT",
+	"MULTI_SELECT",
+] as const);
+
+const PartnerSalesDashboardDynamicFieldSchema = z.object({
+	fieldId: z.uuid(),
+	label: z.string(),
+	type: PartnerSalesDashboardDynamicFieldTypeSchema,
+});
+
+const PartnerSalesDashboardDynamicFieldBreakdownItemSchema = z.object({
+	valueId: z.string(),
+	label: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardProductBreakdownItemSchema = z.object({
+	valueId: z.string(),
+	label: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardStatusFunnelStatusSchema = z.enum([
+	"PENDING",
+	"APPROVED",
+	"COMPLETED",
+	"CANCELED",
+] as const);
+
+const PartnerSalesDashboardStatusFunnelItemSchema = z.object({
+	status: PartnerSalesDashboardStatusFunnelStatusSchema,
+	label: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardParetoItemSchema = z.object({
+	partnerId: z.uuid(),
+	partnerName: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	cumulativeGrossAmount: z.number().int().nonnegative(),
+	cumulativeGrossPct: z.number().min(0).max(100),
+	cumulativeSalesPct: z.number().min(0).max(100),
+});
+
+const PartnerSalesDashboardTicketByPartnerItemSchema = z.object({
+	partnerId: z.uuid(),
+	partnerName: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	averageTicket: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardProductionHealthTimelineItemSchema = z.object({
+	date: z.date(),
+	label: z.string(),
+	producingPartners: z.number().int().nonnegative(),
+	totalPartners: z.number().int().nonnegative(),
+	producingRatePct: z.number().min(0).max(100),
+});
+
+const PartnerSalesDashboardCommissionPendingByPartnerItemSchema = z.object({
+	partnerId: z.uuid(),
+	partnerName: z.string(),
+	status: z.enum(["ACTIVE", "INACTIVE"] as const),
+	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	pendingAmount: z.number().int().nonnegative(),
+	lastSaleDate: z.date().nullable(),
+});
+
+const PartnerSalesDashboardRecencyBucketKeySchema = z.enum([
+	"RANGE_0_30",
+	"RANGE_31_60",
+	"RANGE_61_90",
+	"RANGE_90_PLUS",
+	"NO_SALES",
+] as const);
+
+const PartnerSalesDashboardRecencyBucketSchema = z.object({
+	key: PartnerSalesDashboardRecencyBucketKeySchema,
+	label: z.string(),
+	partnersCount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardRiskRankingItemSchema = z.object({
+	partnerId: z.uuid(),
+	partnerName: z.string(),
+	status: z.enum(["ACTIVE", "INACTIVE"] as const),
+	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	totalSales: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+	delinquentSalesCount: z.number().int().nonnegative(),
+	delinquentGrossAmount: z.number().int().nonnegative(),
+	delinquencyRateByCountPct: z.number().min(0).max(100),
+	delinquencyRateByAmountPct: z.number().min(0).max(100),
+	lastSaleDate: z.date().nullable(),
+});
+
+const PartnerSalesDashboardDelinquencyBucketKeySchema = z.enum([
+	"RANGE_1_30",
+	"RANGE_31_60",
+	"RANGE_61_90",
+	"RANGE_90_PLUS",
+] as const);
+
+const PartnerSalesDashboardDelinquencyBucketSchema = z.object({
+	key: PartnerSalesDashboardDelinquencyBucketKeySchema,
+	label: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+export const PartnerSalesDashboardResponseSchema = z.object({
+	period: z.object({
+		selected: PartnerSalesDashboardDateRangeSchema,
+		inactiveMonths: z.number().int().min(1).max(24),
+		inactiveRange: PartnerSalesDashboardDateRangeSchema,
+		timelineGranularity: PartnerSalesDashboardTimelineGranularitySchema,
+	}),
+	filters: z.object({
+		supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
+		partners: z.array(PartnerSalesDashboardPartnerFilterItemSchema),
+	}),
+	summary: PartnerSalesDashboardSummarySchema,
+	ranking: z.array(PartnerSalesDashboardRankingItemSchema),
+	timeline: z.array(PartnerSalesDashboardTimelineItemSchema),
+	dynamicFieldBreakdown: z.object({
+		availableFields: z.array(PartnerSalesDashboardDynamicFieldSchema),
+		selectedFieldId: z.uuid().nullable(),
+		selectedFieldLabel: z.string().nullable(),
+		selectedFieldType: PartnerSalesDashboardDynamicFieldTypeSchema.nullable(),
+		items: z.array(PartnerSalesDashboardDynamicFieldBreakdownItemSchema),
+	}),
+	productBreakdown: z.object({
+		items: z.array(PartnerSalesDashboardProductBreakdownItemSchema),
+	}),
+	statusFunnel: z.object({
+		items: z.array(PartnerSalesDashboardStatusFunnelItemSchema),
+	}),
+	pareto: z.object({
+		items: z.array(PartnerSalesDashboardParetoItemSchema),
+	}),
+	ticketByPartner: z.object({
+		items: z.array(PartnerSalesDashboardTicketByPartnerItemSchema),
+	}),
+	productionHealthTimeline: z.object({
+		items: z.array(PartnerSalesDashboardProductionHealthTimelineItemSchema),
+	}),
+	commissionBreakdown: z.object({
+		receivedAmount: z.number().int().nonnegative(),
+		pendingAmount: z.number().int().nonnegative(),
+		netRevenueAmount: z.number().int(),
+		pendingByPartner: z.object({
+			items: z.array(PartnerSalesDashboardCommissionPendingByPartnerItemSchema),
+		}),
+	}),
+	delinquencyBreakdown: z.object({
+		totalSales: z.number().int().nonnegative(),
+		buckets: z.array(PartnerSalesDashboardDelinquencyBucketSchema),
+	}),
+	recencyBreakdown: z.object({
+		buckets: z.array(PartnerSalesDashboardRecencyBucketSchema),
+	}),
+	riskRanking: z.object({
+		items: z.array(PartnerSalesDashboardRiskRankingItemSchema),
+	}),
 });
 
 export const SalesDashboardResponseSchema = z.object({
@@ -657,11 +940,45 @@ const NamedEntitySchema = z.object({
 	name: z.string(),
 });
 
+const UserSummarySchema = z.object({
+	id: z.uuid(),
+	name: z.string().nullable(),
+	avatarUrl: z.string().nullable(),
+});
+
 export const SaleResponsiblePayloadSchema = z.object({
 	type: SaleResponsibleTypeSchema,
 	id: z.uuid(),
 	name: z.string(),
 });
+
+export const SaleDelinquencySummarySchema = z.object({
+	hasOpen: z.boolean(),
+	openCount: z.number().int().nonnegative(),
+	oldestDueDate: z.date().nullable(),
+	latestDueDate: z.date().nullable(),
+});
+
+export const SaleDelinquencyOccurrenceSchema = z.object({
+	id: z.uuid(),
+	dueDate: z.date(),
+	resolvedAt: z.date().nullable(),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+	createdBy: UserSummarySchema,
+	resolvedBy: UserSummarySchema.nullable(),
+});
+
+export const CreateSaleDelinquencyBodySchema = z
+	.object({
+		dueDate: SaleDateInputSchema.refine(
+			(value) => value <= format(new Date(), "yyyy-MM-dd"),
+			{
+				message: "Delinquency due date cannot be in the future",
+			},
+		),
+	})
+	.strict();
 
 const SaleBaseResponseSchema = z.object({
 	id: z.uuid(),
@@ -685,6 +1002,7 @@ const SaleBaseResponseSchema = z.object({
 
 export const SaleSummarySchema = SaleBaseResponseSchema.extend({
 	commissionInstallmentsSummary: SaleCommissionInstallmentsSummarySchema,
+	delinquencySummary: SaleDelinquencySummarySchema,
 });
 
 export const SaleDetailSchema = SaleBaseResponseSchema.extend({
@@ -699,6 +1017,13 @@ export const SaleDetailSchema = SaleBaseResponseSchema.extend({
 	dynamicFieldSchema: z.array(SaleDynamicFieldSchemaItemSchema),
 	dynamicFieldValues: SaleDynamicFieldValuesSchema,
 	commissions: z.array(SaleCommissionDetailSchema),
+	delinquencySummary: SaleDelinquencySummarySchema,
+	openDelinquencies: z.array(SaleDelinquencyOccurrenceSchema),
+	delinquencyHistory: z.array(SaleDelinquencyOccurrenceSchema),
+});
+
+export const SaleDelinquencyListItemSchema = SaleSummarySchema.extend({
+	openDelinquencies: z.array(SaleDelinquencyOccurrenceSchema),
 });
 
 export const SaleHistoryActionSchema = z.enum(SaleHistoryAction);
@@ -738,7 +1063,13 @@ export type GetOrganizationCommissionInstallmentsQuery = z.infer<
 export type GetSalesDashboardQuery = z.infer<
 	typeof GetSalesDashboardQuerySchema
 >;
+export type GetPartnerSalesDashboardQuery = z.infer<
+	typeof GetPartnerSalesDashboardQuerySchema
+>;
 export type CreateSaleBody = z.infer<typeof CreateSaleBodySchema>;
+export type CreateSaleDelinquencyBody = z.infer<
+	typeof CreateSaleDelinquencyBodySchema
+>;
 export type CreateSaleBatchItem = z.infer<typeof CreateSaleBatchItemSchema>;
 export type CreateSaleBatchBody = z.infer<typeof CreateSaleBatchBodySchema>;
 export type UpdateSaleBody = z.infer<typeof UpdateSaleBodySchema>;
@@ -763,6 +1094,12 @@ export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 >;
 export type PatchSaleCommissionInstallmentBody = z.infer<
 	typeof PatchSaleCommissionInstallmentBodySchema
+>;
+export type SaleDelinquencySummary = z.infer<
+	typeof SaleDelinquencySummarySchema
+>;
+export type SaleDelinquencyOccurrence = z.infer<
+	typeof SaleDelinquencyOccurrenceSchema
 >;
 export type SaleHistoryChange = z.infer<typeof SaleHistoryChangeSchema>;
 export type SaleHistoryEvent = z.infer<typeof SaleHistoryEventSchema>;

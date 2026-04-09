@@ -83,6 +83,7 @@ export const ModelName = {
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
   SaleHistoryEvent: 'SaleHistoryEvent',
+  SaleDelinquency: 'SaleDelinquency',
   SaleImportTemplate: 'SaleImportTemplate',
   SaleImportAudit: 'SaleImportAudit',
   SaleCommission: 'SaleCommission',
@@ -613,6 +614,21 @@ export const SaleHistoryEventScalarFieldEnum = {
 } as const
 
 export type SaleHistoryEventScalarFieldEnum = (typeof SaleHistoryEventScalarFieldEnum)[keyof typeof SaleHistoryEventScalarFieldEnum]
+
+
+export const SaleDelinquencyScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  organizationId: 'organizationId',
+  dueDate: 'dueDate',
+  resolvedAt: 'resolvedAt',
+  createdById: 'createdById',
+  resolvedById: 'resolvedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleDelinquencyScalarFieldEnum = (typeof SaleDelinquencyScalarFieldEnum)[keyof typeof SaleDelinquencyScalarFieldEnum]
 
 
 export const SaleImportTemplateScalarFieldEnum = {

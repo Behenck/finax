@@ -12,6 +12,7 @@ import {
 	buildSalesVisibilityWhere,
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
+import { loadSaleDelinquencySummaryBySaleIds } from "./sale-delinquencies";
 import { loadSalesResponsible } from "./sale-responsible";
 import { SaleSummarySchema } from "./sale-schemas";
 
@@ -123,6 +124,12 @@ export async function getSales(app: FastifyInstance) {
 					sales,
 				);
 				const saleIds = sales.map((sale) => sale.id);
+				const delinquencySummaryBySaleId =
+					await loadSaleDelinquencySummaryBySaleIds(
+						prisma,
+						organization.id,
+						saleIds,
+					);
 				const commissionInstallmentsSummaryBySaleId = new Map<
 					string,
 					{
@@ -209,6 +216,13 @@ export async function getSales(app: FastifyInstance) {
 						unit: sale.unit,
 						createdBy: sale.createdBy,
 						responsible: responsibleBySaleId.get(sale.id) ?? null,
+						delinquencySummary:
+							delinquencySummaryBySaleId.get(sale.id) ?? {
+								hasOpen: false,
+								openCount: 0,
+								oldestDueDate: null,
+								latestDueDate: null,
+							},
 						commissionInstallmentsSummary:
 							commissionInstallmentsSummaryBySaleId.get(sale.id) ?? {
 								total: 0,

@@ -32,6 +32,12 @@ export interface SaleRootProductOption {
 	label: string;
 }
 
+export interface SalePartnerOption {
+	id: string;
+	name: string;
+	status: "ACTIVE" | "INACTIVE";
+}
+
 type ProductTreeNode = {
 	id: string;
 	name: string;
@@ -180,12 +186,19 @@ export function useSaleFormOptions() {
 			),
 		[sellersQuery.data?.sellers],
 	);
+	const partnersWithStatus = useMemo<SalePartnerOption[]>(
+		() =>
+			(partnersQuery.data?.partners ?? []).map((partner) => ({
+				id: partner.id,
+				name: partner.name,
+				status: partner.status as "ACTIVE" | "INACTIVE",
+			})),
+		[partnersQuery.data?.partners],
+	);
 	const partners = useMemo(
 		() =>
-			(partnersQuery.data?.partners ?? []).filter(
-				(partner) => partner.status === "ACTIVE",
-			),
-		[partnersQuery.data?.partners],
+			partnersWithStatus.filter((partner) => partner.status === "ACTIVE"),
+		[partnersWithStatus],
 	);
 	const supervisors = useMemo(
 		() =>
@@ -231,6 +244,7 @@ export function useSaleFormOptions() {
 		rootProducts,
 		sellers,
 		partners,
+		partnersWithStatus,
 		supervisors,
 		isLoading: queries.some(({ query, enabled: isEnabled }) => {
 			if (!isEnabled) {

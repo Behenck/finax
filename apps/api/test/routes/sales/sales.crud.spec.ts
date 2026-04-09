@@ -12,6 +12,7 @@ import {
 	TransactionStatus,
 	TransactionType,
 } from "generated/prisma/enums";
+import { addDays, format } from "date-fns";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +20,14 @@ import { makeUser } from "../../factories/make-user";
 import { createTestApp } from "../../utils/test-app";
 
 let app: Awaited<ReturnType<typeof createTestApp>>;
+
+function getRelativeDateInput(offsetDays: number) {
+	return format(addDays(new Date(), offsetDays), "yyyy-MM-dd");
+}
+
+function toDateOnlyIsoString(value: string) {
+	return `${value}T00:00:00.000Z`;
+}
 
 type ResponsibleInput =
 	| {
@@ -515,6 +524,52 @@ async function patchSaleStatusUsingApi(
 		.send({
 			status,
 		});
+
+	expect(response.statusCode).toBe(204);
+}
+
+async function createSaleDelinquencyUsingApi(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+	saleId: string,
+	dueDate: string,
+) {
+	const response = await request(app.server)
+		.post(`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies`)
+		.set("Authorization", `Bearer ${fixture.token}`)
+		.send({
+			dueDate,
+		});
+
+	expect(response.statusCode).toBe(201);
+	expect(response.body).toHaveProperty("delinquencyId");
+
+	return response.body.delinquencyId as string;
+}
+
+async function resolveSaleDelinquencyUsingApi(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+	saleId: string,
+	delinquencyId: string,
+) {
+	const response = await request(app.server)
+		.patch(
+			`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies/${delinquencyId}/resolve`,
+		)
+		.set("Authorization", `Bearer ${fixture.token}`);
+
+	expect(response.statusCode).toBe(204);
+}
+
+async function deleteSaleDelinquencyUsingApi(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+	saleId: string,
+	delinquencyId: string,
+) {
+	const response = await request(app.server)
+		.delete(
+			`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies/${delinquencyId}`,
+		)
+		.set("Authorization", `Bearer ${fixture.token}`);
 
 	expect(response.statusCode).toBe(204);
 }
@@ -1378,6 +1433,485 @@ describe("sales crud", () => {
 		expect(sale?.responsibleType).toBe("PARTNER");
 		expect(sale?.responsibleId).toBe(fixture.partner.id);
 	});
+
+	it("should create sale with inactive partner as responsible", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					responsible: {
+						type: "PARTNER",
+						id: fixture.inactivePartner.id,
+					},
+					unitId: undefined,
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+
+		const sale = await prisma.sale.findUnique({
+			where: {
+				id: response.body.saleId,
+			},
+			select: {
+				responsibleType: true,
+				responsibleId: true,
+			},
+		});
+		const partner = await prisma.partner.findUnique({
+			where: {
+				id: fixture.inactivePartner.id,
+			},
+			select: {
+				status: true,
+			},
+		});
+
+		expect(sale?.responsibleType).toBe("PARTNER");
+		expect(sale?.responsibleId).toBe(fixture.inactivePartner.id);
+		expect(partner?.status).toBe(PartnerStatus.INACTIVE);
+	});
+
+	it("should auto activate inactive responsible partner only when sale is completed", async () => {
+		const fixture = await createFixture();
+
+		const createResponse = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildCreatePayload(fixture, {
+					responsible: {
+						type: "PARTNER",
+						id: fixture.inactivePartner.id,
+					},
+					unitId: undefined,
+				}),
+			);
+		expect(createResponse.statusCode).toBe(201);
+
+		const saleId = createResponse.body.saleId as string;
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+
+		const partnerAfterApproved = await prisma.partner.findUnique({
+			where: {
+				id: fixture.inactivePartner.id,
+			},
+			select: {
+				status: true,
+			},
+		});
+		expect(partnerAfterApproved?.status).toBe(PartnerStatus.INACTIVE);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const partnerAfterCompleted = await prisma.partner.findUnique({
+			where: {
+				id: fixture.inactivePartner.id,
+			},
+			select: {
+				status: true,
+			},
+		});
+		expect(partnerAfterCompleted?.status).toBe(PartnerStatus.ACTIVE);
+	});
+
+	it("should keep inactive commission partner inactive after completing sale", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: [
+					{
+						sourceType: "MANUAL",
+						recipientType: "PARTNER",
+						beneficiaryId: fixture.inactivePartner.id,
+						startDate: "2026-03-10",
+						totalPercentage: 1,
+						installments: [
+							{
+								installmentNumber: 1,
+								percentage: 1,
+							},
+						],
+					},
+				],
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const partnerAfterCompleted = await prisma.partner.findUnique({
+			where: {
+				id: fixture.inactivePartner.id,
+			},
+			select: {
+				status: true,
+			},
+		});
+
+		expect(partnerAfterCompleted?.status).toBe(PartnerStatus.INACTIVE);
+	});
+
+	it("should create delinquency for completed sale and expose it in sale details and sales list", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+		const dueDate = getRelativeDateInput(-10);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const delinquencyId = await createSaleDelinquencyUsingApi(
+			fixture,
+			saleId,
+			dueDate,
+		);
+
+		const saleDetailResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(saleDetailResponse.statusCode).toBe(200);
+		expect(saleDetailResponse.body.sale.delinquencySummary).toMatchObject({
+			hasOpen: true,
+			openCount: 1,
+			oldestDueDate: toDateOnlyIsoString(dueDate),
+			latestDueDate: toDateOnlyIsoString(dueDate),
+		});
+		expect(saleDetailResponse.body.sale.openDelinquencies).toHaveLength(1);
+		expect(saleDetailResponse.body.sale.openDelinquencies[0]?.id).toBe(
+			delinquencyId,
+		);
+		expect(saleDetailResponse.body.sale.delinquencyHistory).toHaveLength(0);
+
+		const salesResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(salesResponse.statusCode).toBe(200);
+		const listedSale = salesResponse.body.sales.find(
+			(sale: { id: string }) => sale.id === saleId,
+		);
+		expect(listedSale?.delinquencySummary).toMatchObject({
+			hasOpen: true,
+			openCount: 1,
+		});
+	});
+
+	it("should reject delinquency creation when sale is not completed", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+		const dueDate = getRelativeDateInput(-10);
+
+		const pendingResponse = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				dueDate,
+			});
+
+		expect(pendingResponse.statusCode).toBe(400);
+		expect(pendingResponse.body.message).toBe(
+			"Delinquency can only be created for completed sales",
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+
+		const approvedResponse = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				dueDate,
+			});
+
+		expect(approvedResponse.statusCode).toBe(400);
+		expect(approvedResponse.body.message).toBe(
+			"Delinquency can only be created for completed sales",
+		);
+	});
+
+	it("should reject delinquency creation when due date is in the future", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+		const futureDueDate = getRelativeDateInput(1);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				dueDate: futureDueDate,
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toContain(
+			"Delinquency due date cannot be in the future",
+		);
+	});
+
+	it("should allow multiple delinquency due dates and reject duplicate open due date", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+		const firstDueDate = getRelativeDateInput(-30);
+		const secondDueDate = getRelativeDateInput(-5);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		await createSaleDelinquencyUsingApi(fixture, saleId, firstDueDate);
+		await createSaleDelinquencyUsingApi(fixture, saleId, secondDueDate);
+
+		const duplicatedResponse = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/${saleId}/delinquencies`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				dueDate: firstDueDate,
+			});
+
+		expect(duplicatedResponse.statusCode).toBe(400);
+		expect(duplicatedResponse.body.message).toBe(
+			"An open delinquency already exists for this due date",
+		);
+	});
+
+	it(
+		"should resolve delinquency items individually, keep history and clear active state after last open item",
+		async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(fixture);
+		const firstDueDate = getRelativeDateInput(-30);
+		const secondDueDate = getRelativeDateInput(-5);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+		const firstDelinquencyId = await createSaleDelinquencyUsingApi(
+			fixture,
+			saleId,
+			firstDueDate,
+		);
+		const secondDelinquencyId = await createSaleDelinquencyUsingApi(
+			fixture,
+			saleId,
+			secondDueDate,
+		);
+
+		await resolveSaleDelinquencyUsingApi(fixture, saleId, firstDelinquencyId);
+
+		const detailAfterFirstResolution = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(detailAfterFirstResolution.statusCode).toBe(200);
+		expect(detailAfterFirstResolution.body.sale.delinquencySummary).toMatchObject({
+			hasOpen: true,
+			openCount: 1,
+			oldestDueDate: toDateOnlyIsoString(secondDueDate),
+			latestDueDate: toDateOnlyIsoString(secondDueDate),
+		});
+		expect(detailAfterFirstResolution.body.sale.openDelinquencies).toHaveLength(1);
+		expect(detailAfterFirstResolution.body.sale.openDelinquencies[0]?.id).toBe(
+			secondDelinquencyId,
+		);
+		expect(detailAfterFirstResolution.body.sale.delinquencyHistory).toHaveLength(
+			1,
+		);
+
+		await resolveSaleDelinquencyUsingApi(fixture, saleId, secondDelinquencyId);
+
+		const detailAfterSecondResolution = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(detailAfterSecondResolution.statusCode).toBe(200);
+		expect(
+			detailAfterSecondResolution.body.sale.delinquencySummary,
+		).toMatchObject({
+			hasOpen: false,
+			openCount: 0,
+			oldestDueDate: null,
+			latestDueDate: null,
+		});
+		expect(detailAfterSecondResolution.body.sale.openDelinquencies).toHaveLength(
+			0,
+		);
+		expect(detailAfterSecondResolution.body.sale.delinquencyHistory).toHaveLength(
+			2,
+		);
+
+		const history = await getSaleHistoryEvents(fixture, saleId);
+		expect(
+			history.some((event) => event.action === "DELINQUENCY_CREATED"),
+		).toBe(true);
+		expect(
+			history.some((event) => event.action === "DELINQUENCY_RESOLVED"),
+		).toBe(true);
+		},
+		15000,
+	);
+
+	it(
+		"should delete open delinquency and clear active state when it was the last one",
+		async () => {
+			const fixture = await createFixture();
+			const saleId = await createSaleUsingApi(fixture);
+			const dueDate = getRelativeDateInput(-10);
+
+			await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+			await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+			const delinquencyId = await createSaleDelinquencyUsingApi(
+				fixture,
+				saleId,
+				dueDate,
+			);
+
+			await deleteSaleDelinquencyUsingApi(fixture, saleId, delinquencyId);
+
+			const detailResponse = await request(app.server)
+				.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+				.set("Authorization", `Bearer ${fixture.token}`);
+
+			expect(detailResponse.statusCode).toBe(200);
+			expect(detailResponse.body.sale.delinquencySummary).toMatchObject({
+				hasOpen: false,
+				openCount: 0,
+				oldestDueDate: null,
+				latestDueDate: null,
+			});
+			expect(detailResponse.body.sale.openDelinquencies).toHaveLength(0);
+			expect(detailResponse.body.sale.delinquencyHistory).toHaveLength(0);
+
+			const deletedDelinquency = await prisma.saleDelinquency.findUnique({
+				where: {
+					id: delinquencyId,
+				},
+			});
+			expect(deletedDelinquency).toBeNull();
+
+			const history = await getSaleHistoryEvents(fixture, saleId);
+			expect(
+				history.some((event) => event.action === "DELINQUENCY_DELETED"),
+			).toBe(true);
+		},
+		15000,
+	);
+
+	it(
+		"should delete resolved delinquency from history",
+		async () => {
+			const fixture = await createFixture();
+			const saleId = await createSaleUsingApi(fixture);
+			const dueDate = getRelativeDateInput(-10);
+
+			await patchSaleStatusUsingApi(fixture, saleId, "APPROVED");
+			await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+
+			const delinquencyId = await createSaleDelinquencyUsingApi(
+				fixture,
+				saleId,
+				dueDate,
+			);
+
+			await resolveSaleDelinquencyUsingApi(fixture, saleId, delinquencyId);
+			await deleteSaleDelinquencyUsingApi(fixture, saleId, delinquencyId);
+
+			const detailResponse = await request(app.server)
+				.get(`/organizations/${fixture.org.slug}/sales/${saleId}`)
+				.set("Authorization", `Bearer ${fixture.token}`);
+
+			expect(detailResponse.statusCode).toBe(200);
+			expect(detailResponse.body.sale.delinquencySummary).toMatchObject({
+				hasOpen: false,
+				openCount: 0,
+				oldestDueDate: null,
+				latestDueDate: null,
+			});
+			expect(detailResponse.body.sale.openDelinquencies).toHaveLength(0);
+			expect(detailResponse.body.sale.delinquencyHistory).toHaveLength(0);
+
+			const history = await getSaleHistoryEvents(fixture, saleId);
+			expect(
+				history.filter((event) => event.action === "DELINQUENCY_DELETED"),
+			).toHaveLength(1);
+		},
+		15000,
+	);
+
+	it(
+		"should list only delinquent sales and expose customer sales delinquency summary",
+		async () => {
+		const fixture = await createFixture();
+		const delinquentSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-04",
+			}),
+		);
+		const regularSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, delinquentSaleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, delinquentSaleId, "COMPLETED");
+		await patchSaleStatusUsingApi(fixture, regularSaleId, "APPROVED");
+		await patchSaleStatusUsingApi(fixture, regularSaleId, "COMPLETED");
+		const dueDate = getRelativeDateInput(-10);
+		await createSaleDelinquencyUsingApi(
+			fixture,
+			delinquentSaleId,
+			dueDate,
+		);
+
+		const delinquentSalesResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/delinquency`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(delinquentSalesResponse.statusCode).toBe(200);
+		expect(delinquentSalesResponse.body.sales).toHaveLength(1);
+		expect(delinquentSalesResponse.body.sales[0]?.id).toBe(delinquentSaleId);
+		expect(delinquentSalesResponse.body.sales[0]?.openDelinquencies).toHaveLength(
+			1,
+		);
+
+		const customerResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/customers/${fixture.customer.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(customerResponse.statusCode).toBe(200);
+		expect(customerResponse.body.customer.sales).toHaveLength(2);
+
+		const customerDelinquentSale = customerResponse.body.customer.sales.find(
+			(sale: { id: string }) => sale.id === delinquentSaleId,
+		);
+		const customerRegularSale = customerResponse.body.customer.sales.find(
+			(sale: { id: string }) => sale.id === regularSaleId,
+		);
+
+		expect(customerDelinquentSale?.delinquencySummary).toMatchObject({
+			hasOpen: true,
+			openCount: 1,
+		});
+		expect(customerDelinquentSale?.openDelinquencies).toHaveLength(1);
+		expect(customerRegularSale?.delinquencySummary).toMatchObject({
+			hasOpen: false,
+			openCount: 0,
+		});
+		expect(customerRegularSale?.openDelinquencies).toHaveLength(0);
+		},
+		15000,
+	);
 
 	it("should fail when customer is inactive", async () => {
 		const fixture = await createFixture();
@@ -6724,9 +7258,13 @@ describe("sales crud", () => {
 		expect(linkedTransactionAfterDelete?.saleId).toBeNull();
 	});
 
-	it("should not sync linked transactions when they are paid or canceled", async () => {
-		const fixture = await createFixture();
-		const mapping = await createProductSalesTransactionMapping(fixture.org.id);
+	it(
+		"should not sync linked transactions when they are paid or canceled",
+		async () => {
+			const fixture = await createFixture();
+			const mapping = await createProductSalesTransactionMapping(
+				fixture.org.id,
+			);
 
 		await setOrganizationSalesTransactionsSync(fixture.org.id, true);
 		await updateProductSalesTransactionMapping({
@@ -6843,8 +7381,10 @@ describe("sales crud", () => {
 		expect(canceledTransactionAfterSaleUpdate?.status).toBe(
 			TransactionStatus.CANCELED,
 		);
-		expect(canceledTransactionAfterSaleUpdate?.totalAmount).toBe(888_888);
-	});
+			expect(canceledTransactionAfterSaleUpdate?.totalAmount).toBe(888_888);
+		},
+		15000,
+	);
 
 	it("should patch status in bulk for valid transitions", async () => {
 		const fixture = await createFixture();
@@ -6882,6 +7422,73 @@ describe("sales crud", () => {
 
 		expect(sales).toHaveLength(2);
 		expect(sales.every((sale) => sale.status === SaleStatus.APPROVED)).toBe(
+			true,
+		);
+	});
+
+	it("should auto activate inactive responsible partners when completing sales in bulk", async () => {
+		const fixture = await createFixture();
+		const secondInactivePartner = await prisma.partner.create({
+			data: {
+				name: `Second inactive partner ${Date.now()}`,
+				email: `second-inactive-partner-${Date.now()}@example.com`,
+				phone: "55999555111",
+				documentType: PartnerDocumentType.CPF,
+				document: `${Math.floor(Math.random() * 1_000_000_000)}`,
+				companyName: "Partner Company",
+				state: "RS",
+				organizationId: fixture.org.id,
+				status: PartnerStatus.INACTIVE,
+			},
+		});
+
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				responsible: {
+					type: "PARTNER",
+					id: fixture.inactivePartner.id,
+				},
+				unitId: undefined,
+			}),
+		);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+				responsible: {
+					type: "PARTNER",
+					id: secondInactivePartner.id,
+				},
+				unitId: undefined,
+			}),
+		);
+
+		const response = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds: [firstSaleId, secondSaleId],
+				status: "COMPLETED",
+			});
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.updated).toBe(2);
+
+		const partners = await prisma.partner.findMany({
+			where: {
+				id: {
+					in: [fixture.inactivePartner.id, secondInactivePartner.id],
+				},
+			},
+			select: {
+				id: true,
+				status: true,
+			},
+		});
+
+		expect(partners).toHaveLength(2);
+		expect(partners.every((partner) => partner.status === PartnerStatus.ACTIVE)).toBe(
 			true,
 		);
 	});

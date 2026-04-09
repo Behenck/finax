@@ -1,4 +1,4 @@
-import { format, isValid, parse, type Locale } from "date-fns";
+import { endOfDay, format, isValid, parse, type Locale } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { applyDateInputMask } from "@/utils/date-mask";
@@ -12,6 +12,7 @@ interface CalendarDateInputProps {
 	onChange: (value: string) => void;
 	placeholder?: string;
 	disabled?: boolean;
+	maxDate?: Date;
 	locale?: Locale;
 	"aria-invalid"?: boolean;
 }
@@ -44,6 +45,7 @@ export function CalendarDateInput({
 	onChange,
 	placeholder = "dd/mm/aaaa",
 	disabled,
+	maxDate,
 	locale,
 	"aria-invalid": ariaInvalid,
 }: CalendarDateInputProps) {
@@ -57,6 +59,10 @@ export function CalendarDateInput({
 		const parsedDate = parse(value, "yyyy-MM-dd", new Date());
 		return isValid(parsedDate) ? parsedDate : undefined;
 	}, [value]);
+	const normalizedMaxDate = useMemo(
+		() => (maxDate ? endOfDay(maxDate) : undefined),
+		[maxDate],
+	);
 
 	useEffect(() => {
 		const input = inputRef.current;
@@ -155,12 +161,23 @@ export function CalendarDateInput({
 						mode="single"
 						locale={locale}
 						selected={selectedDate}
+						disabled={
+							normalizedMaxDate
+								? {
+										after: normalizedMaxDate,
+									}
+								: undefined
+						}
 						onSelect={(date) => {
 							if (!date) {
 								onChange("");
 								if (inputRef.current) {
 									inputRef.current.value = "";
 								}
+								return;
+							}
+
+							if (normalizedMaxDate && date > normalizedMaxDate) {
 								return;
 							}
 

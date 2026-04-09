@@ -236,6 +236,7 @@ export type OrganizationWhereInput = {
   sellers?: Prisma.SellerListRelationFilter
   products?: Prisma.ProductListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  saleDelinquencies?: Prisma.SaleDelinquencyListRelationFilter
   saleHistoryEvents?: Prisma.SaleHistoryEventListRelationFilter
   saleImportTemplates?: Prisma.SaleImportTemplateListRelationFilter
   saleImportAudits?: Prisma.SaleImportAuditListRelationFilter
@@ -270,6 +271,7 @@ export type OrganizationOrderByWithRelationInput = {
   sellers?: Prisma.SellerOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
   sales?: Prisma.SaleOrderByRelationAggregateInput
+  saleDelinquencies?: Prisma.SaleDelinquencyOrderByRelationAggregateInput
   saleHistoryEvents?: Prisma.SaleHistoryEventOrderByRelationAggregateInput
   saleImportTemplates?: Prisma.SaleImportTemplateOrderByRelationAggregateInput
   saleImportAudits?: Prisma.SaleImportAuditOrderByRelationAggregateInput
@@ -307,6 +309,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   sellers?: Prisma.SellerListRelationFilter
   products?: Prisma.ProductListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  saleDelinquencies?: Prisma.SaleDelinquencyListRelationFilter
   saleHistoryEvents?: Prisma.SaleHistoryEventListRelationFilter
   saleImportTemplates?: Prisma.SaleImportTemplateListRelationFilter
   saleImportAudits?: Prisma.SaleImportAuditListRelationFilter
@@ -372,6 +375,7 @@ export type OrganizationCreateInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -405,6 +409,7 @@ export type OrganizationUncheckedCreateInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -438,6 +443,7 @@ export type OrganizationUpdateInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -471,6 +477,7 @@ export type OrganizationUncheckedUpdateInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -845,6 +852,20 @@ export type OrganizationUpdateOneRequiredWithoutSaleHistoryEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSaleHistoryEventsInput, Prisma.OrganizationUpdateWithoutSaleHistoryEventsInput>, Prisma.OrganizationUncheckedUpdateWithoutSaleHistoryEventsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutSaleDelinquenciesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedCreateWithoutSaleDelinquenciesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSaleDelinquenciesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutSaleDelinquenciesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedCreateWithoutSaleDelinquenciesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSaleDelinquenciesInput
+  upsert?: Prisma.OrganizationUpsertWithoutSaleDelinquenciesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSaleDelinquenciesInput, Prisma.OrganizationUpdateWithoutSaleDelinquenciesInput>, Prisma.OrganizationUncheckedUpdateWithoutSaleDelinquenciesInput>
+}
+
 export type OrganizationCreateNestedOneWithoutSaleImportTemplatesInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSaleImportTemplatesInput, Prisma.OrganizationUncheckedCreateWithoutSaleImportTemplatesInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSaleImportTemplatesInput
@@ -924,6 +945,7 @@ export type OrganizationCreateWithoutOwnerInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -956,6 +978,7 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1030,6 +1053,7 @@ export type OrganizationCreateWithoutInvitesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1062,6 +1086,7 @@ export type OrganizationUncheckedCreateWithoutInvitesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1110,6 +1135,7 @@ export type OrganizationUpdateWithoutInvitesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1142,6 +1168,7 @@ export type OrganizationUncheckedUpdateWithoutInvitesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1174,6 +1201,7 @@ export type OrganizationCreateWithoutMembersInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1206,6 +1234,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1254,6 +1283,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1286,6 +1316,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1319,6 +1350,7 @@ export type OrganizationCreateWithoutMemberCompanyAccessesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1351,6 +1383,7 @@ export type OrganizationUncheckedCreateWithoutMemberCompanyAccessesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1399,6 +1432,7 @@ export type OrganizationUpdateWithoutMemberCompanyAccessesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1431,6 +1465,7 @@ export type OrganizationUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1463,6 +1498,7 @@ export type OrganizationCreateWithoutRolePermissionsInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1495,6 +1531,7 @@ export type OrganizationUncheckedCreateWithoutRolePermissionsInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1543,6 +1580,7 @@ export type OrganizationUpdateWithoutRolePermissionsInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1575,6 +1613,7 @@ export type OrganizationUncheckedUpdateWithoutRolePermissionsInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1607,6 +1646,7 @@ export type OrganizationCreateWithoutMemberPermissionOverridesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1639,6 +1679,7 @@ export type OrganizationUncheckedCreateWithoutMemberPermissionOverridesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1687,6 +1728,7 @@ export type OrganizationUpdateWithoutMemberPermissionOverridesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1719,6 +1761,7 @@ export type OrganizationUncheckedUpdateWithoutMemberPermissionOverridesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1751,6 +1794,7 @@ export type OrganizationCreateWithoutPermissionAuditLogsInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1783,6 +1827,7 @@ export type OrganizationUncheckedCreateWithoutPermissionAuditLogsInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1831,6 +1876,7 @@ export type OrganizationUpdateWithoutPermissionAuditLogsInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -1863,6 +1909,7 @@ export type OrganizationUncheckedUpdateWithoutPermissionAuditLogsInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1894,6 +1941,7 @@ export type OrganizationCreateWithoutCompaniesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -1926,6 +1974,7 @@ export type OrganizationUncheckedCreateWithoutCompaniesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1974,6 +2023,7 @@ export type OrganizationUpdateWithoutCompaniesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2006,6 +2056,7 @@ export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2038,6 +2089,7 @@ export type OrganizationCreateWithoutCategoriesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2070,6 +2122,7 @@ export type OrganizationUncheckedCreateWithoutCategoriesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2118,6 +2171,7 @@ export type OrganizationUpdateWithoutCategoriesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2150,6 +2204,7 @@ export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2182,6 +2237,7 @@ export type OrganizationCreateWithoutCostCentersInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2214,6 +2270,7 @@ export type OrganizationUncheckedCreateWithoutCostCentersInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2262,6 +2319,7 @@ export type OrganizationUpdateWithoutCostCentersInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2294,6 +2352,7 @@ export type OrganizationUncheckedUpdateWithoutCostCentersInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2326,6 +2385,7 @@ export type OrganizationCreateWithoutEmployeesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2358,6 +2418,7 @@ export type OrganizationUncheckedCreateWithoutEmployeesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2406,6 +2467,7 @@ export type OrganizationUpdateWithoutEmployeesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2438,6 +2500,7 @@ export type OrganizationUncheckedUpdateWithoutEmployeesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2470,6 +2533,7 @@ export type OrganizationCreateWithoutCustomersInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2502,6 +2566,7 @@ export type OrganizationUncheckedCreateWithoutCustomersInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2550,6 +2615,7 @@ export type OrganizationUpdateWithoutCustomersInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2582,6 +2648,7 @@ export type OrganizationUncheckedUpdateWithoutCustomersInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2614,6 +2681,7 @@ export type OrganizationCreateWithoutPartnersInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2646,6 +2714,7 @@ export type OrganizationUncheckedCreateWithoutPartnersInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2694,6 +2763,7 @@ export type OrganizationUpdateWithoutPartnersInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2726,6 +2796,7 @@ export type OrganizationUncheckedUpdateWithoutPartnersInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2758,6 +2829,7 @@ export type OrganizationCreateWithoutSellersInput = {
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2790,6 +2862,7 @@ export type OrganizationUncheckedCreateWithoutSellersInput = {
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2838,6 +2911,7 @@ export type OrganizationUpdateWithoutSellersInput = {
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -2870,6 +2944,7 @@ export type OrganizationUncheckedUpdateWithoutSellersInput = {
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -2902,6 +2977,7 @@ export type OrganizationCreateWithoutProductsInput = {
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -2934,6 +3010,7 @@ export type OrganizationUncheckedCreateWithoutProductsInput = {
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -2982,6 +3059,7 @@ export type OrganizationUpdateWithoutProductsInput = {
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -3014,6 +3092,7 @@ export type OrganizationUncheckedUpdateWithoutProductsInput = {
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3046,6 +3125,7 @@ export type OrganizationCreateWithoutSalesInput = {
   partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -3078,6 +3158,7 @@ export type OrganizationUncheckedCreateWithoutSalesInput = {
   partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3126,6 +3207,7 @@ export type OrganizationUpdateWithoutSalesInput = {
   partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -3158,6 +3240,7 @@ export type OrganizationUncheckedUpdateWithoutSalesInput = {
   partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3191,6 +3274,7 @@ export type OrganizationCreateWithoutSaleHistoryEventsInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutOrganizationInput
@@ -3223,6 +3307,7 @@ export type OrganizationUncheckedCreateWithoutSaleHistoryEventsInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3271,6 +3356,7 @@ export type OrganizationUpdateWithoutSaleHistoryEventsInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutOrganizationNestedInput
@@ -3303,6 +3389,155 @@ export type OrganizationUncheckedUpdateWithoutSaleHistoryEventsInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutOrganizationNestedInput
+  rolePermissions?: Prisma.OrganizationRolePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
+  memberPermissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutOrganizationNestedInput
+  permissionAuditLogs?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutSaleDelinquenciesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
+  avatarUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwns_organizationsInput
+  invites?: Prisma.InviteCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  costCenters?: Prisma.CostCenterCreateNestedManyWithoutOrganizationInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutOrganizationInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  partners?: Prisma.PartnerCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
+  saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
+  saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutOrganizationInput
+  rolePermissions?: Prisma.OrganizationRolePermissionCreateNestedManyWithoutOrganizationInput
+  memberPermissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutOrganizationInput
+  permissionAuditLogs?: Prisma.PermissionAuditLogCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutSaleDelinquenciesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  shouldAttachUserByDomain?: boolean
+  enableSalesTransactionsSync?: boolean
+  avatarUrl?: string | null
+  ownerId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invites?: Prisma.InviteUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  costCenters?: Prisma.CostCenterUncheckedCreateNestedManyWithoutOrganizationInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutOrganizationInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  partners?: Prisma.PartnerUncheckedCreateNestedManyWithoutOrganizationInput
+  sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
+  saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
+  saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutOrganizationInput
+  rolePermissions?: Prisma.OrganizationRolePermissionUncheckedCreateNestedManyWithoutOrganizationInput
+  memberPermissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutOrganizationInput
+  permissionAuditLogs?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutSaleDelinquenciesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedCreateWithoutSaleDelinquenciesInput>
+}
+
+export type OrganizationUpsertWithoutSaleDelinquenciesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedUpdateWithoutSaleDelinquenciesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedCreateWithoutSaleDelinquenciesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutSaleDelinquenciesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutSaleDelinquenciesInput, Prisma.OrganizationUncheckedUpdateWithoutSaleDelinquenciesInput>
+}
+
+export type OrganizationUpdateWithoutSaleDelinquenciesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwns_organizationsNestedInput
+  invites?: Prisma.InviteUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  costCenters?: Prisma.CostCenterUpdateManyWithoutOrganizationNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutOrganizationNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  partners?: Prisma.PartnerUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
+  saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
+  saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutOrganizationNestedInput
+  rolePermissions?: Prisma.OrganizationRolePermissionUpdateManyWithoutOrganizationNestedInput
+  memberPermissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutOrganizationNestedInput
+  permissionAuditLogs?: Prisma.PermissionAuditLogUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutSaleDelinquenciesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invites?: Prisma.InviteUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  costCenters?: Prisma.CostCenterUncheckedUpdateManyWithoutOrganizationNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutOrganizationNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  partners?: Prisma.PartnerUncheckedUpdateManyWithoutOrganizationNestedInput
+  sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3335,6 +3570,7 @@ export type OrganizationCreateWithoutSaleImportTemplatesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutOrganizationInput
@@ -3367,6 +3603,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportTemplatesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3415,6 +3652,7 @@ export type OrganizationUpdateWithoutSaleImportTemplatesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutOrganizationNestedInput
@@ -3447,6 +3685,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportTemplatesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3479,6 +3718,7 @@ export type OrganizationCreateWithoutSaleImportAuditsInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutOrganizationInput
@@ -3511,6 +3751,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportAuditsInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3559,6 +3800,7 @@ export type OrganizationUpdateWithoutSaleImportAuditsInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutOrganizationNestedInput
@@ -3591,6 +3833,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportAuditsInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3622,6 +3865,7 @@ export type OrganizationCreateWithoutTransactionsInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -3654,6 +3898,7 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3702,6 +3947,7 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -3734,6 +3980,7 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3766,6 +4013,7 @@ export type OrganizationCreateWithoutRecurrencesInput = {
   sellers?: Prisma.SellerCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditCreateNestedManyWithoutOrganizationInput
@@ -3798,6 +4046,7 @@ export type OrganizationUncheckedCreateWithoutRecurrencesInput = {
   sellers?: Prisma.SellerUncheckedCreateNestedManyWithoutOrganizationInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutOrganizationInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedCreateNestedManyWithoutOrganizationInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedCreateNestedManyWithoutOrganizationInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3846,6 +4095,7 @@ export type OrganizationUpdateWithoutRecurrencesInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -3878,6 +4128,7 @@ export type OrganizationUncheckedUpdateWithoutRecurrencesInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3922,6 +4173,7 @@ export type OrganizationUpdateWithoutOwnerInput = {
   sellers?: Prisma.SellerUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUpdateManyWithoutOrganizationNestedInput
@@ -3954,6 +4206,7 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   sellers?: Prisma.SellerUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutOrganizationNestedInput
+  saleDelinquencies?: Prisma.SaleDelinquencyUncheckedUpdateManyWithoutOrganizationNestedInput
   saleHistoryEvents?: Prisma.SaleHistoryEventUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportTemplates?: Prisma.SaleImportTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
   saleImportAudits?: Prisma.SaleImportAuditUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3994,6 +4247,7 @@ export type OrganizationCountOutputType = {
   sellers: number
   products: number
   sales: number
+  saleDelinquencies: number
   saleHistoryEvents: number
   saleImportTemplates: number
   saleImportAudits: number
@@ -4017,6 +4271,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   sellers?: boolean | OrganizationCountOutputTypeCountSellersArgs
   products?: boolean | OrganizationCountOutputTypeCountProductsArgs
   sales?: boolean | OrganizationCountOutputTypeCountSalesArgs
+  saleDelinquencies?: boolean | OrganizationCountOutputTypeCountSaleDelinquenciesArgs
   saleHistoryEvents?: boolean | OrganizationCountOutputTypeCountSaleHistoryEventsArgs
   saleImportTemplates?: boolean | OrganizationCountOutputTypeCountSaleImportTemplatesArgs
   saleImportAudits?: boolean | OrganizationCountOutputTypeCountSaleImportAuditsArgs
@@ -4130,6 +4385,13 @@ export type OrganizationCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Ty
 /**
  * OrganizationCountOutputType without action
  */
+export type OrganizationCountOutputTypeCountSaleDelinquenciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleDelinquencyWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
 export type OrganizationCountOutputTypeCountSaleHistoryEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SaleHistoryEventWhereInput
 }
@@ -4202,6 +4464,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   sellers?: boolean | Prisma.Organization$sellersArgs<ExtArgs>
   products?: boolean | Prisma.Organization$productsArgs<ExtArgs>
   sales?: boolean | Prisma.Organization$salesArgs<ExtArgs>
+  saleDelinquencies?: boolean | Prisma.Organization$saleDelinquenciesArgs<ExtArgs>
   saleHistoryEvents?: boolean | Prisma.Organization$saleHistoryEventsArgs<ExtArgs>
   saleImportTemplates?: boolean | Prisma.Organization$saleImportTemplatesArgs<ExtArgs>
   saleImportAudits?: boolean | Prisma.Organization$saleImportAuditsArgs<ExtArgs>
@@ -4269,6 +4532,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   sellers?: boolean | Prisma.Organization$sellersArgs<ExtArgs>
   products?: boolean | Prisma.Organization$productsArgs<ExtArgs>
   sales?: boolean | Prisma.Organization$salesArgs<ExtArgs>
+  saleDelinquencies?: boolean | Prisma.Organization$saleDelinquenciesArgs<ExtArgs>
   saleHistoryEvents?: boolean | Prisma.Organization$saleHistoryEventsArgs<ExtArgs>
   saleImportTemplates?: boolean | Prisma.Organization$saleImportTemplatesArgs<ExtArgs>
   saleImportAudits?: boolean | Prisma.Organization$saleImportAuditsArgs<ExtArgs>
@@ -4302,6 +4566,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     sellers: Prisma.$SellerPayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
     sales: Prisma.$SalePayload<ExtArgs>[]
+    saleDelinquencies: Prisma.$SaleDelinquencyPayload<ExtArgs>[]
     saleHistoryEvents: Prisma.$SaleHistoryEventPayload<ExtArgs>[]
     saleImportTemplates: Prisma.$SaleImportTemplatePayload<ExtArgs>[]
     saleImportAudits: Prisma.$SaleImportAuditPayload<ExtArgs>[]
@@ -4729,6 +4994,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   sellers<T extends Prisma.Organization$sellersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$sellersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SellerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.Organization$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sales<T extends Prisma.Organization$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  saleDelinquencies<T extends Prisma.Organization$saleDelinquenciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$saleDelinquenciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleDelinquencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleHistoryEvents<T extends Prisma.Organization$saleHistoryEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$saleHistoryEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleHistoryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleImportTemplates<T extends Prisma.Organization$saleImportTemplatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$saleImportTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleImportTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleImportAudits<T extends Prisma.Organization$saleImportAuditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$saleImportAuditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleImportAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5499,6 +5765,30 @@ export type Organization$salesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
+ * Organization.saleDelinquencies
+ */
+export type Organization$saleDelinquenciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SaleDelinquency
+   */
+  select?: Prisma.SaleDelinquencySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SaleDelinquency
+   */
+  omit?: Prisma.SaleDelinquencyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleDelinquencyInclude<ExtArgs> | null
+  where?: Prisma.SaleDelinquencyWhereInput
+  orderBy?: Prisma.SaleDelinquencyOrderByWithRelationInput | Prisma.SaleDelinquencyOrderByWithRelationInput[]
+  cursor?: Prisma.SaleDelinquencyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleDelinquencyScalarFieldEnum | Prisma.SaleDelinquencyScalarFieldEnum[]
 }
 
 /**

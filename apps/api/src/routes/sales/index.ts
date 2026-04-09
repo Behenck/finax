@@ -6,6 +6,7 @@ import { createSaleImportTemplate } from "./create-sale-import-template";
 import { deleteCommissionReceiptImportTemplate } from "./delete-commission-receipt-import-template";
 import { deleteSale } from "./delete-sale";
 import { deleteSaleCommissionInstallment } from "./delete-sale-commission-installment";
+import { deleteSaleDelinquency } from "./delete-sale-delinquency";
 import { deleteSaleImportTemplate } from "./delete-sale-import-template";
 import { getCommissionReceiptImportTemplates } from "./get-commission-receipt-import-templates";
 import { getOrganizationCommissionInstallments } from "./get-organization-commission-installments";
@@ -13,10 +14,13 @@ import { getSale } from "./get-sale";
 import { getSaleCommissionInstallments } from "./get-sale-commission-installments";
 import { getSaleHistory } from "./get-sale-history";
 import { getSaleImportTemplates } from "./get-sale-import-templates";
+import { getPartnerSalesDashboard } from "./get-partner-sales-dashboard";
+import { getSalesDelinquency } from "./get-sales-delinquency";
 import { getSales } from "./get-sales";
 import { getSalesDashboard } from "./get-sales-dashboard";
 import { patchSaleCommissionInstallment } from "./patch-sale-commission-installment";
 import { patchSaleCommissionInstallmentStatus } from "./patch-sale-commission-installment-status";
+import { patchSaleDelinquencyResolve } from "./patch-sale-delinquency-resolve";
 import { patchCommissionInstallmentsStatusBulk } from "./patch-commission-installments-status-bulk";
 import { patchSaleStatus } from "./patch-sale-status";
 import { patchSalesDeleteBulk } from "./patch-sales-delete-bulk";
@@ -27,6 +31,7 @@ import { postCommissionReceiptImportApply } from "./post-commission-receipt-impo
 import { postCommissionReceiptImportPreview } from "./post-commission-receipt-import-preview";
 import { postSalesBatch } from "./post-sales-batch";
 import { postSalesImport } from "./post-sales-import";
+import { postSaleDelinquency } from "./post-sale-delinquency";
 import { updateCommissionReceiptImportTemplate } from "./update-commission-receipt-import-template";
 import { updateSale } from "./update-sale";
 import { updateSaleImportTemplate } from "./update-sale-import-template";
@@ -108,12 +113,43 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 		return "sales.status.change" as const;
 	}
 
+	if (
+		routeUrl === "/organizations/:slug/sales/:saleId/delinquencies" &&
+		method === "POST"
+	) {
+		return "sales.update" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/delinquencies/:delinquencyId/resolve" &&
+		method === "PATCH"
+	) {
+		return "sales.update" as const;
+	}
+
+	if (
+		routeUrl ===
+			"/organizations/:slug/sales/:saleId/delinquencies/:delinquencyId" &&
+		method === "DELETE"
+	) {
+		return "sales.update" as const;
+	}
+
 	if (routeUrl === "/organizations/:slug/sales/delete/bulk") {
 		return "sales.delete" as const;
 	}
 
 	if (routeUrl === "/organizations/:slug/sales/dashboard") {
 		return "sales.dashboard.view" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/dashboard/partners") {
+		return "sales.dashboard.view" as const;
+	}
+
+	if (routeUrl === "/organizations/:slug/sales/delinquency") {
+		return "sales.view" as const;
 	}
 
 	if (routeUrl === "/organizations/:slug/sales" && method === "POST") {
@@ -155,10 +191,15 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(updateSale);
 	await app.register(deleteSale);
 	await app.register(getOrganizationCommissionInstallments);
+	await app.register(getPartnerSalesDashboard);
 	await app.register(getSalesDashboard);
 	await app.register(getSales);
+	await app.register(getSalesDelinquency);
 	await app.register(getSale);
 	await app.register(getSaleHistory);
+	await app.register(postSaleDelinquency);
+	await app.register(patchSaleDelinquencyResolve);
+	await app.register(deleteSaleDelinquency);
 	await app.register(patchSaleStatus);
 	await app.register(patchSalesStatusBulk);
 	await app.register(patchSalesDeleteBulk);

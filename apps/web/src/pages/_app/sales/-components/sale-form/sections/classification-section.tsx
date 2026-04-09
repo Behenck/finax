@@ -4,7 +4,10 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
+	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -29,6 +32,7 @@ interface ClassificationSectionProps {
 	responsibles: Array<{
 		id: string;
 		name: string;
+		status?: "ACTIVE" | "INACTIVE";
 	}>;
 	selectedCompanyId: string;
 	selectedResponsibleType: SaleResponsibleType;
@@ -44,6 +48,13 @@ export function ClassificationSection({
 	selectedResponsibleType,
 	isLoadingOptions,
 }: ClassificationSectionProps) {
+	const activePartnerResponsibles = responsibles.filter(
+		(responsible) => responsible.status !== "INACTIVE",
+	);
+	const inactivePartnerResponsibles = responsibles.filter(
+		(responsible) => responsible.status === "INACTIVE",
+	);
+
 	return (
 		<Card className="rounded-sm gap-4 p-5">
 			<h2 className="font-semibold text-md">Classificação da Venda</h2>
@@ -175,11 +186,46 @@ export function ClassificationSection({
 											<SelectValue placeholder="Selecione o responsável" />
 										</SelectTrigger>
 										<SelectContent>
-											{responsibles.map((responsible) => (
-												<SelectItem key={responsible.id} value={responsible.id}>
-													{responsible.name}
-												</SelectItem>
-											))}
+											{selectedResponsibleType === "PARTNER" ? (
+												<>
+													<SelectGroup>
+														<SelectLabel>Ativos</SelectLabel>
+														{activePartnerResponsibles.map((responsible) => (
+															<SelectItem
+																key={responsible.id}
+																value={responsible.id}
+															>
+																{responsible.name}
+															</SelectItem>
+														))}
+													</SelectGroup>
+													{inactivePartnerResponsibles.length > 0 ? (
+														<>
+															<SelectSeparator />
+															<SelectGroup>
+																<SelectLabel>Inativos</SelectLabel>
+																{inactivePartnerResponsibles.map((responsible) => (
+																	<SelectItem
+																		key={responsible.id}
+																		value={responsible.id}
+																	>
+																		{responsible.name}
+																	</SelectItem>
+																))}
+															</SelectGroup>
+														</>
+													) : null}
+												</>
+											) : (
+												responsibles.map((responsible) => (
+													<SelectItem
+														key={responsible.id}
+														value={responsible.id}
+													>
+														{responsible.name}
+													</SelectItem>
+												))
+											)}
 										</SelectContent>
 									</Select>
 									<FieldError error={fieldState.error} />

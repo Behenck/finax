@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ResponsiveDataView } from '@/components/responsive-data-view'
-import { Edit3, EllipsisVertical, Mail, MessageCircle } from 'lucide-react'
+import { Edit3, EllipsisVertical, Eye, Mail, MessageCircle } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,7 +94,17 @@ export function ListCustomers({ customers }: ListCustomersProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link
+                      to="/registers/customers/$customerId"
+                      params={{ customerId: customer.id }}
+                    >
+                      <Eye className="size-4" />
+                      Ver cliente
+                    </Link>
+                  </Button>
+
                   <Button variant="outline" size="sm" asChild>
                     <Link
                       to="/sales/create"
@@ -208,6 +218,18 @@ export function ListCustomers({ customers }: ListCustomersProps) {
                   </TableCell>
                   <TableCell>
                     <div className='flex items-center justify-end'>
+                      <Button
+                        variant="link"
+                        className='text-xs text-muted-foreground hover:text-foreground hover:no-underline'
+                        asChild
+                      >
+                        <Link
+                          to="/registers/customers/$customerId"
+                          params={{ customerId: customer.id }}
+                        >
+                          Ver Cliente
+                        </Link>
+                      </Button>
                       <Button
                         variant="link"
                         className='text-xs text-muted-foreground hover:text-foreground hover:no-underline'

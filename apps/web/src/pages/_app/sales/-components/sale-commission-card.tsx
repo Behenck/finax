@@ -19,7 +19,10 @@ import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
+	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -82,6 +85,7 @@ const DIRECTION_OPTIONS: Array<{
 type SelectOption = {
 	id: string;
 	label: string;
+	status?: "ACTIVE" | "INACTIVE";
 };
 
 interface SaleCommissionCardProps {
@@ -258,6 +262,20 @@ export function SaleCommissionCard({
 			},
 		];
 	}, [beneficiaryId, beneficiaryLabel, beneficiaryOptions]);
+	const activePartnerBeneficiaries = useMemo(
+		() =>
+			beneficiaryOptionsWithFallback.filter(
+				(option) => option.status !== "INACTIVE",
+			),
+		[beneficiaryOptionsWithFallback],
+	);
+	const inactivePartnerBeneficiaries = useMemo(
+		() =>
+			beneficiaryOptionsWithFallback.filter(
+				(option) => option.status === "INACTIVE",
+			),
+		[beneficiaryOptionsWithFallback],
+	);
 
 	return (
 		<Card className="space-y-4 p-4 md:space-y-0 md:gap-3">
@@ -500,11 +518,37 @@ export function SaleCommissionCard({
 												<SelectItem value={OPTIONAL_NONE_VALUE}>
 													Selecione
 												</SelectItem>
-												{beneficiaryOptionsWithFallback.map((option) => (
-													<SelectItem key={option.id} value={option.id}>
-														{option.label}
-													</SelectItem>
-												))}
+												{recipientType === "PARTNER" ? (
+													<>
+														<SelectGroup>
+															<SelectLabel>Ativos</SelectLabel>
+															{activePartnerBeneficiaries.map((option) => (
+																<SelectItem key={option.id} value={option.id}>
+																	{option.label}
+																</SelectItem>
+															))}
+														</SelectGroup>
+														{inactivePartnerBeneficiaries.length > 0 ? (
+															<>
+																<SelectSeparator />
+																<SelectGroup>
+																	<SelectLabel>Inativos</SelectLabel>
+																	{inactivePartnerBeneficiaries.map((option) => (
+																		<SelectItem key={option.id} value={option.id}>
+																			{option.label}
+																		</SelectItem>
+																	))}
+																</SelectGroup>
+															</>
+														) : null}
+													</>
+												) : (
+													beneficiaryOptionsWithFallback.map((option) => (
+														<SelectItem key={option.id} value={option.id}>
+															{option.label}
+														</SelectItem>
+													))
+												)}
 											</SelectContent>
 										</Select>
 										<FormFieldError error={fieldState.error} />

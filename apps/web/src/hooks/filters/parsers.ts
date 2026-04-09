@@ -36,15 +36,24 @@ const TRANSACTION_SORT_BY_VALUES = [
 	"status",
 	"createdAt",
 ] as const;
+const PARTNER_STATUS_FILTER_VALUES = ["ALL", "ACTIVE", "INACTIVE"] as const;
 const SORT_DIRECTION_VALUES = ["asc", "desc"] as const;
 const MEMBER_VIEW_VALUES = ["access", "role"] as const;
-const DASHBOARD_VIEW_VALUES = ["commercial", "operational"] as const;
+const DASHBOARD_VIEW_VALUES = ["commercial", "operational", "partners"] as const;
+const PARTNERS_VIEW_VALUES = ["performance", "commission", "risk"] as const;
+const PRODUCT_BREAKDOWN_DEPTH_VALUES = ["FIRST_LEVEL", "ALL_LEVELS"] as const;
 
 export const textFilterParser = parseAsString
 	.withDefault("")
 	.withOptions({ history: "replace" });
 
 export const roleFilterParser = parseAsStringLiteral(ROLE_FILTER_VALUES)
+	.withDefault("ALL")
+	.withOptions({ history: "replace" });
+
+export const partnerStatusFilterParser = parseAsStringLiteral(
+	PARTNER_STATUS_FILTER_VALUES,
+)
 	.withDefault("ALL")
 	.withOptions({ history: "replace" });
 
@@ -58,6 +67,10 @@ export const memberViewParser = parseAsStringLiteral(MEMBER_VIEW_VALUES).withOpt
 
 export const dashboardViewParser = parseAsStringLiteral(DASHBOARD_VIEW_VALUES)
 	.withDefault("commercial")
+	.withOptions({ history: "replace" });
+
+export const partnersViewParser = parseAsStringLiteral(PARTNERS_VIEW_VALUES)
+	.withDefault("performance")
 	.withOptions({ history: "replace" });
 
 export const showZeroInstallmentsParser = parseAsBoolean
@@ -105,6 +118,16 @@ export const dateFilterParser = parseAsString
 export const monthFilterParser = parseAsString.withOptions({
 	history: "replace",
 });
+
+export const dashboardInactiveMonthsParser = parseAsInteger
+	.withDefault(3)
+	.withOptions({ history: "replace" });
+
+export const productBreakdownDepthParser = parseAsStringLiteral(
+	PRODUCT_BREAKDOWN_DEPTH_VALUES,
+)
+	.withDefault("FIRST_LEVEL")
+	.withOptions({ history: "replace" });
 
 export const pageParser = parseAsInteger
 	.withDefault(1)

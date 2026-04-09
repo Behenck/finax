@@ -2,6 +2,7 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	getOrganizationsSlugPartnersQueryKey,
 	getOrganizationsSlugSalesQueryKey,
 	patchOrganizationsSlugSalesStatusBulk,
 	type PatchOrganizationsSlugSalesStatusBulkMutationRequestStatusEnumKey,
@@ -40,6 +41,11 @@ export function usePatchSalesStatusBulk() {
 
 			await queryClient.invalidateQueries({
 				queryKey: getOrganizationsSlugSalesQueryKey({
+					slug: organization.slug,
+				}),
+			});
+			await queryClient.invalidateQueries({
+				queryKey: getOrganizationsSlugPartnersQueryKey({
 					slug: organization.slug,
 				}),
 			});

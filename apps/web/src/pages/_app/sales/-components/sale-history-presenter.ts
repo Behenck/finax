@@ -31,6 +31,7 @@ const DYNAMIC_FIELD_PATH_REGEX = /^sale\.dynamicFieldValues\.([^.]+)$/;
 const COMMISSION_PATH_REGEX = /^commissions\[(\d+)\]\.(.+)$/;
 const INSTALLMENT_PATH_REGEX =
 	/^commissions\[(\d+)\]\.installments\[(\d+)\]\.(.+)$/;
+const DELINQUENCY_PATH_REGEX = /^delinquency\.(.+)$/;
 
 const SALE_FIELD_LABEL: Record<string, string> = {
 	totalAmount: "valor total",
@@ -77,10 +78,18 @@ const INSTALLMENT_FIELD_LABEL: Record<string, string> = {
 	paymentDate: "data de pagamento",
 };
 
+const DELINQUENCY_FIELD_LABEL: Record<string, string> = {
+	dueDate: "data de vencimento",
+	resolvedAt: "data de resolução",
+};
+
 export const SALE_HISTORY_ACTION_LABEL: Record<HistoryActionEnumKey, string> = {
 	CREATED: "Venda criada",
 	UPDATED: "Venda atualizada",
 	STATUS_CHANGED: "Status alterado",
+	DELINQUENCY_CREATED: "Inadimplência adicionada",
+	DELINQUENCY_RESOLVED: "Inadimplência resolvida",
+	DELINQUENCY_DELETED: "Inadimplência excluída",
 	COMMISSION_INSTALLMENT_UPDATED: "Parcela atualizada",
 	COMMISSION_INSTALLMENT_STATUS_UPDATED: "Status da parcela alterado",
 	COMMISSION_INSTALLMENT_DELETED: "Parcela removida",
@@ -111,6 +120,10 @@ type ParsedHistoryPath =
 	| {
 			type: "commission";
 			commissionIndex: number;
+			field: string;
+	  }
+	| {
+			type: "delinquency";
 			field: string;
 	  }
 	| {
@@ -243,6 +256,14 @@ function parseHistoryPath(path: string): ParsedHistoryPath {
 		};
 	}
 
+	const delinquencyMatch = path.match(DELINQUENCY_PATH_REGEX);
+	if (delinquencyMatch) {
+		return {
+			type: "delinquency",
+			field: delinquencyMatch[1] ?? "",
+		};
+	}
+
 	const saleMatch = path.match(SALE_PATH_REGEX);
 	if (saleMatch) {
 		return {
@@ -337,6 +358,21 @@ function formatChangeValue(value: unknown, parsedPath: ParsedHistoryPath) {
 			typeof normalizedValue === "string"
 		) {
 			return formatDateOnly(normalizedValue);
+		}
+	}
+
+	if (parsedPath.type === "delinquency") {
+		if (
+			(parsedPath.field === "dueDate" || parsedPath.field === "resolvedAt") &&
+			typeof normalizedValue === "string"
+		) {
+			if (DATE_ONLY_REGEX.test(normalizedValue)) {
+				return formatDateOnly(normalizedValue);
+			}
+
+			if (ISO_DATE_TIME_REGEX.test(normalizedValue)) {
+				return formatDateTime(normalizedValue);
+			}
 		}
 	}
 
@@ -565,6 +601,38 @@ function formatInstallmentChange(
 	}
 }
 
+function formatDelinquencyChange(change: SaleHistoryChange, field: string) {
+	const beforeValue = formatChangeValue(change.before, {
+		type: "delinquency",
+		field,
+	});
+	const afterValue = formatChangeValue(change.after, {
+		type: "delinquency",
+		field,
+	});
+
+	switch (field) {
+		case "dueDate":
+			if (change.before === null || change.before === undefined) {
+				return `Inadimplência registrada com vencimento em ${afterValue}.`;
+			}
+
+			if (change.after === null || change.after === undefined) {
+				return `Inadimplência com vencimento em ${beforeValue} foi removida.`;
+			}
+
+			return `Vencimento da inadimplência alterado de ${beforeValue} para ${afterValue}.`;
+		case "resolvedAt":
+			return `Inadimplência resolvida em ${afterValue}.`;
+		default:
+			return buildFallbackSentence(
+				DELINQUENCY_FIELD_LABEL[field] ?? toFriendlyFieldName(field),
+				beforeValue,
+				afterValue,
+			);
+	}
+}
+
 export function formatSaleHistoryChange(change: SaleHistoryChange) {
 	const parsedPath = parseHistoryPath(change.path);
 
@@ -582,6 +650,10 @@ export function formatSaleHistoryChange(change: SaleHistoryChange) {
 			parsedPath.commissionIndex,
 			parsedPath.field,
 		);
+	}
+
+	if (parsedPath.type === "delinquency") {
+		return formatDelinquencyChange(change, parsedPath.field);
 	}
 
 	if (parsedPath.type === "installment") {

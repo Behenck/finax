@@ -68,6 +68,7 @@ import type { SaleFormProps } from "./types";
 type SelectOption = {
 	id: string;
 	label: string;
+	status?: "ACTIVE" | "INACTIVE";
 };
 
 type SaleCommissionBeneficiaryType =
@@ -122,7 +123,7 @@ export function SaleForm({
 		customers,
 		hierarchicalProducts,
 		sellers,
-		partners,
+		partnersWithStatus,
 		supervisors,
 		isLoading: isLoadingOptions,
 		isError: isOptionsError,
@@ -464,8 +465,13 @@ export function SaleForm({
 		[sellers],
 	);
 	const partnerOptions = useMemo<SelectOption[]>(
-		() => partners.map((partner) => ({ id: partner.id, label: partner.name })),
-		[partners],
+		() =>
+			partnersWithStatus.map((partner) => ({
+				id: partner.id,
+				label: partner.name,
+				status: partner.status,
+			})),
+		[partnersWithStatus],
 	);
 	const supervisorOptions = useMemo<SelectOption[]>(
 		() =>
@@ -554,6 +560,7 @@ export function SaleForm({
 				? partnerOptionsForSelect.map((partner) => ({
 						id: partner.id,
 						name: partner.label,
+						status: partner.status,
 					}))
 				: sellerOptionsForSelect.map((seller) => ({
 						id: seller.id,
@@ -1041,18 +1048,19 @@ export function SaleForm({
 								}
 								aria-label="Aplicar nas pendentes"
 								disabled={isPending}
-								onCheckedChange={(checked) => {
-									setCompletedAmountChangeConfirmation((current) =>
-										current
-											? {
-													...current,
-													applyPendingInstallments: Boolean(checked),
-													applyPendingAndReversePaid: Boolean(checked)
-														? false
-														: current.applyPendingAndReversePaid,
-												}
-											: current,
-									);
+									onCheckedChange={(checked) => {
+										const isChecked = checked === true;
+										setCompletedAmountChangeConfirmation((current) =>
+											current
+												? {
+														...current,
+														applyPendingInstallments: isChecked,
+														applyPendingAndReversePaid: isChecked
+															? false
+															: current.applyPendingAndReversePaid,
+													}
+												: current,
+										);
 								}}
 							/>
 							<div className="space-y-1">
@@ -1079,18 +1087,19 @@ export function SaleForm({
 										false
 									}
 									aria-label="Aplicar com estorno"
-									disabled={isPending}
-									onCheckedChange={(checked) => {
-										setCompletedAmountChangeConfirmation((current) =>
-											current
-												? {
-														...current,
-														applyPendingAndReversePaid: Boolean(checked),
-														applyPendingInstallments: Boolean(checked)
-															? false
-															: current.applyPendingInstallments,
-													}
-												: current,
+										disabled={isPending}
+										onCheckedChange={(checked) => {
+											const isChecked = checked === true;
+											setCompletedAmountChangeConfirmation((current) =>
+												current
+													? {
+															...current,
+															applyPendingAndReversePaid: isChecked,
+															applyPendingInstallments: isChecked
+																? false
+																: current.applyPendingInstallments,
+														}
+													: current,
 										);
 									}}
 								/>

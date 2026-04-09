@@ -4,6 +4,7 @@ import { auth } from "@/middleware/auth";
 import {
 	SaleHistoryAction,
 	SaleCommissionInstallmentStatus,
+	PartnerStatus,
 	SaleStatus,
 } from "generated/prisma/enums";
 import type { FastifyInstance } from "fastify";
@@ -69,6 +70,8 @@ export async function patchSaleStatus(app: FastifyInstance) {
 					select: {
 						id: true,
 						status: true,
+						responsibleType: true,
+						responsibleId: true,
 					},
 				});
 
@@ -139,6 +142,23 @@ export async function patchSaleStatus(app: FastifyInstance) {
 									organizationId: organization.id,
 								});
 							}
+						}
+
+						if (
+							status === SaleStatus.COMPLETED &&
+							sale.responsibleType === "PARTNER" &&
+							sale.responsibleId
+						) {
+							await tx.partner.updateMany({
+								where: {
+									id: sale.responsibleId,
+									organizationId: organization.id,
+									status: PartnerStatus.INACTIVE,
+								},
+								data: {
+									status: PartnerStatus.ACTIVE,
+								},
+							});
 						}
 
 						const afterSnapshot = await loadSaleHistorySnapshot(

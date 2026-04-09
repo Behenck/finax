@@ -13,9 +13,14 @@ type SaleResponsibleLookupInput = {
 	responsibleId?: string | null;
 };
 
+type ResolveSaleResponsibleOptions = {
+	allowInactivePartner?: boolean;
+};
+
 export async function resolveSaleResponsibleData(
 	organizationId: string,
 	responsible: SaleResponsibleInput,
+	options: ResolveSaleResponsibleOptions = {},
 ) {
 	if (responsible.type === "SELLER") {
 		const seller = await prisma.seller.findFirst({
@@ -43,7 +48,11 @@ export async function resolveSaleResponsibleData(
 		where: {
 			id: responsible.id,
 			organizationId,
-			status: PartnerStatus.ACTIVE,
+			...(options.allowInactivePartner
+				? {}
+				: {
+						status: PartnerStatus.ACTIVE,
+					}),
 		},
 		select: {
 			id: true,
@@ -51,7 +60,11 @@ export async function resolveSaleResponsibleData(
 	});
 
 	if (!partner) {
-		throw new BadRequestError("Partner not found or inactive");
+		throw new BadRequestError(
+			options.allowInactivePartner
+				? "Partner not found"
+				: "Partner not found or inactive",
+		);
 	}
 
 	return {

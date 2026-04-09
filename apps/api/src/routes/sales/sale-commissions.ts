@@ -1,7 +1,6 @@
 import { addMonths } from "date-fns";
 import type { Prisma } from "generated/prisma/client";
 import {
-	PartnerStatus,
 	Role,
 	type SaleCommissionCalculationBase,
 	type SaleCommissionDirection,
@@ -349,7 +348,6 @@ export async function resolveSaleCommissionsData(
 			? prisma.partner.findMany({
 					where: {
 						organizationId,
-						status: PartnerStatus.ACTIVE,
 						id: {
 							in: Array.from(partnerIds),
 						},
@@ -400,7 +398,7 @@ export async function resolveSaleCommissionsData(
 	assertIdsFound({
 		found: partners.length,
 		expected: partnerIds.size,
-		errorMessage: "One or more partners were not found or are inactive",
+		errorMessage: "One or more partners were not found",
 	});
 	assertIdsFound({
 		found: supervisors.length,

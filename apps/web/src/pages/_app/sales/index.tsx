@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/page-header";
 import { useSales } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardPlus, FileSpreadsheet, Plus } from "lucide-react";
+import { ClipboardPlus, FileSpreadsheet, Plus, TriangleAlert } from "lucide-react";
 import { SalesDataTable } from "./-components/sales-data-table";
 
 export const Route = createFileRoute("/_app/sales/")({
@@ -42,6 +42,12 @@ function SalesPage() {
 				description="Acompanhe, edite e atualize o status das vendas da organização."
 				actions={
 					<>
+						<Button asChild variant="outline" className="w-full sm:w-auto">
+							<Link to="/sales/delinquency">
+								<TriangleAlert className="size-4" />
+								Inadimplência
+							</Link>
+						</Button>
 						{canManageSalesImports ? (
 							<Button asChild variant="outline" className="w-full sm:w-auto">
 								<Link to="/sales/import">

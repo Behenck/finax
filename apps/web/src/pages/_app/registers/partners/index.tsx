@@ -1,8 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { PageHeader } from '@/components/page-header'
-import { textFilterParser } from '@/hooks/filters/parsers'
+import { partnerStatusFilterParser, textFilterParser } from '@/hooks/filters/parsers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Building2, Plus, Search, Users } from 'lucide-react'
 import { ListPartners } from './-components/list-partners'
@@ -18,27 +25,34 @@ export const Route = createFileRoute('/_app/registers/partners/')({
 function PartnersPage() {
   const { organization } = useApp()
   const [search, setSearch] = useQueryState("q", textFilterParser)
+  const [statusFilter, setStatusFilter] = useQueryState(
+    "status",
+    partnerStatusFilterParser,
+  )
   const slug = organization?.slug ?? ""
   const { data, isLoading, isError } = useGetOrganizationsSlugPartners(
     { slug },
     { query: { enabled: Boolean(slug) } },
   )
 
-  const partners = data?.partners ?? []
+  const partners = useMemo(() => data?.partners ?? [], [data?.partners])
 
   const filteredPartners = useMemo(() => {
-    if (!search.trim()) return partners
-
     const query = search.toLowerCase()
+    const hasQuery = search.trim().length > 0
 
-    return partners.filter((customer) => {
-      return (
-        customer.name?.toLowerCase().includes(query) ||
-        customer.email?.toLowerCase().includes(query) ||
-        customer.phone?.includes(query)
-      )
+    return partners.filter((partner) => {
+      const matchesText =
+        !hasQuery ||
+        partner.name?.toLowerCase().includes(query) ||
+        partner.email?.toLowerCase().includes(query) ||
+        partner.phone?.includes(query)
+      const matchesStatus =
+        statusFilter === "ALL" || partner.status === statusFilter
+
+      return matchesText && matchesStatus
     })
-  }, [partners, search])
+  }, [partners, search, statusFilter])
 
   const stats = useMemo(() => {
     const total = partners.length
@@ -103,14 +117,30 @@ function PartnersPage() {
         </Card>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por nome..."
-          className="h-10 w-full pl-10 sm:max-w-md"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome..."
+            className="h-10 w-full pl-10 sm:max-w-md"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => setStatusFilter(value as "ALL" | "ACTIVE" | "INACTIVE")}
+        >
+          <SelectTrigger className="h-10 w-full sm:w-48">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Todos os status</SelectItem>
+            <SelectItem value="ACTIVE">Ativos</SelectItem>
+            <SelectItem value="INACTIVE">Inativos</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <section className="space-y-2">

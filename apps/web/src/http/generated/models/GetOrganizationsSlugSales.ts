@@ -10,15 +10,15 @@ export type GetOrganizationsSlugSalesPathParams = {
   slug: string;
 };
 
-export const salesStatusEnum = {
+export const salesStatusEnum2 = {
   PENDING: "PENDING",
   APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;
 
-export type SalesStatusEnumKey =
-  (typeof salesStatusEnum)[keyof typeof salesStatusEnum];
+export type SalesStatusEnum2Key =
+  (typeof salesStatusEnum2)[keyof typeof salesStatusEnum2];
 
 export const responsibleTypeEnum6 = {
   SELLER: "SELLER",
@@ -53,7 +53,7 @@ export type GetOrganizationsSlugSales200 = {
     /**
      * @type string
      */
-    status: SalesStatusEnumKey;
+    status: SalesStatusEnum2Key;
     /**
      * @type string
      */
@@ -186,6 +186,29 @@ export type GetOrganizationsSlugSales200 = {
        * @type integer
        */
       reversed: number;
+    };
+    /**
+     * @type object
+     */
+    delinquencySummary: {
+      /**
+       * @type boolean
+       */
+      hasOpen: boolean;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      openCount: number;
+      /**
+       * @type string, date-time
+       */
+      oldestDueDate: string | null;
+      /**
+       * @type string, date-time
+       */
+      latestDueDate: string | null;
     };
   }[];
 };

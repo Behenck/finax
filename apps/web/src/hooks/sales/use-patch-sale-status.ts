@@ -2,6 +2,7 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
+	getOrganizationsSlugPartnersQueryKey,
 	getOrganizationsSlugSalesQueryKey,
 	getOrganizationsSlugSalesSaleidQueryKey,
 	patchOrganizationsSlugSalesSaleidStatus,
@@ -49,6 +50,11 @@ export function usePatchSaleStatus() {
 						saleId: variables.saleId,
 					}),
 				}),
+				queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugPartnersQueryKey({
+						slug: organization.slug,
+					}),
+				}),
 			]);
 
 			toast.success(`Status alterado para ${SALE_STATUS_LABEL[variables.status]}.`);
@@ -59,4 +65,3 @@ export function usePatchSaleStatus() {
 		},
 	});
 }
-

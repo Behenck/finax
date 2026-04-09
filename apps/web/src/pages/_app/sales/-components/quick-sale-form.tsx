@@ -19,7 +19,10 @@ import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
+	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -82,6 +85,7 @@ interface QuickSaleFormCustomerOption {
 interface QuickSaleFormResponsibleOption {
 	id: string;
 	name: string;
+	status?: "ACTIVE" | "INACTIVE";
 }
 
 type QuickSaleFormValues = QuickSaleBatchFormInput;
@@ -532,8 +536,29 @@ export function QuickSaleForm({
 			[],
 		[companies, selectedCompanyId],
 	);
-	const responsibleOptions =
-		selectedResponsibleType === "PARTNER" ? partners : sellers;
+	const responsibleOptions = useMemo(
+		() =>
+			selectedResponsibleType === "PARTNER"
+				? [...partners].sort((currentOption, nextOption) => {
+						if (currentOption.status === nextOption.status) {
+							return currentOption.name.localeCompare(nextOption.name);
+						}
+
+						return currentOption.status === "INACTIVE" ? 1 : -1;
+					})
+				: sellers,
+		[selectedResponsibleType, partners, sellers],
+	);
+	const activePartnerResponsibleOptions = useMemo(
+		() =>
+			responsibleOptions.filter((responsible) => responsible.status !== "INACTIVE"),
+		[responsibleOptions],
+	);
+	const inactivePartnerResponsibleOptions = useMemo(
+		() =>
+			responsibleOptions.filter((responsible) => responsible.status === "INACTIVE"),
+		[responsibleOptions],
+	);
 
 	useEffect(() => {
 		if (responsibleOptions.length === 0) {
@@ -993,14 +1018,46 @@ export function QuickSaleForm({
 												<SelectValue placeholder="Selecione o responsável" />
 											</SelectTrigger>
 											<SelectContent>
-												{responsibleOptions.map((responsible) => (
-													<SelectItem
-														key={responsible.id}
-														value={responsible.id}
-													>
-														{responsible.name}
-													</SelectItem>
-												))}
+												{selectedResponsibleType === "PARTNER" ? (
+													<>
+														<SelectGroup>
+															<SelectLabel>Ativos</SelectLabel>
+															{activePartnerResponsibleOptions.map((responsible) => (
+																<SelectItem
+																	key={responsible.id}
+																	value={responsible.id}
+																>
+																	{responsible.name}
+																</SelectItem>
+															))}
+														</SelectGroup>
+														{inactivePartnerResponsibleOptions.length > 0 ? (
+															<>
+																<SelectSeparator />
+																<SelectGroup>
+																	<SelectLabel>Inativos</SelectLabel>
+																	{inactivePartnerResponsibleOptions.map((responsible) => (
+																		<SelectItem
+																			key={responsible.id}
+																			value={responsible.id}
+																		>
+																			{responsible.name}
+																		</SelectItem>
+																	))}
+																</SelectGroup>
+															</>
+														) : null}
+													</>
+												) : (
+													responsibleOptions.map((responsible) => (
+														<SelectItem
+															key={responsible.id}
+															value={responsible.id}
+														>
+															{responsible.name}
+														</SelectItem>
+													))
+												)}
 											</SelectContent>
 										</Select>
 										<FieldError error={fieldState.error} />

@@ -29,6 +29,7 @@ import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/f
 import { Route as AuthGoogleCallbackRouteImport } from './pages/_auth/google/callback'
 import { Route as AppSalesQuickCreateRouteImport } from './pages/_app/sales/quick-create'
 import { Route as AppSalesImportRouteImport } from './pages/_app/sales/import'
+import { Route as AppSalesDelinquencyRouteImport } from './pages/_app/sales/delinquency'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
@@ -52,6 +53,7 @@ import { Route as AppRegistersPartnersUpdateRouteImport } from './pages/_app/reg
 import { Route as AppRegistersPartnersCreateRouteImport } from './pages/_app/registers/partners/create'
 import { Route as AppRegistersCustomersUpdateRouteImport } from './pages/_app/registers/customers/update'
 import { Route as AppRegistersCustomersCreateRouteImport } from './pages/_app/registers/customers/create'
+import { Route as AppRegistersCustomersCustomerIdRouteImport } from './pages/_app/registers/customers/$customerId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -149,6 +151,11 @@ const AppSalesQuickCreateRoute = AppSalesQuickCreateRouteImport.update({
 const AppSalesImportRoute = AppSalesImportRouteImport.update({
   id: '/sales/import',
   path: '/sales/import',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppSalesDelinquencyRoute = AppSalesDelinquencyRouteImport.update({
+  id: '/sales/delinquency',
+  path: '/sales/delinquency',
   getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppSalesCreateRoute = AppSalesCreateRouteImport.update({
@@ -284,6 +291,12 @@ const AppRegistersCustomersCreateRoute =
     path: '/registers/customers/create',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppRegistersCustomersCustomerIdRoute =
+  AppRegistersCustomersCustomerIdRouteImport.update({
+    id: '/registers/customers/$customerId',
+    path: '/registers/customers/$customerId',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsLayoutRouteWithChildren
@@ -293,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/sales/delinquency': typeof AppSalesDelinquencyRoute
   '/sales/import': typeof AppSalesImportRoute
   '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
@@ -306,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
   '/invite/': typeof AuthInviteIndexRoute
+  '/registers/customers/$customerId': typeof AppRegistersCustomersCustomerIdRoute
   '/registers/customers/create': typeof AppRegistersCustomersCreateRoute
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
@@ -334,6 +349,7 @@ export interface FileRoutesByTo {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
+  '/sales/delinquency': typeof AppSalesDelinquencyRoute
   '/sales/import': typeof AppSalesImportRoute
   '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
@@ -347,6 +363,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
   '/invite': typeof AuthInviteIndexRoute
+  '/registers/customers/$customerId': typeof AppRegistersCustomersCustomerIdRoute
   '/registers/customers/create': typeof AppRegistersCustomersCreateRoute
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
@@ -380,6 +397,7 @@ export interface FileRoutesById {
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
+  '/_app/sales/delinquency': typeof AppSalesDelinquencyRoute
   '/_app/sales/import': typeof AppSalesImportRoute
   '/_app/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/_auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -393,6 +411,7 @@ export interface FileRoutesById {
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
   '/_auth/invite/': typeof AuthInviteIndexRoute
+  '/_app/registers/customers/$customerId': typeof AppRegistersCustomersCustomerIdRoute
   '/_app/registers/customers/create': typeof AppRegistersCustomersCreateRoute
   '/_app/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/_app/registers/partners/create': typeof AppRegistersPartnersCreateRoute
@@ -425,6 +444,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/sales/delinquency'
     | '/sales/import'
     | '/sales/quick-create'
     | '/google/callback'
@@ -438,6 +458,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/transactions'
     | '/invite/'
+    | '/registers/customers/$customerId'
     | '/registers/customers/create'
     | '/registers/customers/update'
     | '/registers/partners/create'
@@ -466,6 +487,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/sales/$saleId'
     | '/sales/create'
+    | '/sales/delinquency'
     | '/sales/import'
     | '/sales/quick-create'
     | '/google/callback'
@@ -479,6 +501,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/transactions'
     | '/invite'
+    | '/registers/customers/$customerId'
     | '/registers/customers/create'
     | '/registers/customers/update'
     | '/registers/partners/create'
@@ -511,6 +534,7 @@ export interface FileRouteTypes {
     | '/_auth/verify-otp'
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
+    | '/_app/sales/delinquency'
     | '/_app/sales/import'
     | '/_app/sales/quick-create'
     | '/_auth/google/callback'
@@ -524,6 +548,7 @@ export interface FileRouteTypes {
     | '/_app/settings/'
     | '/_app/transactions/'
     | '/_auth/invite/'
+    | '/_app/registers/customers/$customerId'
     | '/_app/registers/customers/create'
     | '/_app/registers/customers/update'
     | '/_app/registers/partners/create'
@@ -694,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSalesImportRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/sales/delinquency': {
+      id: '/_app/sales/delinquency'
+      path: '/sales/delinquency'
+      fullPath: '/sales/delinquency'
+      preLoaderRoute: typeof AppSalesDelinquencyRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/sales/create': {
       id: '/_app/sales/create'
       path: '/sales/create'
@@ -855,6 +887,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistersCustomersCreateRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/customers/$customerId': {
+      id: '/_app/registers/customers/$customerId'
+      path: '/registers/customers/$customerId'
+      fullPath: '/registers/customers/$customerId'
+      preLoaderRoute: typeof AppRegistersCustomersCustomerIdRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
   }
 }
 
@@ -877,6 +916,7 @@ interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
+  AppSalesDelinquencyRoute: typeof AppSalesDelinquencyRoute
   AppSalesImportRoute: typeof AppSalesImportRoute
   AppSalesQuickCreateRoute: typeof AppSalesQuickCreateRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
@@ -884,6 +924,7 @@ interface AppLayoutRouteChildren {
   AppProfileIndexRoute: typeof AppProfileIndexRoute
   AppSalesIndexRoute: typeof AppSalesIndexRoute
   AppTransactionsIndexRoute: typeof AppTransactionsIndexRoute
+  AppRegistersCustomersCustomerIdRoute: typeof AppRegistersCustomersCustomerIdRoute
   AppRegistersCustomersCreateRoute: typeof AppRegistersCustomersCreateRoute
   AppRegistersCustomersUpdateRoute: typeof AppRegistersCustomersUpdateRoute
   AppRegistersPartnersCreateRoute: typeof AppRegistersPartnersCreateRoute
@@ -907,6 +948,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
+  AppSalesDelinquencyRoute: AppSalesDelinquencyRoute,
   AppSalesImportRoute: AppSalesImportRoute,
   AppSalesQuickCreateRoute: AppSalesQuickCreateRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
@@ -914,6 +956,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppProfileIndexRoute: AppProfileIndexRoute,
   AppSalesIndexRoute: AppSalesIndexRoute,
   AppTransactionsIndexRoute: AppTransactionsIndexRoute,
+  AppRegistersCustomersCustomerIdRoute: AppRegistersCustomersCustomerIdRoute,
   AppRegistersCustomersCreateRoute: AppRegistersCustomersCreateRoute,
   AppRegistersCustomersUpdateRoute: AppRegistersCustomersUpdateRoute,
   AppRegistersPartnersCreateRoute: AppRegistersPartnersCreateRoute,

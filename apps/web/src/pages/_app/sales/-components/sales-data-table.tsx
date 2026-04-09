@@ -77,7 +77,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
-import { entityFilterParser, textFilterParser } from "@/hooks/filters/parsers";
+import {
+	entityFilterParser,
+	pageParser,
+	textFilterParser,
+} from "@/hooks/filters/parsers";
 import {
 	useDeleteSale,
 	useDeleteSalesBulk,
@@ -106,6 +110,7 @@ import {
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { formatSaleDynamicFieldValue } from "./sale-dynamic-fields";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
+import { SaleDelinquencyBadge } from "./sale-delinquency-badge";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
 
@@ -153,6 +158,7 @@ const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
 const SALES_FILTERS_STORAGE_KEY = "finax:sales:list:filters";
 const SALES_COLUMNS_STORAGE_KEY = "finax:sales:list:columns";
 const SALE_DYNAMIC_FIELD_COLUMN_PREFIX = "dynamicField:";
+const SALES_PAGE_SIZE = 10;
 
 function getSaleDynamicFieldColumnId(fieldId: string) {
 	return `${SALE_DYNAMIC_FIELD_COLUMN_PREFIX}${encodeURIComponent(fieldId)}`;
@@ -535,6 +541,7 @@ export function SalesDataTable({
 		"status",
 		saleStatusFilterParser,
 	);
+	const [page, setPage] = useQueryState("page", pageParser);
 	const { mutateAsync: patchSalesStatusBulk, isPending: isBulkStatusPending } =
 		usePatchSalesStatusBulk();
 	const { mutateAsync: deleteSalesBulk, isPending: isBulkDeletePending } =
@@ -589,6 +596,7 @@ export function SalesDataTable({
 			status?: SaleStatusFilter;
 			companyId?: string;
 			unitId?: string;
+			page?: number;
 		}>(SALES_FILTERS_STORAGE_KEY, {});
 
 		if (!globalFilter && storedFilters.q) {
@@ -610,16 +618,24 @@ export function SalesDataTable({
 		if (!unitIdFilter && storedFilters.unitId) {
 			void setUnitIdFilter(storedFilters.unitId);
 		}
+
+		if (page === 1 && storedFilters.page && storedFilters.page > 1) {
+			void setPage(storedFilters.page);
+		}
 	}, [
 		companyIdFilter,
 		globalFilter,
+		page,
 		setCompanyIdFilter,
 		setGlobalFilter,
+		setPage,
 		setStatusFilter,
 		setUnitIdFilter,
 		statusFilter,
 		unitIdFilter,
 	]);
+
+	const currentPage = page >= 1 ? page : 1;
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
@@ -633,9 +649,10 @@ export function SalesDataTable({
 				status: statusFilter,
 				companyId: companyIdFilter,
 				unitId: unitIdFilter,
+				page: currentPage,
 			}),
 		);
-	}, [companyIdFilter, globalFilter, statusFilter, unitIdFilter]);
+	}, [companyIdFilter, currentPage, globalFilter, statusFilter, unitIdFilter]);
 	const productsQuery = useGetOrganizationsSlugProducts(
 		{ slug },
 		{
@@ -676,8 +693,15 @@ export function SalesDataTable({
 		);
 		if (!unitExistsInSelectedCompany) {
 			void setUnitIdFilter("");
+			void setPage(1);
 		}
-	}, [companyIdFilter, setUnitIdFilter, unitIdFilter, unitsBySelectedCompany]);
+	}, [
+		companyIdFilter,
+		setPage,
+		setUnitIdFilter,
+		unitIdFilter,
+		unitsBySelectedCompany,
+	]);
 	const productPathById = useMemo(
 		() =>
 			buildProductPathMap(
@@ -925,12 +949,18 @@ export function SalesDataTable({
 				accessorKey: "customer",
 				header: "Cliente",
 				cell: ({ row }) => (
-					<span
-						className="block max-w-[220px] truncate"
-						title={row.original.customer.name}
-					>
-						{row.original.customer.name}
-					</span>
+					<div className="max-w-[220px]">
+						<span
+							className="block truncate"
+							title={row.original.customer.name}
+						>
+							{row.original.customer.name}
+						</span>
+						<SaleDelinquencyBadge
+							summary={row.original.delinquencySummary}
+							className="mt-1"
+						/>
+					</div>
 				),
 			},
 			{
@@ -1224,6 +1254,10 @@ export function SalesDataTable({
 			columnFilters,
 			columnVisibility,
 			globalFilter,
+			pagination: {
+				pageIndex: currentPage - 1,
+				pageSize: SALES_PAGE_SIZE,
+			},
 			rowSelection,
 		},
 		getRowId: (row) => row.id,
@@ -1237,6 +1271,16 @@ export function SalesDataTable({
 		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
+
+	useEffect(() => {
+		const pageCount = table.getPageCount();
+		const nextPage =
+			pageCount <= 0 ? 1 : Math.min(currentPage, pageCount);
+
+		if (nextPage !== currentPage) {
+			void setPage(nextPage);
+		}
+	}, [currentPage, setPage, table, tableData, globalFilter, columnFilters, sorting]);
 	saleNavigationOrderedIdsRef.current = table
 		.getSortedRowModel()
 		.rows.map((row) => row.original.id);
@@ -1382,6 +1426,7 @@ export function SalesDataTable({
 		void setStatusFilter("ALL");
 		void setCompanyIdFilter("");
 		void setUnitIdFilter("");
+		void setPage(1);
 	}
 
 	if (isLoading) {
@@ -1433,7 +1478,10 @@ export function SalesDataTable({
 					<Input
 						placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
 						value={globalFilter}
-						onChange={(event) => setGlobalFilter(event.target.value)}
+						onChange={(event) => {
+							void setGlobalFilter(event.target.value);
+							void setPage(1);
+						}}
 						className="w-full"
 					/>
 				</div>
@@ -1445,6 +1493,7 @@ export function SalesDataTable({
 						onValueChange={(value) => {
 							void setCompanyIdFilter(value === "ALL" ? "" : value);
 							void setUnitIdFilter("");
+							void setPage(1);
 						}}
 					>
 						<SelectTrigger className="w-full">
@@ -1467,6 +1516,7 @@ export function SalesDataTable({
 						value={unitIdFilter || "ALL"}
 						onValueChange={(value) => {
 							void setUnitIdFilter(value === "ALL" ? "" : value);
+							void setPage(1);
 						}}
 						disabled={!companyIdFilter}
 					>
@@ -1489,7 +1539,8 @@ export function SalesDataTable({
 					<Select
 						value={statusFilter}
 						onValueChange={(value) => {
-							setStatusFilter(value as SaleStatusFilter);
+							void setStatusFilter(value as SaleStatusFilter);
+							void setPage(1);
 						}}
 					>
 						<SelectTrigger className="w-full">
@@ -1644,7 +1695,14 @@ export function SalesDataTable({
 								const summary = sale.commissionInstallmentsSummary;
 
 								return (
-									<Card key={row.id} className="space-y-3 p-4">
+									<Card
+										key={row.id}
+										className={`space-y-3 p-4 ${
+											sale.delinquencySummary.hasOpen
+												? "border-rose-500/30 bg-rose-500/5"
+												: ""
+										}`}
+									>
 										<div className="flex items-start justify-between gap-3">
 											<div className="min-w-0">
 												<p className="truncate text-sm font-semibold">
@@ -1653,6 +1711,11 @@ export function SalesDataTable({
 												<p className="truncate text-xs text-muted-foreground">
 													{sale.productLabel}
 												</p>
+												<SaleDelinquencyBadge
+													summary={sale.delinquencySummary}
+													className="mt-2"
+													showOldestDueDate
+												/>
 											</div>
 											<Checkbox
 												checked={row.getIsSelected()}
@@ -1844,7 +1907,7 @@ export function SalesDataTable({
 						variant="outline"
 						size="sm"
 						className="flex-1 md:flex-none"
-						onClick={() => table.previousPage()}
+						onClick={() => void setPage(Math.max(1, currentPage - 1))}
 						disabled={!table.getCanPreviousPage()}
 					>
 						Anterior
@@ -1853,7 +1916,7 @@ export function SalesDataTable({
 						variant="outline"
 						size="sm"
 						className="flex-1 md:flex-none"
-						onClick={() => table.nextPage()}
+						onClick={() => void setPage(currentPage + 1)}
 						disabled={!table.getCanNextPage()}
 					>
 						Próxima

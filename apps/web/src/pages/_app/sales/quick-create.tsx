@@ -26,7 +26,7 @@ function QuickCreateSalesPage() {
 		rootProducts,
 		hierarchicalProducts,
 		sellers,
-		partners,
+		partnersWithStatus,
 		isLoading: isLoadingOptions,
 		isError: isOptionsError,
 		refetch,
@@ -175,9 +175,10 @@ function QuickCreateSalesPage() {
 					id: seller.id,
 					name: seller.name,
 				}))}
-				partners={partners.map((partner) => ({
+				partners={partnersWithStatus.map((partner) => ({
 					id: partner.id,
 					name: partner.name,
+					status: partner.status,
 				}))}
 				loadProductDynamicFields={loadProductDynamicFields}
 				onSubmitBatch={async (payload) => {

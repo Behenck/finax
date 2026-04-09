@@ -3,6 +3,7 @@ import {
 	ClipboardPlus,
 	Copy,
 	EllipsisVertical,
+	Eye,
 	Pencil,
 	Plus,
 	Trash2,
@@ -79,6 +80,17 @@ export function SaleActionsDropdown({
 					<DropdownMenuLabel>Vendas</DropdownMenuLabel>
 					{canCreateSale ? (
 						<>
+							{customerId ? (
+								<DropdownMenuItem asChild>
+									<Link
+										to="/registers/customers/$customerId"
+										params={{ customerId }}
+									>
+										<Eye className="size-4" />
+										Ver cliente
+									</Link>
+								</DropdownMenuItem>
+							) : null}
 							<DropdownMenuItem asChild>
 								{customerId ? (
 									<Link

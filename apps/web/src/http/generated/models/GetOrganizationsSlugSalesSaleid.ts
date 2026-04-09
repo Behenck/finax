@@ -392,6 +392,147 @@ export type GetOrganizationsSlugSalesSaleid200 = {
         paymentDate: string | null;
       }[];
     }[];
+    /**
+     * @type object
+     */
+    delinquencySummary: {
+      /**
+       * @type boolean
+       */
+      hasOpen: boolean;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      openCount: number;
+      /**
+       * @type string, date-time
+       */
+      oldestDueDate: string | null;
+      /**
+       * @type string, date-time
+       */
+      latestDueDate: string | null;
+    };
+    /**
+     * @type array
+     */
+    openDelinquencies: {
+      /**
+       * @type string, uuid
+       */
+      id: string;
+      /**
+       * @type string, date-time
+       */
+      dueDate: string;
+      /**
+       * @type string, date-time
+       */
+      resolvedAt: string | null;
+      /**
+       * @type string, date-time
+       */
+      createdAt: string;
+      /**
+       * @type string, date-time
+       */
+      updatedAt: string;
+      /**
+       * @type object
+       */
+      createdBy: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string | null;
+        /**
+         * @type string
+         */
+        avatarUrl: string | null;
+      };
+      /**
+       * @type object
+       */
+      resolvedBy: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string | null;
+        /**
+         * @type string
+         */
+        avatarUrl: string | null;
+      } | null;
+    }[];
+    /**
+     * @type array
+     */
+    delinquencyHistory: {
+      /**
+       * @type string, uuid
+       */
+      id: string;
+      /**
+       * @type string, date-time
+       */
+      dueDate: string;
+      /**
+       * @type string, date-time
+       */
+      resolvedAt: string | null;
+      /**
+       * @type string, date-time
+       */
+      createdAt: string;
+      /**
+       * @type string, date-time
+       */
+      updatedAt: string;
+      /**
+       * @type object
+       */
+      createdBy: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string | null;
+        /**
+         * @type string
+         */
+        avatarUrl: string | null;
+      };
+      /**
+       * @type object
+       */
+      resolvedBy: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string | null;
+        /**
+         * @type string
+         */
+        avatarUrl: string | null;
+      } | null;
+    }[];
   };
 };
 

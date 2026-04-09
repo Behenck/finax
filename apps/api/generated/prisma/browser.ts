@@ -178,6 +178,11 @@ export type Sale = Prisma.SaleModel
  */
 export type SaleHistoryEvent = Prisma.SaleHistoryEventModel
 /**
+ * Model SaleDelinquency
+ * 
+ */
+export type SaleDelinquency = Prisma.SaleDelinquencyModel
+/**
  * Model SaleImportTemplate
  * 
  */

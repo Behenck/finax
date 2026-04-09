@@ -320,6 +320,9 @@ export async function updateSale(app: FastifyInstance) {
 				const responsibleData = await resolveSaleResponsibleData(
 					organization.id,
 					data.responsible,
+					{
+						allowInactivePartner: true,
+					},
 				);
 				const resolvedCommissions =
 					data.commissions === undefined

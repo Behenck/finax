@@ -6,12 +6,14 @@ import {
 	CustomerPersonType,
 	CustomerStatus,
 	MemberDataScope,
+	SaleStatus,
 } from "generated/prisma/enums";
 import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import {
 	buildCustomersVisibilityWhere,
+	buildSalesVisibilityWhere,
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
 import { BadRequestError } from "../_errors/bad-request-error";
@@ -19,6 +21,11 @@ import {
 	customerResponsibleTypeValues,
 	loadCustomerResponsible,
 } from "./customer-responsible";
+import {
+	loadOpenSaleDelinquenciesBySaleIds,
+	loadSaleDelinquencySummaryBySaleIds,
+} from "../sales/sale-delinquencies";
+import { loadSalesResponsible } from "../sales/sale-responsible";
 
 export async function getCustomer(app: FastifyInstance) {
 	app
@@ -74,6 +81,64 @@ export async function getCustomer(app: FastifyInstance) {
 										foundationDate: z.date().nullable(),
 									})
 									.nullable(),
+								sales: z.array(
+									z.object({
+										id: z.uuid(),
+										saleDate: z.date(),
+										totalAmount: z.number().int(),
+										status: z.enum(SaleStatus),
+										createdAt: z.date(),
+										updatedAt: z.date(),
+										product: z.object({
+											id: z.uuid(),
+											name: z.string(),
+										}),
+										company: z.object({
+											id: z.uuid(),
+											name: z.string(),
+										}),
+										unit: z
+											.object({
+												id: z.uuid(),
+												name: z.string(),
+											})
+											.nullable(),
+										responsible: z
+											.object({
+												type: z.enum(["SELLER", "PARTNER"] as const),
+												id: z.uuid(),
+												name: z.string(),
+											})
+											.nullable(),
+										delinquencySummary: z.object({
+											hasOpen: z.boolean(),
+											openCount: z.number().int().nonnegative(),
+											oldestDueDate: z.date().nullable(),
+											latestDueDate: z.date().nullable(),
+										}),
+										openDelinquencies: z.array(
+											z.object({
+												id: z.uuid(),
+												dueDate: z.date(),
+												resolvedAt: z.date().nullable(),
+												createdAt: z.date(),
+												updatedAt: z.date(),
+												createdBy: z.object({
+													id: z.uuid(),
+													name: z.string().nullable(),
+													avatarUrl: z.string().nullable(),
+												}),
+												resolvedBy: z
+													.object({
+														id: z.uuid(),
+														name: z.string().nullable(),
+														avatarUrl: z.string().nullable(),
+													})
+													.nullable(),
+											}),
+										),
+									}),
+								),
 							}),
 						}),
 					},
@@ -88,6 +153,10 @@ export async function getCustomer(app: FastifyInstance) {
 					slug,
 					"registers.customers.view.all",
 				);
+				const canViewSales = await request.hasPermission(slug, "sales.view");
+				const canViewAllSales = canViewSales
+					? await request.hasPermission(slug, "sales.view.all")
+					: false;
 				const visibilityContext = await loadMemberDataVisibilityContext({
 					organizationId: organization.id,
 					memberId: membership.id,
@@ -96,7 +165,9 @@ export async function getCustomer(app: FastifyInstance) {
 					customersScope: canViewAllCustomers
 						? MemberDataScope.ORGANIZATION_ALL
 						: MemberDataScope.LINKED_ONLY,
-					salesScope: membership.salesScope,
+					salesScope: canViewAllSales
+						? MemberDataScope.ORGANIZATION_ALL
+						: membership.salesScope,
 					commissionsScope: membership.commissionsScope,
 				});
 				const customersVisibilityWhere = buildCustomersVisibilityWhere({
@@ -166,6 +237,74 @@ export async function getCustomer(app: FastifyInstance) {
 					organization.id,
 					customer,
 				);
+				const salesVisibilityWhere = canViewSales
+					? buildSalesVisibilityWhere(visibilityContext)
+					: undefined;
+				const customerSales = canViewSales
+					? await prisma.sale.findMany({
+							where: salesVisibilityWhere
+								? {
+										AND: [
+											{
+												organizationId: organization.id,
+												customerId: customer.id,
+											},
+											salesVisibilityWhere,
+										],
+									}
+								: {
+										organizationId: organization.id,
+										customerId: customer.id,
+									},
+							orderBy: [{ saleDate: "desc" }, { createdAt: "desc" }],
+							select: {
+								id: true,
+								saleDate: true,
+								totalAmount: true,
+								status: true,
+								createdAt: true,
+								updatedAt: true,
+								responsibleType: true,
+								responsibleId: true,
+								product: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+								company: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+								unit: {
+									select: {
+										id: true,
+										name: true,
+									},
+								},
+							},
+						})
+					: [];
+				const customerSaleIds = customerSales.map((sale) => sale.id);
+				const [
+					responsibleBySaleId,
+					delinquencySummaryBySaleId,
+					openDelinquenciesBySaleId,
+				] = await Promise.all([
+					loadSalesResponsible(organization.id, customerSales),
+					loadSaleDelinquencySummaryBySaleIds(
+						prisma,
+						organization.id,
+						customerSaleIds,
+					),
+					loadOpenSaleDelinquenciesBySaleIds(
+						prisma,
+						organization.id,
+						customerSaleIds,
+					),
+				]);
 
 				const result = {
 					id: customer.id,
@@ -201,6 +340,25 @@ export async function getCustomer(app: FastifyInstance) {
 								foundationDate: customer.customerPJ.foundationDate,
 							}
 						: null,
+					sales: customerSales.map((sale) => ({
+						id: sale.id,
+						saleDate: sale.saleDate,
+						totalAmount: sale.totalAmount,
+						status: sale.status,
+						createdAt: sale.createdAt,
+						updatedAt: sale.updatedAt,
+						product: sale.product,
+						company: sale.company,
+						unit: sale.unit,
+						responsible: responsibleBySaleId.get(sale.id) ?? null,
+						delinquencySummary: delinquencySummaryBySaleId.get(sale.id) ?? {
+							hasOpen: false,
+							openCount: 0,
+							oldestDueDate: null,
+							latestDueDate: null,
+						},
+						openDelinquencies: openDelinquenciesBySaleId.get(sale.id) ?? [],
+					})),
 				};
 
 				return { customer: result };

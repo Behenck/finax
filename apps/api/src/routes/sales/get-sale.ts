@@ -11,6 +11,7 @@ import {
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
 import { BadRequestError } from "../_errors/bad-request-error";
+import { loadSaleDelinquencies } from "./sale-delinquencies";
 import { loadSaleCommissions } from "./sale-commissions";
 import {
 	parseSaleDynamicFieldSchemaJson,
@@ -150,6 +151,11 @@ export async function getSale(app: FastifyInstance) {
 						? undefined
 						: buildSaleCommissionsBeneficiaryVisibilityWhere(visibilityContext),
 				);
+				const delinquencyData = await loadSaleDelinquencies(
+					prisma,
+					organization.id,
+					sale.id,
+				);
 				const dynamicFieldSchema = parseSaleDynamicFieldSchemaJson(
 					sale.dynamicFieldSchema,
 				);
@@ -183,6 +189,9 @@ export async function getSale(app: FastifyInstance) {
 						createdBy: sale.createdBy,
 						responsible,
 						commissions,
+						delinquencySummary: delinquencyData.delinquencySummary,
+						openDelinquencies: delinquencyData.openDelinquencies,
+						delinquencyHistory: delinquencyData.delinquencyHistory,
 					},
 				};
 			},

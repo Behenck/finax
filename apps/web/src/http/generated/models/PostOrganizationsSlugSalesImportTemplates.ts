@@ -20,13 +20,13 @@ export type PostOrganizationsSlugSalesImportTemplates201 = {
   templateId: string;
 };
 
-export const responsibleTypeEnum11 = {
+export const responsibleTypeEnum12 = {
   SELLER: "SELLER",
   PARTNER: "PARTNER",
 } as const;
 
-export type ResponsibleTypeEnum11Key =
-  (typeof responsibleTypeEnum11)[keyof typeof responsibleTypeEnum11];
+export type ResponsibleTypeEnum12Key =
+  (typeof responsibleTypeEnum12)[keyof typeof responsibleTypeEnum12];
 
 export type PostOrganizationsSlugSalesImportTemplatesMutationRequest = {
   /**
@@ -142,7 +142,7 @@ export type PostOrganizationsSlugSalesImportTemplatesMutationRequest = {
       /**
        * @type string
        */
-      type: ResponsibleTypeEnum11Key;
+      type: ResponsibleTypeEnum12Key;
       /**
        * @type string, uuid
        */

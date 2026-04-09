@@ -2,6 +2,8 @@ import {
 	CustomerDocumentType,
 	CustomerPersonType,
 	CustomerStatus,
+	PartnerDocumentType,
+	PartnerStatus,
 	SaleDynamicFieldType,
 	SellerDocumentType,
 	SellerStatus,
@@ -78,6 +80,20 @@ async function createFixture() {
 		},
 	});
 
+	const inactivePartner = await prisma.partner.create({
+		data: {
+			name: `Inactive partner ${suffix}`,
+			email: `inactive-partner-${suffix}@example.com`,
+			phone: "55998888777",
+			documentType: PartnerDocumentType.CPF,
+			document: `999999999${Math.floor(Math.random() * 9)}`,
+			companyName: "Partner Company",
+			state: "RS",
+			organizationId: org.id,
+			status: PartnerStatus.INACTIVE,
+		},
+	});
+
 	const parentProduct = await prisma.product.create({
 		data: {
 			organizationId: org.id,
@@ -114,6 +130,7 @@ async function createFixture() {
 		customer,
 		secondCustomer,
 		seller,
+		inactivePartner,
 		parentProduct,
 		childProduct,
 		outsideScopeProduct,
@@ -243,6 +260,55 @@ describe("sales batch create", () => {
 			},
 		});
 		expect(historyCount).toBe(2);
+	});
+
+	it("should create batch with inactive partner as responsible", async () => {
+		const fixture = await createFixture();
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/batch`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildBatchPayload(fixture, {
+					responsible: {
+						type: "PARTNER",
+						id: fixture.inactivePartner.id,
+					},
+					items: [
+						{
+							customerId: fixture.customer.id,
+							productId: fixture.parentProduct.id,
+							saleDate: "2026-03-10",
+							totalAmount: 100_000,
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(201);
+		expect(response.body.createdCount).toBe(1);
+
+		const sale = await prisma.sale.findFirst({
+			where: {
+				id: response.body.saleIds[0],
+			},
+			select: {
+				responsibleType: true,
+				responsibleId: true,
+			},
+		});
+		const partner = await prisma.partner.findUnique({
+			where: {
+				id: fixture.inactivePartner.id,
+			},
+			select: {
+				status: true,
+			},
+		});
+
+		expect(sale?.responsibleType).toBe("PARTNER");
+		expect(sale?.responsibleId).toBe(fixture.inactivePartner.id);
+		expect(partner?.status).toBe(PartnerStatus.INACTIVE);
 	});
 
 	it("should rollback all items when one item is invalid", async () => {

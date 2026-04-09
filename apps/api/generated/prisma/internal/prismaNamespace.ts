@@ -416,6 +416,7 @@ export const ModelName = {
   ProductCommissionInstallment: 'ProductCommissionInstallment',
   Sale: 'Sale',
   SaleHistoryEvent: 'SaleHistoryEvent',
+  SaleDelinquency: 'SaleDelinquency',
   SaleImportTemplate: 'SaleImportTemplate',
   SaleImportAudit: 'SaleImportAudit',
   SaleCommission: 'SaleCommission',
@@ -438,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleDelinquency" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2810,6 +2811,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SaleDelinquency: {
+      payload: Prisma.$SaleDelinquencyPayload<ExtArgs>
+      fields: Prisma.SaleDelinquencyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SaleDelinquencyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SaleDelinquencyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        findFirst: {
+          args: Prisma.SaleDelinquencyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SaleDelinquencyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        findMany: {
+          args: Prisma.SaleDelinquencyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>[]
+        }
+        create: {
+          args: Prisma.SaleDelinquencyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        createMany: {
+          args: Prisma.SaleDelinquencyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SaleDelinquencyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>[]
+        }
+        delete: {
+          args: Prisma.SaleDelinquencyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        update: {
+          args: Prisma.SaleDelinquencyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        deleteMany: {
+          args: Prisma.SaleDelinquencyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SaleDelinquencyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SaleDelinquencyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>[]
+        }
+        upsert: {
+          args: Prisma.SaleDelinquencyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SaleDelinquencyPayload>
+        }
+        aggregate: {
+          args: Prisma.SaleDelinquencyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSaleDelinquency>
+        }
+        groupBy: {
+          args: Prisma.SaleDelinquencyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleDelinquencyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SaleDelinquencyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SaleDelinquencyCountAggregateOutputType> | number
+        }
+      }
+    }
     SaleImportTemplate: {
       payload: Prisma.$SaleImportTemplatePayload<ExtArgs>
       fields: Prisma.SaleImportTemplateFieldRefs
@@ -3874,6 +3949,21 @@ export const SaleHistoryEventScalarFieldEnum = {
 export type SaleHistoryEventScalarFieldEnum = (typeof SaleHistoryEventScalarFieldEnum)[keyof typeof SaleHistoryEventScalarFieldEnum]
 
 
+export const SaleDelinquencyScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  organizationId: 'organizationId',
+  dueDate: 'dueDate',
+  resolvedAt: 'resolvedAt',
+  createdById: 'createdById',
+  resolvedById: 'resolvedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaleDelinquencyScalarFieldEnum = (typeof SaleDelinquencyScalarFieldEnum)[keyof typeof SaleDelinquencyScalarFieldEnum]
+
+
 export const SaleImportTemplateScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -4755,6 +4845,7 @@ export type GlobalOmitConfig = {
   productCommissionInstallment?: Prisma.ProductCommissionInstallmentOmit
   sale?: Prisma.SaleOmit
   saleHistoryEvent?: Prisma.SaleHistoryEventOmit
+  saleDelinquency?: Prisma.SaleDelinquencyOmit
   saleImportTemplate?: Prisma.SaleImportTemplateOmit
   saleImportAudit?: Prisma.SaleImportAuditOmit
   saleCommission?: Prisma.SaleCommissionOmit

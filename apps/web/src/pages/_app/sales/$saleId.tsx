@@ -8,6 +8,7 @@ import {
 	FilePenLine,
 	type LucideIcon,
 	PlusCircle,
+	TriangleAlert,
 	Trash2,
 	WalletCards,
 } from "lucide-react";
@@ -54,6 +55,7 @@ import {
 	type SaleHistoryEvent,
 	toSaleHistoryTimelineEvent,
 } from "./-components/sale-history-presenter";
+import { SaleDelinquencySection } from "./-components/sale-delinquency-section";
 import { SaleInstallmentsDrawer } from "./-components/sale-installments-drawer";
 import { SaleStatusAction } from "./-components/sale-status-action";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
@@ -105,6 +107,9 @@ const SALE_HISTORY_ACTION_ICON: Record<SaleHistoryEvent["action"], LucideIcon> =
 		CREATED: PlusCircle,
 		UPDATED: FilePenLine,
 		STATUS_CHANGED: CheckCircle2,
+		DELINQUENCY_CREATED: TriangleAlert,
+		DELINQUENCY_RESOLVED: CheckCircle2,
+		DELINQUENCY_DELETED: Trash2,
 		COMMISSION_INSTALLMENT_UPDATED: WalletCards,
 		COMMISSION_INSTALLMENT_STATUS_UPDATED: CheckCircle2,
 		COMMISSION_INSTALLMENT_DELETED: Trash2,
@@ -118,6 +123,12 @@ const SALE_HISTORY_ACTION_ICON_CLASS: Record<
 		"bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30",
 	UPDATED: "bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30",
 	STATUS_CHANGED: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+	DELINQUENCY_CREATED:
+		"bg-rose-500/10 text-rose-600 dark:text-rose-300 border-rose-500/30",
+	DELINQUENCY_RESOLVED:
+		"bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30",
+	DELINQUENCY_DELETED:
+		"bg-rose-500/10 text-rose-600 dark:text-rose-300 border-rose-500/30",
 	COMMISSION_INSTALLMENT_UPDATED:
 		"bg-indigo-500/10 text-indigo-600 border-indigo-500/30",
 	COMMISSION_INSTALLMENT_STATUS_UPDATED:
@@ -428,6 +439,15 @@ export function SaleDetailsPage() {
 					</div>
 				</Card>
 			</div>
+
+			<SaleDelinquencySection
+				saleId={sale.id}
+				customerId={sale.customer.id}
+				saleStatus={sale.status}
+				summary={sale.delinquencySummary}
+				openDelinquencies={sale.openDelinquencies}
+				canManageDelinquencies={canUpdateSale}
+			/>
 
 			<Card className="p-6 space-y-3">
 				<h2 className="font-semibold">Campos personalizados</h2>

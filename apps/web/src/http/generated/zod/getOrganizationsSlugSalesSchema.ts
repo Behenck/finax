@@ -59,6 +59,12 @@ export const getOrganizationsSlugSales200Schema = z.object({
         canceled: z.int().min(0).max(9007199254740991),
         reversed: z.int().min(0).max(9007199254740991),
       }),
+      delinquencySummary: z.object({
+        hasOpen: z.boolean(),
+        openCount: z.int().min(0).max(9007199254740991),
+        oldestDueDate: z.nullable(z.iso.datetime()),
+        latestDueDate: z.nullable(z.iso.datetime()),
+      }),
     }),
   ),
 });
