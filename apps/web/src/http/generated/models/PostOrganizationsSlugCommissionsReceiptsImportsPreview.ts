@@ -10,25 +10,25 @@ export type PostOrganizationsSlugCommissionsReceiptsImportsPreviewPathParams = {
   slug: string;
 };
 
-export const rowsStatusEnum = {
+export const rowsStatusEnum2 = {
   READY: "READY",
   NO_ACTION: "NO_ACTION",
   ATTENTION: "ATTENTION",
   ERROR: "ERROR",
 } as const;
 
-export type RowsStatusEnumKey =
-  (typeof rowsStatusEnum)[keyof typeof rowsStatusEnum];
+export type RowsStatusEnum2Key =
+  (typeof rowsStatusEnum2)[keyof typeof rowsStatusEnum2];
 
-export const rowsActionEnum = {
+export const rowsActionEnum2 = {
   MARK_AS_PAID: "MARK_AS_PAID",
   UPDATE_AMOUNT_AND_MARK_AS_PAID: "UPDATE_AMOUNT_AND_MARK_AS_PAID",
   REVERSE_INSTALLMENT: "REVERSE_INSTALLMENT",
   NONE: "NONE",
 } as const;
 
-export type RowsActionEnumKey =
-  (typeof rowsActionEnum)[keyof typeof rowsActionEnum];
+export type RowsActionEnum2Key =
+  (typeof rowsActionEnum2)[keyof typeof rowsActionEnum2];
 
 export const rowsInstallmentStatusEnum = {
   PENDING: "PENDING",
@@ -92,11 +92,11 @@ export type PostOrganizationsSlugCommissionsReceiptsImportsPreview200 = {
     /**
      * @type string
      */
-    status: RowsStatusEnumKey;
+    status: RowsStatusEnum2Key;
     /**
      * @type string
      */
-    action: RowsActionEnumKey;
+    action: RowsActionEnum2Key;
     /**
      * @type string
      */

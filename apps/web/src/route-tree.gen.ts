@@ -29,6 +29,7 @@ import { Route as AuthPasswordForgotRouteImport } from './pages/_auth/password/f
 import { Route as AuthGoogleCallbackRouteImport } from './pages/_auth/google/callback'
 import { Route as AppSalesQuickCreateRouteImport } from './pages/_app/sales/quick-create'
 import { Route as AppSalesImportRouteImport } from './pages/_app/sales/import'
+import { Route as AppSalesDelinquencyImportRouteImport } from './pages/_app/sales/delinquency-import'
 import { Route as AppSalesDelinquencyRouteImport } from './pages/_app/sales/delinquency'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
@@ -153,6 +154,12 @@ const AppSalesImportRoute = AppSalesImportRouteImport.update({
   path: '/sales/import',
   getParentRoute: () => AppLayoutRoute,
 } as any)
+const AppSalesDelinquencyImportRoute =
+  AppSalesDelinquencyImportRouteImport.update({
+    id: '/sales/delinquency-import',
+    path: '/sales/delinquency-import',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AppSalesDelinquencyRoute = AppSalesDelinquencyRouteImport.update({
   id: '/sales/delinquency',
   path: '/sales/delinquency',
@@ -307,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/delinquency': typeof AppSalesDelinquencyRoute
+  '/sales/delinquency-import': typeof AppSalesDelinquencyImportRoute
   '/sales/import': typeof AppSalesImportRoute
   '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
@@ -350,6 +358,7 @@ export interface FileRoutesByTo {
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/delinquency': typeof AppSalesDelinquencyRoute
+  '/sales/delinquency-import': typeof AppSalesDelinquencyImportRoute
   '/sales/import': typeof AppSalesImportRoute
   '/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/google/callback': typeof AuthGoogleCallbackRoute
@@ -398,6 +407,7 @@ export interface FileRoutesById {
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
   '/_app/sales/delinquency': typeof AppSalesDelinquencyRoute
+  '/_app/sales/delinquency-import': typeof AppSalesDelinquencyImportRoute
   '/_app/sales/import': typeof AppSalesImportRoute
   '/_app/sales/quick-create': typeof AppSalesQuickCreateRoute
   '/_auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -445,6 +455,7 @@ export interface FileRouteTypes {
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/delinquency'
+    | '/sales/delinquency-import'
     | '/sales/import'
     | '/sales/quick-create'
     | '/google/callback'
@@ -488,6 +499,7 @@ export interface FileRouteTypes {
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/delinquency'
+    | '/sales/delinquency-import'
     | '/sales/import'
     | '/sales/quick-create'
     | '/google/callback'
@@ -535,6 +547,7 @@ export interface FileRouteTypes {
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
     | '/_app/sales/delinquency'
+    | '/_app/sales/delinquency-import'
     | '/_app/sales/import'
     | '/_app/sales/quick-create'
     | '/_auth/google/callback'
@@ -717,6 +730,13 @@ declare module '@tanstack/react-router' {
       path: '/sales/import'
       fullPath: '/sales/import'
       preLoaderRoute: typeof AppSalesImportRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/sales/delinquency-import': {
+      id: '/_app/sales/delinquency-import'
+      path: '/sales/delinquency-import'
+      fullPath: '/sales/delinquency-import'
+      preLoaderRoute: typeof AppSalesDelinquencyImportRouteImport
       parentRoute: typeof AppLayoutRoute
     }
     '/_app/sales/delinquency': {
@@ -917,6 +937,7 @@ interface AppLayoutRouteChildren {
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
   AppSalesDelinquencyRoute: typeof AppSalesDelinquencyRoute
+  AppSalesDelinquencyImportRoute: typeof AppSalesDelinquencyImportRoute
   AppSalesImportRoute: typeof AppSalesImportRoute
   AppSalesQuickCreateRoute: typeof AppSalesQuickCreateRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
@@ -949,6 +970,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
   AppSalesDelinquencyRoute: AppSalesDelinquencyRoute,
+  AppSalesDelinquencyImportRoute: AppSalesDelinquencyImportRoute,
   AppSalesImportRoute: AppSalesImportRoute,
   AppSalesQuickCreateRoute: AppSalesQuickCreateRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,

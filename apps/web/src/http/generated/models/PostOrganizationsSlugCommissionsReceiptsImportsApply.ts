@@ -10,13 +10,13 @@ export type PostOrganizationsSlugCommissionsReceiptsImportsApplyPathParams = {
   slug: string;
 };
 
-export const resultsResultEnum = {
+export const resultsResultEnum2 = {
   APPLIED: "APPLIED",
   SKIPPED: "SKIPPED",
 } as const;
 
-export type ResultsResultEnumKey =
-  (typeof resultsResultEnum)[keyof typeof resultsResultEnum];
+export type ResultsResultEnum2Key =
+  (typeof resultsResultEnum2)[keyof typeof resultsResultEnum2];
 
 /**
  * @description Default Response
@@ -53,7 +53,7 @@ export type PostOrganizationsSlugCommissionsReceiptsImportsApply200 = {
     /**
      * @type string
      */
-    result: ResultsResultEnumKey;
+    result: ResultsResultEnum2Key;
     /**
      * @type string
      */

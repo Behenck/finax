@@ -98,6 +98,13 @@ export type {
   DeleteOrganizationsSlugRecurrencesRecurrenceidMutation,
 } from "./DeleteOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type {
+  DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidPathParams,
+  DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204EnumKey,
+  DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204,
+  DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidMutationResponse,
+  DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidMutation,
+} from "./DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid.ts";
+export type {
   DeleteOrganizationsSlugSalesImportTemplatesTemplateidPathParams,
   DeleteOrganizationsSlugSalesImportTemplatesTemplateid204EnumKey,
   DeleteOrganizationsSlugSalesImportTemplatesTemplateid204,
@@ -403,6 +410,19 @@ export type {
   GetOrganizationsSlugSalesDelinquencyQuery,
 } from "./GetOrganizationsSlugSalesDelinquency.ts";
 export type {
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFields200,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQuery,
+} from "./GetOrganizationsSlugSalesDelinquencyImportSearchFields.ts";
+export type {
+  GetOrganizationsSlugSalesDelinquencyImportTemplatesPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportTemplatesQueryParams,
+  GetOrganizationsSlugSalesDelinquencyImportTemplates200,
+  GetOrganizationsSlugSalesDelinquencyImportTemplatesQueryResponse,
+  GetOrganizationsSlugSalesDelinquencyImportTemplatesQuery,
+} from "./GetOrganizationsSlugSalesDelinquencyImportTemplates.ts";
+export type {
   GetOrganizationsSlugSalesImportTemplatesPathParams,
   GetOrganizationsSlugSalesImportTemplatesQueryParams,
   ResponsibleTypeEnum11Key,
@@ -663,7 +683,7 @@ export type {
 } from "./PostOrganizationsSlugCategories.ts";
 export type {
   PostOrganizationsSlugCommissionsReceiptsImportsApplyPathParams,
-  ResultsResultEnumKey,
+  ResultsResultEnum2Key,
   PostOrganizationsSlugCommissionsReceiptsImportsApply200,
   PostOrganizationsSlugCommissionsReceiptsImportsApplyMutationRequestFileTypeEnumKey,
   PostOrganizationsSlugCommissionsReceiptsImportsApplyMutationRequest,
@@ -672,8 +692,8 @@ export type {
 } from "./PostOrganizationsSlugCommissionsReceiptsImportsApply.ts";
 export type {
   PostOrganizationsSlugCommissionsReceiptsImportsPreviewPathParams,
-  RowsStatusEnumKey,
-  RowsActionEnumKey,
+  RowsStatusEnum2Key,
+  RowsActionEnum2Key,
   RowsInstallmentStatusEnumKey,
   PostOrganizationsSlugCommissionsReceiptsImportsPreview200,
   PostOrganizationsSlugCommissionsReceiptsImportsPreviewMutationRequestFileTypeEnumKey,
@@ -790,6 +810,33 @@ export type {
   PostOrganizationsSlugSalesBatchMutationResponse,
   PostOrganizationsSlugSalesBatchMutation,
 } from "./PostOrganizationsSlugSalesBatch.ts";
+export type {
+  PostOrganizationsSlugSalesDelinquencyImportsApplyPathParams,
+  ResultsResultEnumKey,
+  PostOrganizationsSlugSalesDelinquencyImportsApply200,
+  PostOrganizationsSlugSalesDelinquencyImportsApplyMutationRequestFileTypeEnumKey,
+  PostOrganizationsSlugSalesDelinquencyImportsApplyMutationRequest,
+  PostOrganizationsSlugSalesDelinquencyImportsApplyMutationResponse,
+  PostOrganizationsSlugSalesDelinquencyImportsApplyMutation,
+} from "./PostOrganizationsSlugSalesDelinquencyImportsApply.ts";
+export type {
+  PostOrganizationsSlugSalesDelinquencyImportsPreviewPathParams,
+  RowsStatusEnumKey,
+  RowsActionEnumKey,
+  RowsSaleStatusEnumKey,
+  PostOrganizationsSlugSalesDelinquencyImportsPreview200,
+  PostOrganizationsSlugSalesDelinquencyImportsPreviewMutationRequestFileTypeEnumKey,
+  PostOrganizationsSlugSalesDelinquencyImportsPreviewMutationRequest,
+  PostOrganizationsSlugSalesDelinquencyImportsPreviewMutationResponse,
+  PostOrganizationsSlugSalesDelinquencyImportsPreviewMutation,
+} from "./PostOrganizationsSlugSalesDelinquencyImportsPreview.ts";
+export type {
+  PostOrganizationsSlugSalesDelinquencyImportTemplatesPathParams,
+  PostOrganizationsSlugSalesDelinquencyImportTemplates201,
+  PostOrganizationsSlugSalesDelinquencyImportTemplatesMutationRequest,
+  PostOrganizationsSlugSalesDelinquencyImportTemplatesMutationResponse,
+  PostOrganizationsSlugSalesDelinquencyImportTemplatesMutation,
+} from "./PostOrganizationsSlugSalesDelinquencyImportTemplates.ts";
 export type {
   PostOrganizationsSlugSalesImportsPathParams,
   PostOrganizationsSlugSalesImports200,
@@ -1048,6 +1095,14 @@ export type {
   PutOrganizationsSlugRecurrencesRecurrenceidMutation,
 } from "./PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export type {
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidPathParams,
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204EnumKey,
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204,
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidMutationRequest,
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidMutationResponse,
+  PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateidMutation,
+} from "./PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid.ts";
+export type {
   PutOrganizationsSlugSalesImportTemplatesTemplateidPathParams,
   PutOrganizationsSlugSalesImportTemplatesTemplateid204EnumKey,
   PutOrganizationsSlugSalesImportTemplatesTemplateid204,
@@ -1104,6 +1159,7 @@ export { deleteOrganizationsSlugMembersMemberid204Enum } from "./DeleteOrganizat
 export { deleteOrganizationsSlugPartnersPartnerid204Enum } from "./DeleteOrganizationsSlugPartnersPartnerid.ts";
 export { deleteOrganizationsSlugProductsId204Enum } from "./DeleteOrganizationsSlugProductsId.ts";
 export { deleteOrganizationsSlugRecurrencesRecurrenceid204Enum } from "./DeleteOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { deleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204Enum } from "./DeleteOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid.ts";
 export { deleteOrganizationsSlugSalesImportTemplatesTemplateid204Enum } from "./DeleteOrganizationsSlugSalesImportTemplatesTemplateid.ts";
 export { deleteOrganizationsSlugSalesSaleid204Enum } from "./DeleteOrganizationsSlugSalesSaleid.ts";
 export { deleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid204Enum } from "./DeleteOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentid.ts";
@@ -1230,10 +1286,10 @@ export { postAuthSendEmailOtp204Enum } from "./PostAuthSendEmailOtp.ts";
 export { postInvitesInviteidAccept204Enum } from "./PostInvitesInviteidAccept.ts";
 export { postInvitesInviteidReject204Enum } from "./PostInvitesInviteidReject.ts";
 export { postOrganizationsSlugCategoriesMutationRequestTypeEnum } from "./PostOrganizationsSlugCategories.ts";
-export { resultsResultEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsApply.ts";
+export { resultsResultEnum2 } from "./PostOrganizationsSlugCommissionsReceiptsImportsApply.ts";
 export { postOrganizationsSlugCommissionsReceiptsImportsApplyMutationRequestFileTypeEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsApply.ts";
-export { rowsStatusEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
-export { rowsActionEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
+export { rowsStatusEnum2 } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
+export { rowsActionEnum2 } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
 export { rowsInstallmentStatusEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
 export { postOrganizationsSlugCommissionsReceiptsImportsPreviewMutationRequestFileTypeEnum } from "./PostOrganizationsSlugCommissionsReceiptsImportsPreview.ts";
 export { postOrganizationsSlugCustomersMutationRequestPersonTypeEnum } from "./PostOrganizationsSlugCustomers.ts";
@@ -1255,6 +1311,12 @@ export { commissionsRecipientTypeEnum3 } from "./PostOrganizationsSlugSales.ts";
 export { commissionsDirectionEnum } from "./PostOrganizationsSlugSales.ts";
 export { commissionsCalculationBaseEnum3 } from "./PostOrganizationsSlugSales.ts";
 export { responsibleTypeEnum7 } from "./PostOrganizationsSlugSalesBatch.ts";
+export { resultsResultEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsApply.ts";
+export { postOrganizationsSlugSalesDelinquencyImportsApplyMutationRequestFileTypeEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsApply.ts";
+export { rowsStatusEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsPreview.ts";
+export { rowsActionEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsPreview.ts";
+export { rowsSaleStatusEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsPreview.ts";
+export { postOrganizationsSlugSalesDelinquencyImportsPreviewMutationRequestFileTypeEnum } from "./PostOrganizationsSlugSalesDelinquencyImportsPreview.ts";
 export { postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum } from "./PostOrganizationsSlugSalesImports.ts";
 export { responsibleTypeEnum14 } from "./PostOrganizationsSlugSalesImports.ts";
 export { responsibleTypeEnum12 } from "./PostOrganizationsSlugSalesImportTemplates.ts";
@@ -1311,6 +1373,7 @@ export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestTypeEnum } fr
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestStatusEnum } from "./PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestExecutionDayTypeEnum } from "./PutOrganizationsSlugRecurrencesRecurrenceid.ts";
 export { putOrganizationsSlugRecurrencesRecurrenceidMutationRequestAdjustmentRuleEnum } from "./PutOrganizationsSlugRecurrencesRecurrenceid.ts";
+export { putOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid204Enum } from "./PutOrganizationsSlugSalesDelinquencyImportTemplatesTemplateid.ts";
 export { putOrganizationsSlugSalesImportTemplatesTemplateid204Enum } from "./PutOrganizationsSlugSalesImportTemplatesTemplateid.ts";
 export { responsibleTypeEnum13 } from "./PutOrganizationsSlugSalesImportTemplatesTemplateid.ts";
 export { putOrganizationsSlugSalesSaleid204Enum } from "./PutOrganizationsSlugSalesSaleid.ts";

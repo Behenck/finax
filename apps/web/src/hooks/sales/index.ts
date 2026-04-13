@@ -17,6 +17,7 @@ export * from "./use-sale-commission-installments";
 export * from "./use-sale-form-options";
 export * from "./use-sale-history";
 export * from "./use-sale-imports";
+export * from "./use-sale-delinquency-imports";
 export * from "./use-sale-navigation";
 export * from "./use-sales";
 export * from "./use-sales-delinquency";

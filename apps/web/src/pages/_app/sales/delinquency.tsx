@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format, parse } from "date-fns";
-import { Eye, RefreshCcw, TriangleAlert } from "lucide-react";
+import { Eye, RefreshCcw, ShieldAlert, TriangleAlert } from "lucide-react";
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
 import { FilterPanel } from "@/components/filter-panel";
@@ -46,6 +46,7 @@ export function SalesDelinquencyPage() {
 	const { organization } = useApp();
 	const ability = useAbility();
 	const canViewSales = ability.can("access", "sales.view");
+	const canManageSalesImports = ability.can("access", "sales.import.manage");
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const [companyIdFilter, setCompanyIdFilter] = useQueryState(
 		"companyId",
@@ -156,11 +157,19 @@ export function SalesDelinquencyPage() {
 				title="Inadimplência das Vendas"
 				description="Veja rapidamente quais vendas têm parcelas em aberto e podem representar risco de estorno."
 				actions={
-					<Button variant="outline" asChild>
-						<Link to="/sales">
-							Voltar para vendas
-						</Link>
-					</Button>
+					<div className="flex w-full flex-wrap gap-2 sm:w-auto">
+						{canManageSalesImports ? (
+							<Button variant="outline" asChild>
+								<Link to="/sales/delinquency-import">
+									<ShieldAlert className="size-4" />
+									Importar inadimplência
+								</Link>
+							</Button>
+						) : null}
+						<Button variant="outline" asChild>
+							<Link to="/sales">Voltar para vendas</Link>
+						</Button>
+					</div>
 				}
 			/>
 

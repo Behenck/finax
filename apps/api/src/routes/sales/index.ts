@@ -1,15 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import { registerModulePermissionGuard } from "@/permissions/route-guard";
 import { createCommissionReceiptImportTemplate } from "./create-commission-receipt-import-template";
+import { createSaleDelinquencyImportTemplate } from "./create-sale-delinquency-import-template";
 import { createSale } from "./create-sale";
 import { createSaleImportTemplate } from "./create-sale-import-template";
 import { deleteCommissionReceiptImportTemplate } from "./delete-commission-receipt-import-template";
+import { deleteSaleDelinquencyImportTemplate } from "./delete-sale-delinquency-import-template";
 import { deleteSale } from "./delete-sale";
 import { deleteSaleCommissionInstallment } from "./delete-sale-commission-installment";
 import { deleteSaleDelinquency } from "./delete-sale-delinquency";
 import { deleteSaleImportTemplate } from "./delete-sale-import-template";
 import { getCommissionReceiptImportTemplates } from "./get-commission-receipt-import-templates";
 import { getOrganizationCommissionInstallments } from "./get-organization-commission-installments";
+import { getSaleDelinquencyImportSearchFields } from "./get-sale-delinquency-import-search-fields";
+import { getSaleDelinquencyImportTemplates } from "./get-sale-delinquency-import-templates";
 import { getSale } from "./get-sale";
 import { getSaleCommissionInstallments } from "./get-sale-commission-installments";
 import { getSaleHistory } from "./get-sale-history";
@@ -27,12 +31,15 @@ import { patchSalesDeleteBulk } from "./patch-sales-delete-bulk";
 import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
 import { postSaleCommissionInstallmentReversal } from "./post-sale-commission-installment-reversal";
 import { postSaleCommissionInstallmentReversalUndo } from "./post-sale-commission-installment-reversal-undo";
+import { postSaleDelinquencyImportApply } from "./post-sale-delinquency-import-apply";
+import { postSaleDelinquencyImportPreview } from "./post-sale-delinquency-import-preview";
 import { postCommissionReceiptImportApply } from "./post-commission-receipt-import-apply";
 import { postCommissionReceiptImportPreview } from "./post-commission-receipt-import-preview";
 import { postSalesBatch } from "./post-sales-batch";
 import { postSalesImport } from "./post-sales-import";
 import { postSaleDelinquency } from "./post-sale-delinquency";
 import { updateCommissionReceiptImportTemplate } from "./update-commission-receipt-import-template";
+import { updateSaleDelinquencyImportTemplate } from "./update-sale-delinquency-import-template";
 import { updateSale } from "./update-sale";
 import { updateSaleImportTemplate } from "./update-sale-import-template";
 
@@ -40,6 +47,13 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 	const { method, routeUrl } = params;
 
 	if (
+		routeUrl ===
+			"/organizations/:slug/sales/delinquency/import-search-fields" ||
+		routeUrl === "/organizations/:slug/sales/delinquency/import-templates" ||
+		routeUrl ===
+			"/organizations/:slug/sales/delinquency/import-templates/:templateId" ||
+		routeUrl === "/organizations/:slug/sales/delinquency/imports/preview" ||
+		routeUrl === "/organizations/:slug/sales/delinquency/imports/apply" ||
 		routeUrl === "/organizations/:slug/sales/import-templates" ||
 		routeUrl === "/organizations/:slug/sales/import-templates/:templateId" ||
 		routeUrl === "/organizations/:slug/sales/imports" ||
@@ -210,6 +224,13 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(postSaleCommissionInstallmentReversalUndo);
 	await app.register(patchSaleCommissionInstallment);
 	await app.register(deleteSaleCommissionInstallment);
+	await app.register(getSaleDelinquencyImportSearchFields);
+	await app.register(getSaleDelinquencyImportTemplates);
+	await app.register(createSaleDelinquencyImportTemplate);
+	await app.register(updateSaleDelinquencyImportTemplate);
+	await app.register(deleteSaleDelinquencyImportTemplate);
+	await app.register(postSaleDelinquencyImportPreview);
+	await app.register(postSaleDelinquencyImportApply);
 	await app.register(getCommissionReceiptImportTemplates);
 	await app.register(createCommissionReceiptImportTemplate);
 	await app.register(updateCommissionReceiptImportTemplate);

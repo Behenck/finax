@@ -15,6 +15,7 @@ import {
 	FileSpreadsheet,
 	Funnel,
 	Plus,
+	ShieldAlert,
 	TriangleAlert,
 } from "lucide-react";
 import { useState } from "react";
@@ -103,12 +104,20 @@ export function SalesPage() {
 							Filtro
 						</Button>
 						{canManageSalesImports ? (
-							<Button asChild variant="outline" className="w-full sm:w-auto">
-								<Link to="/sales/import">
-									<FileSpreadsheet className="size-4" />
-									Importar Planilha
-								</Link>
-							</Button>
+							<>
+								<Button asChild variant="outline" className="w-full sm:w-auto">
+									<Link to="/sales/import">
+										<FileSpreadsheet className="size-4" />
+										Importar Vendas
+									</Link>
+								</Button>
+								<Button asChild variant="outline" className="w-full sm:w-auto">
+									<Link to="/sales/delinquency-import">
+										<ShieldAlert className="size-4" />
+										Importar Inadimplência
+									</Link>
+								</Button>
+							</>
 						) : null}
 						{canCreateSales ? (
 							<DropdownMenu>
