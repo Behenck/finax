@@ -41,6 +41,8 @@ function hasActiveStoredSalesFilters() {
 			unitId?: string;
 			responsibleType?: string;
 			responsibleId?: string;
+			saleDateFrom?: string;
+			saleDateTo?: string;
 		};
 
 		return Boolean(
@@ -49,7 +51,9 @@ function hasActiveStoredSalesFilters() {
 				(storedFilters.companyId ?? "").trim() ||
 				(storedFilters.unitId ?? "").trim() ||
 				(storedFilters.responsibleType ?? "ALL") !== "ALL" ||
-				(storedFilters.responsibleId ?? "").trim(),
+				(storedFilters.responsibleId ?? "").trim() ||
+				(storedFilters.saleDateFrom ?? "").trim() ||
+				(storedFilters.saleDateTo ?? "").trim(),
 		);
 	} catch {
 		return false;

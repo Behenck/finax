@@ -1,4 +1,4 @@
-import { endOfMonth, format, parse, startOfMonth, subDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
 import {
@@ -18,6 +18,7 @@ import {
 	ArrowRight,
 	BadgeDollarSign,
 	BriefcaseBusiness,
+	ChevronDown,
 	CircleDollarSign,
 	Clock3,
 	Funnel,
@@ -43,6 +44,11 @@ import {
 	type ChartConfig,
 } from "@/components/ui/chart";
 import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
@@ -61,6 +67,11 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
 	dashboardInactiveMonthsParser,
 	dateFilterParser,
 	dashboardViewParser,
@@ -71,19 +82,6 @@ import { usePartnerSalesDashboard } from "@/hooks/sales";
 import type { GetOrganizationsSlugSalesDashboardPartners200 } from "@/http/generated";
 import { cn } from "@/lib/utils";
 import { formatCurrencyBRL } from "@/utils/format-amount";
-
-const PARTNER_STATUS_META = {
-	ACTIVE: {
-		label: "Ativo",
-		className:
-			"border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-	},
-	INACTIVE: {
-		label: "Inativo",
-		className:
-			"border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-	},
-} as const;
 
 const PARTNER_SALES_STATUS_META = {
 	PENDING: {
@@ -166,7 +164,7 @@ const breakdownPieChartConfig = {
 const delinquencyChartConfig = {
 	salesCount: {
 		label: "Vendas inadimplentes",
-		color: "hsl(16 90% 58%)",
+		color: "hsl(0 72% 51%)",
 	},
 } satisfies ChartConfig;
 
@@ -182,6 +180,10 @@ type BreakdownPieDataItem = DashboardBreakdownItem & {
 type StatusFunnelPieDataItem = StatusFunnelItem & {
 	fill: string;
 };
+type DelinquencyPieDataItem =
+	PartnerDashboardData["delinquencyBreakdown"]["buckets"][number] & {
+		fill: string;
+	};
 
 type PartnerKpiCardProps = {
 	title: string;
@@ -201,6 +203,12 @@ const BREAKDOWN_PIE_COLORS = [
 	"#ef4444",
 	"#84cc16",
 ] as const;
+const DELINQUENCY_PIE_COLORS = [
+	"#f87171",
+	"#ef4444",
+	"#dc2626",
+	"#b91c1c",
+] as const;
 const PARTNER_RANKING_CHART_LIMIT = 10;
 
 function getDefaultEndDate() {
@@ -209,14 +217,6 @@ function getDefaultEndDate() {
 
 function getDefaultStartDate() {
 	return format(subDays(new Date(), 89), "yyyy-MM-dd");
-}
-
-function getCurrentMonthStartDate() {
-	return format(startOfMonth(new Date()), "yyyy-MM-dd");
-}
-
-function getCurrentMonthEndDate() {
-	return format(endOfMonth(new Date()), "yyyy-MM-dd");
 }
 
 function parsePartnerIdsCsv(value: string) {
@@ -252,6 +252,15 @@ function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
 	})) satisfies BreakdownPieDataItem[];
 }
 
+function buildDelinquencyPieData(
+	buckets: PartnerDashboardData["delinquencyBreakdown"]["buckets"],
+) {
+	return buckets.map((bucket, index) => ({
+		...bucket,
+		fill: DELINQUENCY_PIE_COLORS[index % DELINQUENCY_PIE_COLORS.length]!,
+	})) satisfies DelinquencyPieDataItem[];
+}
+
 function PartnerKpiCard({
 	title,
 	value,
@@ -277,37 +286,176 @@ function PartnerKpiCard({
 	);
 }
 
+function getRankingCoverageWidth(amount: number, maxAmount: number) {
+	if (maxAmount <= 0) {
+		return 0;
+	}
+
+	return Math.min(Math.max((amount / maxAmount) * 100, 0), 100);
+}
+
+function PartnerRankingCombinedProgressBar({
+	salesAmount,
+	salesCount,
+	delinquentAmount,
+	delinquentSalesCount,
+	maxAmount,
+	label = "Vendas x inadimplencia",
+	compact = false,
+}: {
+	salesAmount: number;
+	salesCount: number;
+	delinquentAmount: number;
+	delinquentSalesCount: number;
+	maxAmount: number;
+	label?: string;
+	compact?: boolean;
+}) {
+	const salesWidth = getRankingCoverageWidth(salesAmount, maxAmount);
+	const delinquentWidth = getRankingCoverageWidth(delinquentAmount, maxAmount);
+	const salesTooltipAriaLabel = `Vendas: ${formatAmountFromCents(salesAmount)} | ${formatCount(salesCount)} venda(s)`;
+	const delinquentTooltipAriaLabel = `Vendas inadimplentes: ${formatAmountFromCents(delinquentAmount)} | ${formatCount(delinquentSalesCount)} venda(s) inadimplente(s)`;
+
+	return (
+		<div className={compact ? "space-y-0" : "space-y-1.5"}>
+			{compact ? null : (
+				<div className="flex items-center justify-between text-[11px]">
+					<span className="text-muted-foreground">{label}</span>
+					<div className="flex items-center gap-1.5">
+						<span className="font-medium tabular-nums text-blue-700 dark:text-blue-300">
+							{formatAmountFromCents(salesAmount)}
+						</span>
+						<span className="text-muted-foreground">|</span>
+						<span className="font-medium tabular-nums text-rose-700 dark:text-rose-300">
+							{formatAmountFromCents(delinquentAmount)}
+						</span>
+					</div>
+				</div>
+			)}
+
+			<div
+				className={cn(
+					"relative overflow-hidden rounded-full bg-muted",
+					"h-2",
+				)}
+			>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<button
+							type="button"
+							aria-label={salesTooltipAriaLabel}
+							className="absolute inset-0 block cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							<div className="h-full overflow-hidden rounded-full">
+								<div
+									className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
+									style={{ width: `${salesWidth}%` }}
+								/>
+							</div>
+						</button>
+					</TooltipTrigger>
+					<TooltipContent
+						side="top"
+						sideOffset={8}
+						className="rounded-lg px-3 py-2"
+					>
+						<div className="space-y-1.5">
+							<div className="text-[11px] font-medium uppercase tracking-wide text-background/80">
+								Vendas
+							</div>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-background/80">Valor</span>
+								<span className="font-mono font-medium tabular-nums text-background">
+									{formatAmountFromCents(salesAmount)}
+								</span>
+							</div>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-background/80">Quantidade</span>
+								<span className="font-mono font-medium tabular-nums text-background">
+									{formatCount(salesCount)} venda(s)
+								</span>
+							</div>
+						</div>
+					</TooltipContent>
+				</Tooltip>
+
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<button
+							type="button"
+							aria-label={delinquentTooltipAriaLabel}
+							className="absolute inset-y-0 left-0 block h-full cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							style={{ width: `${delinquentWidth}%` }}
+						>
+							<div className="h-full rounded-full bg-gradient-to-r from-rose-500 to-red-500" />
+						</button>
+					</TooltipTrigger>
+					<TooltipContent
+						side="top"
+						sideOffset={8}
+						className="rounded-lg px-3 py-2"
+					>
+						<div className="space-y-1.5">
+							<div className="text-[11px] font-medium uppercase tracking-wide text-background/80">
+								Vendas inadimplentes
+							</div>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-background/80">Valor</span>
+								<span className="font-mono font-medium tabular-nums text-background">
+									{formatAmountFromCents(delinquentAmount)}
+								</span>
+							</div>
+							<div className="flex items-center justify-between gap-3">
+								<span className="text-background/80">Quantidade</span>
+								<span className="font-mono font-medium tabular-nums text-background">
+									{formatCount(delinquentSalesCount)} venda(s) inadimplente(s)
+								</span>
+							</div>
+						</div>
+					</TooltipContent>
+				</Tooltip>
+			</div>
+		</div>
+	);
+}
+
 function PartnerRankingCoverageRow({
 	label,
 	amount,
+	salesCount,
+	delinquentAmount,
+	delinquentSalesCount,
 	maxAmount,
-	helperText,
 }: {
 	label: string;
 	amount: number;
+	salesCount: number;
+	delinquentAmount: number;
+	delinquentSalesCount: number;
 	maxAmount: number;
-	helperText?: string;
 }) {
-	const width =
-		maxAmount <= 0 ? 0 : Math.min(Math.max((amount / maxAmount) * 100, 0), 100);
-
 	return (
-		<div className="space-y-1.5">
-			<div className="flex items-center justify-between text-xs">
-				<span className="text-muted-foreground">{label}</span>
-				<span className="font-medium tabular-nums text-foreground">
-					{formatAmountFromCents(amount)}
-				</span>
+		<div className="space-y-1">
+			<div className="flex items-center justify-between gap-2 text-xs">
+				<span className="min-w-0 truncate text-muted-foreground">{label}</span>
+				<div className="shrink-0 text-[11px] tabular-nums">
+					<span className="font-medium text-blue-700 dark:text-blue-300">
+						{formatAmountFromCents(amount)}
+					</span>
+					<span className="px-1 text-muted-foreground">|</span>
+					<span className="font-medium text-rose-700 dark:text-rose-300">
+						{formatAmountFromCents(delinquentAmount)}
+					</span>
+				</div>
 			</div>
-			<div className="h-2 rounded-full bg-muted">
-				<div
-					className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
-					style={{ width: `${width}%` }}
-				/>
-			</div>
-			{helperText ? (
-				<div className="text-[11px] text-muted-foreground">{helperText}</div>
-			) : null}
+			<PartnerRankingCombinedProgressBar
+				salesAmount={amount}
+				salesCount={salesCount}
+				delinquentAmount={delinquentAmount}
+				delinquentSalesCount={delinquentSalesCount}
+				maxAmount={maxAmount}
+				compact
+			/>
 		</div>
 	);
 }
@@ -669,9 +817,9 @@ function PartnerRankingCard({
 					Leitura da liderança e concentração da produção na base de parceiros.
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-5">
+			<CardContent className="space-y-4">
 				{leader ? (
-					<div className="rounded-xl border bg-muted/20 p-4">
+					<div className="rounded-xl border bg-muted/20 p-3">
 						<div className="flex items-center justify-between text-sm">
 							<span className="text-muted-foreground">Líder do período</span>
 							<span className="font-semibold">
@@ -684,15 +832,16 @@ function PartnerRankingCard({
 						<div className="mt-1 text-sm font-medium text-foreground">
 							{formatAmountFromCents(leader.grossAmount)}
 						</div>
-						<div className="mt-3 h-2 rounded-full bg-muted">
-							<div
-								className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
-								style={{
-									width: `${Math.min(Math.max(leaderSharePct, 0), 100)}%`,
-								}}
+						<div className="mt-2">
+							<PartnerRankingCombinedProgressBar
+								salesAmount={leader.grossAmount}
+								salesCount={leader.salesCount}
+								delinquentAmount={leader.delinquentGrossAmount}
+								delinquentSalesCount={leader.delinquentSalesCount}
+								maxAmount={rankingGrossTotal}
 							/>
 						</div>
-						<div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+						<div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
 							<div>Vendas: {formatCount(leader.salesCount)}</div>
 							<div>
 								Inadimplentes: {formatCount(leader.delinquentSalesCount)}
@@ -705,7 +854,7 @@ function PartnerRankingCard({
 					</div>
 				)}
 
-				<div className="grid grid-cols-2 gap-3">
+				<div className="grid grid-cols-2 gap-2">
 					<PartnerCompactMetric
 						label="Produção Top 3"
 						value={formatAmountFromCents(topThreeGrossAmount)}
@@ -716,7 +865,7 @@ function PartnerRankingCard({
 					/>
 				</div>
 
-				<div className="space-y-2">
+				<div className="space-y-1.5">
 					<div className="text-sm font-medium">Cobertura do ranking</div>
 					{topFive.length > 0 ? (
 						topFive.map((partner, index) => (
@@ -724,8 +873,10 @@ function PartnerRankingCard({
 								key={partner.partnerId}
 								label={`#${index + 1} ${partner.partnerName}`}
 								amount={partner.grossAmount}
+								salesCount={partner.salesCount}
+								delinquentAmount={partner.delinquentGrossAmount}
+								delinquentSalesCount={partner.delinquentSalesCount}
 								maxAmount={leader?.grossAmount ?? 0}
-								helperText={`${formatCount(partner.salesCount)} venda(s)`}
 							/>
 						))
 					) : (
@@ -744,56 +895,217 @@ function PartnerRankingListCard({
 }: {
 	items: PartnerDashboardData["ranking"];
 }) {
+	const [expandedSupervisors, setExpandedSupervisors] = useState<Set<string>>(
+		() => new Set(),
+	);
+
+	const supervisorRanking = useMemo(() => {
+		const rankingBySupervisor = new Map<
+			string,
+			{
+				supervisorId: string;
+				supervisorName: string;
+				partnersCount: number;
+				salesCount: number;
+				delinquentSalesCount: number;
+				grossAmount: number;
+				partners: Array<{
+					partnerId: string;
+					partnerName: string;
+					salesCount: number;
+					grossAmount: number;
+					delinquentSalesCount: number;
+					delinquentGrossAmount: number;
+				}>;
+			}
+		>();
+
+		for (const partner of items) {
+			const supervisorId = partner.supervisor?.id ?? "UNASSIGNED";
+			const supervisorName = partner.supervisor?.name ?? "Sem supervisor";
+			const current = rankingBySupervisor.get(supervisorId) ?? {
+				supervisorId,
+				supervisorName,
+				partnersCount: 0,
+				salesCount: 0,
+				delinquentSalesCount: 0,
+				grossAmount: 0,
+				partners: [],
+			};
+
+			current.partnersCount += 1;
+			current.salesCount += partner.salesCount;
+			current.delinquentSalesCount += partner.delinquentSalesCount;
+			current.grossAmount += partner.grossAmount;
+			current.partners.push({
+				partnerId: partner.partnerId,
+				partnerName: partner.partnerName,
+				salesCount: partner.salesCount,
+				grossAmount: partner.grossAmount,
+				delinquentSalesCount: partner.delinquentSalesCount,
+				delinquentGrossAmount: partner.delinquentGrossAmount,
+			});
+			rankingBySupervisor.set(supervisorId, current);
+		}
+
+		return Array.from(rankingBySupervisor.values())
+			.map((supervisor) => ({
+				...supervisor,
+				soldPartners: [...supervisor.partners]
+					.filter((partner) => partner.salesCount > 0)
+					.sort(
+						(left, right) =>
+							right.grossAmount - left.grossAmount ||
+							right.salesCount - left.salesCount ||
+							left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+					),
+			}))
+			.sort(
+				(left, right) =>
+					right.grossAmount - left.grossAmount ||
+					right.salesCount - left.salesCount ||
+					left.supervisorName.localeCompare(right.supervisorName, "pt-BR"),
+			);
+	}, [items]);
+
+	function handleSupervisorOpenChange(supervisorId: string, open: boolean) {
+		setExpandedSupervisors((previousState) => {
+			const nextState = new Set(previousState);
+			if (open) {
+				nextState.add(supervisorId);
+			} else {
+				nextState.delete(supervisorId);
+			}
+			return nextState;
+		});
+	}
+
 	return (
 		<Card className="border-border/70">
 			<CardHeader>
 				<CardTitle>Lista do ranking</CardTitle>
 				<CardDescription>
-					Detalhamento completo dos parceiros ordenados por produção.
+					Detalhamento completo dos supervisores ordenados por produção.
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
-					{items.map((partner, index) => (
-						<div
-							key={partner.partnerId}
-							className="flex flex-col gap-3 rounded-2xl border border-border/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+					{supervisorRanking.map((supervisor, index) => {
+						const isOpen = expandedSupervisors.has(supervisor.supervisorId);
+						return (
+							<Collapsible
+							key={supervisor.supervisorId}
+							open={isOpen}
+							onOpenChange={(open) =>
+								handleSupervisorOpenChange(supervisor.supervisorId, open)
+							}
+							className="rounded-2xl border border-border/70 bg-background"
 						>
-							<div className="flex min-w-0 items-start gap-3">
-								<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
-									#{index + 1}
-								</div>
-								<div className="min-w-0 space-y-1">
-									<div className="truncate font-medium text-foreground">
-										{partner.partnerName}
-									</div>
-									<div className="text-sm text-muted-foreground">
-										{partner.supervisor?.name ?? "Sem supervisor"}
-									</div>
-								</div>
-							</div>
-
-							<div className="flex flex-wrap items-center gap-2 sm:justify-end">
-								<span
-									className={cn(
-										"inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
-										PARTNER_STATUS_META[partner.status].className,
-									)}
+							<CollapsibleTrigger asChild>
+								<button
+									type="button"
+									className="flex w-full flex-col gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/20 sm:flex-row sm:items-center sm:justify-between"
 								>
-									{PARTNER_STATUS_META[partner.status].label}
-								</span>
-								<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-									{formatCount(partner.salesCount)} vendas
+									<div className="flex min-w-0 items-start gap-3">
+										<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+											#{index + 1}
+										</div>
+										<div className="min-w-0 space-y-1">
+											<div className="flex items-center gap-2">
+												<span className="truncate font-medium text-foreground">
+													{supervisor.supervisorName}
+												</span>
+												<ChevronDown
+													className={cn(
+														"size-4 shrink-0 text-muted-foreground transition-transform",
+														isOpen && "rotate-180",
+													)}
+												/>
+											</div>
+											<div className="text-sm text-muted-foreground">
+												Supervisor
+											</div>
+										</div>
+									</div>
+
+									<div className="flex flex-wrap items-center gap-2 sm:justify-end">
+										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+											{formatCount(supervisor.partnersCount)} parceiros
+										</div>
+										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+											{formatCount(supervisor.salesCount)} vendas
+										</div>
+										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+											{formatCount(supervisor.delinquentSalesCount)} inadimplentes
+										</div>
+										<div className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
+											{formatAmountFromCents(supervisor.grossAmount)}
+										</div>
+									</div>
+								</button>
+							</CollapsibleTrigger>
+
+							<CollapsibleContent className="border-t border-border/70">
+								<div className="overflow-x-auto px-4 py-3">
+									<table className="w-full min-w-[560px] text-sm">
+										<thead>
+											<tr className="border-b border-border/70 text-xs text-muted-foreground">
+												<th className="py-2 text-left font-medium">Parceiro</th>
+												<th className="py-2 text-right font-medium">
+													Vendas (qtd)
+												</th>
+												<th className="py-2 text-right font-medium">
+													Produção (R$)
+												</th>
+												<th className="py-2 text-right font-medium">
+													Inadimplência (R$ + qtd)
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											{supervisor.soldPartners.length > 0 ? (
+												supervisor.soldPartners.map((partner) => (
+													<tr
+														key={partner.partnerId}
+														className="border-b border-border/50 last:border-0"
+													>
+														<td className="py-2.5 text-foreground">
+															{partner.partnerName}
+														</td>
+														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
+															{formatCount(partner.salesCount)}
+														</td>
+														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
+															{formatAmountFromCents(partner.grossAmount)}
+														</td>
+														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
+															{formatAmountFromCents(
+																partner.delinquentGrossAmount,
+															)}{" "}
+															•{" "}
+															<span className="text-muted-foreground">
+																{formatCount(partner.delinquentSalesCount)}
+															</span>
+														</td>
+													</tr>
+												))
+											) : (
+												<tr>
+													<td
+														colSpan={4}
+														className="py-3 text-center text-sm text-muted-foreground"
+													>
+														Nenhum parceiro com venda neste período.
+													</td>
+												</tr>
+											)}
+										</tbody>
+									</table>
 								</div>
-								<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-									{formatCount(partner.delinquentSalesCount)} inadimplentes
-								</div>
-								<div className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
-									{formatAmountFromCents(partner.grossAmount)}
-								</div>
-							</div>
-						</div>
-					))}
+							</CollapsibleContent>
+						</Collapsible>
+						);
+					})}
 				</div>
 			</CardContent>
 		</Card>
@@ -1014,6 +1326,16 @@ function DelinquencyBreakdownCard({
 	totalSales: number;
 	buckets: PartnerDashboardData["delinquencyBreakdown"]["buckets"];
 }) {
+	const pieData = useMemo(() => buildDelinquencyPieData(buckets), [buckets]);
+	const pieDataWithSales = useMemo(
+		() => pieData.filter((item) => item.salesCount > 0),
+		[pieData],
+	);
+	const totalDelinquentAmount = useMemo(
+		() => buckets.reduce((sum, bucket) => sum + bucket.grossAmount, 0),
+		[buckets],
+	);
+
 	return (
 		<Card className="border-border/70">
 			<CardHeader>
@@ -1023,57 +1345,121 @@ function DelinquencyBreakdownCard({
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="rounded-xl border bg-muted/20 p-4">
-					<div className="text-sm text-muted-foreground">
-						Vendas inadimplentes
+				<div className="grid grid-cols-2 gap-2">
+					<div className="rounded-xl border bg-muted/20 p-3">
+						<div className="text-xs text-muted-foreground">
+							Vendas inadimplentes
+						</div>
+						<div className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+							{formatCount(totalSales)}
+						</div>
 					</div>
-					<div className="mt-1 text-3xl font-semibold tracking-tight text-foreground">
-						{formatCount(totalSales)}
+					<div className="rounded-xl border bg-muted/20 p-3 text-right">
+						<div className="text-xs text-muted-foreground">Produção em risco</div>
+						<div className="mt-1 text-sm font-semibold text-foreground">
+							{formatAmountFromCents(totalDelinquentAmount)}
+						</div>
 					</div>
 				</div>
-				<ChartContainer
-					config={delinquencyChartConfig}
-					className="h-[252px] w-full"
-				>
-					<BarChart data={buckets}>
-						<CartesianGrid vertical={false} />
-						<XAxis dataKey="label" tickLine={false} axisLine={false} />
-						<YAxis allowDecimals={false} tickLine={false} axisLine={false} />
-						<ChartTooltip
-							content={
-								<ChartTooltipContent
-									formatter={(value, _name, item) => {
-										const dataPoint =
-											item.payload as PartnerDashboardData["delinquencyBreakdown"]["buckets"][number];
-										return (
-											<div className="flex w-full flex-col gap-1">
-												<div className="flex items-center justify-between gap-3">
-													<span className="text-muted-foreground">Vendas</span>
-													<span className="font-mono font-medium tabular-nums text-foreground">
-														{formatCount(Number(value))}
-													</span>
-												</div>
-												<div className="flex items-center justify-between gap-3">
-													<span className="text-muted-foreground">
-														Produção
-													</span>
-													<span className="font-mono font-medium tabular-nums text-foreground">
-														{formatAmountFromCents(dataPoint.grossAmount)}
-													</span>
-												</div>
-											</div>
-										);
-									}}
-								/>
-							}
-						/>
-						<Bar
-							dataKey="salesCount"
-							fill="var(--color-salesCount)"
-							radius={[8, 8, 0, 0]}
-						/>
-					</BarChart>
-				</ChartContainer>
+				{pieDataWithSales.length === 0 ? (
+					<div className="flex h-[220px] items-center justify-center rounded-xl border border-dashed bg-muted/20 px-4 text-center text-sm text-muted-foreground">
+						Sem inadimplência no período selecionado.
+					</div>
+				) : (
+					<div className="space-y-4">
+						<div className="relative mx-auto w-full max-w-[260px]">
+							<ChartContainer
+								config={delinquencyChartConfig}
+								className="h-[230px] w-full"
+							>
+								<PieChart>
+									<ChartTooltip
+										content={
+											<ChartTooltipContent
+												hideLabel
+												formatter={(value, _name, item) => {
+													const dataPoint =
+														item.payload as DelinquencyPieDataItem;
+													return (
+														<div className="flex w-full flex-col gap-1">
+															<div className="font-medium text-foreground">
+																{dataPoint.label}
+															</div>
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
+																	Vendas
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatCount(Number(value))}
+																</span>
+															</div>
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
+																	Produção
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatAmountFromCents(dataPoint.grossAmount)}
+																</span>
+															</div>
+														</div>
+													);
+												}}
+											/>
+										}
+									/>
+									<Pie
+										data={pieDataWithSales}
+										dataKey="salesCount"
+										nameKey="label"
+										innerRadius={56}
+										outerRadius={92}
+										paddingAngle={2}
+									>
+										{pieDataWithSales.map((entry) => (
+											<Cell
+												key={`${entry.key}-${entry.fill}`}
+												fill={entry.fill}
+											/>
+										))}
+									</Pie>
+								</PieChart>
+							</ChartContainer>
+							<div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+								<div className="text-2xl font-semibold tracking-tight text-foreground">
+									{formatCount(totalSales)}
+								</div>
+								<div className="text-xs text-muted-foreground">vendas</div>
+							</div>
+						</div>
+
+						<div className="space-y-2">
+							{pieData.map((item) => (
+								<div
+									key={item.key}
+									className="flex items-center justify-between rounded-xl border border-border/70 bg-background/80 px-3 py-2"
+								>
+									<div className="flex min-w-0 items-center gap-2">
+										<span
+											className="size-2.5 shrink-0 rounded-full"
+											style={{ backgroundColor: item.fill }}
+										/>
+										<span className="truncate text-xs text-foreground">
+											{item.label}
+										</span>
+									</div>
+									<div className="text-right">
+										<div className="text-xs font-medium tabular-nums text-foreground">
+											{formatCount(item.salesCount)}
+										</div>
+										<div className="text-[11px] text-muted-foreground">
+											{formatAmountFromCents(item.grossAmount)}
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);
@@ -1185,15 +1571,7 @@ export function DashboardPartnersOverview() {
 		dynamicFieldId: dynamicFieldId || undefined,
 		productBreakdownDepth,
 	});
-	const partnerSupervisorCardsQuery = usePartnerSalesDashboard({
-		startDate: getCurrentMonthStartDate(),
-		endDate: getCurrentMonthEndDate(),
-		inactiveMonths: 3,
-		supervisorId: supervisorId || undefined,
-		partnerIds: partnerIdsCsv || undefined,
-	});
 	const data = query.data;
-	const partnerSupervisorCardsData = partnerSupervisorCardsQuery.data;
 	const partnerOptions = useMemo(() => {
 		const allPartners = data?.filters.partners ?? [];
 		if (!supervisorId) {
@@ -1239,34 +1617,28 @@ export function DashboardPartnersOverview() {
 		.reduce((total, bucket) => total + bucket.partnersCount, 0);
 	const timelineChartData = useMemo(
 		() =>
-			(partnerSupervisorCardsData?.timeline ?? []).map((item) => ({
+			(data?.timeline ?? []).map((item) => ({
 				date: item.date,
-				day: format(
-					parse(item.date.slice(0, 10), "yyyy-MM-dd", new Date()),
-					"dd",
-				),
+				label: item.label,
 				amount: item.grossAmount / 100,
 				salesCount: item.salesCount,
 			})),
-		[partnerSupervisorCardsData?.timeline],
+		[data?.timeline],
 	);
 	const timelineDailyPeakAmount = useMemo(
 		() =>
 			Math.max(
-				...(partnerSupervisorCardsData?.timeline ?? []).map(
-					(item) => item.grossAmount,
-				),
+				...(data?.timeline ?? []).map((item) => item.grossAmount),
 				0,
 			),
-		[partnerSupervisorCardsData?.timeline],
+		[data?.timeline],
 	);
 	const timelineDaysWithSales = useMemo(
 		() =>
-			(partnerSupervisorCardsData?.timeline ?? []).filter(
-				(item) => item.salesCount > 0,
-			).length,
-		[partnerSupervisorCardsData?.timeline],
+			(data?.timeline ?? []).filter((item) => item.salesCount > 0).length,
+		[data?.timeline],
 	);
+	const timelineGranularity = data?.period.timelineGranularity ?? "DAY";
 
 	if (query.isLoading && !data) {
 		return <DashboardPartnersSkeleton />;
@@ -1475,7 +1847,7 @@ export function DashboardPartnersOverview() {
 				<PartnerKpiCard
 					title="Total de parceiros"
 					value={formatCount(summary?.totalPartners ?? 0)}
-					subtitle={`${formatCount(summary?.inactivePartners ?? 0)} inativos • ${formatCount(summary?.producingPartners ?? 0)} produzindo`}
+					subtitle={`${formatCount(summary?.producingPartners ?? 0)} produzindo • ${formatCount(summary?.inactivePartners ?? 0)} inativos`}
 					icon={Users}
 					toneClassName="bg-slate-500/10 text-slate-700 dark:text-slate-300"
 				/>
@@ -1538,9 +1910,14 @@ export function DashboardPartnersOverview() {
 			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
 				<Card className="overflow-hidden border-border/70">
 					<CardHeader className="border-b">
-						<CardTitle>Faturamento por dia</CardTitle>
+						<CardTitle>
+							{timelineGranularity === "DAY"
+								? "Faturamento por dia"
+								: "Faturamento por mês"}
+						</CardTitle>
 						<CardDescription>
-							Vendas válidas do mês, sem considerar vendas canceladas.
+							Vendas válidas no período filtrado, sem considerar vendas
+							canceladas.
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4 pt-6">
@@ -1551,7 +1928,7 @@ export function DashboardPartnersOverview() {
 							<BarChart data={timelineChartData} barGap={6}>
 								<CartesianGrid vertical={false} />
 								<XAxis
-									dataKey="day"
+									dataKey="label"
 									tickLine={false}
 									axisLine={false}
 									minTickGap={10}
@@ -1566,9 +1943,9 @@ export function DashboardPartnersOverview() {
 										<ChartTooltipContent
 											labelFormatter={(_, payload) => {
 												const item = payload?.[0]?.payload as
-													| { date?: string }
+													| { label?: string }
 													| undefined;
-												return item?.date?.slice(0, 10) ?? "";
+												return item?.label ?? "";
 											}}
 											formatter={(value) => (
 												<div className="ml-auto font-medium">
@@ -1588,11 +1965,19 @@ export function DashboardPartnersOverview() {
 
 						<div className="grid grid-cols-2 gap-3 text-sm">
 							<PartnerCompactMetric
-								label="Pico diário"
+								label={
+									timelineGranularity === "DAY"
+										? "Pico diário"
+										: "Pico mensal"
+								}
 								value={formatAmountFromCents(timelineDailyPeakAmount)}
 							/>
 							<PartnerCompactMetric
-								label="Dias com venda"
+								label={
+									timelineGranularity === "DAY"
+										? "Dias com venda"
+										: "Meses com venda"
+								}
 								value={String(timelineDaysWithSales)}
 							/>
 						</div>
@@ -1600,10 +1985,10 @@ export function DashboardPartnersOverview() {
 				</Card>
 
 				<PartnerSalesStatusCard
-					items={partnerSupervisorCardsData?.statusFunnel.items ?? []}
+					items={data?.statusFunnel.items ?? []}
 				/>
 				<PartnerCommissionsByCompetencyCard
-					summary={partnerSupervisorCardsData?.summary}
+					summary={data?.summary}
 				/>
 			</div>
 

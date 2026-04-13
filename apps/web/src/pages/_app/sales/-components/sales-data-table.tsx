@@ -15,6 +15,7 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table";
 import { format, parse, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
 	ArrowUpDown,
 	Copy,
@@ -49,6 +50,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -78,6 +80,7 @@ import {
 } from "@/components/ui/table";
 import { useApp } from "@/context/app-context";
 import {
+	dateFilterParser,
 	entityFilterParser,
 	pageParser,
 	textFilterParser,
@@ -250,6 +253,10 @@ function formatSaleDate(value: string) {
 
 function formatDateTime(value: string) {
 	return format(parseISO(value), "dd/MM/yyyy HH:mm");
+}
+
+function formatCount(value: number) {
+	return new Intl.NumberFormat("pt-BR").format(value);
 }
 
 function splitProductHierarchyLabel(productLabel: string) {
@@ -564,6 +571,14 @@ export function SalesDataTable({
 		"responsibleId",
 		entityFilterParser,
 	);
+	const [saleDateFromFilter, setSaleDateFromFilter] = useQueryState(
+		"saleDateFrom",
+		dateFilterParser,
+	);
+	const [saleDateToFilter, setSaleDateToFilter] = useQueryState(
+		"saleDateTo",
+		dateFilterParser,
+	);
 	const [page, setPage] = useQueryState("page", pageParser);
 	const { mutateAsync: patchSalesStatusBulk, isPending: isBulkStatusPending } =
 		usePatchSalesStatusBulk();
@@ -621,6 +636,8 @@ export function SalesDataTable({
 			unitId?: string;
 			responsibleType?: SaleResponsibleTypeFilter;
 			responsibleId?: string;
+			saleDateFrom?: string;
+			saleDateTo?: string;
 			page?: number;
 		}>(SALES_FILTERS_STORAGE_KEY, {});
 
@@ -661,6 +678,14 @@ export function SalesDataTable({
 			void setResponsibleIdFilter(storedFilters.responsibleId);
 		}
 
+		if (!saleDateFromFilter && storedFilters.saleDateFrom) {
+			void setSaleDateFromFilter(storedFilters.saleDateFrom);
+		}
+
+		if (!saleDateToFilter && storedFilters.saleDateTo) {
+			void setSaleDateToFilter(storedFilters.saleDateTo);
+		}
+
 		if (page === 1 && storedFilters.page && storedFilters.page > 1) {
 			void setPage(storedFilters.page);
 		}
@@ -677,8 +702,12 @@ export function SalesDataTable({
 		setUnitIdFilter,
 		responsibleIdFilter,
 		responsibleTypeFilter,
+		saleDateFromFilter,
+		saleDateToFilter,
 		statusFilter,
 		unitIdFilter,
+		setSaleDateFromFilter,
+		setSaleDateToFilter,
 	]);
 
 	const currentPage = page >= 1 ? page : 1;
@@ -697,6 +726,8 @@ export function SalesDataTable({
 				unitId: unitIdFilter,
 				responsibleType: responsibleTypeFilter,
 				responsibleId: responsibleIdFilter,
+				saleDateFrom: saleDateFromFilter,
+				saleDateTo: saleDateToFilter,
 				page: currentPage,
 			}),
 		);
@@ -706,6 +737,8 @@ export function SalesDataTable({
 		globalFilter,
 		responsibleIdFilter,
 		responsibleTypeFilter,
+		saleDateFromFilter,
+		saleDateToFilter,
 		statusFilter,
 		unitIdFilter,
 	]);
@@ -848,6 +881,7 @@ export function SalesDataTable({
 	const filteredSales = useMemo(
 		() =>
 			sales.filter((sale) => {
+				const saleDate = sale.saleDate.slice(0, 10);
 				const matchesCompany =
 					!companyIdFilter || sale.company.id === companyIdFilter;
 				const matchesUnit = !unitIdFilter || sale.unit?.id === unitIdFilter;
@@ -857,18 +891,26 @@ export function SalesDataTable({
 						: sale.responsible?.type === responsibleTypeFilter;
 				const matchesResponsibleId =
 					!responsibleIdFilter || sale.responsible?.id === responsibleIdFilter;
+				const matchesSaleDateFrom =
+					!saleDateFromFilter || saleDate >= saleDateFromFilter;
+				const matchesSaleDateTo =
+					!saleDateToFilter || saleDate <= saleDateToFilter;
 
 				return (
 					matchesCompany &&
 					matchesUnit &&
 					matchesResponsibleType &&
-					matchesResponsibleId
+					matchesResponsibleId &&
+					matchesSaleDateFrom &&
+					matchesSaleDateTo
 				);
 			}),
 		[
 			companyIdFilter,
 			responsibleIdFilter,
 			responsibleTypeFilter,
+			saleDateFromFilter,
+			saleDateToFilter,
 			sales,
 			unitIdFilter,
 		],
@@ -1426,6 +1468,73 @@ export function SalesDataTable({
 		getPaginationRowModel: getPaginationRowModel(),
 	});
 
+	const salesSummaryRows = table.getFilteredRowModel().rows;
+	const salesSummary = useMemo(() => {
+		const paid = { count: 0, amount: 0 };
+		const pending = { count: 0, amount: 0 };
+		const canceled = { count: 0, amount: 0 };
+
+		for (const row of salesSummaryRows) {
+			const sale = row.original;
+
+			if (sale.status === "COMPLETED") {
+				paid.count += 1;
+				paid.amount += sale.totalAmount;
+				continue;
+			}
+
+			if (sale.status === "CANCELED") {
+				canceled.count += 1;
+				canceled.amount += sale.totalAmount;
+				continue;
+			}
+
+			pending.count += 1;
+			pending.amount += sale.totalAmount;
+		}
+
+		return {
+			totalPeriod: {
+				count: paid.count + pending.count,
+				amount: paid.amount + pending.amount,
+			},
+			paid,
+			pending,
+			canceled,
+		};
+	}, [salesSummaryRows]);
+
+	const salesSummaryCards = [
+		{
+			id: "totalPeriod",
+			label: "Total no período",
+			subtitle: "Pagas + pendentes",
+			valueClassName: "text-foreground",
+			data: salesSummary.totalPeriod,
+		},
+		{
+			id: "paid",
+			label: "Pagas",
+			subtitle: "Status concluída",
+			valueClassName: "text-emerald-700 dark:text-emerald-300",
+			data: salesSummary.paid,
+		},
+		{
+			id: "pending",
+			label: "Pendentes",
+			subtitle: "Pendente + aprovada",
+			valueClassName: "text-amber-700 dark:text-amber-300",
+			data: salesSummary.pending,
+		},
+		{
+			id: "canceled",
+			label: "Canceladas",
+			subtitle: "Fora do total",
+			valueClassName: "text-rose-700 dark:text-rose-300",
+			data: salesSummary.canceled,
+		},
+	] as const;
+
 	useEffect(() => {
 		const pageCount = table.getPageCount();
 		const nextPage =
@@ -1500,6 +1609,7 @@ export function SalesDataTable({
 		.getSelectedRowModel()
 		.rows.map((row) => row.original);
 	const selectedSaleIds = selectedSales.map((sale) => sale.id);
+	const showResponsibleFilter = responsibleTypeFilter !== "ALL";
 
 	const availableBulkStatuses = useMemo<SaleStatus[]>(() => {
 		if (selectedSales.length === 0) {
@@ -1582,6 +1692,8 @@ export function SalesDataTable({
 		void setUnitIdFilter("");
 		void setResponsibleTypeFilter("ALL");
 		void setResponsibleIdFilter("");
+		void setSaleDateFromFilter("");
+		void setSaleDateToFilter("");
 		void setPage(1);
 	}
 
@@ -1628,8 +1740,32 @@ export function SalesDataTable({
 
 	return (
 		<div className="w-full min-w-0 space-y-4">
+			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+				{salesSummaryCards.map((card) => (
+					<Card
+						key={card.id}
+						className="border-border/70 bg-muted/20 p-4 space-y-1.5"
+					>
+						<div className="flex items-center justify-between gap-2">
+							<span className="text-sm font-medium">{card.label}</span>
+							<span className="text-xs text-muted-foreground">
+								{formatCount(card.data.count)}
+							</span>
+						</div>
+						<p className={`text-lg font-semibold ${card.valueClassName}`}>
+							{formatCurrencyBRL(card.data.amount / 100)}
+						</p>
+						<p className="text-xs text-muted-foreground">{card.subtitle}</p>
+					</Card>
+				))}
+			</div>
+
 			{showFilters ? (
-				<FilterPanel className="lg:grid-cols-4 xl:grid-cols-8 xl:items-end">
+				<FilterPanel
+					className={`lg:grid-cols-4 xl:items-end ${
+						showResponsibleFilter ? "xl:grid-cols-10" : "xl:grid-cols-9"
+					}`}
+				>
 					<div className="space-y-1 xl:col-span-2">
 						<p className="text-xs text-muted-foreground">Busca</p>
 						<Input
@@ -1715,6 +1851,36 @@ export function SalesDataTable({
 					</div>
 
 					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Data de venda de</p>
+						<CalendarDateInput
+							value={saleDateFromFilter}
+							locale={ptBR}
+							onChange={(value) => {
+								void setSaleDateFromFilter(value);
+								if (value && saleDateToFilter && saleDateToFilter < value) {
+									void setSaleDateToFilter(value);
+								}
+								void setPage(1);
+							}}
+						/>
+					</div>
+
+					<div className="space-y-1">
+						<p className="text-xs text-muted-foreground">Data de venda até</p>
+						<CalendarDateInput
+							value={saleDateToFilter}
+							locale={ptBR}
+							onChange={(value) => {
+								void setSaleDateToFilter(value);
+								if (value && saleDateFromFilter && saleDateFromFilter > value) {
+									void setSaleDateFromFilter(value);
+								}
+								void setPage(1);
+							}}
+						/>
+					</div>
+
+					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Tipo de responsável</p>
 						<Select
 							value={responsibleTypeFilter}
@@ -1735,7 +1901,7 @@ export function SalesDataTable({
 						</Select>
 					</div>
 
-					{responsibleTypeFilter !== "ALL" ? (
+					{showResponsibleFilter ? (
 						<div className="space-y-1">
 							<p className="text-xs text-muted-foreground">
 								{responsibleTypeFilter === "SELLER" ? "Vendedor" : "Parceiro"}
