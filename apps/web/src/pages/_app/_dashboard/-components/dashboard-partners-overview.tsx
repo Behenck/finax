@@ -933,12 +933,12 @@ function PartnerRankingSection({
 																</TooltipContent>
 															</Tooltip>
 															{productionShare >= 100 ? (
-																<span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+																<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
 																	<TrendingUp className="size-3" />
 																	{formatSharePercentage(productionShare)}
 																</span>
 															) : (
-																<span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+																<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
 																	<Minus className="size-3" />
 																	{formatSharePercentage(productionShare)}
 																</span>
@@ -1030,6 +1030,14 @@ function SupervisorRankingSection({
 				left.supervisorName.localeCompare(right.supervisorName, "pt-BR"),
 		);
 	}, [items]);
+	const totalSupervisorsGrossAmount = useMemo(
+		() =>
+			supervisors.reduce(
+				(total, supervisor) => total + supervisor.grossAmount,
+				0,
+			),
+		[supervisors],
+	);
 
 	return (
 		<Card className="border-border/70">
@@ -1049,11 +1057,21 @@ function SupervisorRankingSection({
 						Nenhum supervisor com venda no período filtrado.
 					</div>
 				) : (
-					<div className="space-y-2">
-						{supervisors.map((supervisor, index) => {
-							const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
-							const partners = [...supervisor.partners]
-								.sort(
+						<div className="space-y-2">
+							{supervisors.map((supervisor, index) => {
+								const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
+								const supervisorHasValue =
+									supervisor.grossAmount > 0 || supervisor.salesCount > 0;
+								const supervisorShare =
+									totalSupervisorsGrossAmount > 0
+										? (supervisor.grossAmount / totalSupervisorsGrossAmount) * 100
+										: 0;
+								const supervisorShareWidth = Math.min(
+									Math.max(supervisorShare, 0),
+									100,
+								);
+								const partners = [...supervisor.partners]
+									.sort(
 									(left, right) =>
 										right.salesBreakdown.concluded.grossAmount +
 											right.salesBreakdown.pending.grossAmount +
@@ -1080,42 +1098,61 @@ function SupervisorRankingSection({
 										}))
 									}
 								>
-									<div className="overflow-hidden rounded-xl border border-border/70 bg-background/80">
-										<CollapsibleTrigger className="w-full cursor-pointer px-3 py-2 text-left hover:bg-muted/20">
-											<div className="flex items-center justify-between gap-3">
-												<div className="min-w-0">
-													<div className="flex items-center gap-2">
-														<Badge
-															variant="secondary"
-															className="h-6 min-w-6 rounded-full border-0 px-2 font-semibold tabular-nums"
-														>
-															#{index + 1}
-														</Badge>
-														<span className="truncate font-medium text-foreground">
-															{supervisor.supervisorName}
+										<div className="overflow-hidden rounded-md border border-border/70 bg-background/80">
+											<CollapsibleTrigger className="w-full cursor-pointer px-3 py-2 text-left hover:bg-muted/20">
+												<div className="space-y-0.5">
+													<div className="flex items-center gap-2 pb-1">
+														<span className="inline-flex h-8 w-10 items-center font-mono font-medium leading-none tabular-nums text-foreground">
+															{String(index + 1).padStart(2, "0")}
 														</span>
-														<ChevronDown
-															className={cn(
-																"size-4 text-muted-foreground transition-transform",
-																isOpen && "rotate-180",
-															)}
-														/>
+														<div className="flex min-w-0 flex-1 items-center gap-2">
+															<Avatar className="size-8 border border-border/70">
+																<AvatarFallback className="text-[11px] font-medium">
+																	{getInitials(supervisor.supervisorName)}
+																</AvatarFallback>
+															</Avatar>
+															<span className="truncate font-medium text-foreground">
+																{supervisor.supervisorName}
+															</span>
+															<ChevronDown
+																className={cn(
+																	"size-4 text-muted-foreground transition-transform",
+																	isOpen && "rotate-180",
+																)}
+															/>
+														</div>
+														<div className="shrink-0 pl-4 text-right sm:pl-6">
+															<div className="font-mono text-sm font-semibold tabular-nums text-foreground">
+																{formatAmountFromCents(supervisor.grossAmount)}
+															</div>
+														</div>
 													</div>
-													<div className="mt-0.5 text-xs text-muted-foreground">
-														{formatCount(supervisor.partnersCount)} parceiro(s)
-														vinculado(s)
+													<div className="flex items-center gap-2 pl-10">
+														<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+															<div
+																className={cn(
+																	"h-full rounded-full transition-[width]",
+																	supervisorHasValue
+																		? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
+																		: "bg-muted-foreground/30",
+																)}
+																style={{ width: `${supervisorShareWidth}%` }}
+															/>
+														</div>
+														{supervisorShare >= 100 ? (
+															<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+																<TrendingUp className="size-3" />
+																{formatSharePercentage(supervisorShare)}
+															</span>
+														) : (
+															<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
+																<Minus className="size-3" />
+																{formatSharePercentage(supervisorShare)}
+															</span>
+														)}
 													</div>
 												</div>
-												<div className="text-right">
-													<div className="font-mono text-sm font-semibold tabular-nums text-foreground">
-														{formatAmountFromCents(supervisor.grossAmount)}
-													</div>
-													<div className="text-xs text-muted-foreground">
-														{formatCount(supervisor.salesCount)} venda(s)
-													</div>
-												</div>
-											</div>
-										</CollapsibleTrigger>
+											</CollapsibleTrigger>
 										<CollapsibleContent className="border-t border-border/70 bg-muted/10">
 											<div className="overflow-x-auto p-2">
 												<Table className="min-w-[860px]">
