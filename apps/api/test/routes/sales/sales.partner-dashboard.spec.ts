@@ -512,6 +512,20 @@ describe("partner sales dashboard", () => {
 				delinquencyRateByCountPct: 50,
 				delinquencyRateByAmountPct: 66.67,
 				lastSaleDate: expect.stringContaining("2026-03-05"),
+				salesBreakdown: {
+					concluded: {
+						salesCount: 2,
+						grossAmount: 150_000,
+					},
+					pending: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+					canceled: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+				},
 			},
 			{
 				partnerId: fixture.partnerBeta.id,
@@ -531,6 +545,20 @@ describe("partner sales dashboard", () => {
 				delinquencyRateByCountPct: 0,
 				delinquencyRateByAmountPct: 0,
 				lastSaleDate: expect.stringContaining("2026-04-01"),
+				salesBreakdown: {
+					concluded: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+					pending: {
+						salesCount: 1,
+						grossAmount: 80_000,
+					},
+					canceled: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+				},
 			},
 			{
 				partnerId: fixture.partnerGamma.id,
@@ -547,6 +575,20 @@ describe("partner sales dashboard", () => {
 				delinquencyRateByCountPct: 0,
 				delinquencyRateByAmountPct: 0,
 				lastSaleDate: null,
+				salesBreakdown: {
+					concluded: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+					pending: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+					canceled: {
+						salesCount: 0,
+						grossAmount: 0,
+					},
+				},
 			},
 		]);
 		expect(response.body.statusFunnel).toEqual({
@@ -961,6 +1003,20 @@ describe("partner sales dashboard", () => {
 			delinquencyRateByCountPct: 0,
 			delinquencyRateByAmountPct: 0,
 			lastSaleDate: expect.stringContaining("2026-04-01"),
+			salesBreakdown: {
+				concluded: {
+					salesCount: 0,
+					grossAmount: 0,
+				},
+				pending: {
+					salesCount: 1,
+					grossAmount: 80_000,
+				},
+				canceled: {
+					salesCount: 0,
+					grossAmount: 0,
+				},
+			},
 		});
 
 		const supervisorResponse = await request(app.server)

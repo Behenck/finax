@@ -10,6 +10,14 @@ export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams = {
   slug: string;
 };
 
+export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams =
+  {
+    /**
+     * @type string | undefined, uuid
+     */
+    productId?: string;
+  };
+
 /**
  * @description Default Response
  */
@@ -31,5 +39,6 @@ export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse 
 export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQuery = {
   Response: GetOrganizationsSlugSalesDelinquencyImportSearchFields200;
   PathParams: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams;
+  QueryParams: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams;
   Errors: any;
 };

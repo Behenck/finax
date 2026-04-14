@@ -1,4 +1,4 @@
-import { format, subDays } from "date-fns";
+import { endOfMonth, format, parse, startOfMonth, subDays, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
 import {
@@ -21,14 +21,17 @@ import {
 	ChevronDown,
 	CircleDollarSign,
 	Clock3,
+	Crown,
 	Funnel,
 	RefreshCcw,
 	ShieldAlert,
 	ShoppingCart,
+	Trophy,
 	Users,
 } from "lucide-react";
 import { FilterPanel } from "@/components/filter-panel";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import {
 	Card,
@@ -38,16 +41,16 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
 	type ChartConfig,
 } from "@/components/ui/chart";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -67,10 +70,14 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
 	dashboardInactiveMonthsParser,
 	dateFilterParser,
@@ -82,6 +89,7 @@ import { usePartnerSalesDashboard } from "@/hooks/sales";
 import type { GetOrganizationsSlugSalesDashboardPartners200 } from "@/http/generated";
 import { cn } from "@/lib/utils";
 import { formatCurrencyBRL } from "@/utils/format-amount";
+import { getInitials } from "@/utils/get-initials";
 
 const PARTNER_SALES_STATUS_META = {
 	PENDING: {
@@ -209,7 +217,9 @@ const DELINQUENCY_PIE_COLORS = [
 	"#dc2626",
 	"#b91c1c",
 ] as const;
-const PARTNER_RANKING_CHART_LIMIT = 10;
+const UUID_REGEX =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const DATE_FILTER_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function getDefaultEndDate() {
 	return format(new Date(), "yyyy-MM-dd");
@@ -219,11 +229,41 @@ function getDefaultStartDate() {
 	return format(subDays(new Date(), 89), "yyyy-MM-dd");
 }
 
-function parsePartnerIdsCsv(value: string) {
+function getPreviousMonthDateRange(referenceDate: string) {
+	const parsedReferenceDate = parse(referenceDate, "yyyy-MM-dd", new Date());
+	const previousMonthDate = subMonths(parsedReferenceDate, 1);
+
+	return {
+		startDate: format(startOfMonth(previousMonthDate), "yyyy-MM-dd"),
+		endDate: format(endOfMonth(previousMonthDate), "yyyy-MM-dd"),
+	};
+}
+
+function parsePartnerIdsCsv(value: string | null | undefined) {
+	if (!value) {
+		return [];
+	}
+
 	return value
 		.split(",")
 		.map((item) => item.trim())
 		.filter(Boolean);
+}
+
+function isValidUuid(value: string | null | undefined): value is string {
+	return Boolean(value && UUID_REGEX.test(value));
+}
+
+function isValidDateFilterInput(value: string | null | undefined): value is string {
+	if (!value || !DATE_FILTER_REGEX.test(value)) {
+		return false;
+	}
+
+	const parsedDate = parse(value, "yyyy-MM-dd", new Date());
+	return (
+		!Number.isNaN(parsedDate.getTime()) &&
+		format(parsedDate, "yyyy-MM-dd") === value
+	);
 }
 
 function serializePartnerIdsCsv(ids: string[]) {
@@ -236,13 +276,6 @@ function formatCount(value: number) {
 
 function formatAmountFromCents(value: number) {
 	return formatCurrencyBRL(value / 100);
-}
-
-function formatPercentage(value: number) {
-	return `${value.toLocaleString("pt-BR", {
-		minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-		maximumFractionDigits: 2,
-	})}%`;
 }
 
 function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
@@ -283,180 +316,6 @@ function PartnerKpiCard({
 				</div>
 			</CardContent>
 		</Card>
-	);
-}
-
-function getRankingCoverageWidth(amount: number, maxAmount: number) {
-	if (maxAmount <= 0) {
-		return 0;
-	}
-
-	return Math.min(Math.max((amount / maxAmount) * 100, 0), 100);
-}
-
-function PartnerRankingCombinedProgressBar({
-	salesAmount,
-	salesCount,
-	delinquentAmount,
-	delinquentSalesCount,
-	maxAmount,
-	label = "Vendas x inadimplencia",
-	compact = false,
-}: {
-	salesAmount: number;
-	salesCount: number;
-	delinquentAmount: number;
-	delinquentSalesCount: number;
-	maxAmount: number;
-	label?: string;
-	compact?: boolean;
-}) {
-	const salesWidth = getRankingCoverageWidth(salesAmount, maxAmount);
-	const delinquentWidth = getRankingCoverageWidth(delinquentAmount, maxAmount);
-	const salesTooltipAriaLabel = `Vendas: ${formatAmountFromCents(salesAmount)} | ${formatCount(salesCount)} venda(s)`;
-	const delinquentTooltipAriaLabel = `Vendas inadimplentes: ${formatAmountFromCents(delinquentAmount)} | ${formatCount(delinquentSalesCount)} venda(s) inadimplente(s)`;
-
-	return (
-		<div className={compact ? "space-y-0" : "space-y-1.5"}>
-			{compact ? null : (
-				<div className="flex items-center justify-between text-[11px]">
-					<span className="text-muted-foreground">{label}</span>
-					<div className="flex items-center gap-1.5">
-						<span className="font-medium tabular-nums text-blue-700 dark:text-blue-300">
-							{formatAmountFromCents(salesAmount)}
-						</span>
-						<span className="text-muted-foreground">|</span>
-						<span className="font-medium tabular-nums text-rose-700 dark:text-rose-300">
-							{formatAmountFromCents(delinquentAmount)}
-						</span>
-					</div>
-				</div>
-			)}
-
-			<div
-				className={cn(
-					"relative overflow-hidden rounded-full bg-muted",
-					"h-2",
-				)}
-			>
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<button
-							type="button"
-							aria-label={salesTooltipAriaLabel}
-							className="absolute inset-0 block cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-						>
-							<div className="h-full overflow-hidden rounded-full">
-								<div
-									className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
-									style={{ width: `${salesWidth}%` }}
-								/>
-							</div>
-						</button>
-					</TooltipTrigger>
-					<TooltipContent
-						side="top"
-						sideOffset={8}
-						className="rounded-lg px-3 py-2"
-					>
-						<div className="space-y-1.5">
-							<div className="text-[11px] font-medium uppercase tracking-wide text-background/80">
-								Vendas
-							</div>
-							<div className="flex items-center justify-between gap-3">
-								<span className="text-background/80">Valor</span>
-								<span className="font-mono font-medium tabular-nums text-background">
-									{formatAmountFromCents(salesAmount)}
-								</span>
-							</div>
-							<div className="flex items-center justify-between gap-3">
-								<span className="text-background/80">Quantidade</span>
-								<span className="font-mono font-medium tabular-nums text-background">
-									{formatCount(salesCount)} venda(s)
-								</span>
-							</div>
-						</div>
-					</TooltipContent>
-				</Tooltip>
-
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<button
-							type="button"
-							aria-label={delinquentTooltipAriaLabel}
-							className="absolute inset-y-0 left-0 block h-full cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							style={{ width: `${delinquentWidth}%` }}
-						>
-							<div className="h-full rounded-full bg-gradient-to-r from-rose-500 to-red-500" />
-						</button>
-					</TooltipTrigger>
-					<TooltipContent
-						side="top"
-						sideOffset={8}
-						className="rounded-lg px-3 py-2"
-					>
-						<div className="space-y-1.5">
-							<div className="text-[11px] font-medium uppercase tracking-wide text-background/80">
-								Vendas inadimplentes
-							</div>
-							<div className="flex items-center justify-between gap-3">
-								<span className="text-background/80">Valor</span>
-								<span className="font-mono font-medium tabular-nums text-background">
-									{formatAmountFromCents(delinquentAmount)}
-								</span>
-							</div>
-							<div className="flex items-center justify-between gap-3">
-								<span className="text-background/80">Quantidade</span>
-								<span className="font-mono font-medium tabular-nums text-background">
-									{formatCount(delinquentSalesCount)} venda(s) inadimplente(s)
-								</span>
-							</div>
-						</div>
-					</TooltipContent>
-				</Tooltip>
-			</div>
-		</div>
-	);
-}
-
-function PartnerRankingCoverageRow({
-	label,
-	amount,
-	salesCount,
-	delinquentAmount,
-	delinquentSalesCount,
-	maxAmount,
-}: {
-	label: string;
-	amount: number;
-	salesCount: number;
-	delinquentAmount: number;
-	delinquentSalesCount: number;
-	maxAmount: number;
-}) {
-	return (
-		<div className="space-y-1">
-			<div className="flex items-center justify-between gap-2 text-xs">
-				<span className="min-w-0 truncate text-muted-foreground">{label}</span>
-				<div className="shrink-0 text-[11px] tabular-nums">
-					<span className="font-medium text-blue-700 dark:text-blue-300">
-						{formatAmountFromCents(amount)}
-					</span>
-					<span className="px-1 text-muted-foreground">|</span>
-					<span className="font-medium text-rose-700 dark:text-rose-300">
-						{formatAmountFromCents(delinquentAmount)}
-					</span>
-				</div>
-			</div>
-			<PartnerRankingCombinedProgressBar
-				salesAmount={amount}
-				salesCount={salesCount}
-				delinquentAmount={delinquentAmount}
-				delinquentSalesCount={delinquentSalesCount}
-				maxAmount={maxAmount}
-				compact
-			/>
-		</div>
 	);
 }
 
@@ -771,40 +630,24 @@ function PartnerBreakdownPieCard({
 	);
 }
 
-function PartnerRankingCard({
+function PartnerRankingSection({
 	items,
 }: {
 	items: PartnerDashboardData["ranking"];
 }) {
-	const topFive = useMemo(() => items.slice(0, 5), [items]);
-	const topTen = useMemo(
-		() => items.slice(0, PARTNER_RANKING_CHART_LIMIT),
-		[items],
-	);
-	const rankingGrossTotal = useMemo(
-		() => items.reduce((sum, partner) => sum + partner.grossAmount, 0),
-		[items],
-	);
-	const topThreeGrossAmount = useMemo(
+	const soldPartners = useMemo(
 		() =>
-			items.slice(0, 3).reduce((sum, partner) => sum + partner.grossAmount, 0),
+			[...items]
+				.filter((partner) => partner.salesCount > 0)
+				.sort(
+					(left, right) =>
+						right.grossAmount - left.grossAmount ||
+						right.salesCount - left.salesCount ||
+						left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+				),
 		[items],
 	);
-	const topTenGrossAmount = useMemo(
-		() => topTen.reduce((sum, partner) => sum + partner.grossAmount, 0),
-		[topTen],
-	);
-	const topTenSalesCount = useMemo(
-		() => topTen.reduce((sum, partner) => sum + partner.salesCount, 0),
-		[topTen],
-	);
-	const topTenAverageTicket =
-		topTenSalesCount > 0 ? Math.round(topTenGrossAmount / topTenSalesCount) : 0;
-	const leader = topFive[0] ?? null;
-	const leaderSharePct =
-		leader && rankingGrossTotal > 0
-			? (leader.grossAmount / rankingGrossTotal) * 100
-			: 0;
+	const topThree = useMemo(() => soldPartners.slice(0, 3), [soldPartners]);
 
 	return (
 		<Card className="border-border/70">
@@ -814,306 +657,634 @@ function PartnerRankingCard({
 					Ranking de parceiros
 				</CardTitle>
 				<CardDescription>
-					Leitura da liderança e concentração da produção na base de parceiros.
+					Top 3 lado a lado com total vendido e, abaixo, a lista completa.
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-4">
-				{leader ? (
-					<div className="rounded-xl border bg-muted/20 p-3">
-						<div className="flex items-center justify-between text-sm">
-							<span className="text-muted-foreground">Líder do período</span>
-							<span className="font-semibold">
-								{formatPercentage(leaderSharePct)}
-							</span>
-						</div>
-						<div className="mt-2 text-lg font-semibold text-foreground">
-							{leader.partnerName}
-						</div>
-						<div className="mt-1 text-sm font-medium text-foreground">
-							{formatAmountFromCents(leader.grossAmount)}
-						</div>
-						<div className="mt-2">
-							<PartnerRankingCombinedProgressBar
-								salesAmount={leader.grossAmount}
-								salesCount={leader.salesCount}
-								delinquentAmount={leader.delinquentGrossAmount}
-								delinquentSalesCount={leader.delinquentSalesCount}
-								maxAmount={rankingGrossTotal}
-							/>
-						</div>
-						<div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-							<div>Vendas: {formatCount(leader.salesCount)}</div>
-							<div>
-								Inadimplentes: {formatCount(leader.delinquentSalesCount)}
-							</div>
-						</div>
+			<CardContent>
+				{soldPartners.length === 0 ? (
+					<div className="rounded-xl border border-dashed bg-muted/20 p-5 text-sm text-muted-foreground">
+						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-					<div className="rounded-xl border border-dashed bg-muted/20 p-5 text-sm text-muted-foreground">
-						Nenhum parceiro com produção para o período selecionado.
+					<div className="grid grid-cols-1 gap-6 xl:grid-cols-[35fr_65fr]">
+						<div className="space-y-4">
+							<div className="grid grid-cols-3 items-end gap-2">
+								{[
+									{
+										rank: 2,
+										partner: topThree[1] ?? null,
+										pedestalClassName: "h-16",
+									},
+									{
+										rank: 1,
+										partner: topThree[0] ?? null,
+										pedestalClassName: "h-24",
+									},
+									{
+										rank: 3,
+										partner: topThree[2] ?? null,
+										pedestalClassName: "h-12",
+									},
+								].map((slot) => {
+									const partner = slot.partner;
+									const toneByRank = {
+										1: {
+											rankBadge:
+												"bg-amber-500/15 text-amber-900 dark:bg-amber-400/20 dark:text-amber-100",
+										},
+										2: {
+											rankBadge:
+												"bg-zinc-400/15 text-zinc-900 dark:bg-zinc-300/20 dark:text-zinc-100",
+										},
+										3: {
+											rankBadge:
+												"bg-orange-500/15 text-orange-900 dark:bg-orange-400/20 dark:text-orange-100",
+										},
+									} as const;
+									const tone = toneByRank[slot.rank as 1 | 2 | 3];
+
+										if (!partner) {
+											return (
+												<div key={`podium-empty-${slot.rank}`} className="flex flex-col">
+													<div className="rounded-t-md p-2">
+														<Badge
+															variant="secondary"
+															className={cn(
+																"size-6 rounded-full border-0 p-0",
+																tone.rankBadge,
+															)}
+														>
+															<Trophy className="size-3.5" />
+															<span className="sr-only">Top {slot.rank}</span>
+														</Badge>
+													</div>
+													<div
+														className={cn(
+															"rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
+															slot.pedestalClassName,
+														)}
+													/>
+											</div>
+										);
+									}
+
+									const totalSoldAmount =
+										partner.salesBreakdown.concluded.grossAmount +
+										partner.salesBreakdown.pending.grossAmount;
+									const totalSoldCount =
+										partner.salesBreakdown.concluded.salesCount +
+										partner.salesBreakdown.pending.salesCount;
+
+											return (
+												<div key={partner.partnerId} className="flex flex-col">
+													<div className="rounded-t-md p-2.5 text-center min-h-[190px] flex flex-col">
+														<div className="flex items-start justify-between gap-2">
+															<Badge
+																variant="secondary"
+																className={cn(
+																	"size-6 rounded-full border-0 p-0",
+																	tone.rankBadge,
+																)}
+															>
+																<Trophy className="size-3.5" />
+																<span className="sr-only">Top {slot.rank}</span>
+															</Badge>
+															<div
+																className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-foreground dark:bg-zinc-800/60"
+															>
+																{formatCount(totalSoldCount)}
+															</div>
+													</div>
+
+													<div className="relative mx-auto mt-2">
+														<Avatar className="size-13 border-2 border-background shadow-sm">
+															<AvatarFallback
+																className={cn(
+																	"bg-transparent text-sm font-semibold text-foreground",
+																)}
+															>
+																{getInitials(partner.partnerName)}
+															</AvatarFallback>
+														</Avatar>
+														{slot.rank === 1 ? (
+															<Crown className="absolute -right-1 -top-1 size-3.5 rotate-45 text-amber-700 dark:text-amber-300" />
+														) : null}
+													</div>
+
+													<div className="mt-2 min-h-[30px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
+														{partner.partnerName}
+													</div>
+
+													<div
+														className="mt-auto pt-3 font-mono text-xl font-black tabular-nums leading-none tracking-tight text-foreground"
+													>
+														{formatAmountFromCents(totalSoldAmount)}
+													</div>
+												</div>
+												<div
+													className={cn(
+														"rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
+														slot.pedestalClassName,
+													)}
+												/>
+											</div>
+										);
+									})}
+								</div>
+						</div>
+
+						<div className="rounded-md p-2 sm:p-3">
+							<Table className="min-w-[820px]">
+								<TableHeader className="[&_tr]:border-0">
+									<TableRow className="border-0 bg-muted/20 hover:bg-muted/20">
+										<TableHead className="px-3 text-center text-xs font-medium text-muted-foreground">
+											Ranking
+										</TableHead>
+										<TableHead className="px-3 text-xs font-medium text-muted-foreground">
+											Avatar
+										</TableHead>
+										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+											Concluídas (R$ + qtd)
+										</TableHead>
+										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+											Processando (R$ + qtd)
+										</TableHead>
+										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+											Canceladas (R$ + qtd)
+										</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody className="[&_tr]:border-0">
+									{soldPartners.map((partner, index) => {
+										const rank = index + 1;
+										const concludedHasValue =
+											partner.salesBreakdown.concluded.grossAmount > 0 ||
+											partner.salesBreakdown.concluded.salesCount > 0;
+										const pendingHasValue =
+											partner.salesBreakdown.pending.grossAmount > 0 ||
+											partner.salesBreakdown.pending.salesCount > 0;
+										const canceledHasValue =
+											partner.salesBreakdown.canceled.grossAmount > 0 ||
+											partner.salesBreakdown.canceled.salesCount > 0;
+										return (
+											<TableRow
+												key={partner.partnerId}
+												className={cn(
+													"border-0",
+													rank <= 3
+														? "bg-gray-50 hover:bg-gray-100 dark:bg-zinc-800/35 dark:hover:bg-zinc-800/45"
+														: "bg-transparent hover:bg-gray-100 dark:hover:bg-zinc-800/35",
+												)}
+											>
+												<TableCell className="px-3 py-3 text-center">
+													<Badge
+														variant="secondary"
+														className={cn(
+															"mx-auto h-7 min-w-7 rounded-full border-0 justify-center font-semibold tabular-nums",
+															rank <= 3 ? "p-0" : "px-2",
+															rank === 1 &&
+																"bg-amber-500/15 text-amber-900 dark:bg-amber-400/20 dark:text-amber-100",
+															rank === 2 &&
+																"bg-zinc-400/15 text-zinc-900 dark:bg-zinc-300/20 dark:text-zinc-100",
+															rank === 3 &&
+																"bg-orange-500/15 text-orange-900 dark:bg-orange-400/20 dark:text-orange-100",
+															rank > 3 &&
+																"bg-muted text-foreground",
+														)}
+													>
+														{rank <= 3 ? (
+															<>
+																<Trophy className="size-3.5" />
+																<span className="sr-only">Top {rank}</span>
+															</>
+														) : (
+															`#${rank}`
+														)}
+													</Badge>
+												</TableCell>
+												<TableCell className="px-3 py-3">
+													<div className="flex min-w-0 items-center gap-3">
+														<Avatar className="size-8 border border-border/70">
+															<AvatarFallback className="text-[11px] font-medium">
+																{getInitials(partner.partnerName)}
+															</AvatarFallback>
+														</Avatar>
+														<span className="truncate font-medium text-foreground">
+															{partner.partnerName}
+														</span>
+													</div>
+												</TableCell>
+												<TableCell
+													className={cn(
+														"px-3 py-3 text-right font-mono tabular-nums",
+														concludedHasValue
+															? "font-semibold text-foreground"
+															: "font-normal text-muted-foreground",
+													)}
+												>
+													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+														<span className="text-right leading-none">
+															{formatAmountFromCents(
+																partner.salesBreakdown.concluded.grossAmount,
+															)}
+														</span>
+														<span aria-hidden="true" className="leading-none opacity-70">
+															•
+														</span>
+														<span
+															className={cn(
+																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																concludedHasValue ? "font-semibold" : "font-medium",
+															)}
+														>
+															{formatCount(partner.salesBreakdown.concluded.salesCount)}
+														</span>
+													</div>
+												</TableCell>
+												<TableCell
+													className={cn(
+														"px-3 py-3 text-right font-mono tabular-nums",
+														pendingHasValue
+															? "font-semibold text-foreground"
+															: "font-normal text-muted-foreground",
+													)}
+												>
+													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+														<span className="text-right leading-none">
+															{formatAmountFromCents(
+																partner.salesBreakdown.pending.grossAmount,
+															)}
+														</span>
+														<span aria-hidden="true" className="leading-none opacity-70">
+															•
+														</span>
+														<span
+															className={cn(
+																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																pendingHasValue ? "font-semibold" : "font-medium",
+															)}
+														>
+															{formatCount(partner.salesBreakdown.pending.salesCount)}
+														</span>
+													</div>
+												</TableCell>
+												<TableCell
+													className={cn(
+														"px-3 py-3 text-right font-mono tabular-nums",
+														canceledHasValue
+															? "font-semibold text-foreground"
+															: "font-normal text-muted-foreground",
+													)}
+												>
+													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+														<span className="text-right leading-none">
+															{formatAmountFromCents(
+																partner.salesBreakdown.canceled.grossAmount,
+															)}
+														</span>
+														<span aria-hidden="true" className="leading-none opacity-70">
+															•
+														</span>
+														<span
+															className={cn(
+																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																canceledHasValue ? "font-semibold" : "font-medium",
+															)}
+														>
+															{formatCount(partner.salesBreakdown.canceled.salesCount)}
+														</span>
+													</div>
+												</TableCell>
+											</TableRow>
+										);
+									})}
+								</TableBody>
+							</Table>
+						</div>
 					</div>
 				)}
-
-				<div className="grid grid-cols-2 gap-2">
-					<PartnerCompactMetric
-						label="Produção Top 3"
-						value={formatAmountFromCents(topThreeGrossAmount)}
-					/>
-					<PartnerCompactMetric
-						label="Ticket médio Top 10"
-						value={formatAmountFromCents(topTenAverageTicket)}
-					/>
-				</div>
-
-				<div className="space-y-1.5">
-					<div className="text-sm font-medium">Cobertura do ranking</div>
-					{topFive.length > 0 ? (
-						topFive.map((partner, index) => (
-							<PartnerRankingCoverageRow
-								key={partner.partnerId}
-								label={`#${index + 1} ${partner.partnerName}`}
-								amount={partner.grossAmount}
-								salesCount={partner.salesCount}
-								delinquentAmount={partner.delinquentGrossAmount}
-								delinquentSalesCount={partner.delinquentSalesCount}
-								maxAmount={leader?.grossAmount ?? 0}
-							/>
-						))
-					) : (
-						<div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-							Sem dados de ranking para exibir.
-						</div>
-					)}
-				</div>
 			</CardContent>
 		</Card>
 	);
 }
 
-function PartnerRankingListCard({
+function SupervisorRankingSection({
 	items,
+	canceledByPartnerId,
+	hasPreviousMonthCanceledData,
 }: {
 	items: PartnerDashboardData["ranking"];
+	canceledByPartnerId: Record<
+		string,
+		{
+			grossAmount: number;
+			salesCount: number;
+		}
+	>;
+	hasPreviousMonthCanceledData: boolean;
 }) {
-	const [expandedSupervisors, setExpandedSupervisors] = useState<Set<string>>(
-		() => new Set(),
+	const [openSupervisors, setOpenSupervisors] = useState<Record<string, boolean>>(
+		{},
 	);
 
-	const supervisorRanking = useMemo(() => {
-		const rankingBySupervisor = new Map<
-			string,
-			{
-				supervisorId: string;
-				supervisorName: string;
-				partnersCount: number;
-				salesCount: number;
-				delinquentSalesCount: number;
-				grossAmount: number;
-				partners: Array<{
-					partnerId: string;
-					partnerName: string;
-					salesCount: number;
-					grossAmount: number;
-					delinquentSalesCount: number;
-					delinquentGrossAmount: number;
-				}>;
-			}
-		>();
+	const supervisors = useMemo(() => {
+		type AggregatedSupervisor = {
+			supervisorId: string;
+			supervisorName: string;
+			partnersCount: number;
+			salesCount: number;
+			grossAmount: number;
+			partners: PartnerDashboardData["ranking"];
+		};
+
+		const bySupervisor = new Map<string, AggregatedSupervisor>();
 
 		for (const partner of items) {
+			const concludedAmount = partner.salesBreakdown.concluded.grossAmount;
+			const pendingAmount = partner.salesBreakdown.pending.grossAmount;
+			const canceledAmount = partner.salesBreakdown.canceled.grossAmount;
+			const concludedCount = partner.salesBreakdown.concluded.salesCount;
+			const pendingCount = partner.salesBreakdown.pending.salesCount;
+			const canceledCount = partner.salesBreakdown.canceled.salesCount;
+			const totalTrackedAmount = concludedAmount + pendingAmount + canceledAmount;
+			const totalTrackedCount = concludedCount + pendingCount + canceledCount;
+
 			const supervisorId = partner.supervisor?.id ?? "UNASSIGNED";
-			const supervisorName = partner.supervisor?.name ?? "Sem supervisor";
-			const current = rankingBySupervisor.get(supervisorId) ?? {
-				supervisorId,
-				supervisorName,
-				partnersCount: 0,
-				salesCount: 0,
-				delinquentSalesCount: 0,
-				grossAmount: 0,
-				partners: [],
-			};
+			const supervisorName =
+				partner.supervisor?.name?.trim() || "Sem supervisor";
+			const current = bySupervisor.get(supervisorId);
+
+			if (!current) {
+				bySupervisor.set(supervisorId, {
+					supervisorId,
+					supervisorName,
+					partnersCount: 1,
+					salesCount: totalTrackedCount,
+					grossAmount: totalTrackedAmount,
+					partners: [partner],
+				});
+				continue;
+			}
 
 			current.partnersCount += 1;
-			current.salesCount += partner.salesCount;
-			current.delinquentSalesCount += partner.delinquentSalesCount;
-			current.grossAmount += partner.grossAmount;
-			current.partners.push({
-				partnerId: partner.partnerId,
-				partnerName: partner.partnerName,
-				salesCount: partner.salesCount,
-				grossAmount: partner.grossAmount,
-				delinquentSalesCount: partner.delinquentSalesCount,
-				delinquentGrossAmount: partner.delinquentGrossAmount,
-			});
-			rankingBySupervisor.set(supervisorId, current);
+			current.salesCount += totalTrackedCount;
+			current.grossAmount += totalTrackedAmount;
+			current.partners.push(partner);
 		}
 
-		return Array.from(rankingBySupervisor.values())
-			.map((supervisor) => ({
-				...supervisor,
-				soldPartners: [...supervisor.partners]
-					.filter((partner) => partner.salesCount > 0)
-					.sort(
-						(left, right) =>
-							right.grossAmount - left.grossAmount ||
-							right.salesCount - left.salesCount ||
-							left.partnerName.localeCompare(right.partnerName, "pt-BR"),
-					),
-			}))
-			.sort(
-				(left, right) =>
-					right.grossAmount - left.grossAmount ||
-					right.salesCount - left.salesCount ||
-					left.supervisorName.localeCompare(right.supervisorName, "pt-BR"),
-			);
+		return [...bySupervisor.values()].sort(
+			(left, right) =>
+				right.grossAmount - left.grossAmount ||
+				right.salesCount - left.salesCount ||
+				left.supervisorName.localeCompare(right.supervisorName, "pt-BR"),
+		);
 	}, [items]);
-
-	function handleSupervisorOpenChange(supervisorId: string, open: boolean) {
-		setExpandedSupervisors((previousState) => {
-			const nextState = new Set(previousState);
-			if (open) {
-				nextState.add(supervisorId);
-			} else {
-				nextState.delete(supervisorId);
-			}
-			return nextState;
-		});
-	}
 
 	return (
 		<Card className="border-border/70">
 			<CardHeader>
-				<CardTitle>Lista do ranking</CardTitle>
+				<CardTitle className="flex items-center gap-2">
+					<BriefcaseBusiness className="size-4 text-muted-foreground" />
+					Ranking de supervisores
+				</CardTitle>
 				<CardDescription>
-					Detalhamento completo dos supervisores ordenados por produção.
+					Produção agregada por supervisor no período filtrado, com
+					canceladas do mês anterior.
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
-					{supervisorRanking.map((supervisor, index) => {
-						const isOpen = expandedSupervisors.has(supervisor.supervisorId);
-						return (
-							<Collapsible
-							key={supervisor.supervisorId}
-							open={isOpen}
-							onOpenChange={(open) =>
-								handleSupervisorOpenChange(supervisor.supervisorId, open)
-							}
-							className="rounded-2xl border border-border/70 bg-background"
-						>
-							<CollapsibleTrigger asChild>
-								<button
-									type="button"
-									className="flex w-full flex-col gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/20 sm:flex-row sm:items-center sm:justify-between"
+				{supervisors.length === 0 ? (
+					<div className="rounded-xl border border-dashed bg-muted/20 p-5 text-sm text-muted-foreground">
+						Nenhum supervisor com venda no período filtrado.
+					</div>
+				) : (
+					<div className="space-y-2">
+						{supervisors.map((supervisor, index) => {
+							const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
+							const partners = [...supervisor.partners]
+								.sort(
+									(left, right) =>
+										right.salesBreakdown.concluded.grossAmount +
+											right.salesBreakdown.pending.grossAmount +
+											right.salesBreakdown.canceled.grossAmount -
+											(left.salesBreakdown.concluded.grossAmount +
+												left.salesBreakdown.pending.grossAmount +
+												left.salesBreakdown.canceled.grossAmount) ||
+										right.salesBreakdown.concluded.salesCount +
+											right.salesBreakdown.pending.salesCount +
+											right.salesBreakdown.canceled.salesCount -
+											(left.salesBreakdown.concluded.salesCount +
+												left.salesBreakdown.pending.salesCount +
+												left.salesBreakdown.canceled.salesCount) ||
+										left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+								);
+							return (
+								<Collapsible
+									key={supervisor.supervisorId}
+									open={isOpen}
+									onOpenChange={(nextOpen) =>
+										setOpenSupervisors((previousState) => ({
+											...previousState,
+											[supervisor.supervisorId]: nextOpen,
+										}))
+									}
 								>
-									<div className="flex min-w-0 items-start gap-3">
-										<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
-											#{index + 1}
-										</div>
-										<div className="min-w-0 space-y-1">
-											<div className="flex items-center gap-2">
-												<span className="truncate font-medium text-foreground">
-													{supervisor.supervisorName}
-												</span>
-												<ChevronDown
-													className={cn(
-														"size-4 shrink-0 text-muted-foreground transition-transform",
-														isOpen && "rotate-180",
-													)}
-												/>
+									<div className="overflow-hidden rounded-xl border border-border/70 bg-background/80">
+										<CollapsibleTrigger className="w-full cursor-pointer px-3 py-2 text-left hover:bg-muted/20">
+											<div className="flex items-center justify-between gap-3">
+												<div className="min-w-0">
+													<div className="flex items-center gap-2">
+														<Badge
+															variant="secondary"
+															className="h-6 min-w-6 rounded-full border-0 px-2 font-semibold tabular-nums"
+														>
+															#{index + 1}
+														</Badge>
+														<span className="truncate font-medium text-foreground">
+															{supervisor.supervisorName}
+														</span>
+														<ChevronDown
+															className={cn(
+																"size-4 text-muted-foreground transition-transform",
+																isOpen && "rotate-180",
+															)}
+														/>
+													</div>
+													<div className="mt-0.5 text-xs text-muted-foreground">
+														{formatCount(supervisor.partnersCount)} parceiro(s)
+														vinculado(s)
+													</div>
+												</div>
+												<div className="text-right">
+													<div className="font-mono text-sm font-semibold tabular-nums text-foreground">
+														{formatAmountFromCents(supervisor.grossAmount)}
+													</div>
+													<div className="text-xs text-muted-foreground">
+														{formatCount(supervisor.salesCount)} venda(s)
+													</div>
+												</div>
 											</div>
-											<div className="text-sm text-muted-foreground">
-												Supervisor
+										</CollapsibleTrigger>
+										<CollapsibleContent className="border-t border-border/70 bg-muted/10">
+											<div className="overflow-x-auto p-2">
+												<Table className="min-w-[860px]">
+													<TableHeader className="[&_tr]:border-0">
+														<TableRow className="border-0 bg-muted/30 hover:bg-muted/30">
+															<TableHead className="px-3 text-xs font-medium text-muted-foreground">
+																Parceiro
+															</TableHead>
+															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																Concluídas (R$ + qtd)
+															</TableHead>
+															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																Em processamento (R$ + qtd)
+															</TableHead>
+															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																Inadimplentes (R$ + qtd)
+															</TableHead>
+															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																Canceladas do mês passado (R$ + qtd)
+															</TableHead>
+														</TableRow>
+													</TableHeader>
+														<TableBody className="[&_tr]:border-0">
+														{partners.map((partner) => {
+															const canceledMetrics =
+																canceledByPartnerId[partner.partnerId] ??
+																(hasPreviousMonthCanceledData
+																	? {
+																			grossAmount: 0,
+																			salesCount: 0,
+																		}
+																	: partner.salesBreakdown.canceled);
+
+															return (
+																<TableRow
+																	key={partner.partnerId}
+																	className="bg-transparent hover:bg-muted/20"
+																>
+																<TableCell className="px-3 py-3">
+																	<div className="flex min-w-0 items-center gap-3">
+																		<Avatar className="size-7 border border-border/70">
+																			<AvatarFallback className="text-[10px] font-medium">
+																				{getInitials(partner.partnerName)}
+																			</AvatarFallback>
+																		</Avatar>
+																		<span className="truncate font-medium text-foreground">
+																			{partner.partnerName}
+																		</span>
+																	</div>
+																</TableCell>
+																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
+																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																		<span className="text-right leading-none">
+																			{formatAmountFromCents(
+																				partner.salesBreakdown.concluded.grossAmount,
+																			)}
+																		</span>
+																		<span
+																			aria-hidden="true"
+																			className="leading-none opacity-70"
+																		>
+																			•
+																		</span>
+																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
+																			{formatCount(
+																				partner.salesBreakdown.concluded.salesCount,
+																			)}
+																		</span>
+																	</div>
+																</TableCell>
+																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
+																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																		<span className="text-right leading-none">
+																			{formatAmountFromCents(
+																				partner.salesBreakdown.pending.grossAmount,
+																			)}
+																		</span>
+																		<span
+																			aria-hidden="true"
+																			className="leading-none opacity-70"
+																		>
+																			•
+																		</span>
+																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
+																			{formatCount(
+																				partner.salesBreakdown.pending.salesCount,
+																			)}
+																		</span>
+																	</div>
+																</TableCell>
+																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
+																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																		<span className="text-right leading-none">
+																			{formatAmountFromCents(partner.delinquentGrossAmount)}
+																		</span>
+																		<span
+																			aria-hidden="true"
+																			className="leading-none opacity-70"
+																		>
+																			•
+																		</span>
+																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
+																			{formatCount(partner.delinquentSalesCount)}
+																		</span>
+																	</div>
+																</TableCell>
+																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
+																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																		<span className="text-right leading-none">
+																			{formatAmountFromCents(
+																				canceledMetrics.grossAmount,
+																			)}
+																		</span>
+																		<span
+																			aria-hidden="true"
+																			className="leading-none opacity-70"
+																		>
+																			•
+																		</span>
+																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
+																			{formatCount(
+																				canceledMetrics.salesCount,
+																			)}
+																		</span>
+																	</div>
+																</TableCell>
+															</TableRow>
+															);
+														})}
+														{partners.length === 0 ? (
+															<TableRow className="bg-transparent hover:bg-transparent">
+																<TableCell
+																	colSpan={5}
+																	className="px-3 py-4 text-center text-sm text-muted-foreground"
+																>
+																	Nenhum parceiro com venda no período filtrado.
+																</TableCell>
+															</TableRow>
+														) : null}
+													</TableBody>
+												</Table>
 											</div>
-										</div>
+										</CollapsibleContent>
 									</div>
-
-									<div className="flex flex-wrap items-center gap-2 sm:justify-end">
-										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-											{formatCount(supervisor.partnersCount)} parceiros
-										</div>
-										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-											{formatCount(supervisor.salesCount)} vendas
-										</div>
-										<div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-											{formatCount(supervisor.delinquentSalesCount)} inadimplentes
-										</div>
-										<div className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
-											{formatAmountFromCents(supervisor.grossAmount)}
-										</div>
-									</div>
-								</button>
-							</CollapsibleTrigger>
-
-							<CollapsibleContent className="border-t border-border/70">
-								<div className="overflow-x-auto px-4 py-3">
-									<table className="w-full min-w-[560px] text-sm">
-										<thead>
-											<tr className="border-b border-border/70 text-xs text-muted-foreground">
-												<th className="py-2 text-left font-medium">Parceiro</th>
-												<th className="py-2 text-right font-medium">
-													Vendas (qtd)
-												</th>
-												<th className="py-2 text-right font-medium">
-													Produção (R$)
-												</th>
-												<th className="py-2 text-right font-medium">
-													Inadimplência (R$ + qtd)
-												</th>
-											</tr>
-										</thead>
-										<tbody>
-											{supervisor.soldPartners.length > 0 ? (
-												supervisor.soldPartners.map((partner) => (
-													<tr
-														key={partner.partnerId}
-														className="border-b border-border/50 last:border-0"
-													>
-														<td className="py-2.5 text-foreground">
-															{partner.partnerName}
-														</td>
-														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
-															{formatCount(partner.salesCount)}
-														</td>
-														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
-															{formatAmountFromCents(partner.grossAmount)}
-														</td>
-														<td className="py-2.5 text-right font-mono tabular-nums text-foreground">
-															{formatAmountFromCents(
-																partner.delinquentGrossAmount,
-															)}{" "}
-															•{" "}
-															<span className="text-muted-foreground">
-																{formatCount(partner.delinquentSalesCount)}
-															</span>
-														</td>
-													</tr>
-												))
-											) : (
-												<tr>
-													<td
-														colSpan={4}
-														className="py-3 text-center text-sm text-muted-foreground"
-													>
-														Nenhum parceiro com venda neste período.
-													</td>
-												</tr>
-											)}
-										</tbody>
-									</table>
-								</div>
-							</CollapsibleContent>
-						</Collapsible>
-						);
-					})}
-				</div>
+								</Collapsible>
+							);
+						})}
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);
 }
 
 function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
-	const pieData = items
+	const visibleItems = useMemo(
+		() => items.filter((item) => item.status !== "APPROVED"),
+		[items],
+	);
+	const pieData = visibleItems
 		.map((item) => ({
 			...item,
 			fill: PARTNER_SALES_STATUS_META[item.status as StatusFunnelKey].color,
@@ -1176,7 +1347,7 @@ function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
 				</div>
 
 				<div className="space-y-2">
-					{items.map((item) => (
+					{visibleItems.map((item) => (
 						<div
 							key={item.status}
 							className={cn(
@@ -1529,21 +1700,35 @@ export function DashboardPartnersOverview() {
 
 	const defaultStartDate = useMemo(() => getDefaultStartDate(), []);
 	const defaultEndDate = useMemo(() => getDefaultEndDate(), []);
-	const effectiveStartDate = startDate || defaultStartDate;
-	const effectiveEndDate = endDate || defaultEndDate;
+	const effectiveStartDate =
+		isValidDateFilterInput(startDate) ? startDate : defaultStartDate;
+	const effectiveEndDate =
+		isValidDateFilterInput(endDate) ? endDate : defaultEndDate;
+	const effectiveSupervisorId = isValidUuid(supervisorId) ? supervisorId : "";
+	const effectiveDynamicFieldId = isValidUuid(dynamicFieldId)
+		? dynamicFieldId
+		: "";
 	const selectedPartnerIds = useMemo(
-		() => parsePartnerIdsCsv(partnerIdsCsv),
+		() => parsePartnerIdsCsv(partnerIdsCsv).filter(isValidUuid),
 		[partnerIdsCsv],
+	);
+	const effectivePartnerIdsCsv =
+		selectedPartnerIds.length > 0
+			? serializePartnerIdsCsv(selectedPartnerIds)
+			: undefined;
+	const previousMonthCanceledDateRange = useMemo(
+		() => getPreviousMonthDateRange(effectiveEndDate),
+		[effectiveEndDate],
 	);
 
 	useEffect(() => {
-		if (!startDate) {
+		if (!isValidDateFilterInput(startDate)) {
 			void setStartDate(defaultStartDate);
 		}
 	}, [defaultStartDate, setStartDate, startDate]);
 
 	useEffect(() => {
-		if (!endDate) {
+		if (!isValidDateFilterInput(endDate)) {
 			void setEndDate(defaultEndDate);
 		}
 	}, [defaultEndDate, endDate, setEndDate]);
@@ -1566,22 +1751,50 @@ export function DashboardPartnersOverview() {
 		startDate: effectiveStartDate,
 		endDate: effectiveEndDate,
 		inactiveMonths,
-		supervisorId: supervisorId || undefined,
-		partnerIds: partnerIdsCsv || undefined,
-		dynamicFieldId: dynamicFieldId || undefined,
+		supervisorId: effectiveSupervisorId || undefined,
+		partnerIds: effectivePartnerIdsCsv,
+		dynamicFieldId: effectiveDynamicFieldId || undefined,
+		productBreakdownDepth,
+	});
+	const previousMonthCanceledQuery = usePartnerSalesDashboard({
+		startDate: previousMonthCanceledDateRange.startDate,
+		endDate: previousMonthCanceledDateRange.endDate,
+		inactiveMonths,
+		supervisorId: effectiveSupervisorId || undefined,
+		partnerIds: effectivePartnerIdsCsv,
+		dynamicFieldId: effectiveDynamicFieldId || undefined,
 		productBreakdownDepth,
 	});
 	const data = query.data;
+	const previousMonthCanceledByPartnerId = useMemo(() => {
+		const map: Record<
+			string,
+			{
+				grossAmount: number;
+				salesCount: number;
+			}
+		> = {};
+
+		for (const partner of previousMonthCanceledQuery.data?.ranking ?? []) {
+			map[partner.partnerId] = {
+				grossAmount: partner.salesBreakdown.canceled.grossAmount,
+				salesCount: partner.salesBreakdown.canceled.salesCount,
+			};
+		}
+
+		return map;
+	}, [previousMonthCanceledQuery.data?.ranking]);
+	const hasPreviousMonthCanceledData = Boolean(previousMonthCanceledQuery.data);
 	const partnerOptions = useMemo(() => {
 		const allPartners = data?.filters.partners ?? [];
-		if (!supervisorId) {
+		if (!effectiveSupervisorId) {
 			return allPartners;
 		}
 
 		return allPartners.filter(
-			(partner) => partner.supervisorId === supervisorId,
+			(partner) => partner.supervisorId === effectiveSupervisorId,
 		);
-	}, [data?.filters.partners, supervisorId]);
+	}, [data?.filters.partners, effectiveSupervisorId]);
 
 	useEffect(() => {
 		const allowedIds = new Set(partnerOptions.map((partner) => partner.id));
@@ -1762,7 +1975,7 @@ export function DashboardPartnersOverview() {
 					<div className="space-y-2">
 						<Label>Supervisor</Label>
 						<Select
-							value={supervisorId || "ALL"}
+							value={effectiveSupervisorId || "ALL"}
 							onValueChange={(value) => {
 								void setSupervisorId(value === "ALL" ? "" : value);
 							}}
@@ -1912,7 +2125,7 @@ export function DashboardPartnersOverview() {
 					<CardHeader className="border-b">
 						<CardTitle>
 							{timelineGranularity === "DAY"
-								? "Faturamento por dia"
+								? "Vendas por dia"
 								: "Faturamento por mês"}
 						</CardTitle>
 						<CardDescription>
@@ -1992,83 +2205,12 @@ export function DashboardPartnersOverview() {
 				/>
 			</div>
 
-			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-				<PartnerRankingCard items={data?.ranking ?? []} />
-				<Card className="border-border/70">
-					<CardHeader>
-						<CardTitle>Leitura rápida</CardTitle>
-						<CardDescription>
-							Resumo de saúde da base para decisão imediata.
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="space-y-1">
-							<div className="flex items-center justify-between text-sm">
-								<span className="text-muted-foreground">Taxa de produção</span>
-								<span className="font-medium text-foreground">
-									{formatPercentage(summary?.producingPartnersRatePct ?? 0)}
-								</span>
-							</div>
-							<div className="h-2 overflow-hidden rounded-full bg-muted">
-								<div
-									className="h-full rounded-full bg-emerald-500"
-									style={{
-										width: `${Math.min(
-											Math.max(summary?.producingPartnersRatePct ?? 0, 0),
-											100,
-										)}%`,
-									}}
-								/>
-							</div>
-						</div>
-
-						<div className="space-y-1">
-							<div className="flex items-center justify-between text-sm">
-								<span className="text-muted-foreground">
-									Taxa de inadimplência por valor
-								</span>
-								<span className="font-medium text-foreground">
-									{formatPercentage(summary?.delinquencyRateByAmountPct ?? 0)}
-								</span>
-							</div>
-							<div className="h-2 overflow-hidden rounded-full bg-muted">
-								<div
-									className="h-full rounded-full bg-rose-500"
-									style={{
-										width: `${Math.min(
-											Math.max(summary?.delinquencyRateByAmountPct ?? 0, 0),
-											100,
-										)}%`,
-									}}
-								/>
-							</div>
-						</div>
-
-						<div className="grid grid-cols-1 gap-3">
-							<div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2">
-								<div className="text-xs text-muted-foreground">
-									Janela de inatividade
-								</div>
-								<div className="mt-1 font-medium text-foreground">
-									{formatCount(summary?.partnersWithoutProduction ?? 0)}{" "}
-									parceiros sem produção nos últimos {inactiveMonths}{" "}
-									{inactiveMonths === 1 ? "mês" : "meses"}
-								</div>
-							</div>
-							<div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2">
-								<div className="text-xs text-muted-foreground">
-									Receita líquida
-								</div>
-								<div className="mt-1 font-medium text-foreground">
-									{formatAmountFromCents(summary?.netRevenueAmount ?? 0)}
-								</div>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
-
-			<PartnerRankingListCard items={data?.ranking ?? []} />
+			<PartnerRankingSection items={data?.ranking ?? []} />
+			<SupervisorRankingSection
+				items={data?.ranking ?? []}
+				canceledByPartnerId={previousMonthCanceledByPartnerId}
+				hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
+			/>
 
 			<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
 				<PartnerBreakdownPieCard

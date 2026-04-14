@@ -7,6 +7,7 @@ import fetch from "@/lib/axios";
 import type {
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams,
 } from "../models/GetOrganizationsSlugSalesDelinquencyImportSearchFields.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 import type {
@@ -18,16 +19,20 @@ import type {
 import { getOrganizationsSlugSalesDelinquencyImportSearchFields } from "../getOrganizationsSlugSalesDelinquencyImportSearchFields.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey = ({
-  slug,
-}: {
-  slug: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams["slug"];
-}) =>
+export const getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey = (
+  {
+    slug,
+  }: {
+    slug: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams["slug"];
+  },
+  params: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams = {},
+) =>
   [
     {
       url: "/organizations/:slug/sales/delinquency/import-search-fields",
       params: { slug: slug },
     },
+    ...(params ? [params] : []),
   ] as const;
 
 export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey =
@@ -38,13 +43,18 @@ export type GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey =
 export function getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryOptions(
   {
     slug,
+    params,
   }: {
     slug: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams["slug"];
+    params?: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams;
   },
   config: Partial<RequestConfig> & { client?: typeof fetch } = {},
 ) {
   const queryKey =
-    getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey({ slug });
+    getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey(
+      { slug },
+      params,
+    );
   return queryOptions<
     GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
     ResponseErrorConfig<Error>,
@@ -56,7 +66,7 @@ export function getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryOptio
     queryFn: async ({ signal }) => {
       config.signal = signal;
       return getOrganizationsSlugSalesDelinquencyImportSearchFields(
-        { slug },
+        { slug, params },
         config,
       );
     },
@@ -76,8 +86,10 @@ export function useGetOrganizationsSlugSalesDelinquencyImportSearchFields<
 >(
   {
     slug,
+    params,
   }: {
     slug: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams["slug"];
+    params?: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams;
   },
   options: {
     query?: Partial<
@@ -96,12 +108,15 @@ export function useGetOrganizationsSlugSalesDelinquencyImportSearchFields<
   const { client: queryClient, ...queryOptions } = queryConfig;
   const queryKey =
     queryOptions?.queryKey ??
-    getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey({ slug });
+    getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryKey(
+      { slug },
+      params,
+    );
 
   const query = useQuery(
     {
       ...getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryOptions(
-        { slug },
+        { slug, params },
         config,
       ),
       queryKey,

@@ -121,6 +121,20 @@ type PartnerSummaryMetrics = {
 	delinquencyRateByAmountPct: number;
 	lastSaleDate: Date | null;
 	recencyLastSaleDate: Date | null;
+	salesBreakdown: {
+		concluded: {
+			salesCount: number;
+			grossAmount: number;
+		};
+		pending: {
+			salesCount: number;
+			grossAmount: number;
+		};
+		canceled: {
+			salesCount: number;
+			grossAmount: number;
+		};
+	};
 };
 
 type DashboardBreakdownItem = {
@@ -558,6 +572,23 @@ function getStatusLabel(
 	return "Cancelada";
 }
 
+function createEmptyRankingSalesBreakdown() {
+	return {
+		concluded: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+		pending: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+		canceled: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+	};
+}
+
 export async function getPartnerSalesDashboard(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
@@ -797,6 +828,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					partnersWithRecentSalesRows,
 					products,
 					statusFunnelRows,
+					partnerStatusRows,
 					partnerLatestSaleRows,
 				] = await Promise.all([
 					filteredPartnerIds.length > 0
@@ -832,6 +864,18 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					filteredPartnerIds.length > 0
 						? prisma.sale.groupBy({
 								by: ["status"],
+								where: statusFunnelSalesWhere,
+								_count: {
+									_all: true,
+								},
+								_sum: {
+									totalAmount: true,
+								},
+							})
+						: Promise.resolve([]),
+					filteredPartnerIds.length > 0
+						? prisma.sale.groupBy({
+								by: ["responsibleId", "status"],
 								where: statusFunnelSalesWhere,
 								_count: {
 									_all: true,
@@ -1081,6 +1125,34 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						)
 						.map((row) => [row.responsibleId, row._max.saleDate]),
 				);
+				const partnerSalesBreakdownByPartnerId = new Map<
+					string,
+					PartnerSummaryMetrics["salesBreakdown"]
+				>();
+				for (const row of partnerStatusRows) {
+					if (typeof row.responsibleId !== "string") {
+						continue;
+					}
+
+					const current =
+						partnerSalesBreakdownByPartnerId.get(row.responsibleId) ??
+						createEmptyRankingSalesBreakdown();
+					const salesCount = row._count._all;
+					const grossAmount = row._sum.totalAmount ?? 0;
+
+					if (row.status === SaleStatus.PENDING) {
+						current.pending.salesCount += salesCount;
+						current.pending.grossAmount += grossAmount;
+					} else if (row.status === SaleStatus.CANCELED) {
+						current.canceled.salesCount += salesCount;
+						current.canceled.grossAmount += grossAmount;
+					} else {
+						current.concluded.salesCount += salesCount;
+						current.concluded.grossAmount += grossAmount;
+					}
+
+					partnerSalesBreakdownByPartnerId.set(row.responsibleId, current);
+				}
 
 				const partnerMetrics = filteredPartners.map((partner) => {
 					const partnerSales = salesByPartnerId.get(partner.id) ?? [];
@@ -1098,6 +1170,9 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						pendingIncomeByPartnerId.get(partner.id) ?? 0;
 					const partnerNetRevenue =
 						paidCommissionTotals.income - paidCommissionTotals.outcome;
+					const partnerSalesBreakdown =
+						partnerSalesBreakdownByPartnerId.get(partner.id) ??
+						createEmptyRankingSalesBreakdown();
 
 					let partnerDelinquentSalesCount = 0;
 					let partnerDelinquentGrossAmount = 0;
@@ -1181,6 +1256,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						),
 						lastSaleDate,
 						recencyLastSaleDate,
+						salesBreakdown: partnerSalesBreakdown,
 					} satisfies PartnerSummaryMetrics;
 				});
 
@@ -1230,11 +1306,12 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						commissionReceivedAmount: partner.commissionReceivedAmount,
 						netRevenueAmount: partner.netRevenueAmount,
 						delinquentSalesCount: partner.delinquentSalesCount,
-						delinquentGrossAmount: partner.delinquentGrossAmount,
-						delinquencyRateByCountPct: partner.delinquencyRateByCountPct,
-						delinquencyRateByAmountPct: partner.delinquencyRateByAmountPct,
-						lastSaleDate: partner.lastSaleDate,
-					}));
+							delinquentGrossAmount: partner.delinquentGrossAmount,
+							delinquencyRateByCountPct: partner.delinquencyRateByCountPct,
+							delinquencyRateByAmountPct: partner.delinquencyRateByAmountPct,
+							lastSaleDate: partner.lastSaleDate,
+							salesBreakdown: partner.salesBreakdown,
+						}));
 				const riskRanking = {
 					items: [...partnerMetrics]
 						.sort(

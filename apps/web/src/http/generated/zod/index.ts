@@ -256,6 +256,7 @@ export {
 } from "./getOrganizationsSlugSalesDashboardSchema.ts";
 export {
   getOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParamsSchema,
+  getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParamsSchema,
   getOrganizationsSlugSalesDelinquencyImportSearchFields200Schema,
   getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponseSchema,
 } from "./getOrganizationsSlugSalesDelinquencyImportSearchFieldsSchema.ts";

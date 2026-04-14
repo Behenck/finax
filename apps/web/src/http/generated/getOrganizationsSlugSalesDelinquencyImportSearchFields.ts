@@ -7,6 +7,7 @@ import fetch from "@/lib/axios";
 import type {
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams,
 } from "./models/GetOrganizationsSlugSalesDelinquencyImportSearchFields.ts";
 import type { RequestConfig, ResponseErrorConfig } from "@/lib/axios";
 
@@ -29,8 +30,10 @@ function getGetOrganizationsSlugSalesDelinquencyImportSearchFieldsUrl({
 export async function getOrganizationsSlugSalesDelinquencyImportSearchFields(
   {
     slug,
+    params,
   }: {
     slug: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams["slug"];
+    params?: GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams;
   },
   config: Partial<RequestConfig> & { client?: typeof fetch } = {},
 ) {
@@ -45,6 +48,7 @@ export async function getOrganizationsSlugSalesDelinquencyImportSearchFields(
     url: getGetOrganizationsSlugSalesDelinquencyImportSearchFieldsUrl({
       slug,
     }).url.toString(),
+    params,
     ...requestConfig,
   });
   return res.data;

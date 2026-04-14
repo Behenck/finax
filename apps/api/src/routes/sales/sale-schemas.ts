@@ -488,6 +488,11 @@ const PartnerSalesDashboardTimelineItemSchema = z.object({
 	grossAmount: z.number().int().nonnegative(),
 });
 
+const PartnerSalesDashboardRankingSalesBreakdownBucketSchema = z.object({
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
 const PartnerSalesDashboardRankingItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
@@ -503,6 +508,11 @@ const PartnerSalesDashboardRankingItemSchema = z.object({
 	delinquencyRateByCountPct: z.number().min(0).max(100),
 	delinquencyRateByAmountPct: z.number().min(0).max(100),
 	lastSaleDate: z.date().nullable(),
+	salesBreakdown: z.object({
+		concluded: PartnerSalesDashboardRankingSalesBreakdownBucketSchema,
+		pending: PartnerSalesDashboardRankingSalesBreakdownBucketSchema,
+		canceled: PartnerSalesDashboardRankingSalesBreakdownBucketSchema,
+	}),
 });
 
 const PartnerSalesDashboardDynamicFieldTypeSchema = z.enum([

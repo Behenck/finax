@@ -10,6 +10,13 @@ export const getOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParamsSch
     slug: z.string(),
   });
 
+export const getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParamsSchema =
+  z
+    .object({
+      productId: z.optional(z.uuid()),
+    })
+    .optional();
+
 /**
  * @description Default Response
  */

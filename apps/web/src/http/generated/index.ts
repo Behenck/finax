@@ -595,6 +595,7 @@ export type {
 } from "./models/GetOrganizationsSlugSalesDelinquency.ts";
 export type {
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams,
   GetOrganizationsSlugSalesDelinquencyImportSearchFields200,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQuery,
@@ -2522,6 +2523,7 @@ export {
 } from "./zod/getOrganizationsSlugSalesDashboardSchema.ts";
 export {
   getOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParamsSchema,
+  getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParamsSchema,
   getOrganizationsSlugSalesDelinquencyImportSearchFields200Schema,
   getOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponseSchema,
 } from "./zod/getOrganizationsSlugSalesDelinquencyImportSearchFieldsSchema.ts";

@@ -98,6 +98,20 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       delinquencyRateByCountPct: z.number().min(0).max(100),
       delinquencyRateByAmountPct: z.number().min(0).max(100),
       lastSaleDate: z.nullable(z.iso.datetime()),
+      salesBreakdown: z.object({
+        concluded: z.object({
+          salesCount: z.int().min(0).max(9007199254740991),
+          grossAmount: z.int().min(0).max(9007199254740991),
+        }),
+        pending: z.object({
+          salesCount: z.int().min(0).max(9007199254740991),
+          grossAmount: z.int().min(0).max(9007199254740991),
+        }),
+        canceled: z.object({
+          salesCount: z.int().min(0).max(9007199254740991),
+          grossAmount: z.int().min(0).max(9007199254740991),
+        }),
+      }),
     }),
   ),
   timeline: z.array(

@@ -414,6 +414,62 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      * @type string, date-time
      */
     lastSaleDate: string | null;
+    /**
+     * @type object
+     */
+    salesBreakdown: {
+      /**
+       * @type object
+       */
+      concluded: {
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        salesCount: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        grossAmount: number;
+      };
+      /**
+       * @type object
+       */
+      pending: {
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        salesCount: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        grossAmount: number;
+      };
+      /**
+       * @type object
+       */
+      canceled: {
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        salesCount: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        grossAmount: number;
+      };
+    };
   }[];
   /**
    * @type array

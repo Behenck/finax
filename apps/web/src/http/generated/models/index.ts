@@ -411,6 +411,7 @@ export type {
 } from "./GetOrganizationsSlugSalesDelinquency.ts";
 export type {
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsPathParams,
+  GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryParams,
   GetOrganizationsSlugSalesDelinquencyImportSearchFields200,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQueryResponse,
   GetOrganizationsSlugSalesDelinquencyImportSearchFieldsQuery,
