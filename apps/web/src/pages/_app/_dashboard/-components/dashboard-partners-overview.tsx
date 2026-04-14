@@ -718,12 +718,16 @@ function PartnerRankingSection({
 															<span className="sr-only">Top {slot.rank}</span>
 														</Badge>
 													</div>
-													<div
-														className={cn(
-															"rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
-															slot.pedestalClassName,
-														)}
-													/>
+														<div
+															className={cn(
+																"relative flex items-center justify-center rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
+																slot.pedestalClassName,
+															)}
+														>
+															<span className="font-bungee text-base font-black tabular-nums tracking-wide text-zinc-500 dark:text-zinc-100">
+																{slot.rank}
+															</span>
+														</div>
 											</div>
 										);
 									}
@@ -783,10 +787,14 @@ function PartnerRankingSection({
 												</div>
 												<div
 													className={cn(
-														"rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
+														"relative flex items-center justify-center rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
 														slot.pedestalClassName,
 													)}
-												/>
+												>
+														<span className="font-bungee text-base font-black tabular-nums tracking-wide text-zinc-500 dark:text-zinc-100">
+															{slot.rank}
+														</span>
+												</div>
 											</div>
 										);
 									})}
@@ -1157,6 +1165,18 @@ function SupervisorRankingSection({
 																			salesCount: 0,
 																		}
 																	: partner.salesBreakdown.canceled);
+															const concludedHasValue =
+																partner.salesBreakdown.concluded.grossAmount > 0 ||
+																partner.salesBreakdown.concluded.salesCount > 0;
+															const pendingHasValue =
+																partner.salesBreakdown.pending.grossAmount > 0 ||
+																partner.salesBreakdown.pending.salesCount > 0;
+															const delinquentHasValue =
+																partner.delinquentGrossAmount > 0 ||
+																partner.delinquentSalesCount > 0;
+															const canceledHasValue =
+																canceledMetrics.grossAmount > 0 ||
+																canceledMetrics.salesCount > 0;
 
 															return (
 																<TableRow
@@ -1175,12 +1195,19 @@ function SupervisorRankingSection({
 																		</span>
 																	</div>
 																</TableCell>
-																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
-																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-																		<span className="text-right leading-none">
-																			{formatAmountFromCents(
-																				partner.salesBreakdown.concluded.grossAmount,
-																			)}
+																	<TableCell
+																		className={cn(
+																			"px-3 py-3 text-right font-mono tabular-nums",
+																			concludedHasValue
+																				? "font-semibold text-foreground"
+																				: "font-normal text-muted-foreground",
+																		)}
+																	>
+																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																			<span className="text-right leading-none">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.concluded.grossAmount,
+																				)}
 																		</span>
 																		<span
 																			aria-hidden="true"
@@ -1188,37 +1215,33 @@ function SupervisorRankingSection({
 																		>
 																			•
 																		</span>
-																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
-																			{formatCount(
-																				partner.salesBreakdown.concluded.salesCount,
-																			)}
-																		</span>
-																	</div>
-																</TableCell>
-																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
-																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-																		<span className="text-right leading-none">
-																			{formatAmountFromCents(
-																				partner.salesBreakdown.pending.grossAmount,
-																			)}
-																		</span>
-																		<span
-																			aria-hidden="true"
-																			className="leading-none opacity-70"
-																		>
-																			•
-																		</span>
-																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
-																			{formatCount(
-																				partner.salesBreakdown.pending.salesCount,
-																			)}
-																		</span>
-																	</div>
-																</TableCell>
-																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
-																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-																		<span className="text-right leading-none">
-																			{formatAmountFromCents(partner.delinquentGrossAmount)}
+																			<span
+																				className={cn(
+																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																					concludedHasValue
+																						? "font-semibold"
+																						: "font-medium",
+																				)}
+																			>
+																				{formatCount(
+																					partner.salesBreakdown.concluded.salesCount,
+																				)}
+																			</span>
+																		</div>
+																	</TableCell>
+																	<TableCell
+																		className={cn(
+																			"px-3 py-3 text-right font-mono tabular-nums",
+																			pendingHasValue
+																				? "font-semibold text-foreground"
+																				: "font-normal text-muted-foreground",
+																		)}
+																	>
+																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																			<span className="text-right leading-none">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.pending.grossAmount,
+																				)}
 																		</span>
 																		<span
 																			aria-hidden="true"
@@ -1226,15 +1249,61 @@ function SupervisorRankingSection({
 																		>
 																			•
 																		</span>
-																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
-																			{formatCount(partner.delinquentSalesCount)}
+																			<span
+																				className={cn(
+																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																					pendingHasValue
+																						? "font-semibold"
+																						: "font-medium",
+																				)}
+																			>
+																				{formatCount(
+																					partner.salesBreakdown.pending.salesCount,
+																				)}
+																			</span>
+																		</div>
+																	</TableCell>
+																	<TableCell
+																		className={cn(
+																			"px-3 py-3 text-right font-mono tabular-nums",
+																			delinquentHasValue
+																				? "font-semibold text-foreground"
+																				: "font-normal text-muted-foreground",
+																		)}
+																	>
+																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																			<span className="text-right leading-none">
+																				{formatAmountFromCents(partner.delinquentGrossAmount)}
 																		</span>
-																	</div>
-																</TableCell>
-																<TableCell className="px-3 py-3 text-right font-mono tabular-nums text-foreground">
-																	<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-																		<span className="text-right leading-none">
-																			{formatAmountFromCents(
+																		<span
+																			aria-hidden="true"
+																			className="leading-none opacity-70"
+																		>
+																			•
+																		</span>
+																			<span
+																				className={cn(
+																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																					delinquentHasValue
+																						? "font-semibold"
+																						: "font-medium",
+																				)}
+																			>
+																				{formatCount(partner.delinquentSalesCount)}
+																			</span>
+																		</div>
+																	</TableCell>
+																	<TableCell
+																		className={cn(
+																			"px-3 py-3 text-right font-mono tabular-nums",
+																			canceledHasValue
+																				? "font-semibold text-foreground"
+																				: "font-normal text-muted-foreground",
+																		)}
+																	>
+																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
+																			<span className="text-right leading-none">
+																				{formatAmountFromCents(
 																				canceledMetrics.grossAmount,
 																			)}
 																		</span>
@@ -1244,10 +1313,17 @@ function SupervisorRankingSection({
 																		>
 																			•
 																		</span>
-																		<span className="min-w-[4ch] text-left text-xs leading-none font-semibold tabular-nums">
-																			{formatCount(
-																				canceledMetrics.salesCount,
-																			)}
+																			<span
+																				className={cn(
+																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
+																					canceledHasValue
+																						? "font-semibold"
+																						: "font-medium",
+																				)}
+																			>
+																				{formatCount(
+																					canceledMetrics.salesCount,
+																				)}
 																		</span>
 																	</div>
 																</TableCell>
