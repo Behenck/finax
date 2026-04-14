@@ -68,6 +68,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
@@ -680,7 +681,7 @@ function PartnerRankingSection({
 					Ranking de parceiros
 				</CardTitle>
 				<CardDescription>
-					Top 3 lado a lado com total vendido e, abaixo, a lista completa.
+					Top 3 ao lado da lista completa de produção.
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -689,8 +690,8 @@ function PartnerRankingSection({
 						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-						<div className="space-y-5">
-							<div className="mx-auto w-full max-w-[520px]">
+						<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
+							<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
 								<div className="grid grid-cols-3 items-end gap-1.5">
 									{[
 										{
@@ -786,7 +787,7 @@ function PartnerRankingSection({
 														</div>
 
 															<div
-																className="mt-auto pt-2 font-mono text-lg font-medium tabular-nums leading-none tracking-tight text-foreground"
+																className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground"
 															>
 																{formatAmountFromCents(totalSoldAmount)}
 															</div>
@@ -810,6 +811,11 @@ function PartnerRankingSection({
 									})}
 							</div>
 						</div>
+						<Separator className="xl:hidden" />
+						<Separator
+							orientation="vertical"
+							className="hidden xl:block xl:self-stretch"
+						/>
 
 						<div className="rounded-md p-2 sm:p-3">
 							<Table className="table-fixed">
@@ -2258,17 +2264,13 @@ export function DashboardPartnersOverview() {
 				/>
 			</div>
 
-			<div className="grid grid-cols-1 gap-6 lg:grid-cols-[40fr_60fr]">
-				<div className="min-w-0">
-					<PartnerRankingSection items={data?.ranking ?? []} />
-				</div>
-				<div className="min-w-0">
-					<SupervisorRankingSection
-						items={data?.ranking ?? []}
-						canceledByPartnerId={previousMonthCanceledByPartnerId}
-						hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
-					/>
-				</div>
+			<div className="space-y-6">
+				<PartnerRankingSection items={data?.ranking ?? []} />
+				<SupervisorRankingSection
+					items={data?.ranking ?? []}
+					canceledByPartnerId={previousMonthCanceledByPartnerId}
+					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
+				/>
 			</div>
 
 			<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
