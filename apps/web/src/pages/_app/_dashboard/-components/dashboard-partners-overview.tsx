@@ -11,7 +11,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQueryState } from "nuqs";
 import {
 	Activity,
@@ -21,12 +21,12 @@ import {
 	ChevronDown,
 	CircleDollarSign,
 	Clock3,
-	Crown,
 	Funnel,
+	Minus,
 	RefreshCcw,
 	ShieldAlert,
 	ShoppingCart,
-	Trophy,
+	TrendingUp,
 	Users,
 } from "lucide-react";
 import { FilterPanel } from "@/components/filter-panel";
@@ -77,6 +77,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
 	dashboardInactiveMonthsParser,
@@ -276,6 +281,13 @@ function formatCount(value: number) {
 
 function formatAmountFromCents(value: number) {
 	return formatCurrencyBRL(value / 100);
+}
+
+function formatSharePercentage(value: number) {
+	return `${value.toLocaleString("pt-BR", {
+		minimumFractionDigits: value % 1 === 0 ? 0 : 1,
+		maximumFractionDigits: 1,
+	})}%`;
 }
 
 function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
@@ -648,6 +660,17 @@ function PartnerRankingSection({
 		[items],
 	);
 	const topThree = useMemo(() => soldPartners.slice(0, 3), [soldPartners]);
+	const totalProductionCount = useMemo(
+		() =>
+			soldPartners.reduce(
+				(total, partner) =>
+					total +
+					partner.salesBreakdown.concluded.salesCount +
+					partner.salesBreakdown.pending.salesCount,
+				0,
+			),
+		[soldPartners],
+	);
 
 	return (
 		<Card className="border-border/70">
@@ -666,307 +689,261 @@ function PartnerRankingSection({
 						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-					<div className="grid grid-cols-1 gap-6 xl:grid-cols-[35fr_65fr]">
-						<div className="space-y-4">
-							<div className="grid grid-cols-3 items-end gap-2">
-								{[
-									{
-										rank: 2,
-										partner: topThree[1] ?? null,
-										pedestalClassName: "h-16",
-									},
-									{
-										rank: 1,
-										partner: topThree[0] ?? null,
-										pedestalClassName: "h-24",
-									},
-									{
-										rank: 3,
-										partner: topThree[2] ?? null,
-										pedestalClassName: "h-12",
-									},
-								].map((slot) => {
-									const partner = slot.partner;
-									const toneByRank = {
-										1: {
-											rankBadge:
-												"bg-amber-500/15 text-amber-900 dark:bg-amber-400/20 dark:text-amber-100",
+						<div className="space-y-5">
+							<div className="mx-auto w-full max-w-[520px]">
+								<div className="grid grid-cols-3 items-end gap-1.5">
+									{[
+										{
+											rank: 2,
+											partner: topThree[1] ?? null,
+											pedestalClassName: "h-14",
 										},
-										2: {
-											rankBadge:
-												"bg-zinc-400/15 text-zinc-900 dark:bg-zinc-300/20 dark:text-zinc-100",
+										{
+											rank: 1,
+											partner: topThree[0] ?? null,
+											pedestalClassName: "h-20",
 										},
-										3: {
-											rankBadge:
-												"bg-orange-500/15 text-orange-900 dark:bg-orange-400/20 dark:text-orange-100",
+										{
+											rank: 3,
+											partner: topThree[2] ?? null,
+											pedestalClassName: "h-10",
 										},
-									} as const;
-									const tone = toneByRank[slot.rank as 1 | 2 | 3];
+									].map((slot) => {
+										const partner = slot.partner;
+										const pedestalGradientByRank = {
+											1: "bg-gradient-to-t from-emerald-500/85 to-green-500/70 dark:from-emerald-400/80 dark:to-green-400/65",
+											2: "bg-gradient-to-t from-cyan-500/85 to-indigo-500/70 dark:from-cyan-400/80 dark:to-indigo-400/65",
+											3: "bg-gradient-to-t from-amber-500/80 to-amber-400/55 dark:from-amber-400/75 dark:to-amber-300/50",
+										} as const;
+										const pedestalLabelByRank = {
+											1: "text-primary-foreground",
+											2: "text-primary-foreground",
+											3: "text-amber-900 dark:text-amber-100",
+										} as const;
+										const avatarGradientByRank = {
+											1: "bg-gradient-to-br from-emerald-500 to-green-500",
+											2: "bg-gradient-to-br from-cyan-500 to-indigo-500",
+											3: "bg-gradient-to-br from-amber-500/60 to-amber-400/30 dark:from-amber-400/60 dark:to-amber-300/30",
+										} as const;
+										const avatarLabelByRank = {
+											1: "text-primary-foreground",
+											2: "text-primary-foreground",
+											3: "text-amber-900 dark:text-amber-100",
+										} as const;
+										const pedestalGradientClass =
+											pedestalGradientByRank[slot.rank as 1 | 2 | 3];
+										const pedestalLabelClass =
+											pedestalLabelByRank[slot.rank as 1 | 2 | 3];
+										const avatarGradientClass =
+											avatarGradientByRank[slot.rank as 1 | 2 | 3];
+										const avatarLabelClass =
+											avatarLabelByRank[slot.rank as 1 | 2 | 3];
 
-										if (!partner) {
-											return (
+											if (!partner) {
+												return (
 												<div key={`podium-empty-${slot.rank}`} className="flex flex-col">
-													<div className="rounded-t-md p-2">
-														<Badge
-															variant="secondary"
-															className={cn(
-																"size-6 rounded-full border-0 p-0",
-																tone.rankBadge,
-															)}
-														>
-															<Trophy className="size-3.5" />
-															<span className="sr-only">Top {slot.rank}</span>
-														</Badge>
-													</div>
-														<div
-															className={cn(
-																"relative flex items-center justify-center rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
-																slot.pedestalClassName,
-															)}
-														>
-															<span className="font-bungee text-base font-black tabular-nums tracking-wide text-zinc-500 dark:text-zinc-100">
-																{slot.rank}
-															</span>
-														</div>
+																<div
+																	className={cn(
+																		"relative flex items-center justify-center rounded-t-2xl",
+																		pedestalGradientClass,
+																		slot.pedestalClassName,
+																	)}
+																>
+																	<span className={cn(
+																		"font-bungee text-base font-black tabular-nums tracking-wide",
+																		pedestalLabelClass,
+																	)}>
+																		{slot.rank}
+																	</span>
+																</div>
 											</div>
 										);
 									}
 
-									const totalSoldAmount =
-										partner.salesBreakdown.concluded.grossAmount +
-										partner.salesBreakdown.pending.grossAmount;
-									const totalSoldCount =
-										partner.salesBreakdown.concluded.salesCount +
-										partner.salesBreakdown.pending.salesCount;
+										const totalSoldAmount =
+											partner.salesBreakdown.concluded.grossAmount +
+											partner.salesBreakdown.pending.grossAmount;
 
-											return (
-												<div key={partner.partnerId} className="flex flex-col">
-													<div className="rounded-t-md p-2.5 text-center min-h-[190px] flex flex-col">
-														<div className="flex items-start justify-between gap-2">
-															<Badge
-																variant="secondary"
-																className={cn(
-																	"size-6 rounded-full border-0 p-0",
-																	tone.rankBadge,
-																)}
-															>
-																<Trophy className="size-3.5" />
-																<span className="sr-only">Top {slot.rank}</span>
-															</Badge>
-															<div
-																className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-foreground dark:bg-zinc-800/60"
-															>
-																{formatCount(totalSoldCount)}
-															</div>
-													</div>
-
-													<div className="relative mx-auto mt-2">
-														<Avatar className="size-13 border-2 border-background shadow-sm">
-															<AvatarFallback
-																className={cn(
-																	"bg-transparent text-sm font-semibold text-foreground",
-																)}
-															>
-																{getInitials(partner.partnerName)}
-															</AvatarFallback>
+												return (
+													<div key={partner.partnerId} className="flex flex-col">
+															<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
+															<div className="relative mx-auto mt-1">
+															<Avatar className="size-13 border-2 border-background shadow-sm">
+																<AvatarFallback
+																	className={cn(
+																		"text-sm font-semibold",
+																		avatarGradientClass,
+																		avatarLabelClass,
+																	)}
+																>
+																	{getInitials(partner.partnerName)}
+																</AvatarFallback>
 														</Avatar>
-														{slot.rank === 1 ? (
-															<Crown className="absolute -right-1 -top-1 size-3.5 rotate-45 text-amber-700 dark:text-amber-300" />
-														) : null}
-													</div>
+														</div>
 
-													<div className="mt-2 min-h-[30px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
-														{partner.partnerName}
-													</div>
+														<div className="mt-1 min-h-[26px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
+															{partner.partnerName}
+														</div>
 
-													<div
-														className="mt-auto pt-3 font-mono text-xl font-black tabular-nums leading-none tracking-tight text-foreground"
-													>
-														{formatAmountFromCents(totalSoldAmount)}
+															<div
+																className="mt-auto pt-2 font-mono text-lg font-medium tabular-nums leading-none tracking-tight text-foreground"
+															>
+																{formatAmountFromCents(totalSoldAmount)}
+															</div>
+												</div>
+														<div
+															className={cn(
+																"relative flex items-center justify-center rounded-t-2xl",
+																pedestalGradientClass,
+																slot.pedestalClassName,
+															)}
+														>
+															<span className={cn(
+																"font-bungee text-base font-black tabular-nums tracking-wide",
+																pedestalLabelClass,
+															)}>
+																{slot.rank}
+															</span>
 													</div>
-												</div>
-												<div
-													className={cn(
-														"relative flex items-center justify-center rounded-t-md bg-zinc-200/70 dark:bg-zinc-700/40",
-														slot.pedestalClassName,
-													)}
-												>
-														<span className="font-bungee text-base font-black tabular-nums tracking-wide text-zinc-500 dark:text-zinc-100">
-															{slot.rank}
-														</span>
-												</div>
 											</div>
 										);
 									})}
-								</div>
+							</div>
 						</div>
 
 						<div className="rounded-md p-2 sm:p-3">
-							<Table className="min-w-[820px]">
-								<TableHeader className="[&_tr]:border-0">
-									<TableRow className="border-0 bg-muted/20 hover:bg-muted/20">
-										<TableHead className="px-3 text-center text-xs font-medium text-muted-foreground">
-											Ranking
-										</TableHead>
-										<TableHead className="px-3 text-xs font-medium text-muted-foreground">
-											Avatar
-										</TableHead>
-										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-											Concluídas (R$ + qtd)
-										</TableHead>
-										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-											Processando (R$ + qtd)
-										</TableHead>
-										<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-											Canceladas (R$ + qtd)
-										</TableHead>
-									</TableRow>
-								</TableHeader>
+							<Table className="table-fixed">
 								<TableBody className="[&_tr]:border-0">
 									{soldPartners.map((partner, index) => {
 										const rank = index + 1;
-										const concludedHasValue =
-											partner.salesBreakdown.concluded.grossAmount > 0 ||
-											partner.salesBreakdown.concluded.salesCount > 0;
-										const pendingHasValue =
-											partner.salesBreakdown.pending.grossAmount > 0 ||
-											partner.salesBreakdown.pending.salesCount > 0;
-										const canceledHasValue =
-											partner.salesBreakdown.canceled.grossAmount > 0 ||
-											partner.salesBreakdown.canceled.salesCount > 0;
-										return (
-											<TableRow
-												key={partner.partnerId}
-												className={cn(
-													"border-0",
-													rank <= 3
-														? "bg-gray-50 hover:bg-gray-100 dark:bg-zinc-800/35 dark:hover:bg-zinc-800/45"
-														: "bg-transparent hover:bg-gray-100 dark:hover:bg-zinc-800/35",
-												)}
-											>
-												<TableCell className="px-3 py-3 text-center">
-													<Badge
-														variant="secondary"
-														className={cn(
-															"mx-auto h-7 min-w-7 rounded-full border-0 justify-center font-semibold tabular-nums",
-															rank <= 3 ? "p-0" : "px-2",
-															rank === 1 &&
-																"bg-amber-500/15 text-amber-900 dark:bg-amber-400/20 dark:text-amber-100",
-															rank === 2 &&
-																"bg-zinc-400/15 text-zinc-900 dark:bg-zinc-300/20 dark:text-zinc-100",
-															rank === 3 &&
-																"bg-orange-500/15 text-orange-900 dark:bg-orange-400/20 dark:text-orange-100",
-															rank > 3 &&
-																"bg-muted text-foreground",
-														)}
-													>
-														{rank <= 3 ? (
-															<>
-																<Trophy className="size-3.5" />
-																<span className="sr-only">Top {rank}</span>
-															</>
-														) : (
-															`#${rank}`
-														)}
-													</Badge>
-												</TableCell>
-												<TableCell className="px-3 py-3">
-													<div className="flex min-w-0 items-center gap-3">
-														<Avatar className="size-8 border border-border/70">
-															<AvatarFallback className="text-[11px] font-medium">
-																{getInitials(partner.partnerName)}
-															</AvatarFallback>
-														</Avatar>
-														<span className="truncate font-medium text-foreground">
-															{partner.partnerName}
-														</span>
-													</div>
-												</TableCell>
-												<TableCell
-													className={cn(
-														"px-3 py-3 text-right font-mono tabular-nums",
-														concludedHasValue
-															? "font-semibold text-foreground"
-															: "font-normal text-muted-foreground",
-													)}
-												>
-													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-														<span className="text-right leading-none">
-															{formatAmountFromCents(
-																partner.salesBreakdown.concluded.grossAmount,
-															)}
-														</span>
-														<span aria-hidden="true" className="leading-none opacity-70">
-															•
-														</span>
-														<span
-															className={cn(
-																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
-																concludedHasValue ? "font-semibold" : "font-medium",
-															)}
-														>
-															{formatCount(partner.salesBreakdown.concluded.salesCount)}
-														</span>
-													</div>
-												</TableCell>
-												<TableCell
-													className={cn(
-														"px-3 py-3 text-right font-mono tabular-nums",
-														pendingHasValue
-															? "font-semibold text-foreground"
-															: "font-normal text-muted-foreground",
-													)}
-												>
-													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-														<span className="text-right leading-none">
-															{formatAmountFromCents(
-																partner.salesBreakdown.pending.grossAmount,
-															)}
-														</span>
-														<span aria-hidden="true" className="leading-none opacity-70">
-															•
-														</span>
-														<span
-															className={cn(
-																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
-																pendingHasValue ? "font-semibold" : "font-medium",
-															)}
-														>
-															{formatCount(partner.salesBreakdown.pending.salesCount)}
-														</span>
-													</div>
-												</TableCell>
-												<TableCell
-													className={cn(
-														"px-3 py-3 text-right font-mono tabular-nums",
-														canceledHasValue
-															? "font-semibold text-foreground"
-															: "font-normal text-muted-foreground",
-													)}
-												>
-													<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
-														<span className="text-right leading-none">
-															{formatAmountFromCents(
-																partner.salesBreakdown.canceled.grossAmount,
-															)}
-														</span>
-														<span aria-hidden="true" className="leading-none opacity-70">
-															•
-														</span>
-														<span
-															className={cn(
-																"min-w-[4ch] text-left text-xs leading-none tabular-nums",
-																canceledHasValue ? "font-semibold" : "font-medium",
-															)}
-														>
-															{formatCount(partner.salesBreakdown.canceled.salesCount)}
-														</span>
-													</div>
-												</TableCell>
-											</TableRow>
+										const rowToneClass = "bg-transparent";
+											const productionAmount =
+												partner.salesBreakdown.concluded.grossAmount +
+												partner.salesBreakdown.pending.grossAmount;
+										const productionCount =
+											partner.salesBreakdown.concluded.salesCount +
+											partner.salesBreakdown.pending.salesCount;
+										const productionHasValue =
+											productionAmount > 0 || productionCount > 0;
+										const productionShare =
+											totalProductionCount > 0
+												? (productionCount / totalProductionCount) * 100
+												: 0;
+										const productionShareWidth = Math.min(
+											Math.max(productionShare, 0),
+											100,
 										);
-									})}
-								</TableBody>
+										return (
+											<Fragment key={partner.partnerId}>
+												<TableRow className={cn("border-0", rowToneClass)}>
+													<TableCell className="w-10 whitespace-nowrap pb-1 pl-2 pr-2 pt-2 text-left align-middle">
+														<span className="inline-flex h-8 items-center font-mono font-medium leading-none tabular-nums text-foreground">
+															{String(rank).padStart(2, "0")}
+														</span>
+													</TableCell>
+													<TableCell className="pb-1 pl-2 pr-3 pt-2">
+														<div className="flex min-w-0 items-center gap-2">
+															<Avatar className="size-8 border border-border/70">
+																<AvatarFallback className="text-[11px] font-medium">
+																	{getInitials(partner.partnerName)}
+																</AvatarFallback>
+															</Avatar>
+															<span className="truncate font-medium text-foreground">
+																{partner.partnerName}
+															</span>
+														</div>
+													</TableCell>
+														<TableCell
+															className={cn(
+																"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
+																productionHasValue
+																	? "font-semibold text-foreground"
+																	: "font-normal text-muted-foreground",
+															)}
+														>
+															<div className="text-right leading-none">
+																{formatAmountFromCents(productionAmount)}
+															</div>
+														</TableCell>
+												</TableRow>
+												<TableRow className={cn("border-0", rowToneClass)}>
+													<TableCell className="py-0 pl-2 pr-1" />
+													<TableCell colSpan={2} className="px-3 pb-2 pt-0">
+															<div className="flex items-center gap-2">
+																<Tooltip>
+																	<TooltipTrigger asChild>
+																		<button
+																			type="button"
+																			className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+																			aria-label={`Detalhes de produção de ${partner.partnerName}`}
+																		>
+																	<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+																				<div
+																				className={cn(
+																					"h-full rounded-full transition-[width]",
+																					productionHasValue
+																						? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
+																						: "bg-muted-foreground/30",
+																				)}
+																					style={{
+																						width: `${productionShareWidth}%`,
+																					}}
+																				/>
+																			</div>
+																		</button>
+																	</TooltipTrigger>
+																	<TooltipContent
+																		side="top"
+																		sideOffset={8}
+																		className="min-w-[220px] space-y-1.5"
+																	>
+																		<div className="text-xs font-semibold">
+																			{partner.partnerName}
+																		</div>
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">Concluídas</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.concluded.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">Processando</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.pending.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">Canceladas</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.canceled.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																</TooltipContent>
+															</Tooltip>
+															{productionShare >= 100 ? (
+																<span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+																	<TrendingUp className="size-3" />
+																	{formatSharePercentage(productionShare)}
+																</span>
+															) : (
+																<span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+																	<Minus className="size-3" />
+																	{formatSharePercentage(productionShare)}
+																</span>
+															)}
+														</div>
+													</TableCell>
+												</TableRow>
+											</Fragment>
+											);
+										})}
+									</TableBody>
 							</Table>
 						</div>
 					</div>
@@ -2281,12 +2258,18 @@ export function DashboardPartnersOverview() {
 				/>
 			</div>
 
-			<PartnerRankingSection items={data?.ranking ?? []} />
-			<SupervisorRankingSection
-				items={data?.ranking ?? []}
-				canceledByPartnerId={previousMonthCanceledByPartnerId}
-				hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
-			/>
+			<div className="grid grid-cols-1 gap-6 lg:grid-cols-[40fr_60fr]">
+				<div className="min-w-0">
+					<PartnerRankingSection items={data?.ranking ?? []} />
+				</div>
+				<div className="min-w-0">
+					<SupervisorRankingSection
+						items={data?.ranking ?? []}
+						canceledByPartnerId={previousMonthCanceledByPartnerId}
+						hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
+					/>
+				</div>
+			</div>
 
 			<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
 				<PartnerBreakdownPieCard
