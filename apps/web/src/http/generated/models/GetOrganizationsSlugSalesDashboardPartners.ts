@@ -495,6 +495,30 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      * @type integer
      */
     grossAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    concludedGrossAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    processedGrossAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    concludedAndProcessedGrossAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    canceledGrossAmount: number;
   }[];
   /**
    * @type object

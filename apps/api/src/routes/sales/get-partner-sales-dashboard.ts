@@ -85,6 +85,12 @@ type DashboardSaleRow = {
 	dynamicFieldValues: Prisma.JsonValue | null;
 };
 
+type DashboardTimelineSaleByStatusRow = {
+	saleDate: Date;
+	totalAmount: number;
+	status: SaleStatus;
+};
+
 type ProductRow = {
 	id: string;
 	name: string;
@@ -829,6 +835,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					products,
 					statusFunnelRows,
 					partnerStatusRows,
+					timelineSalesByStatusRows,
 					partnerLatestSaleRows,
 				] = await Promise.all([
 					filteredPartnerIds.length > 0
@@ -882,6 +889,16 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 								},
 								_sum: {
 									totalAmount: true,
+								},
+							})
+						: Promise.resolve([]),
+					filteredPartnerIds.length > 0
+						? prisma.sale.findMany({
+								where: statusFunnelSalesWhere,
+								select: {
+									saleDate: true,
+									totalAmount: true,
+									status: true,
 								},
 							})
 						: Promise.resolve([]),
@@ -1017,11 +1034,25 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				);
 				const timelineSummaryByKey = new Map<
 					string,
-					{ salesCount: number; grossAmount: number }
+					{
+						salesCount: number;
+						grossAmount: number;
+						concludedGrossAmount: number;
+						processedGrossAmount: number;
+						concludedAndProcessedGrossAmount: number;
+						canceledGrossAmount: number;
+					}
 				>(
 					timelineBuckets.map((bucket) => [
 						bucket.key,
-						{ salesCount: 0, grossAmount: 0 },
+						{
+							salesCount: 0,
+							grossAmount: 0,
+							concludedGrossAmount: 0,
+							processedGrossAmount: 0,
+							concludedAndProcessedGrossAmount: 0,
+							canceledGrossAmount: 0,
+						},
 					]),
 				);
 				for (const sale of sales) {
@@ -1037,17 +1068,55 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					bucketSummary.salesCount += 1;
 					bucketSummary.grossAmount += sale.totalAmount;
 				}
+				for (const sale of timelineSalesByStatusRows as DashboardTimelineSaleByStatusRow[]) {
+					const bucketKey =
+						timelineGranularity === "DAY"
+							? getUtcDateKey(sale.saleDate)
+							: getUtcMonthKey(sale.saleDate);
+					const bucketSummary = timelineSummaryByKey.get(bucketKey);
+					if (!bucketSummary) {
+						continue;
+					}
+
+					if (sale.status === SaleStatus.PENDING) {
+						bucketSummary.processedGrossAmount += sale.totalAmount;
+						bucketSummary.concludedAndProcessedGrossAmount += sale.totalAmount;
+						continue;
+					}
+
+					if (
+						sale.status === SaleStatus.APPROVED ||
+						sale.status === SaleStatus.COMPLETED
+					) {
+						bucketSummary.concludedGrossAmount += sale.totalAmount;
+						bucketSummary.concludedAndProcessedGrossAmount += sale.totalAmount;
+						continue;
+					}
+
+					if (sale.status === SaleStatus.CANCELED) {
+						bucketSummary.canceledGrossAmount += sale.totalAmount;
+					}
+				}
 
 				const timeline = timelineBuckets.map((bucket) => {
 					const summary = timelineSummaryByKey.get(bucket.key) ?? {
 						salesCount: 0,
 						grossAmount: 0,
+						concludedGrossAmount: 0,
+						processedGrossAmount: 0,
+						concludedAndProcessedGrossAmount: 0,
+						canceledGrossAmount: 0,
 					};
 					return {
 						label: bucket.label,
 						date: bucket.date,
 						salesCount: summary.salesCount,
 						grossAmount: summary.grossAmount,
+						concludedGrossAmount: summary.concludedGrossAmount,
+						processedGrossAmount: summary.processedGrossAmount,
+						concludedAndProcessedGrossAmount:
+							summary.concludedAndProcessedGrossAmount,
+						canceledGrossAmount: summary.canceledGrossAmount,
 					};
 				});
 				const monthlyProductionBuckets = buildTimelineBuckets(
@@ -1306,12 +1375,12 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						commissionReceivedAmount: partner.commissionReceivedAmount,
 						netRevenueAmount: partner.netRevenueAmount,
 						delinquentSalesCount: partner.delinquentSalesCount,
-							delinquentGrossAmount: partner.delinquentGrossAmount,
-							delinquencyRateByCountPct: partner.delinquencyRateByCountPct,
-							delinquencyRateByAmountPct: partner.delinquencyRateByAmountPct,
-							lastSaleDate: partner.lastSaleDate,
-							salesBreakdown: partner.salesBreakdown,
-						}));
+						delinquentGrossAmount: partner.delinquentGrossAmount,
+						delinquencyRateByCountPct: partner.delinquencyRateByCountPct,
+						delinquencyRateByAmountPct: partner.delinquencyRateByAmountPct,
+						lastSaleDate: partner.lastSaleDate,
+						salesBreakdown: partner.salesBreakdown,
+					}));
 				const riskRanking = {
 					items: [...partnerMetrics]
 						.sort(

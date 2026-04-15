@@ -2,8 +2,8 @@ import { endOfMonth, format, parse, startOfMonth, subDays, subMonths } from "dat
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
 import {
-	Bar,
-	BarChart,
+	Area,
+	AreaChart,
 	CartesianGrid,
 	Cell,
 	Pie,
@@ -11,7 +11,14 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+	Fragment,
+	useEffect,
+	useId,
+	useMemo,
+	useState,
+	type ReactNode,
+} from "react";
 import { useQueryState } from "nuqs";
 import {
 	Activity,
@@ -31,7 +38,6 @@ import {
 } from "lucide-react";
 import { FilterPanel } from "@/components/filter-panel";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import {
 	Card,
@@ -140,9 +146,21 @@ const PARTNER_COMMISSION_STATUS_META = {
 } as const;
 
 const timelineChartConfig = {
-	amount: {
-		label: "Faturamento",
+	concludedAndProcessedAmount: {
+		label: "Todas",
+		color: "hsl(217 91% 60%)",
+	},
+	concludedAmount: {
+		label: "Concluídas",
 		color: "hsl(160 84% 39%)",
+	},
+	processedAmount: {
+		label: "Processadas",
+		color: "hsl(45 93% 47%)",
+	},
+	canceledAmount: {
+		label: "Canceladas",
+		color: "hsl(0 84% 60%)",
 	},
 } satisfies ChartConfig;
 
@@ -206,6 +224,26 @@ type PartnerKpiCardProps = {
 	icon: typeof Users;
 	toneClassName: string;
 };
+
+const TIMELINE_SERIES_OPTIONS = [
+	{
+		key: "concludedAndProcessedAmount",
+		label: "Todas",
+	},
+	{
+		key: "concludedAmount",
+		label: "Concluídas",
+	},
+	{
+		key: "processedAmount",
+		label: "Processadas",
+	},
+	{
+		key: "canceledAmount",
+		label: "Canceladas",
+	},
+] as const;
+type TimelineSeriesKey = (typeof TIMELINE_SERIES_OPTIONS)[number]["key"];
 
 const BREAKDOWN_PIE_COLORS = [
 	"#2563eb",
@@ -445,6 +483,32 @@ function PartnerMultiSelectFilter({
 				) : null}
 			</DropdownMenuContent>
 		</DropdownMenu>
+	);
+}
+
+function TimelineSeriesSelectFilter({
+	selectedKey,
+	onChange,
+}: {
+	selectedKey: TimelineSeriesKey;
+	onChange: (key: TimelineSeriesKey) => void;
+}) {
+	return (
+		<Select
+			value={selectedKey}
+			onValueChange={(value) => onChange(value as TimelineSeriesKey)}
+		>
+			<SelectTrigger className="w-full rounded-full sm:w-[260px]">
+				<SelectValue placeholder="Selecione uma série" />
+			</SelectTrigger>
+			<SelectContent>
+				{TIMELINE_SERIES_OPTIONS.map((option) => (
+					<SelectItem key={option.key} value={option.key}>
+						{option.label}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
 	);
 }
 
@@ -1793,6 +1857,8 @@ export function DashboardPartnersOverview() {
 		productBreakdownDepthParser,
 	);
 	const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+	const [selectedTimelineSeries, setSelectedTimelineSeries] =
+		useState<TimelineSeriesKey>("concludedAndProcessedAmount");
 
 	const defaultStartDate = useMemo(() => getDefaultStartDate(), []);
 	const defaultEndDate = useMemo(() => getDefaultEndDate(), []);
@@ -1929,7 +1995,11 @@ export function DashboardPartnersOverview() {
 			(data?.timeline ?? []).map((item) => ({
 				date: item.date,
 				label: item.label,
-				amount: item.grossAmount / 100,
+				concludedAndProcessedAmount:
+					item.concludedAndProcessedGrossAmount / 100,
+				concludedAmount: item.concludedGrossAmount / 100,
+				processedAmount: item.processedGrossAmount / 100,
+				canceledAmount: item.canceledGrossAmount / 100,
 				salesCount: item.salesCount,
 			})),
 		[data?.timeline],
@@ -1948,6 +2018,20 @@ export function DashboardPartnersOverview() {
 		[data?.timeline],
 	);
 	const timelineGranularity = data?.period.timelineGranularity ?? "DAY";
+	const timelineSeriesKeysToRender =
+		selectedTimelineSeries === "concludedAndProcessedAmount"
+			? TIMELINE_SERIES_OPTIONS.map((item) => item.key)
+			: [selectedTimelineSeries];
+	const timelineAreaGradientIdPrefix = useId().replace(/:/g, "");
+	const timelineAreaGradientIds = useMemo(
+		() => ({
+			concludedAndProcessedAmount: `${timelineAreaGradientIdPrefix}-timeline-concluded-and-processed`,
+			concludedAmount: `${timelineAreaGradientIdPrefix}-timeline-concluded`,
+			processedAmount: `${timelineAreaGradientIdPrefix}-timeline-processed`,
+			canceledAmount: `${timelineAreaGradientIdPrefix}-timeline-canceled`,
+		}),
+		[timelineAreaGradientIdPrefix],
+	);
 
 	if (query.isLoading && !data) {
 		return <DashboardPartnersSkeleton />;
@@ -2216,90 +2300,140 @@ export function DashboardPartnersOverview() {
 				</Card>
 			) : null}
 
-			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
-				<Card className="overflow-hidden border-border/70">
-					<CardHeader className="border-b">
-						<CardTitle>
-							{timelineGranularity === "DAY"
-								? "Vendas por dia"
-								: "Faturamento por mês"}
-						</CardTitle>
-						<CardDescription>
-							Vendas válidas no período filtrado, sem considerar vendas
-							canceladas.
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4 pt-6">
-						<ChartContainer
-							config={timelineChartConfig}
-							className="h-[290px] w-full"
-						>
-							<BarChart data={timelineChartData} barGap={6}>
-								<CartesianGrid vertical={false} />
-								<XAxis
-									dataKey="label"
-									tickLine={false}
-									axisLine={false}
-									minTickGap={10}
+				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
+					<Card className="overflow-hidden border-border/70">
+						<CardHeader className="border-b">
+							<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+								<div className="space-y-1">
+									<CardTitle>
+										{timelineGranularity === "DAY"
+											? "Vendas por dia"
+											: "Faturamento por mês"}
+									</CardTitle>
+									<CardDescription>
+										Visualize concluídas e processadas no período, com opção de
+										comparar as canceladas.
+									</CardDescription>
+								</div>
+								<TimelineSeriesSelectFilter
+									selectedKey={selectedTimelineSeries}
+									onChange={setSelectedTimelineSeries}
 								/>
-								<YAxis
-									tickLine={false}
-									axisLine={false}
-									tickFormatter={(value) => formatCurrencyBRL(Number(value))}
-								/>
-								<ChartTooltip
-									content={
-										<ChartTooltipContent
-											labelFormatter={(_, payload) => {
-												const item = payload?.[0]?.payload as
-													| { label?: string }
-													| undefined;
-												return item?.label ?? "";
-											}}
-											formatter={(value) => (
-												<div className="ml-auto font-medium">
-													{formatCurrencyBRL(Number(value))}
-												</div>
-											)}
+							</div>
+						</CardHeader>
+						<CardContent className="space-y-4 pt-6">
+							<ChartContainer
+								config={timelineChartConfig}
+								className="h-[290px] w-full"
+							>
+								<AreaChart data={timelineChartData}>
+									<defs>
+										{TIMELINE_SERIES_OPTIONS.map((option) => (
+											<linearGradient
+												key={option.key}
+												id={timelineAreaGradientIds[option.key]}
+												x1="0"
+												y1="0"
+												x2="0"
+												y2="1"
+											>
+												<stop
+													offset="5%"
+													stopColor={`var(--color-${option.key})`}
+													stopOpacity={0.7}
+												/>
+												<stop
+													offset="95%"
+													stopColor={`var(--color-${option.key})`}
+													stopOpacity={0.1}
+												/>
+											</linearGradient>
+										))}
+									</defs>
+									<CartesianGrid vertical={false} />
+									<XAxis
+										dataKey="label"
+										tickLine={false}
+										axisLine={false}
+										tickMargin={8}
+										minTickGap={24}
+									/>
+									<YAxis
+										tickLine={false}
+										axisLine={false}
+										tickFormatter={(value) => formatCurrencyBRL(Number(value))}
+									/>
+									<ChartTooltip
+										cursor={false}
+										content={
+											<ChartTooltipContent
+												labelFormatter={(_, payload) => {
+													const item = payload?.[0]?.payload as
+														| { label?: string }
+														| undefined;
+													return item?.label ?? "";
+												}}
+												formatter={(value, name) => {
+													const seriesKey = String(name) as TimelineSeriesKey;
+													const seriesLabel =
+														timelineChartConfig[seriesKey]?.label ?? name;
+													return (
+														<div className="flex w-full items-center justify-between gap-2">
+															<span className="text-muted-foreground">
+																{seriesLabel}
+															</span>
+															<div className="font-medium">
+																{formatCurrencyBRL(Number(value))}
+															</div>
+														</div>
+													);
+												}}
+												indicator="dot"
+											/>
+										}
+									/>
+									{timelineSeriesKeysToRender.map((seriesKey) => (
+										<Area
+											key={seriesKey}
+											dataKey={seriesKey}
+											type="natural"
+											stroke={`var(--color-${seriesKey})`}
+											strokeWidth={2}
+											fill={`url(#${timelineAreaGradientIds[seriesKey]})`}
+											activeDot={{ r: 5 }}
 										/>
+									))}
+								</AreaChart>
+							</ChartContainer>
+
+							<div className="grid grid-cols-2 gap-3 text-sm">
+								<PartnerCompactMetric
+									label={
+										timelineGranularity === "DAY"
+											? "Pico diário"
+											: "Pico mensal"
 									}
+									value={formatAmountFromCents(timelineDailyPeakAmount)}
 								/>
-								<Bar
-									dataKey="amount"
-									radius={[8, 8, 0, 0]}
-									fill="var(--color-amount)"
+								<PartnerCompactMetric
+									label={
+										timelineGranularity === "DAY"
+											? "Dias com venda"
+											: "Meses com venda"
+									}
+									value={String(timelineDaysWithSales)}
 								/>
-							</BarChart>
-						</ChartContainer>
+							</div>
+						</CardContent>
+					</Card>
 
-						<div className="grid grid-cols-2 gap-3 text-sm">
-							<PartnerCompactMetric
-								label={
-									timelineGranularity === "DAY"
-										? "Pico diário"
-										: "Pico mensal"
-								}
-								value={formatAmountFromCents(timelineDailyPeakAmount)}
-							/>
-							<PartnerCompactMetric
-								label={
-									timelineGranularity === "DAY"
-										? "Dias com venda"
-										: "Meses com venda"
-								}
-								value={String(timelineDaysWithSales)}
-							/>
-						</div>
-					</CardContent>
-				</Card>
-
-				<PartnerSalesStatusCard
-					items={data?.statusFunnel.items ?? []}
-				/>
-				<PartnerCommissionsByCompetencyCard
-					summary={data?.summary}
-				/>
-			</div>
+					<PartnerSalesStatusCard
+						items={data?.statusFunnel.items ?? []}
+					/>
+					<PartnerCommissionsByCompetencyCard
+						summary={data?.summary}
+					/>
+				</div>
 
 			<div className="space-y-6">
 				<PartnerRankingSection items={data?.ranking ?? []} />

@@ -120,6 +120,10 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       date: z.iso.datetime(),
       salesCount: z.int().min(0).max(9007199254740991),
       grossAmount: z.int().min(0).max(9007199254740991),
+      concludedGrossAmount: z.int().min(0).max(9007199254740991),
+      processedGrossAmount: z.int().min(0).max(9007199254740991),
+      concludedAndProcessedGrossAmount: z.int().min(0).max(9007199254740991),
+      canceledGrossAmount: z.int().min(0).max(9007199254740991),
     }),
   ),
   dynamicFieldBreakdown: z.object({

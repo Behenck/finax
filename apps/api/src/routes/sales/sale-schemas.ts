@@ -486,6 +486,10 @@ const PartnerSalesDashboardTimelineItemSchema = z.object({
 	date: z.date(),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
+	concludedGrossAmount: z.number().int().nonnegative(),
+	processedGrossAmount: z.number().int().nonnegative(),
+	concludedAndProcessedGrossAmount: z.number().int().nonnegative(),
+	canceledGrossAmount: z.number().int().nonnegative(),
 });
 
 const PartnerSalesDashboardRankingSalesBreakdownBucketSchema = z.object({

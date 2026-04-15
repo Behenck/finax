@@ -321,7 +321,7 @@ async function createSaleSeed(
 								},
 							},
 						})),
-				  }
+					}
 				: undefined,
 		},
 	});
@@ -387,7 +387,10 @@ async function seedDashboardData(fixture: PartnerDashboardFixture) {
 		productId: fixture.subproductProperty.id,
 		dynamicFieldValues: {
 			[ASSET_TYPE_FIELD_ID]: ASSET_TYPE_VEHICLE_OPTION_ID,
-			[COVERAGE_FIELD_ID]: [COVERAGE_INSURED_OPTION_ID, COVERAGE_UNINSURED_OPTION_ID],
+			[COVERAGE_FIELD_ID]: [
+				COVERAGE_INSURED_OPTION_ID,
+				COVERAGE_UNINSURED_OPTION_ID,
+			],
 		},
 		commissions: [
 			{
@@ -486,6 +489,48 @@ describe("partner sales dashboard", () => {
 			delinquencyRateByAmountPct: 43.48,
 		});
 		expect(response.body.period.timelineGranularity).toBe("MONTH");
+		expect(response.body.timeline).toEqual([
+			{
+				label: "01/2026",
+				date: expect.stringContaining("2026-01-01"),
+				salesCount: 0,
+				grossAmount: 0,
+				concludedGrossAmount: 0,
+				processedGrossAmount: 0,
+				concludedAndProcessedGrossAmount: 0,
+				canceledGrossAmount: 0,
+			},
+			{
+				label: "02/2026",
+				date: expect.stringContaining("2026-02-01"),
+				salesCount: 1,
+				grossAmount: 100_000,
+				concludedGrossAmount: 100_000,
+				processedGrossAmount: 0,
+				concludedAndProcessedGrossAmount: 100_000,
+				canceledGrossAmount: 0,
+			},
+			{
+				label: "03/2026",
+				date: expect.stringContaining("2026-03-01"),
+				salesCount: 1,
+				grossAmount: 50_000,
+				concludedGrossAmount: 50_000,
+				processedGrossAmount: 0,
+				concludedAndProcessedGrossAmount: 50_000,
+				canceledGrossAmount: 0,
+			},
+			{
+				label: "04/2026",
+				date: expect.stringContaining("2026-04-01"),
+				salesCount: 1,
+				grossAmount: 80_000,
+				concludedGrossAmount: 0,
+				processedGrossAmount: 80_000,
+				concludedAndProcessedGrossAmount: 80_000,
+				canceledGrossAmount: 0,
+			},
+		]);
 		expect(response.body.filters.supervisors).toEqual([
 			{
 				id: fixture.supervisorUser.id,
@@ -903,6 +948,57 @@ describe("partner sales dashboard", () => {
 				lastSaleDate: expect.stringContaining("2025-12-15"),
 			},
 		]);
+	});
+
+	it("should include canceled sales in timeline series without affecting valid summary", async () => {
+		const fixture = await createFixture();
+		await seedDashboardData(fixture);
+
+		await createSaleSeed(fixture, {
+			saleDate: "2026-03-20",
+			totalAmount: 40_000,
+			status: SaleStatus.CANCELED,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerBeta.id,
+			productId: fixture.subproductAuto.id,
+		});
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
+			.query({
+				startDate: "2026-01-01",
+				endDate: "2026-04-08",
+				inactiveMonths: 3,
+			})
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.summary.totalSales).toBe(3);
+		expect(response.body.summary.grossAmount).toBe(230_000);
+
+		const marchBucket = response.body.timeline.find(
+			(item: { label: string }) => item.label === "03/2026",
+		);
+		expect(marchBucket).toEqual({
+			label: "03/2026",
+			date: expect.stringContaining("2026-03-01"),
+			salesCount: 1,
+			grossAmount: 50_000,
+			concludedGrossAmount: 50_000,
+			processedGrossAmount: 0,
+			concludedAndProcessedGrossAmount: 50_000,
+			canceledGrossAmount: 40_000,
+		});
+
+		const canceledStatus = response.body.statusFunnel.items.find(
+			(item: { status: string }) => item.status === "CANCELED",
+		);
+		expect(canceledStatus).toEqual({
+			status: "CANCELED",
+			label: "Cancelada",
+			salesCount: 1,
+			grossAmount: 40_000,
+		});
 	});
 
 	it("should keep commission competency values even when sale date is outside the period", async () => {
