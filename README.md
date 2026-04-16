@@ -1,5 +1,9 @@
 # Vendas
 
+## Deploy
+
+O deploy de producao no Easypanel esta documentado em [`docs/deploy/easypanel.md`](docs/deploy/easypanel.md).
+
 ## Tela de Produtos
 
 - Criar um produto com `parent_id`, onde o produto pode estar relacionado a outro (Tipo categorias).

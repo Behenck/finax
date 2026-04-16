@@ -33,6 +33,7 @@ import { Route as AppSalesDelinquencyImportRouteImport } from './pages/_app/sale
 import { Route as AppSalesDelinquencyRouteImport } from './pages/_app/sales/delinquency'
 import { Route as AppSalesCreateRouteImport } from './pages/_app/sales/create'
 import { Route as AppSalesSaleIdRouteImport } from './pages/_app/sales/$saleId'
+import { Route as AppCommissionsBonusPreviewRouteImport } from './pages/_app/commissions/bonus-preview'
 import { Route as AuthInviteInviteIdIndexRouteImport } from './pages/_auth/invite/$inviteId/index'
 import { Route as AppTransactionsCreateIndexRouteImport } from './pages/_app/transactions/create/index'
 import { Route as AppSettingsOrganizationIndexRouteImport } from './pages/_app/settings/organization/index'
@@ -175,6 +176,12 @@ const AppSalesSaleIdRoute = AppSalesSaleIdRouteImport.update({
   path: '/sales/$saleId',
   getParentRoute: () => AppLayoutRoute,
 } as any)
+const AppCommissionsBonusPreviewRoute =
+  AppCommissionsBonusPreviewRouteImport.update({
+    id: '/commissions/bonus-preview',
+    path: '/commissions/bonus-preview',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AuthInviteInviteIdIndexRoute = AuthInviteInviteIdIndexRouteImport.update({
   id: '/$inviteId/',
   path: '/$inviteId/',
@@ -311,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/commissions/bonus-preview': typeof AppCommissionsBonusPreviewRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/delinquency': typeof AppSalesDelinquencyRoute
@@ -355,6 +363,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/commissions/bonus-preview': typeof AppCommissionsBonusPreviewRoute
   '/sales/$saleId': typeof AppSalesSaleIdRoute
   '/sales/create': typeof AppSalesCreateRoute
   '/sales/delinquency': typeof AppSalesDelinquencyRoute
@@ -404,6 +413,7 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/_app/commissions/bonus-preview': typeof AppCommissionsBonusPreviewRoute
   '/_app/sales/$saleId': typeof AppSalesSaleIdRoute
   '/_app/sales/create': typeof AppSalesCreateRoute
   '/_app/sales/delinquency': typeof AppSalesDelinquencyRoute
@@ -452,6 +462,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/verify-otp'
+    | '/commissions/bonus-preview'
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/delinquency'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/verify-otp'
+    | '/commissions/bonus-preview'
     | '/sales/$saleId'
     | '/sales/create'
     | '/sales/delinquency'
@@ -544,6 +556,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/verify-otp'
+    | '/_app/commissions/bonus-preview'
     | '/_app/sales/$saleId'
     | '/_app/sales/create'
     | '/_app/sales/delinquency'
@@ -760,6 +773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSalesSaleIdRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/commissions/bonus-preview': {
+      id: '/_app/commissions/bonus-preview'
+      path: '/commissions/bonus-preview'
+      fullPath: '/commissions/bonus-preview'
+      preLoaderRoute: typeof AppCommissionsBonusPreviewRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_auth/invite/$inviteId/': {
       id: '/_auth/invite/$inviteId/'
       path: '/$inviteId'
@@ -934,6 +954,7 @@ const AppSettingsLayoutRouteWithChildren =
 
 interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
+  AppCommissionsBonusPreviewRoute: typeof AppCommissionsBonusPreviewRoute
   AppSalesSaleIdRoute: typeof AppSalesSaleIdRoute
   AppSalesCreateRoute: typeof AppSalesCreateRoute
   AppSalesDelinquencyRoute: typeof AppSalesDelinquencyRoute
@@ -967,6 +988,7 @@ interface AppLayoutRouteChildren {
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
+  AppCommissionsBonusPreviewRoute: AppCommissionsBonusPreviewRoute,
   AppSalesSaleIdRoute: AppSalesSaleIdRoute,
   AppSalesCreateRoute: AppSalesCreateRoute,
   AppSalesDelinquencyRoute: AppSalesDelinquencyRoute,

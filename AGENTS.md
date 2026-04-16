@@ -27,6 +27,8 @@ Aplica-se a todo o repositorio. Regras mais especificas em subpastas (`apps/web/
 - `package.json`: scripts da raiz (`dev`, `build`, `lint`)
 - `turbo.json`: orquestracao de tarefas do monorepo
 - `pnpm-workspace.yaml`: definicao do workspace
+- `docs/deploy`: guias operacionais de deploy
+- `deploy/easypanel`: exemplos de variaveis para deploy no Easypanel
 
 ## Como navegar por tipo de mudanca
 - Mudanca somente no frontend: ler `apps/web/AGENTS.md` antes de implementar.
@@ -52,6 +54,10 @@ Executar a partir da raiz:
 - `pnpm dev`: roda apps em modo desenvolvimento via Turbo
 - `pnpm build`: build das apps via Turbo
 - `pnpm lint`: lint das apps via Turbo
+
+## Deploy
+- O deploy de producao no Easypanel esta documentado em `docs/deploy/easypanel.md`.
+- Exemplos de variaveis de ambiente para os servicos do Easypanel ficam em `deploy/easypanel`.
 
 ## Integracao frontend <-> backend (visao global)
 - A API expoe documentacao OpenAPI em `http://localhost:3333/docs/json` (definido em `apps/api/src/app.ts`).
