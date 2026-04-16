@@ -25,10 +25,8 @@ import {
 import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
-import {
-	useGetOrganizationsSlugProducts,
-	usePostOrganizationsSlugCommissionsBonusSettlements,
-} from "@/http/generated";
+import { useGetOrganizationsSlugProducts } from "@/http/generated";
+import { usePostOrganizationsSlugCommissionsBonusSettlements } from "@/http/generated/hooks/usePostOrganizationsSlugCommissionsBonusSettlements";
 
 type BonusSettlementFrequency = "MONTHLY" | "SEMIANNUAL" | "ANNUAL";
 

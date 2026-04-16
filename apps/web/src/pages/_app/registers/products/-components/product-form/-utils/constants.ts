@@ -28,3 +28,16 @@ export const COMMISSION_CALCULATION_BASE_LABEL = {
 	SALE_TOTAL: "Valor da venda",
 	COMMISSION: "Comissão",
 } as const;
+
+export const BONUS_PARTICIPANT_OPTIONS = [
+	{ value: "COMPANY", label: "Empresa" },
+	{ value: "PARTNER", label: "Parceiro" },
+	{ value: "SELLER", label: "Vendedor" },
+	{ value: "SUPERVISOR", label: "Supervisor" },
+] as const;
+
+export const BONUS_PERIOD_FREQUENCY_OPTIONS = [
+	{ value: "MONTHLY", label: "Mensal" },
+	{ value: "SEMIANNUAL", label: "Semestral" },
+	{ value: "ANNUAL", label: "Anual" },
+] as const;

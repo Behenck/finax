@@ -232,6 +232,7 @@ export function ProductForm({
 				? (initialData?.salesTransactionCostCenterId ?? undefined)
 				: (duplicateSalesTransactionCostCenterId ?? undefined),
 			scenarios: [],
+			bonusScenarios: [],
 			saleFields: [],
 			commissionReversalMode: null,
 			commissionReversalTotalPercentage: undefined,
@@ -447,6 +448,7 @@ export function ProductForm({
 				(scenariosData?.scenarios ?? []).length > 0
 					? (scenariosData?.scenarios ?? []).map(mapApiScenarioToForm)
 					: [],
+			bonusScenarios: [],
 			saleFields: (saleFieldsData?.fields ?? []).map((field) => ({
 				label: field.label,
 				type: field.type as SaleDynamicFieldType,

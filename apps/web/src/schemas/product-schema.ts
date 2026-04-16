@@ -219,6 +219,66 @@ const productSaleFieldSchema = z
 		}
 	});
 
+const productBonusParticipantSchema = z.object({
+	type: z.enum(["COMPANY", "PARTNER", "SELLER", "SUPERVISOR"]),
+	valueId: z.uuid({ error: "Selecione o participante" }),
+});
+
+const productBonusPayoutInstallmentSchema = z.object({
+	installmentNumber: z.number().int().min(1),
+	percentage: percentageSchema,
+});
+
+const productBonusScenarioSchema = z
+	.object({
+		name: z
+			.string({ error: "Defina um nome para a meta" })
+			.trim()
+			.min(1, "Defina um nome para a meta"),
+		metric: z.enum(["SALE_TOTAL"]).optional(),
+		targetAmount: z
+			.number({ error: "Informe a meta" })
+			.int("Informe a meta")
+			.gt(0, "Informe uma meta maior que zero"),
+		periodFrequency: z.enum(["MONTHLY", "SEMIANNUAL", "ANNUAL"]),
+		participants: z
+			.array(productBonusParticipantSchema)
+			.min(1, "Adicione ao menos um participante"),
+		payoutEnabled: z.boolean(),
+		payoutTotalPercentage: totalPercentageSchema.optional(),
+		payoutDueDay: z.number().int().min(1).max(31).optional(),
+		payoutInstallments: z.array(productBonusPayoutInstallmentSchema),
+	})
+	.superRefine((scenario, ctx) => {
+		if (!scenario.payoutEnabled) {
+			return;
+		}
+
+		if (scenario.payoutTotalPercentage === undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Informe o percentual total da bonificação",
+				path: ["payoutTotalPercentage"],
+			});
+		}
+
+		if (scenario.payoutDueDay === undefined) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Informe o dia fixo da bonificação",
+				path: ["payoutDueDay"],
+			});
+		}
+
+		if (scenario.payoutInstallments.length === 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Informe ao menos uma parcela de bonificação",
+				path: ["payoutInstallments"],
+			});
+		}
+	});
+
 export const productSchema = z
 	.object({
 		name: z
@@ -227,6 +287,7 @@ export const productSchema = z
 		salesTransactionCategoryId: z.uuid().optional(),
 		salesTransactionCostCenterId: z.uuid().optional(),
 		scenarios: z.array(productCommissionScenarioSchema),
+		bonusScenarios: z.array(productBonusScenarioSchema),
 		saleFields: z.array(productSaleFieldSchema),
 		commissionReversalMode: productCommissionReversalModeSchema.nullable(),
 		commissionReversalTotalPercentage: totalPercentageSchema.optional(),

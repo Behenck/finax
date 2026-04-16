@@ -30,10 +30,10 @@ import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
 	useGetOrganizationsSlugProducts,
-	usePostOrganizationsSlugCommissionsBonusSettlements,
-	usePostOrganizationsSlugCommissionsBonusSettlementsPreview,
-	type PostOrganizationsSlugCommissionsBonusSettlementsPreview200,
 } from "@/http/generated";
+import { usePostOrganizationsSlugCommissionsBonusSettlements } from "@/http/generated/hooks/usePostOrganizationsSlugCommissionsBonusSettlements";
+import { usePostOrganizationsSlugCommissionsBonusSettlementsPreview } from "@/http/generated/hooks/usePostOrganizationsSlugCommissionsBonusSettlementsPreview";
+import type { PostOrganizationsSlugCommissionsBonusSettlementsPreview200 } from "@/http/generated/models/PostOrganizationsSlugCommissionsBonusSettlementsPreview";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 
 type BonusSettlementFrequency = "MONTHLY" | "SEMIANNUAL" | "ANNUAL";

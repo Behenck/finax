@@ -1,4 +1,7 @@
-import type { ProductCommissionScenarioFormData } from "@/schemas/product-schema";
+import type {
+	ProductCommissionScenarioFormData,
+	ProductFormData,
+} from "@/schemas/product-schema";
 
 export interface SelectOption {
 	id: string;
@@ -7,3 +10,5 @@ export interface SelectOption {
 
 export type ConditionType =
 	ProductCommissionScenarioFormData["conditions"][number]["type"];
+export type BonusParticipantType =
+	ProductFormData["bonusScenarios"][number]["participants"][number]["type"];
