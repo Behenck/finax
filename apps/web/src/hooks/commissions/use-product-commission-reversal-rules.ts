@@ -63,6 +63,7 @@ export function useProductCommissionReversalRules(
 		enabled:
 			Boolean(slug && productId) &&
 			(options?.enabled === undefined ? true : options.enabled),
+		staleTime: 5 * 60_000,
 	});
 }
 
@@ -95,33 +96,36 @@ export function useReplaceProductCommissionReversalRules() {
 					mode,
 					totalPaidPercentage:
 						mode === "TOTAL_PAID_PERCENTAGE"
-							? totalPaidPercentage ?? null
+							? (totalPaidPercentage ?? null)
 							: undefined,
 					rules,
 				},
 			);
 		},
-		onSuccess: async (_, variables) => {
+		onSuccess: (_, variables) => {
 			if (!organization?.slug) {
 				return;
 			}
 
-			await queryClient.invalidateQueries({
+			queryClient.invalidateQueries({
 				queryKey: buildProductCommissionReversalRulesQueryKey(
 					organization.slug,
 					variables.productId,
 					false,
 				),
+				refetchType: "none",
 			});
-			await queryClient.invalidateQueries({
+			queryClient.invalidateQueries({
 				queryKey: buildProductCommissionReversalRulesQueryKey(
 					organization.slug,
 					variables.productId,
 					true,
 				),
+				refetchType: "none",
 			});
-			await queryClient.invalidateQueries({
+			queryClient.invalidateQueries({
 				queryKey: ["product-commission-reversal-rules", organization.slug],
+				refetchType: "none",
 			});
 		},
 		onError: (error, variables) => {

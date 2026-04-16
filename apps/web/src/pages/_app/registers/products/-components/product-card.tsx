@@ -20,12 +20,15 @@ import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
-	getOrganizationsSlugProductsQueryKey,
 	useDeleteOrganizationsSlugProductsId,
 	usePutOrganizationsSlugProductsId,
 } from "@/http/generated";
 import { cn } from "@/lib/utils";
 import type { Product, ProductListItem } from "@/schemas/types/product";
+import {
+	removeProductFromProductsCache,
+	updateProductInProductsCache,
+} from "../-utils/product-cache";
 import { CreateProduct } from "./create-product";
 import { DuplicateProduct } from "./duplicate-product";
 import { ProductScenarioBadges } from "./product-scenario-badges";
@@ -52,14 +55,6 @@ export function ProductCard({ product }: ProductCardProps) {
 	const isInactive = !product.isActive;
 	// const mutedIconClass = isInactive ? "text-muted-foreground" : "text-muted-foreground";
 
-	async function invalidateProducts() {
-		await queryClient.invalidateQueries({
-			queryKey: getOrganizationsSlugProductsQueryKey({
-				slug: organization!.slug,
-			}),
-		});
-	}
-
 	async function onDelete(target: ProductListItem) {
 		const confirmed = window.confirm(
 			`Deseja realmente excluir o produto ${target.name}?`,
@@ -72,7 +67,11 @@ export function ProductCard({ product }: ProductCardProps) {
 				id: target.id,
 			});
 
-			await invalidateProducts();
+			removeProductFromProductsCache(
+				queryClient,
+				organization!.slug,
+				target.id,
+			);
 			toast.success(`Produto ${target.name} excluído com sucesso!`);
 		} catch (error) {
 			const message = resolveErrorMessage(normalizeApiError(error));
@@ -96,7 +95,10 @@ export function ProductCard({ product }: ProductCardProps) {
 				},
 			});
 
-			await invalidateProducts();
+			updateProductInProductsCache(queryClient, organization!.slug, {
+				...target,
+				isActive: !target.isActive,
+			});
 			toast.success(
 				`Produto ${target.name} ${target.isActive ? "desativado" : "ativado"} com sucesso!`,
 			);
@@ -149,7 +151,10 @@ export function ProductCard({ product }: ProductCardProps) {
 									</p>
 								)}
 
-								<ProductScenarioBadges productId={product.id} />
+								<ProductScenarioBadges
+									productId={product.id}
+									enabled={isOpen}
+								/>
 
 								{hasChildren && (
 									<p className="mt-1 text-xs text-muted-foreground">
@@ -184,7 +189,10 @@ export function ProductCard({ product }: ProductCardProps) {
 							onClick={() => onToggleActive(product)}
 						>
 							<Power
-								className={cn("text-green-600", isInactive && "text-muted-foreground")}
+								className={cn(
+									"text-green-600",
+									isInactive && "text-muted-foreground",
+								)}
 							/>
 						</Button>
 

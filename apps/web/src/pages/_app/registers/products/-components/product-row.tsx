@@ -78,19 +78,19 @@ export function ProductRow({
 								<span className="font-medium text-sm">{product.name}</span>
 							</div>
 
-								{product.description && (
-									<p className="mt-1 truncate text-xs text-muted-foreground">
-										{product.description}
-									</p>
-								)}
+							{product.description && (
+								<p className="mt-1 truncate text-xs text-muted-foreground">
+									{product.description}
+								</p>
+							)}
 
-								<ProductScenarioBadges productId={product.id} />
+							<ProductScenarioBadges productId={product.id} enabled={isOpen} />
 
-								{hasChildren && (
-									<p className="mt-1 text-xs text-muted-foreground">
-										{children.length} produto(s) filho(s)
-									</p>
-								)}
+							{hasChildren && (
+								<p className="mt-1 text-xs text-muted-foreground">
+									{children.length} produto(s) filho(s)
+								</p>
+							)}
 						</div>
 					</CollapsibleTrigger>
 
@@ -130,7 +130,10 @@ export function ProductRow({
 							onClick={() => onToggleActive(product)}
 						>
 							<Power
-								className={cn("text-green-600", isInactive && "text-muted-foreground")}
+								className={cn(
+									"text-green-600",
+									isInactive && "text-muted-foreground",
+								)}
 							/>
 						</Button>
 

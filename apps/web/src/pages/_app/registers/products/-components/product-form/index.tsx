@@ -35,7 +35,6 @@ import {
 import {
 	getOrganizationsSlugProductsIdCommissionScenariosQueryKey,
 	getOrganizationsSlugProductsIdSaleFieldsQueryKey,
-	getOrganizationsSlugProductsQueryKey,
 	useGetOrganizationsSlugCategories,
 	useGetOrganizationsSlugCompanies,
 	useGetOrganizationsSlugCostcenters,
@@ -56,6 +55,10 @@ import {
 	SALE_DYNAMIC_FIELD_TYPE_VALUES,
 	type SaleDynamicFieldType,
 } from "@/schemas/types/sale-dynamic-fields";
+import {
+	addProductToProductsCache,
+	updateProductInProductsCache,
+} from "../../-utils/product-cache";
 import { ScenarioTabContent } from "./-components/scenario-tab-content";
 import {
 	createDefaultScenario,
@@ -146,77 +149,6 @@ export function ProductForm({
 	const shouldLoadSourceProductData = Boolean(sourceProductId);
 	const duplicateProductName = duplicateFromProductName?.trim() ?? "";
 
-	const { data: companiesData } = useGetOrganizationsSlugCompanies(
-		{ slug: organization?.slug ?? "" },
-		{ query: { enabled: !!organization?.slug } },
-	);
-	const { data: categoriesData } = useGetOrganizationsSlugCategories(
-		{ slug: organization?.slug ?? "" },
-		{
-			query: {
-				enabled: !!organization?.slug && isSalesTransactionsSyncEnabled,
-			},
-		},
-	);
-	const { data: costCentersData } = useGetOrganizationsSlugCostcenters(
-		{ slug: organization?.slug ?? "" },
-		{
-			query: {
-				enabled: !!organization?.slug && isSalesTransactionsSyncEnabled,
-			},
-		},
-	);
-
-	const { data: sellersData } = useGetOrganizationsSlugSellers(
-		{ slug: organization?.slug ?? "" },
-		{ query: { enabled: !!organization?.slug } },
-	);
-
-	const { data: partnersData } = useGetOrganizationsSlugPartners(
-		{ slug: organization?.slug ?? "" },
-		{ query: { enabled: !!organization?.slug } },
-	);
-
-	const { data: supervisorsData } = useGetOrganizationsSlugMembersRole(
-		{ slug: organization?.slug ?? "", role: "SUPERVISOR" },
-		{ query: { enabled: !!organization?.slug } },
-	);
-
-	const {
-		data: scenariosData,
-		isLoading: isLoadingScenarios,
-		isError: isScenariosError,
-		error: scenariosError,
-	} = useGetOrganizationsSlugProductsIdCommissionScenarios(
-		{ slug: organization?.slug ?? "", id: sourceProductId },
-		{
-			query: {
-				enabled: !!organization?.slug && shouldLoadSourceProductData,
-			},
-		},
-	);
-	const {
-		data: saleFieldsData,
-		isLoading: isLoadingSaleFields,
-		isError: isSaleFieldsError,
-		error: saleFieldsError,
-	} = useGetOrganizationsSlugProductsIdSaleFields(
-		{ slug: organization?.slug ?? "", id: sourceProductId },
-		{
-			query: {
-				enabled: !!organization?.slug && shouldLoadSourceProductData,
-			},
-		},
-	);
-	const {
-		data: commissionReversalRulesData,
-		isLoading: isLoadingCommissionReversalRules,
-		isError: isCommissionReversalRulesError,
-		error: commissionReversalRulesError,
-	} = useProductCommissionReversalRules(sourceProductId, {
-		enabled: !!organization?.slug && shouldLoadSourceProductData,
-	});
-
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
@@ -303,6 +235,106 @@ export function ProductForm({
 		: scenarioFields.length > 0
 			? "scenario-0"
 			: "";
+	const shouldLoadCommissionScenarioOptions =
+		activeProductConfigTab === "commission-scenarios" &&
+		(shouldLoadSourceProductData || scenarioFields.length > 0);
+	const shouldLoadTransactionOptions =
+		activeProductConfigTab === "transaction" && isSalesTransactionsSyncEnabled;
+
+	const { data: companiesData } = useGetOrganizationsSlugCompanies(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadCommissionScenarioOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+	const { data: categoriesData } = useGetOrganizationsSlugCategories(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadTransactionOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+	const { data: costCentersData } = useGetOrganizationsSlugCostcenters(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadTransactionOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+
+	const { data: sellersData } = useGetOrganizationsSlugSellers(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadCommissionScenarioOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+
+	const { data: partnersData } = useGetOrganizationsSlugPartners(
+		{ slug: organization?.slug ?? "" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadCommissionScenarioOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+
+	const { data: supervisorsData } = useGetOrganizationsSlugMembersRole(
+		{ slug: organization?.slug ?? "", role: "SUPERVISOR" },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadCommissionScenarioOptions,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+
+	const {
+		data: scenariosData,
+		isLoading: isLoadingScenarios,
+		isError: isScenariosError,
+		error: scenariosError,
+	} = useGetOrganizationsSlugProductsIdCommissionScenarios(
+		{ slug: organization?.slug ?? "", id: sourceProductId },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadSourceProductData,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+	const {
+		data: saleFieldsData,
+		isLoading: isLoadingSaleFields,
+		isError: isSaleFieldsError,
+		error: saleFieldsError,
+	} = useGetOrganizationsSlugProductsIdSaleFields(
+		{ slug: organization?.slug ?? "", id: sourceProductId },
+		{
+			query: {
+				enabled: !!organization?.slug && shouldLoadSourceProductData,
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
+	const {
+		data: commissionReversalRulesData,
+		isLoading: isLoadingCommissionReversalRules,
+		isError: isCommissionReversalRulesError,
+		error: commissionReversalRulesError,
+	} = useProductCommissionReversalRules(sourceProductId, {
+		enabled: !!organization?.slug && shouldLoadSourceProductData,
+	});
 
 	useEffect(() => {
 		if (!isSalesTransactionsSyncEnabled) {
@@ -495,41 +527,34 @@ export function ProductForm({
 		initializedFromApiRef.current = false;
 	}, [mode, sourceProductId]);
 
-	const invalidateProducts = async () => {
-		await queryClient.invalidateQueries({
-			queryKey: getOrganizationsSlugProductsQueryKey({
-				slug: organization!.slug,
-			}),
-		});
-	};
-
-	const invalidateProductCommissionScenarios = async (productId: string) => {
-		await queryClient.invalidateQueries({
+	const invalidateProductCommissionScenarios = (productId: string) => {
+		queryClient.invalidateQueries({
 			queryKey: getOrganizationsSlugProductsIdCommissionScenariosQueryKey({
 				slug: organization!.slug,
 				id: productId,
 			}),
+			refetchType: "none",
 		});
 	};
 
-	const invalidateProductSaleFields = async (productId: string) => {
-		await queryClient.invalidateQueries({
+	const invalidateProductSaleFields = (productId: string) => {
+		queryClient.invalidateQueries({
 			queryKey: getOrganizationsSlugProductsIdSaleFieldsQueryKey({
 				slug: organization!.slug,
 				id: productId,
 			}),
+			refetchType: "none",
 		});
 	};
 
-	const invalidateProductCommissionReversalRules = async (
-		productId: string,
-	) => {
-		await queryClient.invalidateQueries({
+	const invalidateProductCommissionReversalRules = (productId: string) => {
+		queryClient.invalidateQueries({
 			queryKey: [
 				"product-commission-reversal-rules",
 				organization!.slug,
 				productId,
 			],
+			refetchType: "none",
 		});
 	};
 
@@ -762,13 +787,49 @@ export function ProductForm({
 			mode: commissionReversalMode,
 			totalPaidPercentage:
 				commissionReversalMode === "TOTAL_PAID_PERCENTAGE"
-					? commissionReversalTotalPercentage ?? null
+					? (commissionReversalTotalPercentage ?? null)
 					: null,
 			rules: commissionReversalRules.map((rule) => ({
 				installmentNumber: rule.installmentNumber,
 				percentage: rule.percentage,
 			})),
 		});
+	};
+
+	const saveProductConfigurations = async (
+		productId: string,
+		data: ProductFormData,
+	) => {
+		const saveTasks: Promise<unknown>[] = [];
+
+		if (isEditMode || data.scenarios.length > 0) {
+			saveTasks.push(saveProductCommissionScenarios(productId, data.scenarios));
+		}
+
+		if (isEditMode || data.saleFields.length > 0) {
+			saveTasks.push(saveProductSaleFields(productId, data.saleFields));
+		}
+
+		if (
+			isEditMode ||
+			data.commissionReversalMode !== null ||
+			data.commissionReversalTotalPercentage !== undefined ||
+			data.commissionReversalRules.length > 0
+		) {
+			saveTasks.push(
+				saveProductCommissionReversalRules(
+					productId,
+					data.commissionReversalMode,
+					data.commissionReversalTotalPercentage,
+					data.commissionReversalRules,
+				),
+			);
+		}
+
+		await Promise.all(saveTasks);
+		invalidateProductCommissionScenarios(productId);
+		invalidateProductSaleFields(productId);
+		invalidateProductCommissionReversalRules(productId);
 	};
 
 	const onSubmit = async (data: ProductFormData) => {
@@ -808,18 +869,30 @@ export function ProductForm({
 
 		if (!isEditMode) {
 			let createdProductId: string;
+			const parentId = fixedParentId ?? duplicateParentId ?? null;
 			try {
 				const createdProduct = await createProduct({
 					slug: organization!.slug,
 					data: {
 						name,
 						description: null,
-						parentId: fixedParentId ?? duplicateParentId ?? null,
+						parentId,
 						salesTransactionCategoryId,
 						salesTransactionCostCenterId,
 					},
 				});
 				createdProductId = createdProduct.productId;
+				addProductToProductsCache(queryClient, organization!.slug, {
+					id: createdProductId,
+					name,
+					description: null,
+					parentId,
+					isActive: true,
+					sortOrder: 0,
+					salesTransactionCategoryId,
+					salesTransactionCostCenterId,
+					children: [],
+				});
 			} catch (error) {
 				const message = resolveErrorMessage(normalizeApiError(error));
 				toast.error(message);
@@ -827,22 +900,10 @@ export function ProductForm({
 			}
 
 			try {
-				await saveProductCommissionScenarios(createdProductId, data.scenarios);
-				await saveProductSaleFields(createdProductId, data.saleFields);
-				await saveProductCommissionReversalRules(
-					createdProductId,
-					data.commissionReversalMode,
-					data.commissionReversalTotalPercentage,
-					data.commissionReversalRules,
-				);
-				await invalidateProductCommissionScenarios(createdProductId);
-				await invalidateProductSaleFields(createdProductId);
-				await invalidateProductCommissionReversalRules(createdProductId);
-				await invalidateProducts();
+				await saveProductConfigurations(createdProductId, data);
 				toast.success("Produto cadastrado com sucesso");
 				onSuccess?.();
 			} catch (error) {
-				await invalidateProducts();
 				const message = resolveErrorMessage(normalizeApiError(error));
 				if (isDatabaseSchemaOutdatedMessage(message)) {
 					toast.error(
@@ -874,6 +935,12 @@ export function ProductForm({
 					salesTransactionCostCenterId,
 				},
 			});
+			updateProductInProductsCache(queryClient, organization!.slug, {
+				...initialData,
+				name,
+				salesTransactionCategoryId,
+				salesTransactionCostCenterId,
+			});
 		} catch (error) {
 			const message = resolveErrorMessage(normalizeApiError(error));
 			toast.error(message);
@@ -881,22 +948,10 @@ export function ProductForm({
 		}
 
 		try {
-			await saveProductCommissionScenarios(initialData.id, data.scenarios);
-			await saveProductSaleFields(initialData.id, data.saleFields);
-			await saveProductCommissionReversalRules(
-				initialData.id,
-				data.commissionReversalMode,
-				data.commissionReversalTotalPercentage,
-				data.commissionReversalRules,
-			);
-			await invalidateProductCommissionScenarios(initialData.id);
-			await invalidateProductSaleFields(initialData.id);
-			await invalidateProductCommissionReversalRules(initialData.id);
-			await invalidateProducts();
+			await saveProductConfigurations(initialData.id, data);
 			toast.success("Produto atualizado com sucesso");
 			onSuccess?.();
 		} catch (error) {
-			await invalidateProducts();
 			const message = resolveErrorMessage(normalizeApiError(error));
 			if (isDatabaseSchemaOutdatedMessage(message)) {
 				toast.error(
@@ -955,7 +1010,10 @@ export function ProductForm({
 					>
 						Cenários de comissão
 					</TabsTrigger>
-					<TabsTrigger value="reversal-rules" className="rounded-sm font-normal">
+					<TabsTrigger
+						value="reversal-rules"
+						className="rounded-sm font-normal"
+					>
 						Cenário de estorno
 					</TabsTrigger>
 					<TabsTrigger value="sale-fields" className="rounded-sm font-normal">
@@ -1320,69 +1378,71 @@ export function ProductForm({
 									</p>
 								) : (
 									<div className="space-y-3">
-										{commissionReversalRuleFields.map((ruleField, ruleIndex) => (
-											<div
-												key={ruleField.id}
-												className="grid gap-3 rounded-md border p-3 md:grid-cols-[180px_200px_auto]"
-											>
-												<Field className="gap-1">
-													<FieldLabel>Parcela</FieldLabel>
-													<Input
-														type="number"
-														min={1}
-														step={1}
-														{...register(
-															`commissionReversalRules.${ruleIndex}.installmentNumber`,
-															{
-																valueAsNumber: true,
-															},
-														)}
-													/>
-													<FormFieldError
-														error={
-															errors.commissionReversalRules?.[ruleIndex]
-																?.installmentNumber
-														}
-													/>
-												</Field>
+										{commissionReversalRuleFields.map(
+											(ruleField, ruleIndex) => (
+												<div
+													key={ruleField.id}
+													className="grid gap-3 rounded-md border p-3 md:grid-cols-[180px_200px_auto]"
+												>
+													<Field className="gap-1">
+														<FieldLabel>Parcela</FieldLabel>
+														<Input
+															type="number"
+															min={1}
+															step={1}
+															{...register(
+																`commissionReversalRules.${ruleIndex}.installmentNumber`,
+																{
+																	valueAsNumber: true,
+																},
+															)}
+														/>
+														<FormFieldError
+															error={
+																errors.commissionReversalRules?.[ruleIndex]
+																	?.installmentNumber
+															}
+														/>
+													</Field>
 
-												<Field className="gap-1">
-													<FieldLabel>% Estorno</FieldLabel>
-													<Input
-														type="number"
-														min={0.0001}
-														max={100}
-														step={0.0001}
-														{...register(
-															`commissionReversalRules.${ruleIndex}.percentage`,
-															{
-																valueAsNumber: true,
-															},
-														)}
-													/>
-													<FormFieldError
-														error={
-															errors.commissionReversalRules?.[ruleIndex]
-																?.percentage
-														}
-													/>
-												</Field>
+													<Field className="gap-1">
+														<FieldLabel>% Estorno</FieldLabel>
+														<Input
+															type="number"
+															min={0.0001}
+															max={100}
+															step={0.0001}
+															{...register(
+																`commissionReversalRules.${ruleIndex}.percentage`,
+																{
+																	valueAsNumber: true,
+																},
+															)}
+														/>
+														<FormFieldError
+															error={
+																errors.commissionReversalRules?.[ruleIndex]
+																	?.percentage
+															}
+														/>
+													</Field>
 
-												<div className="flex items-end justify-end">
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														aria-label="Remover regra"
-														onClick={() =>
-															handleRemoveCommissionReversalRule(ruleIndex)
-														}
-													>
-														<Trash2 className="size-4" />
-													</Button>
+													<div className="flex items-end justify-end">
+														<Button
+															type="button"
+															variant="outline"
+															size="icon"
+															aria-label="Remover regra"
+															onClick={() =>
+																handleRemoveCommissionReversalRule(ruleIndex)
+															}
+														>
+															<Trash2 className="size-4" />
+														</Button>
+													</div>
 												</div>
-											</div>
-										))}
+											),
+										)}
 									</div>
 								)}
 							</div>

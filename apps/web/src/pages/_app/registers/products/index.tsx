@@ -21,9 +21,16 @@ function Products() {
 	const { organization } = useApp();
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 
-	const { data, isLoading, isError } = useGetOrganizationsSlugProducts({
-		slug: organization!.slug,
-	});
+	const { data, isLoading, isError } = useGetOrganizationsSlugProducts(
+		{
+			slug: organization!.slug,
+		},
+		{
+			query: {
+				staleTime: 60_000,
+			},
+		},
+	);
 
 	const safeProducts = (data?.products as Product[]) ?? [];
 
@@ -32,14 +39,15 @@ function Products() {
 
 		const query = search.toLowerCase();
 
-		function filterNode<T extends { name: string; description: string | null; children?: T[] }>(
-			node: T,
-		): T | null {
+		function filterNode<
+			T extends { name: string; description: string | null; children?: T[] },
+		>(node: T): T | null {
 			const nodeMatch =
 				node.name.toLowerCase().includes(query) ||
 				node.description?.toLowerCase().includes(query);
 
-			const filteredChildren = node.children?.map(filterNode).filter(isNotNull) ?? [];
+			const filteredChildren =
+				node.children?.map(filterNode).filter(isNotNull) ?? [];
 
 			if (nodeMatch) {
 				return node;
@@ -55,9 +63,7 @@ function Products() {
 			return null;
 		}
 
-		return safeProducts
-			.map(filterNode)
-			.filter(isNotNull);
+		return safeProducts.map(filterNode).filter(isNotNull);
 	}, [safeProducts, search]);
 
 	if (isLoading) return <p>Carregando...</p>;
@@ -68,10 +74,7 @@ function Products() {
 
 	return (
 		<main className="w-full space-y-6">
-			<PageHeader
-				title="Gerenciar Produtos"
-				actions={<CreateProduct />}
-			/>
+			<PageHeader title="Gerenciar Produtos" actions={<CreateProduct />} />
 
 			<div className="relative">
 				<Search className="absolute left-5 top-1/2 size-4 -translate-1/2 text-muted-foreground" />

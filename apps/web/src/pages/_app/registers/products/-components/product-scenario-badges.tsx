@@ -7,17 +7,27 @@ import { cn } from "@/lib/utils";
 interface ProductScenarioBadgesProps {
 	productId: string;
 	className?: string;
+	enabled?: boolean;
 }
 
 export function ProductScenarioBadges({
 	productId,
 	className,
+	enabled = true,
 }: ProductScenarioBadgesProps) {
 	const { organization } = useApp();
-	const { data } = useGetOrganizationsSlugProductsIdCommissionScenarios({
-		slug: organization?.slug ?? "",
-		id: productId,
-	});
+	const { data } = useGetOrganizationsSlugProductsIdCommissionScenarios(
+		{
+			slug: organization?.slug ?? "",
+			id: productId,
+		},
+		{
+			query: {
+				enabled: Boolean(enabled && organization?.slug && productId),
+				staleTime: 5 * 60_000,
+			},
+		},
+	);
 
 	const scenarioNames = useMemo(() => {
 		const names =
