@@ -11,7 +11,7 @@ import {
 import { useDeleteSale, useSale, useSaleNavigation } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
 import { useState } from "react";
-import { SaleForm } from "../-components/sale-form";
+import { SaleForm } from "../-components/sale-form/index";
 import {
 	AlertDialog,
 	AlertDialogAction,

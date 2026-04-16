@@ -1,10 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-	createFileRoute,
-	Link,
-	Navigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import z from "zod";
 import {
@@ -66,7 +62,7 @@ function SignIn() {
 		},
 	});
 
-	const email = watch("email")
+	const email = watch("email");
 
 	useEffect(() => {
 		if (!oauthError) {
@@ -95,24 +91,22 @@ function SignIn() {
 			const message = resolveErrorMessage(apiError);
 
 			if (apiError?.status === 403 && !!email) {
-				console.log("otp")
 				try {
-					await sendEmailOTP({ data: { email } })
+					await sendEmailOTP({ data: { email } });
 
-					toast.success("O código foi enviado para o seu email!")
+					toast.success("O código foi enviado para o seu email!");
 
 					router.navigate({
 						to: "/verify-otp",
-						search: { email: data.email }
+						search: { email: data.email },
 					});
-				} catch (err) {
-					console.log(err)
+				} catch (otpError) {
+					toast.error(resolveErrorMessage(normalizeApiError(otpError)));
 				}
 
 				return;
 			}
 
-			console.error("API Error:", apiError);
 			toast.error(message);
 		}
 

@@ -7,14 +7,13 @@ import { PERMISSION_CATALOG } from "../src/permissions/catalog";
 import { Role } from "../generated/prisma/enums";
 
 const DEFAULT_ADMIN = {
-	name: "Denilson Behenck",
-	email: "denilson@arkogrupo.com",
-	password: "behenck",
+	name: "Admin Finax",
+	email: "admin@finax.local",
 };
 
 const DEFAULT_ORGANIZATION = {
-	name: "Arko Grupo",
-	slug: "arko-grupo",
+	name: "Finax",
+	slug: "finax",
 };
 
 type PrismaContext = Prisma.TransactionClient | typeof prisma;
@@ -43,6 +42,29 @@ async function assertEmptyEntryData() {
 	}
 }
 
+function getSeedAdmin() {
+	const password = process.env.SEED_ADMIN_PASSWORD;
+
+	if (!password) {
+		throw new Error(
+			"SEED_ADMIN_PASSWORD environment variable is required to run the backend seed.",
+		);
+	}
+
+	return {
+		name: process.env.SEED_ADMIN_NAME ?? DEFAULT_ADMIN.name,
+		email: process.env.SEED_ADMIN_EMAIL ?? DEFAULT_ADMIN.email,
+		password,
+	};
+}
+
+function getSeedOrganization() {
+	return {
+		name: process.env.SEED_ORGANIZATION_NAME ?? DEFAULT_ORGANIZATION.name,
+		slug: process.env.SEED_ORGANIZATION_SLUG ?? DEFAULT_ORGANIZATION.slug,
+	};
+}
+
 async function syncPermissions(ctx: PrismaContext) {
 	console.log(
 		`[seed] Syncing ${PERMISSION_CATALOG.length} permissions from catalog...`,
@@ -64,12 +86,14 @@ async function syncPermissions(ctx: PrismaContext) {
 async function createAdminContext(ctx: PrismaContext) {
 	console.log("[seed] Creating admin user and default organization...");
 
-	const passwordHash = await hash(DEFAULT_ADMIN.password, 6);
+	const seedAdmin = getSeedAdmin();
+	const seedOrganization = getSeedOrganization();
+	const passwordHash = await hash(seedAdmin.password, 12);
 
 	const user = await ctx.user.create({
 		data: {
-			name: DEFAULT_ADMIN.name,
-			email: DEFAULT_ADMIN.email,
+			name: seedAdmin.name,
+			email: seedAdmin.email,
 			passwordHash,
 			emailVerifiedAt: new Date(),
 		},
@@ -77,8 +101,8 @@ async function createAdminContext(ctx: PrismaContext) {
 
 	const organization = await ctx.organization.create({
 		data: {
-			name: DEFAULT_ORGANIZATION.name,
-			slug: DEFAULT_ORGANIZATION.slug,
+			name: seedOrganization.name,
+			slug: seedOrganization.slug,
 			ownerId: user.id,
 		},
 	});
@@ -109,7 +133,7 @@ async function main() {
 
 	console.log("[seed] Seed completed successfully.");
 	console.log(
-		`[seed] Admin: ${user.email} | Password: ${DEFAULT_ADMIN.password} | Organization: ${organization.slug}`,
+		`[seed] Admin: ${user.email} | Organization: ${organization.slug}`,
 	);
 }
 

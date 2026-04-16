@@ -164,6 +164,32 @@ export const ProductCommissionReversalMode = {
 export type ProductCommissionReversalMode = (typeof ProductCommissionReversalMode)[keyof typeof ProductCommissionReversalMode]
 
 
+export const ProductBonusMetric = {
+  SALE_TOTAL: 'SALE_TOTAL'
+} as const
+
+export type ProductBonusMetric = (typeof ProductBonusMetric)[keyof typeof ProductBonusMetric]
+
+
+export const ProductBonusPeriodFrequency = {
+  MONTHLY: 'MONTHLY',
+  SEMIANNUAL: 'SEMIANNUAL',
+  ANNUAL: 'ANNUAL'
+} as const
+
+export type ProductBonusPeriodFrequency = (typeof ProductBonusPeriodFrequency)[keyof typeof ProductBonusPeriodFrequency]
+
+
+export const ProductBonusParticipantType = {
+  COMPANY: 'COMPANY',
+  PARTNER: 'PARTNER',
+  SELLER: 'SELLER',
+  SUPERVISOR: 'SUPERVISOR'
+} as const
+
+export type ProductBonusParticipantType = (typeof ProductBonusParticipantType)[keyof typeof ProductBonusParticipantType]
+
+
 export const SaleDynamicFieldType = {
   TEXT: 'TEXT',
   NUMBER: 'NUMBER',
@@ -233,7 +259,8 @@ export type SaleResponsibleType = (typeof SaleResponsibleType)[keyof typeof Sale
 
 export const SaleCommissionSourceType = {
   PULLED: 'PULLED',
-  MANUAL: 'MANUAL'
+  MANUAL: 'MANUAL',
+  BONUS: 'BONUS'
 } as const
 
 export type SaleCommissionSourceType = (typeof SaleCommissionSourceType)[keyof typeof SaleCommissionSourceType]

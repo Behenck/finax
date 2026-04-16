@@ -965,14 +965,6 @@ export type EnumSaleCommissionSourceTypeFieldUpdateOperationsInput = {
   set?: $Enums.SaleCommissionSourceType
 }
 
-export type EnumSaleCommissionRecipientTypeFieldUpdateOperationsInput = {
-  set?: $Enums.SaleCommissionRecipientType
-}
-
-export type EnumSaleCommissionDirectionFieldUpdateOperationsInput = {
-  set?: $Enums.SaleCommissionDirection
-}
-
 export type EnumSaleCommissionCalculationBaseFieldUpdateOperationsInput = {
   set?: $Enums.SaleCommissionCalculationBase
 }

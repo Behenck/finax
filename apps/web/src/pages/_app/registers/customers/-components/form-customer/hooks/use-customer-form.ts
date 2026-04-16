@@ -1,106 +1,127 @@
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { customerSchema, type CustomerFormInput, type CustomerFormOutput } from "@/schemas/customer-schema"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  getOrganizationsSlugCustomersQueryKey,
-  usePostOrganizationsSlugCustomers,
-  usePutOrganizationsSlugCustomersCustomerid,
-  type GetOrganizationsSlugCustomersCustomerid200,
-  type PostOrganizationsSlugCustomersMutationRequest,
-} from "@/http/generated"
-import { useApp } from "@/context/app-context"
-import { toast } from "sonner"
-import { router } from "@/router"
-import { buildCustomerDefaultValues, mapCustomerFormToRequest } from "../-mappers/customer-mapper"
-import { useQueryClient } from '@tanstack/react-query';
+	customerSchema,
+	type CustomerFormInput,
+	type CustomerFormOutput,
+} from "@/schemas/customer-schema";
+import {
+	getOrganizationsSlugCustomersQueryKey,
+	usePostOrganizationsSlugCustomers,
+	usePutOrganizationsSlugCustomersCustomerid,
+	type GetOrganizationsSlugCustomersCustomerid200,
+	type PostOrganizationsSlugCustomersMutationRequest,
+} from "@/http/generated";
+import { useApp } from "@/context/app-context";
+import { toast } from "sonner";
+import { router } from "@/router";
+import {
+	buildCustomerDefaultValues,
+	mapCustomerFormToRequest,
+} from "../-mappers/customer-mapper";
+import { useQueryClient } from "@tanstack/react-query";
+import { normalizeApiError } from "@/errors/api-error";
+import { resolveErrorMessage } from "@/errors";
 
 interface UseCustomerFormProps {
-  customer?: GetOrganizationsSlugCustomersCustomerid200["customer"] & {
-    responsible?: {
-      type: "SELLER" | "PARTNER"
-      id: string
-      name: string
-    } | null
-  }
-  type: "CREATE" | "UPDATE"
-  onSuccess?: () => void | Promise<void>
+	customer?: GetOrganizationsSlugCustomersCustomerid200["customer"] & {
+		responsible?: {
+			type: "SELLER" | "PARTNER";
+			id: string;
+			name: string;
+		} | null;
+	};
+	type: "CREATE" | "UPDATE";
+	onSuccess?: () => void | Promise<void>;
 }
 
-export function useCustomerForm({ customer, type, onSuccess }: UseCustomerFormProps) {
-  const { organization } = useApp()
-  const queryClient = useQueryClient()
+export function useCustomerForm({
+	customer,
+	type,
+	onSuccess,
+}: UseCustomerFormProps) {
+	const { organization } = useApp();
+	const queryClient = useQueryClient();
 
-  const { mutateAsync: createCustomer } =
-    usePostOrganizationsSlugCustomers()
+	const { mutateAsync: createCustomer } = usePostOrganizationsSlugCustomers();
 
-  const { mutateAsync: updateCustomer } =
-    usePutOrganizationsSlugCustomersCustomerid()
+	const { mutateAsync: updateCustomer } =
+		usePutOrganizationsSlugCustomersCustomerid();
 
-  const form = useForm<CustomerFormInput, unknown, CustomerFormOutput>({
-    resolver: zodResolver(customerSchema),
-    defaultValues: buildCustomerDefaultValues(customer),
-  })
+	const form = useForm<CustomerFormInput, unknown, CustomerFormOutput>({
+		resolver: zodResolver(customerSchema),
+		defaultValues: buildCustomerDefaultValues(customer),
+	});
 
-  const personType = form.watch("personType")
+	const personType = form.watch("personType");
 
-  async function onSubmit(data: CustomerFormOutput) {
-    try {
-      if (type === "CREATE") {
-        const response = await createCustomer({
-          slug: organization!.slug,
-          data: mapCustomerFormToRequest(data) as PostOrganizationsSlugCustomersMutationRequest,
-        }, {
-          onSuccess: async () => {
-            await queryClient.invalidateQueries({
-              queryKey: getOrganizationsSlugCustomersQueryKey({
-                slug: organization!.slug,
-              }),
-            })
-          },
-        });
+	async function onSubmit(data: CustomerFormOutput) {
+		try {
+			if (type === "CREATE") {
+				const response = await createCustomer(
+					{
+						slug: organization!.slug,
+						data: mapCustomerFormToRequest(
+							data,
+						) as PostOrganizationsSlugCustomersMutationRequest,
+					},
+					{
+						onSuccess: async () => {
+							await queryClient.invalidateQueries({
+								queryKey: getOrganizationsSlugCustomersQueryKey({
+									slug: organization!.slug,
+								}),
+							});
+						},
+					},
+				);
 
-        toast.success("Cliente cadastrado com sucesso")
+				toast.success("Cliente cadastrado com sucesso");
 
-        form.reset()
+				form.reset();
 
-        if (onSuccess) {
-          await onSuccess()
-          return
-        }
+				if (onSuccess) {
+					await onSuccess();
+					return;
+				}
 
-        router.navigate({
-          to: "/registers/customers/update",
-          search: { customerId: response.customerId },
-        })
+				router.navigate({
+					to: "/registers/customers/update",
+					search: { customerId: response.customerId },
+				});
 
-        return
-      }
+				return;
+			}
 
-      await updateCustomer({
-        slug: organization!.slug,
-        customerId: customer!.id,
-        data: mapCustomerFormToRequest(data) as PostOrganizationsSlugCustomersMutationRequest,
-      }, {
-        onSuccess: async () => {
-          await queryClient.invalidateQueries({
-            queryKey: getOrganizationsSlugCustomersQueryKey({
-              slug: organization!.slug,
-            }),
-          })
-        },
-      });
+			await updateCustomer(
+				{
+					slug: organization!.slug,
+					customerId: customer!.id,
+					data: mapCustomerFormToRequest(
+						data,
+					) as PostOrganizationsSlugCustomersMutationRequest,
+				},
+				{
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: getOrganizationsSlugCustomersQueryKey({
+								slug: organization!.slug,
+							}),
+						});
+					},
+				},
+			);
 
-      toast.success("Cliente atualizado com sucesso")
-      await onSuccess?.()
-    } catch (err) {
-      console.log(err)
-      toast.error("Erro ao salvar cliente")
-    }
-  }
+			toast.success("Cliente atualizado com sucesso");
+			await onSuccess?.();
+		} catch (err) {
+			toast.error(resolveErrorMessage(normalizeApiError(err)));
+		}
+	}
 
-  return {
-    form,
-    personType,
-    onSubmit,
-  }
+	return {
+		form,
+		personType,
+		onSubmit,
+	};
 }

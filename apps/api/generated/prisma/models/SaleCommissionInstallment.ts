@@ -631,10 +631,6 @@ export type SaleCommissionInstallmentUncheckedCreateNestedManyWithoutOriginInsta
   connect?: Prisma.SaleCommissionInstallmentWhereUniqueInput | Prisma.SaleCommissionInstallmentWhereUniqueInput[]
 }
 
-export type EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput = {
-  set?: $Enums.SaleCommissionInstallmentStatus
-}
-
 export type NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput = {
   set?: $Enums.SaleCommissionInstallmentStatus | null
 }

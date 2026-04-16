@@ -1,4 +1,5 @@
 import {
+	ProductBonusPeriodFrequency,
 	SaleCommissionCalculationBase,
 	SaleCommissionDirection,
 	SaleCommissionInstallmentStatus,
@@ -118,6 +119,9 @@ export const SaleCommissionCalculationBaseSchema = z.enum(
 );
 export const SaleCommissionInstallmentStatusSchema = z.enum(
 	SaleCommissionInstallmentStatus,
+);
+export const ProductBonusPeriodFrequencySchema = z.enum(
+	ProductBonusPeriodFrequency,
 );
 
 export const SaleCommissionInstallmentInputSchema = z
@@ -949,6 +953,100 @@ export const PatchSaleCommissionInstallmentBodySchema = z
 		}
 	});
 
+export const PostBonusSettlementsBodySchema = z
+	.object({
+		productId: z.uuid(),
+		periodFrequency: ProductBonusPeriodFrequencySchema,
+		periodYear: z.number().int().min(2000).max(2100),
+		periodIndex: z.number().int().min(1).max(12),
+		settledAt: SaleDateInputSchema.optional(),
+	})
+	.strict()
+	.superRefine((value, ctx) => {
+		if (
+			value.periodFrequency === ProductBonusPeriodFrequency.ANNUAL &&
+			value.periodIndex !== 1
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["periodIndex"],
+				message: "Annual bonus period index must be 1",
+			});
+		}
+
+		if (
+			value.periodFrequency === ProductBonusPeriodFrequency.SEMIANNUAL &&
+			value.periodIndex > 2
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["periodIndex"],
+				message: "Semiannual bonus period index must be between 1 and 2",
+			});
+		}
+	});
+
+const BonusSettlementProductSchema = z.object({
+	id: z.uuid(),
+	name: z.string(),
+});
+
+const BonusSettlementWinnerInstallmentSchema = z.object({
+	installmentNumber: z.number().int().min(1),
+	percentage: CommissionPercentageSchema,
+	amount: z.number().int(),
+	expectedPaymentDate: z.date(),
+});
+
+const BonusSettlementWinnerSchema = z.object({
+	scenarioId: z.uuid(),
+	scenarioName: z.string(),
+	participantType: z.enum(["COMPANY", "PARTNER", "SELLER", "SUPERVISOR"]),
+	recipientType: SaleCommissionRecipientTypeSchema,
+	beneficiaryLabel: z.string(),
+	achievedAmount: z.number().int(),
+	targetAmount: z.number().int(),
+	payoutEnabled: z.boolean(),
+	payoutAmount: z.number().int(),
+	payoutTotalPercentage: CommissionPercentageSchema,
+	payoutInstallments: z.array(BonusSettlementWinnerInstallmentSchema),
+});
+
+export const PostBonusSettlementsPreviewResponseSchema = z.object({
+	settlementId: z.uuid().nullable(),
+	isSettled: z.boolean(),
+	product: BonusSettlementProductSchema,
+	periodFrequency: ProductBonusPeriodFrequencySchema,
+	periodYear: z.number().int(),
+	periodIndex: z.number().int(),
+	periodStart: z.date(),
+	periodEnd: z.date(),
+	settledAt: z.date(),
+	salesCount: z.number().int().nonnegative(),
+	salesTotalAmount: z.number().int().nonnegative(),
+	scenariosCount: z.number().int().nonnegative(),
+	winnersCount: z.number().int().nonnegative(),
+	installmentsCount: z.number().int().nonnegative(),
+	winners: z.array(BonusSettlementWinnerSchema),
+});
+
+export const PostBonusSettlementsResponseSchema = z.object({
+	settlementId: z.uuid(),
+	winnersCount: z.number().int().nonnegative(),
+	resultsCount: z.number().int().nonnegative(),
+	installmentsCount: z.number().int().nonnegative(),
+});
+
+export const PatchBonusInstallmentStatusBodySchema = z
+	.object({
+		status: z.enum([
+			SaleCommissionInstallmentStatus.PAID,
+			SaleCommissionInstallmentStatus.CANCELED,
+		] as const),
+		paymentDate: SaleDateInputSchema.optional(),
+	})
+	.strict();
+
 const NamedEntitySchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
@@ -1108,6 +1206,12 @@ export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 >;
 export type PatchSaleCommissionInstallmentBody = z.infer<
 	typeof PatchSaleCommissionInstallmentBodySchema
+>;
+export type PostBonusSettlementsBody = z.infer<
+	typeof PostBonusSettlementsBodySchema
+>;
+export type PatchBonusInstallmentStatusBody = z.infer<
+	typeof PatchBonusInstallmentStatusBodySchema
 >;
 export type SaleDelinquencySummary = z.infer<
 	typeof SaleDelinquencySummarySchema

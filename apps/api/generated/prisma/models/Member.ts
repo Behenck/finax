@@ -213,6 +213,9 @@ export type MemberWhereInput = {
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
   permissionOverrides?: Prisma.MemberPermissionOverrideListRelationFilter
   permissionAuditTargets?: Prisma.PermissionAuditLogListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -231,6 +234,9 @@ export type MemberOrderByWithRelationInput = {
   saleCommissions?: Prisma.SaleCommissionOrderByRelationAggregateInput
   permissionOverrides?: Prisma.MemberPermissionOverrideOrderByRelationAggregateInput
   permissionAuditTargets?: Prisma.PermissionAuditLogOrderByRelationAggregateInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantOrderByRelationAggregateInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultOrderByRelationAggregateInput
+  bonusInstallments?: Prisma.BonusInstallmentOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +259,9 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
   permissionOverrides?: Prisma.MemberPermissionOverrideListRelationFilter
   permissionAuditTargets?: Prisma.PermissionAuditLogListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }, "id" | "organizationId_userId">
 
 export type MemberOrderByWithAggregationInput = {
@@ -297,6 +306,9 @@ export type MemberCreateInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -313,6 +325,9 @@ export type MemberUncheckedCreateInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUpdateInput = {
@@ -329,6 +344,9 @@ export type MemberUpdateInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -345,6 +363,9 @@ export type MemberUncheckedUpdateInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -568,6 +589,54 @@ export type MemberUpdateOneWithoutPermissionAuditTargetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutPermissionAuditTargetsInput, Prisma.MemberUpdateWithoutPermissionAuditTargetsInput>, Prisma.MemberUncheckedUpdateWithoutPermissionAuditTargetsInput>
 }
 
+export type MemberCreateNestedOneWithoutProductBonusParticipantsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProductBonusParticipantsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutProductBonusParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProductBonusParticipantsInput
+  upsert?: Prisma.MemberUpsertWithoutProductBonusParticipantsInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProductBonusParticipantsInput, Prisma.MemberUpdateWithoutProductBonusParticipantsInput>, Prisma.MemberUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type MemberCreateNestedOneWithoutBonusSettlementResultsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutBonusSettlementResultsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutBonusSettlementResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutBonusSettlementResultsInput
+  upsert?: Prisma.MemberUpsertWithoutBonusSettlementResultsInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutBonusSettlementResultsInput, Prisma.MemberUpdateWithoutBonusSettlementResultsInput>, Prisma.MemberUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type MemberCreateNestedOneWithoutBonusInstallmentsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutBonusInstallmentsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutBonusInstallmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutBonusInstallmentsInput
+  upsert?: Prisma.MemberUpsertWithoutBonusInstallmentsInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutBonusInstallmentsInput, Prisma.MemberUpdateWithoutBonusInstallmentsInput>, Prisma.MemberUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
 export type MemberCreateNestedOneWithoutProductCommissionsInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutProductCommissionsInput, Prisma.MemberUncheckedCreateWithoutProductCommissionsInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProductCommissionsInput
@@ -613,6 +682,9 @@ export type MemberCreateWithoutUserInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
@@ -628,6 +700,9 @@ export type MemberUncheckedCreateWithoutUserInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -683,6 +758,9 @@ export type MemberCreateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
@@ -698,6 +776,9 @@ export type MemberUncheckedCreateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutMemberCompanyAccessesInput = {
@@ -729,6 +810,9 @@ export type MemberUpdateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
@@ -744,6 +828,9 @@ export type MemberUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateWithoutOrganizationInput = {
@@ -759,6 +846,9 @@ export type MemberCreateWithoutOrganizationInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutOrganizationInput = {
@@ -774,6 +864,9 @@ export type MemberUncheckedCreateWithoutOrganizationInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutOrganizationInput = {
@@ -815,6 +908,9 @@ export type MemberCreateWithoutPermissionOverridesInput = {
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutPermissionOverridesInput = {
@@ -830,6 +926,9 @@ export type MemberUncheckedCreateWithoutPermissionOverridesInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutPermissionOverridesInput = {
@@ -861,6 +960,9 @@ export type MemberUpdateWithoutPermissionOverridesInput = {
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutPermissionOverridesInput = {
@@ -876,6 +978,9 @@ export type MemberUncheckedUpdateWithoutPermissionOverridesInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateWithoutPermissionAuditTargetsInput = {
@@ -891,6 +996,9 @@ export type MemberCreateWithoutPermissionAuditTargetsInput = {
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutPermissionAuditTargetsInput = {
@@ -906,6 +1014,9 @@ export type MemberUncheckedCreateWithoutPermissionAuditTargetsInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutPermissionAuditTargetsInput = {
@@ -937,6 +1048,9 @@ export type MemberUpdateWithoutPermissionAuditTargetsInput = {
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutPermissionAuditTargetsInput = {
@@ -952,6 +1066,273 @@ export type MemberUncheckedUpdateWithoutPermissionAuditTargetsInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberUncheckedCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberCreateOrConnectWithoutProductBonusParticipantsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedCreateWithoutProductBonusParticipantsInput>
+}
+
+export type MemberUpsertWithoutProductBonusParticipantsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedUpdateWithoutProductBonusParticipantsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedCreateWithoutProductBonusParticipantsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutProductBonusParticipantsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutProductBonusParticipantsInput, Prisma.MemberUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type MemberUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberUncheckedCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberCreateOrConnectWithoutBonusSettlementResultsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedCreateWithoutBonusSettlementResultsInput>
+}
+
+export type MemberUpsertWithoutBonusSettlementResultsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedUpdateWithoutBonusSettlementResultsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedCreateWithoutBonusSettlementResultsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutBonusSettlementResultsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutBonusSettlementResultsInput, Prisma.MemberUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type MemberUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMember_onInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberUncheckedCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  role?: $Enums.Role
+  customersScope?: $Enums.MemberDataScope
+  salesScope?: $Enums.MemberDataScope
+  commissionsScope?: $Enums.MemberDataScope
+  partnersScope?: $Enums.MemberDataScope
+  organizationId: string
+  userId: string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutMemberInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+}
+
+export type MemberCreateOrConnectWithoutBonusInstallmentsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedCreateWithoutBonusInstallmentsInput>
+}
+
+export type MemberUpsertWithoutBonusInstallmentsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedUpdateWithoutBonusInstallmentsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedCreateWithoutBonusInstallmentsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutBonusInstallmentsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutBonusInstallmentsInput, Prisma.MemberUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
+export type MemberUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMember_onNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  customersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  salesScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  commissionsScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  partnersScope?: Prisma.EnumMemberDataScopeFieldUpdateOperationsInput | $Enums.MemberDataScope
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutMemberNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
+  permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateWithoutProductCommissionsInput = {
@@ -967,6 +1348,9 @@ export type MemberCreateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutProductCommissionsInput = {
@@ -982,6 +1366,9 @@ export type MemberUncheckedCreateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutProductCommissionsInput = {
@@ -1013,6 +1400,9 @@ export type MemberUpdateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
@@ -1028,6 +1418,9 @@ export type MemberUncheckedUpdateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateWithoutSaleCommissionsInput = {
@@ -1043,6 +1436,9 @@ export type MemberCreateWithoutSaleCommissionsInput = {
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberUncheckedCreateWithoutSaleCommissionsInput = {
@@ -1058,6 +1454,9 @@ export type MemberUncheckedCreateWithoutSaleCommissionsInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSupervisorInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedCreateNestedManyWithoutMemberInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedCreateNestedManyWithoutTargetMemberInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSupervisorInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySupervisorInput
 }
 
 export type MemberCreateOrConnectWithoutSaleCommissionsInput = {
@@ -1089,6 +1488,9 @@ export type MemberUpdateWithoutSaleCommissionsInput = {
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutSaleCommissionsInput = {
@@ -1104,6 +1506,9 @@ export type MemberUncheckedUpdateWithoutSaleCommissionsInput = {
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -1129,6 +1534,9 @@ export type MemberUpdateWithoutUserInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
@@ -1144,6 +1552,9 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
@@ -1179,6 +1590,9 @@ export type MemberUpdateWithoutOrganizationInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutOrganizationInput = {
@@ -1194,6 +1608,9 @@ export type MemberUncheckedUpdateWithoutOrganizationInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
   permissionOverrides?: Prisma.MemberPermissionOverrideUncheckedUpdateManyWithoutMemberNestedInput
   permissionAuditTargets?: Prisma.PermissionAuditLogUncheckedUpdateManyWithoutTargetMemberNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSupervisorNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySupervisorNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1217,6 +1634,9 @@ export type MemberCountOutputType = {
   saleCommissions: number
   permissionOverrides: number
   permissionAuditTargets: number
+  productBonusParticipants: number
+  bonusSettlementResults: number
+  bonusInstallments: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1225,6 +1645,9 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   saleCommissions?: boolean | MemberCountOutputTypeCountSaleCommissionsArgs
   permissionOverrides?: boolean | MemberCountOutputTypeCountPermissionOverridesArgs
   permissionAuditTargets?: boolean | MemberCountOutputTypeCountPermissionAuditTargetsArgs
+  productBonusParticipants?: boolean | MemberCountOutputTypeCountProductBonusParticipantsArgs
+  bonusSettlementResults?: boolean | MemberCountOutputTypeCountBonusSettlementResultsArgs
+  bonusInstallments?: boolean | MemberCountOutputTypeCountBonusInstallmentsArgs
 }
 
 /**
@@ -1272,6 +1695,27 @@ export type MemberCountOutputTypeCountPermissionAuditTargetsArgs<ExtArgs extends
   where?: Prisma.PermissionAuditLogWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountProductBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+}
+
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountBonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusSettlementResultWhereInput
+}
+
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountBonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusInstallmentWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1289,6 +1733,9 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
   permissionOverrides?: boolean | Prisma.Member$permissionOverridesArgs<ExtArgs>
   permissionAuditTargets?: boolean | Prisma.Member$permissionAuditTargetsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Member$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Member$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Member$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -1338,6 +1785,9 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   saleCommissions?: boolean | Prisma.Member$saleCommissionsArgs<ExtArgs>
   permissionOverrides?: boolean | Prisma.Member$permissionOverridesArgs<ExtArgs>
   permissionAuditTargets?: boolean | Prisma.Member$permissionAuditTargetsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Member$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Member$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Member$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1359,6 +1809,9 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     saleCommissions: Prisma.$SaleCommissionPayload<ExtArgs>[]
     permissionOverrides: Prisma.$MemberPermissionOverridePayload<ExtArgs>[]
     permissionAuditTargets: Prisma.$PermissionAuditLogPayload<ExtArgs>[]
+    productBonusParticipants: Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>[]
+    bonusSettlementResults: Prisma.$BonusSettlementResultPayload<ExtArgs>[]
+    bonusInstallments: Prisma.$BonusInstallmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1770,6 +2223,9 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   saleCommissions<T extends Prisma.Member$saleCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$saleCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissionOverrides<T extends Prisma.Member$permissionOverridesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$permissionOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPermissionOverridePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissionAuditTargets<T extends Prisma.Member$permissionAuditTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$permissionAuditTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productBonusParticipants<T extends Prisma.Member$productBonusParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$productBonusParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusSettlementResults<T extends Prisma.Member$bonusSettlementResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$bonusSettlementResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusSettlementResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusInstallments<T extends Prisma.Member$bonusInstallmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$bonusInstallmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusInstallmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2320,6 +2776,78 @@ export type Member$permissionAuditTargetsArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.PermissionAuditLogScalarFieldEnum | Prisma.PermissionAuditLogScalarFieldEnum[]
+}
+
+/**
+ * Member.productBonusParticipants
+ */
+export type Member$productBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductBonusScenarioParticipant
+   */
+  select?: Prisma.ProductBonusScenarioParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductBonusScenarioParticipant
+   */
+  omit?: Prisma.ProductBonusScenarioParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductBonusScenarioParticipantInclude<ExtArgs> | null
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+  orderBy?: Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput | Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.ProductBonusScenarioParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductBonusScenarioParticipantScalarFieldEnum | Prisma.ProductBonusScenarioParticipantScalarFieldEnum[]
+}
+
+/**
+ * Member.bonusSettlementResults
+ */
+export type Member$bonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusSettlementResult
+   */
+  select?: Prisma.BonusSettlementResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusSettlementResult
+   */
+  omit?: Prisma.BonusSettlementResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusSettlementResultInclude<ExtArgs> | null
+  where?: Prisma.BonusSettlementResultWhereInput
+  orderBy?: Prisma.BonusSettlementResultOrderByWithRelationInput | Prisma.BonusSettlementResultOrderByWithRelationInput[]
+  cursor?: Prisma.BonusSettlementResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusSettlementResultScalarFieldEnum | Prisma.BonusSettlementResultScalarFieldEnum[]
+}
+
+/**
+ * Member.bonusInstallments
+ */
+export type Member$bonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusInstallment
+   */
+  select?: Prisma.BonusInstallmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusInstallment
+   */
+  omit?: Prisma.BonusInstallmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusInstallmentInclude<ExtArgs> | null
+  where?: Prisma.BonusInstallmentWhereInput
+  orderBy?: Prisma.BonusInstallmentOrderByWithRelationInput | Prisma.BonusInstallmentOrderByWithRelationInput[]
+  cursor?: Prisma.BonusInstallmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusInstallmentScalarFieldEnum | Prisma.BonusInstallmentScalarFieldEnum[]
 }
 
 /**

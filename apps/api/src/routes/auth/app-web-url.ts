@@ -1,6 +1,6 @@
 import type { FastifyRequest } from "fastify";
 
-function normalizeOrigin(input?: string | null) {
+export function normalizeOrigin(input?: string | null) {
 	if (!input) {
 		return null;
 	}

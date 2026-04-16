@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import { postSessionsPassword } from "@/http/generated";
+import { setAuthToken } from "@/lib/auth-token";
 
 type SignInInput = {
 	email: string;
@@ -17,7 +17,7 @@ export function useSignIn() {
 		},
 
 		onSuccess: async (data) => {
-			Cookies.set("token", data.accessToken);
+			setAuthToken(data.accessToken);
 
 			await queryClient.invalidateQueries({
 				queryKey: ["session"],

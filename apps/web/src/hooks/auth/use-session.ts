@@ -1,10 +1,10 @@
 import type { GetMe200 } from "@/http/generated";
 import { api } from "@/lib/axios";
+import { getAuthToken } from "@/lib/auth-token";
 import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 
 export function useSession() {
-	const token = Cookies.get("token");
+	const token = getAuthToken();
 
 	return useQuery<GetMe200>({
 		queryKey: ["session"],

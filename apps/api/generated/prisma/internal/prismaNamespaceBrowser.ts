@@ -75,6 +75,12 @@ export const ModelName = {
   Seller: 'Seller',
   Product: 'Product',
   ProductCommissionReversalRule: 'ProductCommissionReversalRule',
+  ProductBonusScenario: 'ProductBonusScenario',
+  ProductBonusScenarioParticipant: 'ProductBonusScenarioParticipant',
+  ProductBonusScenarioPayoutInstallment: 'ProductBonusScenarioPayoutInstallment',
+  BonusSettlement: 'BonusSettlement',
+  BonusSettlementResult: 'BonusSettlementResult',
+  BonusInstallment: 'BonusInstallment',
   ProductSaleField: 'ProductSaleField',
   ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
@@ -488,6 +494,119 @@ export const ProductCommissionReversalRuleScalarFieldEnum = {
 } as const
 
 export type ProductCommissionReversalRuleScalarFieldEnum = (typeof ProductCommissionReversalRuleScalarFieldEnum)[keyof typeof ProductCommissionReversalRuleScalarFieldEnum]
+
+
+export const ProductBonusScenarioScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  metric: 'metric',
+  targetAmount: 'targetAmount',
+  periodFrequency: 'periodFrequency',
+  payoutEnabled: 'payoutEnabled',
+  payoutTotalPercentage: 'payoutTotalPercentage',
+  payoutDueDay: 'payoutDueDay',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductBonusScenarioScalarFieldEnum = (typeof ProductBonusScenarioScalarFieldEnum)[keyof typeof ProductBonusScenarioScalarFieldEnum]
+
+
+export const ProductBonusScenarioParticipantScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  type: 'type',
+  companyId: 'companyId',
+  partnerId: 'partnerId',
+  sellerId: 'sellerId',
+  supervisorId: 'supervisorId',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductBonusScenarioParticipantScalarFieldEnum = (typeof ProductBonusScenarioParticipantScalarFieldEnum)[keyof typeof ProductBonusScenarioParticipantScalarFieldEnum]
+
+
+export const ProductBonusScenarioPayoutInstallmentScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductBonusScenarioPayoutInstallmentScalarFieldEnum = (typeof ProductBonusScenarioPayoutInstallmentScalarFieldEnum)[keyof typeof ProductBonusScenarioPayoutInstallmentScalarFieldEnum]
+
+
+export const BonusSettlementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  productId: 'productId',
+  periodFrequency: 'periodFrequency',
+  periodYear: 'periodYear',
+  periodIndex: 'periodIndex',
+  settledById: 'settledById',
+  settledAt: 'settledAt',
+  winnersCount: 'winnersCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BonusSettlementScalarFieldEnum = (typeof BonusSettlementScalarFieldEnum)[keyof typeof BonusSettlementScalarFieldEnum]
+
+
+export const BonusSettlementResultScalarFieldEnum = {
+  id: 'id',
+  settlementId: 'settlementId',
+  scenarioId: 'scenarioId',
+  participantType: 'participantType',
+  beneficiaryCompanyId: 'beneficiaryCompanyId',
+  beneficiaryPartnerId: 'beneficiaryPartnerId',
+  beneficiarySellerId: 'beneficiarySellerId',
+  beneficiarySupervisorId: 'beneficiarySupervisorId',
+  beneficiaryLabel: 'beneficiaryLabel',
+  achievedAmount: 'achievedAmount',
+  targetAmount: 'targetAmount',
+  payoutEnabled: 'payoutEnabled',
+  payoutAmount: 'payoutAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type BonusSettlementResultScalarFieldEnum = (typeof BonusSettlementResultScalarFieldEnum)[keyof typeof BonusSettlementResultScalarFieldEnum]
+
+
+export const BonusInstallmentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  settlementId: 'settlementId',
+  resultId: 'resultId',
+  scenarioId: 'scenarioId',
+  productId: 'productId',
+  scenarioName: 'scenarioName',
+  periodFrequency: 'periodFrequency',
+  periodYear: 'periodYear',
+  periodIndex: 'periodIndex',
+  recipientType: 'recipientType',
+  direction: 'direction',
+  beneficiaryCompanyId: 'beneficiaryCompanyId',
+  beneficiaryPartnerId: 'beneficiaryPartnerId',
+  beneficiarySellerId: 'beneficiarySellerId',
+  beneficiarySupervisorId: 'beneficiarySupervisorId',
+  beneficiaryLabel: 'beneficiaryLabel',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  amount: 'amount',
+  status: 'status',
+  expectedPaymentDate: 'expectedPaymentDate',
+  paymentDate: 'paymentDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BonusInstallmentScalarFieldEnum = (typeof BonusInstallmentScalarFieldEnum)[keyof typeof BonusInstallmentScalarFieldEnum]
 
 
 export const ProductSaleFieldScalarFieldEnum = {

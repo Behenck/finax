@@ -141,7 +141,7 @@ export function CategoryForm({
 		usePutOrganizationsSlugCategoriesId();
 
 	const { handleSubmit, control, formState } = useForm<CreateCategoryType>({
-		resolver: zodResolver(categorySchema as any),
+		resolver: zodResolver(categorySchema),
 		defaultValues: {
 			name: initialData?.name ?? "",
 			code: initialData?.code ?? "",

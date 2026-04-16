@@ -19,25 +19,26 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  tokens              Token[]
-  accounts            Account[]
-  invites             Invite[]
-  member_on           Member[]
-  refreshTokens       RefreshToken[]
-  owns_organizations  Organization[]
-  createdTransactions Transaction[]  @relation("TransactionCreatedBy")
-  employees           Employee[]
-  recurrencesCreated  Recurrence[]   @relation("RecurrenceCreatedBy")
-  createdSales        Sale[]         @relation("SaleCreatedBy")
-  saleHistoryEvents   SaleHistoryEvent[] @relation("SaleHistoryActor")
-  createdSaleDelinquencies SaleDelinquency[] @relation("SaleDelinquencyCreatedBy")
-  resolvedSaleDelinquencies SaleDelinquency[] @relation("SaleDelinquencyResolvedBy")
-  saleImportTemplates SaleImportTemplate[] @relation("SaleImportTemplateCreatedBy")
-  saleImportAudits    SaleImportAudit[]    @relation("SaleImportAuditActor")
-  supervisedPartners  Partner[]      @relation("PartnerSupervisor")
-  linkedPartners      Partner[]      @relation("PartnerUser")
-  linkedSellers       Seller[]       @relation("SellerUser")
-  permissionAuditLogs PermissionAuditLog[] @relation("PermissionAuditActor")
+  tokens                    Token[]
+  accounts                  Account[]
+  invites                   Invite[]
+  member_on                 Member[]
+  refreshTokens             RefreshToken[]
+  owns_organizations        Organization[]
+  createdTransactions       Transaction[]        @relation("TransactionCreatedBy")
+  employees                 Employee[]
+  recurrencesCreated        Recurrence[]         @relation("RecurrenceCreatedBy")
+  createdSales              Sale[]               @relation("SaleCreatedBy")
+  saleHistoryEvents         SaleHistoryEvent[]   @relation("SaleHistoryActor")
+  createdSaleDelinquencies  SaleDelinquency[]    @relation("SaleDelinquencyCreatedBy")
+  resolvedSaleDelinquencies SaleDelinquency[]    @relation("SaleDelinquencyResolvedBy")
+  saleImportTemplates       SaleImportTemplate[] @relation("SaleImportTemplateCreatedBy")
+  saleImportAudits          SaleImportAudit[]    @relation("SaleImportAuditActor")
+  supervisedPartners        Partner[]            @relation("PartnerSupervisor")
+  linkedPartners            Partner[]            @relation("PartnerUser")
+  linkedSellers             Seller[]             @relation("SellerUser")
+  permissionAuditLogs       PermissionAuditLog[] @relation("PermissionAuditActor")
+  settledBonusSettlements   BonusSettlement[]    @relation("BonusSettlementSettledBy")
 
   @@map("users")
 }
@@ -142,21 +143,24 @@ model Invite {
 }
 
 model Member {
-  id                    String                @id @default(uuid())
-  role                  Role                  @default(MEMBER)
-  customersScope        MemberDataScope       @default(ORGANIZATION_ALL) @map("customers_scope")
-  salesScope            MemberDataScope       @default(ORGANIZATION_ALL) @map("sales_scope")
-  commissionsScope      MemberDataScope       @default(ORGANIZATION_ALL) @map("commissions_scope")
-  partnersScope         MemberDataScope       @default(ORGANIZATION_ALL) @map("partners_scope")
-  organization          Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId        String                @map("organization_id")
-  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                String                @map("user_id")
-  memberCompanyAccesses MemberCompanyAccess[]
-  productCommissions    ProductCommission[]   @relation("ProductCommissionRecipientSupervisor")
-  saleCommissions       SaleCommission[]      @relation("SaleCommissionBeneficiarySupervisor")
-  permissionOverrides   MemberPermissionOverride[]
-  permissionAuditTargets PermissionAuditLog[] @relation("PermissionAuditTargetMember")
+  id                       String                            @id @default(uuid())
+  role                     Role                              @default(MEMBER)
+  customersScope           MemberDataScope                   @default(ORGANIZATION_ALL) @map("customers_scope")
+  salesScope               MemberDataScope                   @default(ORGANIZATION_ALL) @map("sales_scope")
+  commissionsScope         MemberDataScope                   @default(ORGANIZATION_ALL) @map("commissions_scope")
+  partnersScope            MemberDataScope                   @default(ORGANIZATION_ALL) @map("partners_scope")
+  organization             Organization                      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId           String                            @map("organization_id")
+  user                     User                              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                   String                            @map("user_id")
+  memberCompanyAccesses    MemberCompanyAccess[]
+  productCommissions       ProductCommission[]               @relation("ProductCommissionRecipientSupervisor")
+  saleCommissions          SaleCommission[]                  @relation("SaleCommissionBeneficiarySupervisor")
+  permissionOverrides      MemberPermissionOverride[]
+  permissionAuditTargets   PermissionAuditLog[]              @relation("PermissionAuditTargetMember")
+  productBonusParticipants ProductBonusScenarioParticipant[] @relation("ProductBonusParticipantSupervisor")
+  bonusSettlementResults   BonusSettlementResult[]           @relation("BonusSettlementResultBeneficiarySupervisor")
+  bonusInstallments        BonusInstallment[]                @relation("BonusInstallmentBeneficiarySupervisor")
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -185,39 +189,41 @@ model MemberCompanyAccess {
 }
 
 model Organization {
-  id                       String   @id @default(uuid())
-  name                     String
-  slug                     String   @unique
-  domain                   String?  @unique
-  shouldAttachUserByDomain Boolean  @default(false) @map("should_attach_user_by_domain")
-  enableSalesTransactionsSync Boolean @default(false) @map("enable_sales_transactions_sync")
-  avatarUrl                String?  @map("avatar_url")
-  ownerId                  String   @map("owner_id")
-  createdAt                DateTime @default(now()) @map("created_at")
-  updatedAt                DateTime @updatedAt @map("updated_at")
-  owner                    User?    @relation(fields: [ownerId], references: [id])
+  id                          String   @id @default(uuid())
+  name                        String
+  slug                        String   @unique
+  domain                      String?  @unique
+  shouldAttachUserByDomain    Boolean  @default(false) @map("should_attach_user_by_domain")
+  enableSalesTransactionsSync Boolean  @default(false) @map("enable_sales_transactions_sync")
+  avatarUrl                   String?  @map("avatar_url")
+  ownerId                     String   @map("owner_id")
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("updated_at")
+  owner                       User?    @relation(fields: [ownerId], references: [id])
 
-  invites               Invite[]
-  members               Member[]
-  categories            Category[]
-  companies             Company[]
-  transactions          Transaction[]
-  costCenters           CostCenter[]
-  employees             Employee[]
-  recurrences           Recurrence[]
-  customers             Customer[]
-  partners              Partner[]
-  sellers               Seller[]
-  products              Product[]
-  sales                 Sale[]
-  saleDelinquencies     SaleDelinquency[]
-  saleHistoryEvents     SaleHistoryEvent[]
-  saleImportTemplates   SaleImportTemplate[]
-  saleImportAudits      SaleImportAudit[]
-  memberCompanyAccesses MemberCompanyAccess[]
-  rolePermissions       OrganizationRolePermission[]
+  invites                   Invite[]
+  members                   Member[]
+  categories                Category[]
+  companies                 Company[]
+  transactions              Transaction[]
+  costCenters               CostCenter[]
+  employees                 Employee[]
+  recurrences               Recurrence[]
+  customers                 Customer[]
+  partners                  Partner[]
+  sellers                   Seller[]
+  products                  Product[]
+  sales                     Sale[]
+  saleDelinquencies         SaleDelinquency[]
+  saleHistoryEvents         SaleHistoryEvent[]
+  saleImportTemplates       SaleImportTemplate[]
+  saleImportAudits          SaleImportAudit[]
+  memberCompanyAccesses     MemberCompanyAccess[]
+  rolePermissions           OrganizationRolePermission[]
   memberPermissionOverrides MemberPermissionOverride[]
-  permissionAuditLogs   PermissionAuditLog[]
+  permissionAuditLogs       PermissionAuditLog[]
+  bonusSettlements          BonusSettlement[]
+  bonusInstallments         BonusInstallment[]
 
   @@index([slug])
   @@map("organizations")
@@ -234,8 +240,8 @@ model Permission {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  rolePermissions   OrganizationRolePermission[]
-  memberOverrides   MemberPermissionOverride[]
+  rolePermissions OrganizationRolePermission[]
+  memberOverrides MemberPermissionOverride[]
 
   @@index([module])
   @@index([isActive])
@@ -243,10 +249,10 @@ model Permission {
 }
 
 model OrganizationRolePermission {
-  id             String @id @default(uuid())
-  organizationId String @map("organization_id")
+  id             String  @id @default(uuid())
+  organizationId String  @map("organization_id")
   role           Role
-  permissionId   String @map("permission_id")
+  permissionId   String  @map("permission_id")
   allowed        Boolean @default(true)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -262,10 +268,10 @@ model OrganizationRolePermission {
 }
 
 model MemberPermissionOverride {
-  id             String @id @default(uuid())
-  memberId       String @map("member_id")
-  organizationId String @map("organization_id")
-  permissionId   String @map("permission_id")
+  id             String                   @id @default(uuid())
+  memberId       String                   @map("member_id")
+  organizationId String                   @map("organization_id")
+  permissionId   String                   @map("permission_id")
   effect         PermissionOverrideEffect
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -304,10 +310,10 @@ model PermissionAuditLog {
 }
 
 model Company {
-  id             String @id @default(uuid())
+  id             String  @id @default(uuid())
   name           String
   cnpj           String?
-  organizationId String @map("organization_id")
+  organizationId String  @map("organization_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -317,10 +323,13 @@ model Company {
   employees                           Employee[]
   recurrences                         Recurrence[]
   sales                               Sale[]
-  saleCommissions                     SaleCommission[]                  @relation("SaleCommissionBeneficiaryCompany")
+  saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiaryCompany")
   memberCompanyAccesses               MemberCompanyAccess[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionCompany")
   productCommissions                  ProductCommission[]                  @relation("ProductCommissionRecipientCompany")
+  productBonusParticipants            ProductBonusScenarioParticipant[]    @relation("ProductBonusParticipantCompany")
+  bonusSettlementResults              BonusSettlementResult[]              @relation("BonusSettlementResultBeneficiaryCompany")
+  bonusInstallments                   BonusInstallment[]                   @relation("BonusInstallmentBeneficiaryCompany")
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -328,7 +337,7 @@ model Company {
 }
 
 model Unit {
-  id           String @id @default(uuid())
+  id           String  @id @default(uuid())
   name         String
   cnpj         String?
   country      String?
@@ -339,7 +348,7 @@ model Unit {
   neighborhood String?
   number       String?
   complement   String?
-  companyId    String @map("company_id")
+  companyId    String  @map("company_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -347,7 +356,7 @@ model Unit {
   transactions                        Transaction[]
   recurrences                         Recurrence[]
   sales                               Sale[]
-  saleCommissions                     SaleCommission[]                  @relation("SaleCommissionBeneficiaryUnit")
+  saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiaryUnit")
   memberCompanyAccesses               MemberCompanyAccess[]
   employees                           Employee[]
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionUnit")
@@ -374,10 +383,10 @@ model Category {
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children Category[] @relation("CategoryTree")
 
-  transactions     Transaction[]
-  transactionItens TransactionItem[]
-  recurrences      Recurrence[]
-  salesTransactionProducts Product[] @relation("ProductSalesTransactionCategory")
+  transactions             Transaction[]
+  transactionItens         TransactionItem[]
+  recurrences              Recurrence[]
+  salesTransactionProducts Product[]         @relation("ProductSalesTransactionCategory")
 
   @@unique([organizationId, parentId, name])
   @@index([organizationId])
@@ -392,10 +401,10 @@ model CostCenter {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  organization Organization  @relation(fields: [organizationId], references: [id])
-  transactions Transaction[]
-  recurrences  Recurrence[]
-  salesTransactionProducts Product[] @relation("ProductSalesTransactionCostCenter")
+  organization             Organization  @relation(fields: [organizationId], references: [id])
+  transactions             Transaction[]
+  recurrences              Recurrence[]
+  salesTransactionProducts Product[]     @relation("ProductSalesTransactionCostCenter")
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -411,7 +420,7 @@ enum EmployeePixKeyType {
 }
 
 model Employee {
-  id             String  @id @default(uuid())
+  id             String              @id @default(uuid())
   name           String
   department     String?
   email          String
@@ -429,7 +438,7 @@ model Employee {
   state          String?
   zipCode        String?             @map("zip_code")
   country        String?
-  userId         String? @map("user_id")
+  userId         String?             @map("user_id")
   organizationId String
   companyId      String
   unitId         String?
@@ -592,11 +601,14 @@ model Partner {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  supervisor   User?        @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
-  user         User?        @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
-  organization Organization @relation(fields: [organizationId], references: [id])
+  supervisor                          User?                                @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+  user                                User?                                @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
+  organization                        Organization                         @relation(fields: [organizationId], references: [id])
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionPartner")
-  saleCommissions                    SaleCommission[]                  @relation("SaleCommissionBeneficiaryPartner")
+  saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiaryPartner")
+  productBonusParticipants            ProductBonusScenarioParticipant[]    @relation("ProductBonusParticipantPartner")
+  bonusSettlementResults              BonusSettlementResult[]              @relation("BonusSettlementResultBeneficiaryPartner")
+  bonusInstallments                   BonusInstallment[]                   @relation("BonusInstallmentBeneficiaryPartner")
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])
@@ -650,6 +662,9 @@ model Seller {
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionSeller")
   productCommissions                  ProductCommission[]                  @relation("ProductCommissionRecipientSeller")
   saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiarySeller")
+  productBonusParticipants            ProductBonusScenarioParticipant[]    @relation("ProductBonusParticipantSeller")
+  bonusSettlementResults              BonusSettlementResult[]              @relation("BonusSettlementResultBeneficiarySeller")
+  bonusInstallments                   BonusInstallment[]                   @relation("BonusInstallmentBeneficiarySeller")
 
   @@unique([organizationId, email])
   @@unique([organizationId, document])
@@ -659,31 +674,34 @@ model Seller {
 }
 
 model Product {
-  id                             String  @id @default(uuid())
-  organizationId                 String  @map("organization_id")
-  parentId                       String? @map("parent_id")
-  name                           String
-  description                    String?
-  isActive                       Boolean @default(true) @map("is_active")
-  sortOrder                      Int     @default(0) @map("sort_order")
-  salesTransactionCategoryId     String? @map("sales_transaction_category_id")
-  salesTransactionCostCenterId   String? @map("sales_transaction_cost_center_id")
-  commissionReversalMode         ProductCommissionReversalMode? @map("commission_reversal_mode")
-  commissionReversalTotalPercentage Int? @map("commission_reversal_total_percentage")
+  id                                String                         @id @default(uuid())
+  organizationId                    String                         @map("organization_id")
+  parentId                          String?                        @map("parent_id")
+  name                              String
+  description                       String?
+  isActive                          Boolean                        @default(true) @map("is_active")
+  sortOrder                         Int                            @default(0) @map("sort_order")
+  salesTransactionCategoryId        String?                        @map("sales_transaction_category_id")
+  salesTransactionCostCenterId      String?                        @map("sales_transaction_cost_center_id")
+  commissionReversalMode            ProductCommissionReversalMode? @map("commission_reversal_mode")
+  commissionReversalTotalPercentage Int?                           @map("commission_reversal_total_percentage")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  organization              Organization @relation(fields: [organizationId], references: [id])
-  parent                    Product?     @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
-  children                  Product[]    @relation("ProductTree")
-  sales                     Sale[]
-  saleFields                ProductSaleField[]
-  salesTransactionCategory  Category?    @relation("ProductSalesTransactionCategory", fields: [salesTransactionCategoryId], references: [id], onDelete: SetNull)
-  salesTransactionCostCenter CostCenter? @relation("ProductSalesTransactionCostCenter", fields: [salesTransactionCostCenterId], references: [id], onDelete: SetNull)
+  organization               Organization       @relation(fields: [organizationId], references: [id])
+  parent                     Product?           @relation("ProductTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children                   Product[]          @relation("ProductTree")
+  sales                      Sale[]
+  saleFields                 ProductSaleField[]
+  salesTransactionCategory   Category?          @relation("ProductSalesTransactionCategory", fields: [salesTransactionCategoryId], references: [id], onDelete: SetNull)
+  salesTransactionCostCenter CostCenter?        @relation("ProductSalesTransactionCostCenter", fields: [salesTransactionCostCenterId], references: [id], onDelete: SetNull)
 
-  commissionScenarios ProductCommissionScenario[]
+  commissionScenarios     ProductCommissionScenario[]
   commissionReversalRules ProductCommissionReversalRule[]
+  bonusScenarios          ProductBonusScenario[]
+  bonusSettlements        BonusSettlement[]
+  bonusInstallments       BonusInstallment[]
 
   @@unique([organizationId, parentId, name])
   @@index([organizationId])
@@ -715,6 +733,204 @@ model ProductCommissionReversalRule {
   @@map("product_commission_reversal_rules")
 }
 
+enum ProductBonusMetric {
+  SALE_TOTAL
+}
+
+enum ProductBonusPeriodFrequency {
+  MONTHLY
+  SEMIANNUAL
+  ANNUAL
+}
+
+enum ProductBonusParticipantType {
+  COMPANY
+  PARTNER
+  SELLER
+  SUPERVISOR
+}
+
+model ProductBonusScenario {
+  id                    String                      @id @default(uuid())
+  productId             String                      @map("product_id")
+  name                  String
+  metric                ProductBonusMetric          @default(SALE_TOTAL)
+  targetAmount          Int                         @map("target_amount")
+  periodFrequency       ProductBonusPeriodFrequency @map("period_frequency")
+  payoutEnabled         Boolean                     @default(false) @map("payout_enabled")
+  payoutTotalPercentage Int?                        @map("payout_total_percentage")
+  payoutDueDay          Int?                        @map("payout_due_day")
+  isActive              Boolean                     @default(true) @map("is_active")
+  sortOrder             Int                         @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product            Product                                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  participants       ProductBonusScenarioParticipant[]
+  payoutInstallments ProductBonusScenarioPayoutInstallment[]
+  settlementResults  BonusSettlementResult[]
+  bonusInstallments  BonusInstallment[]
+
+  @@unique([productId, name])
+  @@index([productId])
+  @@index([productId, isActive, sortOrder])
+  @@map("product_bonus_scenarios")
+}
+
+model ProductBonusScenarioParticipant {
+  id           String                      @id @default(uuid())
+  scenarioId   String                      @map("scenario_id")
+  type         ProductBonusParticipantType
+  companyId    String?                     @map("company_id")
+  partnerId    String?                     @map("partner_id")
+  sellerId     String?                     @map("seller_id")
+  supervisorId String?                     @map("supervisor_id")
+  sortOrder    Int                         @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  scenario   ProductBonusScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  company    Company?             @relation("ProductBonusParticipantCompany", fields: [companyId], references: [id], onDelete: SetNull)
+  partner    Partner?             @relation("ProductBonusParticipantPartner", fields: [partnerId], references: [id], onDelete: SetNull)
+  seller     Seller?              @relation("ProductBonusParticipantSeller", fields: [sellerId], references: [id], onDelete: SetNull)
+  supervisor Member?              @relation("ProductBonusParticipantSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+
+  @@index([scenarioId])
+  @@index([scenarioId, sortOrder])
+  @@index([companyId])
+  @@index([partnerId])
+  @@index([sellerId])
+  @@index([supervisorId])
+  @@map("product_bonus_scenario_participants")
+}
+
+model ProductBonusScenarioPayoutInstallment {
+  id                String @id @default(uuid())
+  scenarioId        String @map("scenario_id")
+  installmentNumber Int    @map("installment_number")
+  percentage        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  scenario ProductBonusScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@unique([scenarioId, installmentNumber], map: "product_bonus_scenario_payout_installments_scenario_id_inst_key")
+  @@index([scenarioId])
+  @@map("product_bonus_scenario_payout_installments")
+}
+
+model BonusSettlement {
+  id              String                      @id @default(uuid())
+  organizationId  String                      @map("organization_id")
+  productId       String                      @map("product_id")
+  periodFrequency ProductBonusPeriodFrequency @map("period_frequency")
+  periodYear      Int                         @map("period_year")
+  periodIndex     Int                         @map("period_index")
+  settledById     String                      @map("settled_by_id")
+  settledAt       DateTime                    @default(now()) @map("settled_at")
+  winnersCount    Int                         @default(0) @map("winners_count")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product      Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  settledBy    User                    @relation("BonusSettlementSettledBy", fields: [settledById], references: [id], onDelete: Cascade)
+  results      BonusSettlementResult[]
+  installments BonusInstallment[]
+
+  @@unique([organizationId, productId, periodFrequency, periodYear, periodIndex], map: "bonus_settlements_organization_id_product_id_period_frequen_key")
+  @@index([organizationId, productId])
+  @@index([organizationId, periodFrequency, periodYear, periodIndex], map: "bonus_settlements_organization_id_period_frequency_period_y_idx")
+  @@map("bonus_settlements")
+}
+
+model BonusSettlementResult {
+  id                      String                      @id @default(uuid())
+  settlementId            String                      @map("settlement_id")
+  scenarioId              String                      @map("scenario_id")
+  participantType         ProductBonusParticipantType @map("participant_type")
+  beneficiaryCompanyId    String?                     @map("beneficiary_company_id")
+  beneficiaryPartnerId    String?                     @map("beneficiary_partner_id")
+  beneficiarySellerId     String?                     @map("beneficiary_seller_id")
+  beneficiarySupervisorId String?                     @map("beneficiary_supervisor_id")
+  beneficiaryLabel        String                      @map("beneficiary_label")
+  achievedAmount          Int                         @map("achieved_amount")
+  targetAmount            Int                         @map("target_amount")
+  payoutEnabled           Boolean                     @default(false) @map("payout_enabled")
+  payoutAmount            Int                         @default(0) @map("payout_amount")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  settlement            BonusSettlement      @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+  scenario              ProductBonusScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  beneficiaryCompany    Company?             @relation("BonusSettlementResultBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
+  beneficiaryPartner    Partner?             @relation("BonusSettlementResultBeneficiaryPartner", fields: [beneficiaryPartnerId], references: [id], onDelete: SetNull)
+  beneficiarySeller     Seller?              @relation("BonusSettlementResultBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
+  beneficiarySupervisor Member?              @relation("BonusSettlementResultBeneficiarySupervisor", fields: [beneficiarySupervisorId], references: [id], onDelete: SetNull)
+  installments          BonusInstallment[]
+
+  @@index([settlementId])
+  @@index([scenarioId])
+  @@index([beneficiaryCompanyId])
+  @@index([beneficiaryPartnerId])
+  @@index([beneficiarySellerId])
+  @@index([beneficiarySupervisorId])
+  @@map("bonus_settlement_results")
+}
+
+model BonusInstallment {
+  id                      String                          @id @default(uuid())
+  organizationId          String                          @map("organization_id")
+  settlementId            String                          @map("settlement_id")
+  resultId                String                          @map("result_id")
+  scenarioId              String                          @map("scenario_id")
+  productId               String                          @map("product_id")
+  scenarioName            String                          @map("scenario_name")
+  periodFrequency         ProductBonusPeriodFrequency     @map("period_frequency")
+  periodYear              Int                             @map("period_year")
+  periodIndex             Int                             @map("period_index")
+  recipientType           SaleCommissionRecipientType     @map("recipient_type")
+  direction               SaleCommissionDirection         @default(OUTCOME)
+  beneficiaryCompanyId    String?                         @map("beneficiary_company_id")
+  beneficiaryPartnerId    String?                         @map("beneficiary_partner_id")
+  beneficiarySellerId     String?                         @map("beneficiary_seller_id")
+  beneficiarySupervisorId String?                         @map("beneficiary_supervisor_id")
+  beneficiaryLabel        String                          @map("beneficiary_label")
+  installmentNumber       Int                             @map("installment_number")
+  percentage              Int
+  amount                  Int
+  status                  SaleCommissionInstallmentStatus @default(PENDING)
+  expectedPaymentDate     DateTime                        @map("expected_payment_date") @db.Date
+  paymentDate             DateTime?                       @map("payment_date") @db.Date
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization          Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  settlement            BonusSettlement       @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+  result                BonusSettlementResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  scenario              ProductBonusScenario  @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  product               Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  beneficiaryCompany    Company?              @relation("BonusInstallmentBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
+  beneficiaryPartner    Partner?              @relation("BonusInstallmentBeneficiaryPartner", fields: [beneficiaryPartnerId], references: [id], onDelete: SetNull)
+  beneficiarySeller     Seller?               @relation("BonusInstallmentBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
+  beneficiarySupervisor Member?               @relation("BonusInstallmentBeneficiarySupervisor", fields: [beneficiarySupervisorId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([organizationId, expectedPaymentDate])
+  @@index([productId])
+  @@index([settlementId])
+  @@index([resultId])
+  @@index([scenarioId])
+  @@index([beneficiaryCompanyId])
+  @@index([beneficiaryPartnerId])
+  @@index([beneficiarySellerId])
+  @@index([beneficiarySupervisorId])
+  @@map("bonus_installments")
+}
+
 enum SaleDynamicFieldType {
   TEXT
   NUMBER
@@ -739,7 +955,7 @@ model ProductSaleField {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product                  @relation(fields: [productId], references: [id], onDelete: Cascade)
   options ProductSaleFieldOption[]
 
   @@unique([productId, labelNormalized])
@@ -749,12 +965,12 @@ model ProductSaleField {
 }
 
 model ProductSaleFieldOption {
-  id              String @id @default(uuid())
-  fieldId         String @map("field_id")
+  id              String  @id @default(uuid())
+  fieldId         String  @map("field_id")
   label           String
-  labelNormalized String @map("label_normalized")
+  labelNormalized String  @map("label_normalized")
   isDefault       Boolean @default(false) @map("is_default")
-  sortOrder       Int    @default(0) @map("sort_order")
+  sortOrder       Int     @default(0) @map("sort_order")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -842,19 +1058,19 @@ enum ProductCommissionCalculationBase {
 }
 
 model ProductCommission {
-  id                        String                         @id @default(uuid())
-  scenarioId                String                         @map("scenario_id")
+  id                        String                           @id @default(uuid())
+  scenarioId                String                           @map("scenario_id")
   description               String
-  recipientType             ProductCommissionRecipientType @map("recipient_type")
+  recipientType             ProductCommissionRecipientType   @map("recipient_type")
   calculationBase           ProductCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
-  baseCommissionId          String?                        @map("base_commission_id")
-  recipientCompanyId        String?                        @map("recipient_company_id")
-  recipientUnitId           String?                        @map("recipient_unit_id")
-  recipientSellerId         String?                        @map("recipient_seller_id")
-  recipientSupervisorId     String?                        @map("recipient_supervisor_id")
-  recipientOtherDescription String?                        @map("recipient_other_description")
-  totalPercentage           Int                            @map("total_percentage")
-  sortOrder                 Int                            @default(0) @map("sort_order")
+  baseCommissionId          String?                          @map("base_commission_id")
+  recipientCompanyId        String?                          @map("recipient_company_id")
+  recipientUnitId           String?                          @map("recipient_unit_id")
+  recipientSellerId         String?                          @map("recipient_seller_id")
+  recipientSupervisorId     String?                          @map("recipient_supervisor_id")
+  recipientOtherDescription String?                          @map("recipient_other_description")
+  totalPercentage           Int                              @map("total_percentage")
+  sortOrder                 Int                              @default(0) @map("sort_order")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -862,11 +1078,11 @@ model ProductCommission {
   scenario            ProductCommissionScenario      @relation(fields: [scenarioId], references: [id])
   baseCommission      ProductCommission?             @relation("ProductCommissionBaseLink", fields: [baseCommissionId], references: [id], onDelete: SetNull)
   childCommissions    ProductCommission[]            @relation("ProductCommissionBaseLink")
-  recipientCompany    Company?                @relation("ProductCommissionRecipientCompany", fields: [recipientCompanyId], references: [id])
-  recipientUnit       Unit?                   @relation("ProductCommissionRecipientUnit", fields: [recipientUnitId], references: [id])
-  recipientSeller     Seller?                 @relation("ProductCommissionRecipientSeller", fields: [recipientSellerId], references: [id])
-  recipientSupervisor Member?                 @relation("ProductCommissionRecipientSupervisor", fields: [recipientSupervisorId], references: [id])
-  installments ProductCommissionInstallment[]
+  recipientCompany    Company?                       @relation("ProductCommissionRecipientCompany", fields: [recipientCompanyId], references: [id])
+  recipientUnit       Unit?                          @relation("ProductCommissionRecipientUnit", fields: [recipientUnitId], references: [id])
+  recipientSeller     Seller?                        @relation("ProductCommissionRecipientSeller", fields: [recipientSellerId], references: [id])
+  recipientSupervisor Member?                        @relation("ProductCommissionRecipientSupervisor", fields: [recipientSupervisorId], references: [id])
+  installments        ProductCommissionInstallment[]
 
   @@index([scenarioId])
   @@index([scenarioId, sortOrder])
@@ -908,6 +1124,7 @@ enum SaleResponsibleType {
 enum SaleCommissionSourceType {
   PULLED
   MANUAL
+  BONUS
 }
 
 enum SaleCommissionRecipientType {
@@ -951,34 +1168,34 @@ enum SaleHistoryAction {
 model Sale {
   id String @id @default(uuid())
 
-  organizationId  String              @map("organization_id")
-  companyId       String              @map("company_id")
-  unitId          String?             @map("unit_id")
-  customerId      String              @map("customer_id")
-  productId       String              @map("product_id")
-  saleDate        DateTime            @map("sale_date") @db.Date
-  totalAmount     Int                 @map("total_amount")
-  status          SaleStatus          @default(PENDING)
-  responsibleType SaleResponsibleType? @map("responsible_type")
-  responsibleId   String?              @map("responsible_id")
-  notes           String?
-  dynamicFieldSchema Json             @default("[]") @map("dynamic_field_schema")
-  dynamicFieldValues Json             @default("{}") @map("dynamic_field_values")
-  createdById     String              @map("created_by_id")
+  organizationId     String               @map("organization_id")
+  companyId          String               @map("company_id")
+  unitId             String?              @map("unit_id")
+  customerId         String               @map("customer_id")
+  productId          String               @map("product_id")
+  saleDate           DateTime             @map("sale_date") @db.Date
+  totalAmount        Int                  @map("total_amount")
+  status             SaleStatus           @default(PENDING)
+  responsibleType    SaleResponsibleType? @map("responsible_type")
+  responsibleId      String?              @map("responsible_id")
+  notes              String?
+  dynamicFieldSchema Json                 @default("[]") @map("dynamic_field_schema")
+  dynamicFieldValues Json                 @default("{}") @map("dynamic_field_values")
+  createdById        String               @map("created_by_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  company      Company      @relation(fields: [companyId], references: [id])
-  unit         Unit?        @relation(fields: [unitId], references: [id])
-  customer     Customer     @relation(fields: [customerId], references: [id])
-  product      Product      @relation(fields: [productId], references: [id])
-  createdBy    User         @relation("SaleCreatedBy", fields: [createdById], references: [id])
-  commissions  SaleCommission[]
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  company           Company            @relation(fields: [companyId], references: [id])
+  unit              Unit?              @relation(fields: [unitId], references: [id])
+  customer          Customer           @relation(fields: [customerId], references: [id])
+  product           Product            @relation(fields: [productId], references: [id])
+  createdBy         User               @relation("SaleCreatedBy", fields: [createdById], references: [id])
+  commissions       SaleCommission[]
   saleDelinquencies SaleDelinquency[]
-  historyEvents SaleHistoryEvent[]
-  transaction  Transaction? @relation("SaleTransaction")
+  historyEvents     SaleHistoryEvent[]
+  transaction       Transaction?       @relation("SaleTransaction")
 
   @@index([organizationId, saleDate])
   @@index([organizationId, status])
@@ -1012,13 +1229,13 @@ model SaleHistoryEvent {
 }
 
 model SaleDelinquency {
-  id             String   @id @default(uuid())
-  saleId         String   @map("sale_id")
-  organizationId String   @map("organization_id")
-  dueDate        DateTime @map("due_date") @db.Date
+  id             String    @id @default(uuid())
+  saleId         String    @map("sale_id")
+  organizationId String    @map("organization_id")
+  dueDate        DateTime  @map("due_date") @db.Date
   resolvedAt     DateTime? @map("resolved_at")
-  createdById    String   @map("created_by_id")
-  resolvedById   String?  @map("resolved_by_id")
+  createdById    String    @map("created_by_id")
+  resolvedById   String?   @map("resolved_by_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -1036,19 +1253,19 @@ model SaleDelinquency {
 }
 
 model SaleImportTemplate {
-  id             String @id @default(uuid())
-  organizationId String @map("organization_id")
-  name           String
+  id              String @id @default(uuid())
+  organizationId  String @map("organization_id")
+  name            String
   headerSignature String @map("header_signature")
-  mappingJson    Json   @map("mapping_json")
-  fixedValuesJson Json  @map("fixed_values_json")
-  createdById    String @map("created_by_id")
+  mappingJson     Json   @map("mapping_json")
+  fixedValuesJson Json   @map("fixed_values_json")
+  createdById     String @map("created_by_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdBy    User         @relation("SaleImportTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User              @relation("SaleImportTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   audits       SaleImportAudit[]
 
   @@unique([organizationId, name])
@@ -1059,20 +1276,20 @@ model SaleImportTemplate {
 }
 
 model SaleImportAudit {
-  id             String  @id @default(uuid())
-  organizationId String  @map("organization_id")
-  actorId        String  @map("actor_id")
-  templateId     String? @map("template_id")
-  fileType       String  @map("file_type")
-  headerSignature String @map("header_signature")
-  totalRows      Int     @map("total_rows")
-  importedRows   Int     @map("imported_rows")
-  failedRows     Int     @map("failed_rows")
+  id              String  @id @default(uuid())
+  organizationId  String  @map("organization_id")
+  actorId         String  @map("actor_id")
+  templateId      String? @map("template_id")
+  fileType        String  @map("file_type")
+  headerSignature String  @map("header_signature")
+  totalRows       Int     @map("total_rows")
+  importedRows    Int     @map("imported_rows")
+  failedRows      Int     @map("failed_rows")
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  actor        User              @relation("SaleImportAuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User                @relation("SaleImportAuditActor", fields: [actorId], references: [id], onDelete: Cascade)
   template     SaleImportTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@index([organizationId])
@@ -1083,35 +1300,35 @@ model SaleImportAudit {
 }
 
 model SaleCommission {
-  id                    String                    @id @default(uuid())
-  saleId                String                    @map("sale_id")
-  sourceType            SaleCommissionSourceType  @map("source_type")
-  recipientType         SaleCommissionRecipientType @map("recipient_type")
-  direction             SaleCommissionDirection   @map("direction")
-  calculationBase       SaleCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
-  baseCommissionId      String?                   @map("base_commission_id")
-  beneficiaryCompanyId  String?                   @map("beneficiary_company_id")
-  beneficiaryUnitId     String?                   @map("beneficiary_unit_id")
-  beneficiarySellerId   String?                   @map("beneficiary_seller_id")
-  beneficiaryPartnerId  String?                   @map("beneficiary_partner_id")
-  beneficiarySupervisorId String?                 @map("beneficiary_supervisor_id")
-  beneficiaryLabel      String?                   @map("beneficiary_label")
-  startDate             DateTime                  @map("start_date") @db.Date
-  totalPercentage       Int                       @map("total_percentage")
-  sortOrder             Int                       @default(0) @map("sort_order")
+  id                      String                        @id @default(uuid())
+  saleId                  String                        @map("sale_id")
+  sourceType              SaleCommissionSourceType      @map("source_type")
+  recipientType           SaleCommissionRecipientType   @map("recipient_type")
+  direction               SaleCommissionDirection       @map("direction")
+  calculationBase         SaleCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
+  baseCommissionId        String?                       @map("base_commission_id")
+  beneficiaryCompanyId    String?                       @map("beneficiary_company_id")
+  beneficiaryUnitId       String?                       @map("beneficiary_unit_id")
+  beneficiarySellerId     String?                       @map("beneficiary_seller_id")
+  beneficiaryPartnerId    String?                       @map("beneficiary_partner_id")
+  beneficiarySupervisorId String?                       @map("beneficiary_supervisor_id")
+  beneficiaryLabel        String?                       @map("beneficiary_label")
+  startDate               DateTime                      @map("start_date") @db.Date
+  totalPercentage         Int                           @map("total_percentage")
+  sortOrder               Int                           @default(0) @map("sort_order")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  sale                 Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  baseCommission       SaleCommission? @relation("SaleCommissionBaseLink", fields: [baseCommissionId], references: [id], onDelete: SetNull)
-  childCommissions     SaleCommission[] @relation("SaleCommissionBaseLink")
-  beneficiaryCompany   Company? @relation("SaleCommissionBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
-  beneficiaryUnit      Unit?    @relation("SaleCommissionBeneficiaryUnit", fields: [beneficiaryUnitId], references: [id], onDelete: SetNull)
-  beneficiarySeller    Seller?  @relation("SaleCommissionBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
-  beneficiaryPartner   Partner? @relation("SaleCommissionBeneficiaryPartner", fields: [beneficiaryPartnerId], references: [id], onDelete: SetNull)
-  beneficiarySupervisor Member? @relation("SaleCommissionBeneficiarySupervisor", fields: [beneficiarySupervisorId], references: [id], onDelete: SetNull)
-  installments         SaleCommissionInstallment[]
+  sale                  Sale                        @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  baseCommission        SaleCommission?             @relation("SaleCommissionBaseLink", fields: [baseCommissionId], references: [id], onDelete: SetNull)
+  childCommissions      SaleCommission[]            @relation("SaleCommissionBaseLink")
+  beneficiaryCompany    Company?                    @relation("SaleCommissionBeneficiaryCompany", fields: [beneficiaryCompanyId], references: [id], onDelete: SetNull)
+  beneficiaryUnit       Unit?                       @relation("SaleCommissionBeneficiaryUnit", fields: [beneficiaryUnitId], references: [id], onDelete: SetNull)
+  beneficiarySeller     Seller?                     @relation("SaleCommissionBeneficiarySeller", fields: [beneficiarySellerId], references: [id], onDelete: SetNull)
+  beneficiaryPartner    Partner?                    @relation("SaleCommissionBeneficiaryPartner", fields: [beneficiaryPartnerId], references: [id], onDelete: SetNull)
+  beneficiarySupervisor Member?                     @relation("SaleCommissionBeneficiarySupervisor", fields: [beneficiarySupervisorId], references: [id], onDelete: SetNull)
+  installments          SaleCommissionInstallment[]
 
   @@index([saleId])
   @@index([saleId, sortOrder])
@@ -1125,23 +1342,23 @@ model SaleCommission {
 }
 
 model SaleCommissionInstallment {
-  id                String @id @default(uuid())
-  saleCommissionId  String @map("sale_commission_id")
-  originInstallmentId String? @map("origin_installment_id")
-  installmentNumber Int    @map("installment_number")
-  percentage        Int
-  amount            Int
-  status            SaleCommissionInstallmentStatus @default(PENDING)
-  expectedPaymentDate DateTime @map("expected_payment_date") @db.Date
-  paymentDate       DateTime? @map("payment_date") @db.Date
-  reversedFromStatus SaleCommissionInstallmentStatus? @map("reversed_from_status")
-  reversedFromAmount Int? @map("reversed_from_amount")
-  reversedFromPaymentDate DateTime? @map("reversed_from_payment_date") @db.Date
+  id                      String                           @id @default(uuid())
+  saleCommissionId        String                           @map("sale_commission_id")
+  originInstallmentId     String?                          @map("origin_installment_id")
+  installmentNumber       Int                              @map("installment_number")
+  percentage              Int
+  amount                  Int
+  status                  SaleCommissionInstallmentStatus  @default(PENDING)
+  expectedPaymentDate     DateTime                         @map("expected_payment_date") @db.Date
+  paymentDate             DateTime?                        @map("payment_date") @db.Date
+  reversedFromStatus      SaleCommissionInstallmentStatus? @map("reversed_from_status")
+  reversedFromAmount      Int?                             @map("reversed_from_amount")
+  reversedFromPaymentDate DateTime?                        @map("reversed_from_payment_date") @db.Date
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  saleCommission SaleCommission @relation(fields: [saleCommissionId], references: [id], onDelete: Cascade)
-  originInstallment SaleCommissionInstallment? @relation("SaleCommissionInstallmentReversalOrigin", fields: [originInstallmentId], references: [id], onDelete: SetNull)
+  saleCommission       SaleCommission              @relation(fields: [saleCommissionId], references: [id], onDelete: Cascade)
+  originInstallment    SaleCommissionInstallment?  @relation("SaleCommissionInstallmentReversalOrigin", fields: [originInstallmentId], references: [id], onDelete: SetNull)
   reversalInstallments SaleCommissionInstallment[] @relation("SaleCommissionInstallmentReversalOrigin")
 
   @@index([saleCommissionId, installmentNumber])

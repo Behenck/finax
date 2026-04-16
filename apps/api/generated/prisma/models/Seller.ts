@@ -307,6 +307,9 @@ export type SellerWhereInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }
 
 export type SellerOrderByWithRelationInput = {
@@ -335,6 +338,9 @@ export type SellerOrderByWithRelationInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionOrderByRelationAggregateInput
   productCommissions?: Prisma.ProductCommissionOrderByRelationAggregateInput
   saleCommissions?: Prisma.SaleCommissionOrderByRelationAggregateInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantOrderByRelationAggregateInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultOrderByRelationAggregateInput
+  bonusInstallments?: Prisma.BonusInstallmentOrderByRelationAggregateInput
 }
 
 export type SellerWhereUniqueInput = Prisma.AtLeast<{
@@ -368,6 +374,9 @@ export type SellerWhereUniqueInput = Prisma.AtLeast<{
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
   saleCommissions?: Prisma.SaleCommissionListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }, "id" | "organizationId_email" | "organizationId_document">
 
 export type SellerOrderByWithAggregationInput = {
@@ -446,6 +455,9 @@ export type SellerCreateInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateInput = {
@@ -472,6 +484,9 @@ export type SellerUncheckedCreateInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUpdateInput = {
@@ -498,6 +513,9 @@ export type SellerUpdateInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateInput = {
@@ -524,6 +542,9 @@ export type SellerUncheckedUpdateInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerCreateManyInput = {
@@ -779,6 +800,54 @@ export type EnumSellerStatusFieldUpdateOperationsInput = {
   set?: $Enums.SellerStatus
 }
 
+export type SellerCreateNestedOneWithoutProductBonusParticipantsInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutProductBonusParticipantsInput
+  connect?: Prisma.SellerWhereUniqueInput
+}
+
+export type SellerUpdateOneWithoutProductBonusParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutProductBonusParticipantsInput
+  upsert?: Prisma.SellerUpsertWithoutProductBonusParticipantsInput
+  disconnect?: Prisma.SellerWhereInput | boolean
+  delete?: Prisma.SellerWhereInput | boolean
+  connect?: Prisma.SellerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SellerUpdateToOneWithWhereWithoutProductBonusParticipantsInput, Prisma.SellerUpdateWithoutProductBonusParticipantsInput>, Prisma.SellerUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type SellerCreateNestedOneWithoutBonusSettlementResultsInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutBonusSettlementResultsInput
+  connect?: Prisma.SellerWhereUniqueInput
+}
+
+export type SellerUpdateOneWithoutBonusSettlementResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutBonusSettlementResultsInput
+  upsert?: Prisma.SellerUpsertWithoutBonusSettlementResultsInput
+  disconnect?: Prisma.SellerWhereInput | boolean
+  delete?: Prisma.SellerWhereInput | boolean
+  connect?: Prisma.SellerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SellerUpdateToOneWithWhereWithoutBonusSettlementResultsInput, Prisma.SellerUpdateWithoutBonusSettlementResultsInput>, Prisma.SellerUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type SellerCreateNestedOneWithoutBonusInstallmentsInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutBonusInstallmentsInput
+  connect?: Prisma.SellerWhereUniqueInput
+}
+
+export type SellerUpdateOneWithoutBonusInstallmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.SellerCreateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.SellerCreateOrConnectWithoutBonusInstallmentsInput
+  upsert?: Prisma.SellerUpsertWithoutBonusInstallmentsInput
+  disconnect?: Prisma.SellerWhereInput | boolean
+  delete?: Prisma.SellerWhereInput | boolean
+  connect?: Prisma.SellerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SellerUpdateToOneWithWhereWithoutBonusInstallmentsInput, Prisma.SellerUpdateWithoutBonusInstallmentsInput>, Prisma.SellerUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
 export type SellerCreateNestedOneWithoutProductCommissionScenarioConditionsInput = {
   create?: Prisma.XOR<Prisma.SellerCreateWithoutProductCommissionScenarioConditionsInput, Prisma.SellerUncheckedCreateWithoutProductCommissionScenarioConditionsInput>
   connectOrCreate?: Prisma.SellerCreateOrConnectWithoutProductCommissionScenarioConditionsInput
@@ -850,6 +919,9 @@ export type SellerCreateWithoutUserInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateWithoutUserInput = {
@@ -875,6 +947,9 @@ export type SellerUncheckedCreateWithoutUserInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerCreateOrConnectWithoutUserInput = {
@@ -952,6 +1027,9 @@ export type SellerCreateWithoutOrganizationInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateWithoutOrganizationInput = {
@@ -977,6 +1055,9 @@ export type SellerUncheckedCreateWithoutOrganizationInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerCreateOrConnectWithoutOrganizationInput = {
@@ -1005,6 +1086,390 @@ export type SellerUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.SellerUpdateManyMutationInput, Prisma.SellerUncheckedUpdateManyWithoutOrganizationInput>
 }
 
+export type SellerCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  status?: $Enums.SellerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutLinkedSellersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerUncheckedCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  userId?: string | null
+  status?: $Enums.SellerStatus
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerCreateOrConnectWithoutProductBonusParticipantsInput = {
+  where: Prisma.SellerWhereUniqueInput
+  create: Prisma.XOR<Prisma.SellerCreateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedCreateWithoutProductBonusParticipantsInput>
+}
+
+export type SellerUpsertWithoutProductBonusParticipantsInput = {
+  update: Prisma.XOR<Prisma.SellerUpdateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedUpdateWithoutProductBonusParticipantsInput>
+  create: Prisma.XOR<Prisma.SellerCreateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedCreateWithoutProductBonusParticipantsInput>
+  where?: Prisma.SellerWhereInput
+}
+
+export type SellerUpdateToOneWithWhereWithoutProductBonusParticipantsInput = {
+  where?: Prisma.SellerWhereInput
+  data: Prisma.XOR<Prisma.SellerUpdateWithoutProductBonusParticipantsInput, Prisma.SellerUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type SellerUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutLinkedSellersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
+export type SellerUncheckedUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
+export type SellerCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  status?: $Enums.SellerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutLinkedSellersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerUncheckedCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  userId?: string | null
+  status?: $Enums.SellerStatus
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerCreateOrConnectWithoutBonusSettlementResultsInput = {
+  where: Prisma.SellerWhereUniqueInput
+  create: Prisma.XOR<Prisma.SellerCreateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedCreateWithoutBonusSettlementResultsInput>
+}
+
+export type SellerUpsertWithoutBonusSettlementResultsInput = {
+  update: Prisma.XOR<Prisma.SellerUpdateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedUpdateWithoutBonusSettlementResultsInput>
+  create: Prisma.XOR<Prisma.SellerCreateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedCreateWithoutBonusSettlementResultsInput>
+  where?: Prisma.SellerWhereInput
+}
+
+export type SellerUpdateToOneWithWhereWithoutBonusSettlementResultsInput = {
+  where?: Prisma.SellerWhereInput
+  data: Prisma.XOR<Prisma.SellerUpdateWithoutBonusSettlementResultsInput, Prisma.SellerUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type SellerUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutLinkedSellersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
+export type SellerUncheckedUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
+export type SellerCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  status?: $Enums.SellerStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutLinkedSellersInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerUncheckedCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  documentType: $Enums.SellerDocumentType
+  document: string
+  companyName: string
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state: string
+  zipCode?: string | null
+  country?: string
+  userId?: string | null
+  status?: $Enums.SellerStatus
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+}
+
+export type SellerCreateOrConnectWithoutBonusInstallmentsInput = {
+  where: Prisma.SellerWhereUniqueInput
+  create: Prisma.XOR<Prisma.SellerCreateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedCreateWithoutBonusInstallmentsInput>
+}
+
+export type SellerUpsertWithoutBonusInstallmentsInput = {
+  update: Prisma.XOR<Prisma.SellerUpdateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedUpdateWithoutBonusInstallmentsInput>
+  create: Prisma.XOR<Prisma.SellerCreateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedCreateWithoutBonusInstallmentsInput>
+  where?: Prisma.SellerWhereInput
+}
+
+export type SellerUpdateToOneWithWhereWithoutBonusInstallmentsInput = {
+  where?: Prisma.SellerWhereInput
+  data: Prisma.XOR<Prisma.SellerUpdateWithoutBonusInstallmentsInput, Prisma.SellerUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
+export type SellerUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutLinkedSellersNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
+export type SellerUncheckedUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zipCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSellerStatusFieldUpdateOperationsInput | $Enums.SellerStatus
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+}
+
 export type SellerCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
   name: string
@@ -1028,6 +1493,9 @@ export type SellerCreateWithoutProductCommissionScenarioConditionsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateWithoutProductCommissionScenarioConditionsInput = {
@@ -1053,6 +1521,9 @@ export type SellerUncheckedCreateWithoutProductCommissionScenarioConditionsInput
   updatedAt?: Date | string
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerCreateOrConnectWithoutProductCommissionScenarioConditionsInput = {
@@ -1094,6 +1565,9 @@ export type SellerUpdateWithoutProductCommissionScenarioConditionsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateWithoutProductCommissionScenarioConditionsInput = {
@@ -1119,6 +1593,9 @@ export type SellerUncheckedUpdateWithoutProductCommissionScenarioConditionsInput
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerCreateWithoutProductCommissionsInput = {
@@ -1144,6 +1621,9 @@ export type SellerCreateWithoutProductCommissionsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateWithoutProductCommissionsInput = {
@@ -1169,6 +1649,9 @@ export type SellerUncheckedCreateWithoutProductCommissionsInput = {
   updatedAt?: Date | string
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerCreateOrConnectWithoutProductCommissionsInput = {
@@ -1210,6 +1693,9 @@ export type SellerUpdateWithoutProductCommissionsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateWithoutProductCommissionsInput = {
@@ -1235,6 +1721,9 @@ export type SellerUncheckedUpdateWithoutProductCommissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerCreateWithoutSaleCommissionsInput = {
@@ -1260,6 +1749,9 @@ export type SellerCreateWithoutSaleCommissionsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutSellersInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientSellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerUncheckedCreateWithoutSaleCommissionsInput = {
@@ -1285,6 +1777,9 @@ export type SellerUncheckedCreateWithoutSaleCommissionsInput = {
   updatedAt?: Date | string
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutSellerInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientSellerInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutSellerInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiarySellerInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiarySellerInput
 }
 
 export type SellerCreateOrConnectWithoutSaleCommissionsInput = {
@@ -1326,6 +1821,9 @@ export type SellerUpdateWithoutSaleCommissionsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutSellersNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateWithoutSaleCommissionsInput = {
@@ -1351,6 +1849,9 @@ export type SellerUncheckedUpdateWithoutSaleCommissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerCreateManyUserInput = {
@@ -1398,6 +1899,9 @@ export type SellerUpdateWithoutUserInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateWithoutUserInput = {
@@ -1423,6 +1927,9 @@ export type SellerUncheckedUpdateWithoutUserInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateManyWithoutUserInput = {
@@ -1492,6 +1999,9 @@ export type SellerUpdateWithoutOrganizationInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateWithoutOrganizationInput = {
@@ -1517,6 +2027,9 @@ export type SellerUncheckedUpdateWithoutOrganizationInput = {
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutSellerNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientSellerNestedInput
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutSellerNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiarySellerNestedInput
 }
 
 export type SellerUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1550,12 +2063,18 @@ export type SellerCountOutputType = {
   productCommissionScenarioConditions: number
   productCommissions: number
   saleCommissions: number
+  productBonusParticipants: number
+  bonusSettlementResults: number
+  bonusInstallments: number
 }
 
 export type SellerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productCommissionScenarioConditions?: boolean | SellerCountOutputTypeCountProductCommissionScenarioConditionsArgs
   productCommissions?: boolean | SellerCountOutputTypeCountProductCommissionsArgs
   saleCommissions?: boolean | SellerCountOutputTypeCountSaleCommissionsArgs
+  productBonusParticipants?: boolean | SellerCountOutputTypeCountProductBonusParticipantsArgs
+  bonusSettlementResults?: boolean | SellerCountOutputTypeCountBonusSettlementResultsArgs
+  bonusInstallments?: boolean | SellerCountOutputTypeCountBonusInstallmentsArgs
 }
 
 /**
@@ -1589,6 +2108,27 @@ export type SellerCountOutputTypeCountSaleCommissionsArgs<ExtArgs extends runtim
   where?: Prisma.SaleCommissionWhereInput
 }
 
+/**
+ * SellerCountOutputType without action
+ */
+export type SellerCountOutputTypeCountProductBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+}
+
+/**
+ * SellerCountOutputType without action
+ */
+export type SellerCountOutputTypeCountBonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusSettlementResultWhereInput
+}
+
+/**
+ * SellerCountOutputType without action
+ */
+export type SellerCountOutputTypeCountBonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusInstallmentWhereInput
+}
+
 
 export type SellerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1616,6 +2156,9 @@ export type SellerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   productCommissionScenarioConditions?: boolean | Prisma.Seller$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Seller$productCommissionsArgs<ExtArgs>
   saleCommissions?: boolean | Prisma.Seller$saleCommissionsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Seller$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Seller$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Seller$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.SellerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["seller"]>
 
@@ -1699,6 +2242,9 @@ export type SellerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   productCommissionScenarioConditions?: boolean | Prisma.Seller$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Seller$productCommissionsArgs<ExtArgs>
   saleCommissions?: boolean | Prisma.Seller$saleCommissionsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Seller$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Seller$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Seller$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.SellerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SellerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1718,6 +2264,9 @@ export type $SellerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     productCommissionScenarioConditions: Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>[]
     productCommissions: Prisma.$ProductCommissionPayload<ExtArgs>[]
     saleCommissions: Prisma.$SaleCommissionPayload<ExtArgs>[]
+    productBonusParticipants: Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>[]
+    bonusSettlementResults: Prisma.$BonusSettlementResultPayload<ExtArgs>[]
+    bonusInstallments: Prisma.$BonusInstallmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2139,6 +2688,9 @@ export interface Prisma__SellerClient<T, Null = never, ExtArgs extends runtime.T
   productCommissionScenarioConditions<T extends Prisma.Seller$productCommissionScenarioConditionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$productCommissionScenarioConditionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissions<T extends Prisma.Seller$productCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$productCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   saleCommissions<T extends Prisma.Seller$saleCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$saleCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SaleCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productBonusParticipants<T extends Prisma.Seller$productBonusParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$productBonusParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusSettlementResults<T extends Prisma.Seller$bonusSettlementResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$bonusSettlementResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusSettlementResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusInstallments<T extends Prisma.Seller$bonusInstallmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Seller$bonusInstallmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusInstallmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2672,6 +3224,78 @@ export type Seller$saleCommissionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.SaleCommissionScalarFieldEnum | Prisma.SaleCommissionScalarFieldEnum[]
+}
+
+/**
+ * Seller.productBonusParticipants
+ */
+export type Seller$productBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductBonusScenarioParticipant
+   */
+  select?: Prisma.ProductBonusScenarioParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductBonusScenarioParticipant
+   */
+  omit?: Prisma.ProductBonusScenarioParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductBonusScenarioParticipantInclude<ExtArgs> | null
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+  orderBy?: Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput | Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.ProductBonusScenarioParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductBonusScenarioParticipantScalarFieldEnum | Prisma.ProductBonusScenarioParticipantScalarFieldEnum[]
+}
+
+/**
+ * Seller.bonusSettlementResults
+ */
+export type Seller$bonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusSettlementResult
+   */
+  select?: Prisma.BonusSettlementResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusSettlementResult
+   */
+  omit?: Prisma.BonusSettlementResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusSettlementResultInclude<ExtArgs> | null
+  where?: Prisma.BonusSettlementResultWhereInput
+  orderBy?: Prisma.BonusSettlementResultOrderByWithRelationInput | Prisma.BonusSettlementResultOrderByWithRelationInput[]
+  cursor?: Prisma.BonusSettlementResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusSettlementResultScalarFieldEnum | Prisma.BonusSettlementResultScalarFieldEnum[]
+}
+
+/**
+ * Seller.bonusInstallments
+ */
+export type Seller$bonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusInstallment
+   */
+  select?: Prisma.BonusInstallmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusInstallment
+   */
+  omit?: Prisma.BonusInstallmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusInstallmentInclude<ExtArgs> | null
+  where?: Prisma.BonusInstallmentWhereInput
+  orderBy?: Prisma.BonusInstallmentOrderByWithRelationInput | Prisma.BonusInstallmentOrderByWithRelationInput[]
+  cursor?: Prisma.BonusInstallmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusInstallmentScalarFieldEnum | Prisma.BonusInstallmentScalarFieldEnum[]
 }
 
 /**

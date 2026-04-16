@@ -160,6 +160,36 @@ export type Product = Prisma.ProductModel
  */
 export type ProductCommissionReversalRule = Prisma.ProductCommissionReversalRuleModel
 /**
+ * Model ProductBonusScenario
+ * 
+ */
+export type ProductBonusScenario = Prisma.ProductBonusScenarioModel
+/**
+ * Model ProductBonusScenarioParticipant
+ * 
+ */
+export type ProductBonusScenarioParticipant = Prisma.ProductBonusScenarioParticipantModel
+/**
+ * Model ProductBonusScenarioPayoutInstallment
+ * 
+ */
+export type ProductBonusScenarioPayoutInstallment = Prisma.ProductBonusScenarioPayoutInstallmentModel
+/**
+ * Model BonusSettlement
+ * 
+ */
+export type BonusSettlement = Prisma.BonusSettlementModel
+/**
+ * Model BonusSettlementResult
+ * 
+ */
+export type BonusSettlementResult = Prisma.BonusSettlementResultModel
+/**
+ * Model BonusInstallment
+ * 
+ */
+export type BonusInstallment = Prisma.BonusInstallmentModel
+/**
  * Model ProductSaleField
  * 
  */

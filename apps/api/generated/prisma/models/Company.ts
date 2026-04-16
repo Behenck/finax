@@ -192,6 +192,9 @@ export type CompanyWhereInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -210,6 +213,9 @@ export type CompanyOrderByWithRelationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessOrderByRelationAggregateInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionOrderByRelationAggregateInput
   productCommissions?: Prisma.ProductCommissionOrderByRelationAggregateInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantOrderByRelationAggregateInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultOrderByRelationAggregateInput
+  bonusInstallments?: Prisma.BonusInstallmentOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -232,6 +238,9 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   memberCompanyAccesses?: Prisma.MemberCompanyAccessListRelationFilter
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionListRelationFilter
   productCommissions?: Prisma.ProductCommissionListRelationFilter
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantListRelationFilter
+  bonusSettlementResults?: Prisma.BonusSettlementResultListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }, "id" | "organizationId_name">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -271,6 +280,9 @@ export type CompanyCreateInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -288,6 +300,9 @@ export type CompanyUncheckedCreateInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -305,6 +320,9 @@ export type CompanyUpdateInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -322,6 +340,9 @@ export type CompanyUncheckedUpdateInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -480,6 +501,54 @@ export type CompanyUpdateOneRequiredWithoutEmployeesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutEmployeesInput, Prisma.CompanyUpdateWithoutEmployeesInput>, Prisma.CompanyUncheckedUpdateWithoutEmployeesInput>
 }
 
+export type CompanyCreateNestedOneWithoutProductBonusParticipantsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProductBonusParticipantsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutProductBonusParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedCreateWithoutProductBonusParticipantsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProductBonusParticipantsInput
+  upsert?: Prisma.CompanyUpsertWithoutProductBonusParticipantsInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutProductBonusParticipantsInput, Prisma.CompanyUpdateWithoutProductBonusParticipantsInput>, Prisma.CompanyUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type CompanyCreateNestedOneWithoutBonusSettlementResultsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutBonusSettlementResultsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutBonusSettlementResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedCreateWithoutBonusSettlementResultsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutBonusSettlementResultsInput
+  upsert?: Prisma.CompanyUpsertWithoutBonusSettlementResultsInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutBonusSettlementResultsInput, Prisma.CompanyUpdateWithoutBonusSettlementResultsInput>, Prisma.CompanyUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type CompanyCreateNestedOneWithoutBonusInstallmentsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutBonusInstallmentsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutBonusInstallmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutBonusInstallmentsInput
+  upsert?: Prisma.CompanyUpsertWithoutBonusInstallmentsInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutBonusInstallmentsInput, Prisma.CompanyUpdateWithoutBonusInstallmentsInput>, Prisma.CompanyUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
 export type CompanyCreateNestedOneWithoutProductCommissionScenarioConditionsInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutProductCommissionScenarioConditionsInput, Prisma.CompanyUncheckedCreateWithoutProductCommissionScenarioConditionsInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProductCommissionScenarioConditionsInput
@@ -584,6 +653,9 @@ export type CompanyCreateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutMemberCompanyAccessesInput = {
@@ -600,6 +672,9 @@ export type CompanyUncheckedCreateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutMemberCompanyAccessesInput = {
@@ -632,6 +707,9 @@ export type CompanyUpdateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutMemberCompanyAccessesInput = {
@@ -648,6 +726,9 @@ export type CompanyUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutOrganizationInput = {
@@ -664,6 +745,9 @@ export type CompanyCreateWithoutOrganizationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutOrganizationInput = {
@@ -680,6 +764,9 @@ export type CompanyUncheckedCreateWithoutOrganizationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutOrganizationInput = {
@@ -733,6 +820,9 @@ export type CompanyCreateWithoutUnitsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUnitsInput = {
@@ -749,6 +839,9 @@ export type CompanyUncheckedCreateWithoutUnitsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUnitsInput = {
@@ -781,6 +874,9 @@ export type CompanyUpdateWithoutUnitsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUnitsInput = {
@@ -797,6 +893,9 @@ export type CompanyUncheckedUpdateWithoutUnitsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutEmployeesInput = {
@@ -813,6 +912,9 @@ export type CompanyCreateWithoutEmployeesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutEmployeesInput = {
@@ -829,6 +931,9 @@ export type CompanyUncheckedCreateWithoutEmployeesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutEmployeesInput = {
@@ -861,6 +966,9 @@ export type CompanyUpdateWithoutEmployeesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutEmployeesInput = {
@@ -877,6 +985,285 @@ export type CompanyUncheckedUpdateWithoutEmployeesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutCompaniesInput
+  units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutProductBonusParticipantsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  organizationId: string
+  createdAt?: Date | string
+  units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutProductBonusParticipantsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedCreateWithoutProductBonusParticipantsInput>
+}
+
+export type CompanyUpsertWithoutProductBonusParticipantsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedUpdateWithoutProductBonusParticipantsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedCreateWithoutProductBonusParticipantsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutProductBonusParticipantsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutProductBonusParticipantsInput, Prisma.CompanyUncheckedUpdateWithoutProductBonusParticipantsInput>
+}
+
+export type CompanyUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCompaniesNestedInput
+  units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutProductBonusParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutCompaniesInput
+  units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutBonusSettlementResultsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  organizationId: string
+  createdAt?: Date | string
+  units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutBonusSettlementResultsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedCreateWithoutBonusSettlementResultsInput>
+}
+
+export type CompanyUpsertWithoutBonusSettlementResultsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedUpdateWithoutBonusSettlementResultsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedCreateWithoutBonusSettlementResultsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutBonusSettlementResultsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutBonusSettlementResultsInput, Prisma.CompanyUncheckedUpdateWithoutBonusSettlementResultsInput>
+}
+
+export type CompanyUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCompaniesNestedInput
+  units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutBonusSettlementResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutCompaniesInput
+  units?: Prisma.UnitCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  name: string
+  cnpj?: string | null
+  organizationId: string
+  createdAt?: Date | string
+  units?: Prisma.UnitUncheckedCreateNestedManyWithoutCompanyInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  recurrences?: Prisma.RecurrenceUncheckedCreateNestedManyWithoutCompanyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutCompanyInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
+  productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutBonusInstallmentsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedCreateWithoutBonusInstallmentsInput>
+}
+
+export type CompanyUpsertWithoutBonusInstallmentsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedUpdateWithoutBonusInstallmentsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedCreateWithoutBonusInstallmentsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutBonusInstallmentsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutBonusInstallmentsInput, Prisma.CompanyUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
+export type CompanyUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutCompaniesNestedInput
+  units?: Prisma.UnitUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  units?: Prisma.UnitUncheckedUpdateManyWithoutCompanyNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  recurrences?: Prisma.RecurrenceUncheckedUpdateManyWithoutCompanyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutCompanyNestedInput
+  saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+  productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutProductCommissionScenarioConditionsInput = {
@@ -893,6 +1280,9 @@ export type CompanyCreateWithoutProductCommissionScenarioConditionsInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutProductCommissionScenarioConditionsInput = {
@@ -909,6 +1299,9 @@ export type CompanyUncheckedCreateWithoutProductCommissionScenarioConditionsInpu
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutProductCommissionScenarioConditionsInput = {
@@ -941,6 +1334,9 @@ export type CompanyUpdateWithoutProductCommissionScenarioConditionsInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutProductCommissionScenarioConditionsInput = {
@@ -957,6 +1353,9 @@ export type CompanyUncheckedUpdateWithoutProductCommissionScenarioConditionsInpu
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutProductCommissionsInput = {
@@ -973,6 +1372,9 @@ export type CompanyCreateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionCreateNestedManyWithoutBeneficiaryCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutProductCommissionsInput = {
@@ -989,6 +1391,9 @@ export type CompanyUncheckedCreateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutProductCommissionsInput = {
@@ -1021,6 +1426,9 @@ export type CompanyUpdateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUpdateManyWithoutBeneficiaryCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutProductCommissionsInput = {
@@ -1037,6 +1445,9 @@ export type CompanyUncheckedUpdateWithoutProductCommissionsInput = {
   saleCommissions?: Prisma.SaleCommissionUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutSalesInput = {
@@ -1053,6 +1464,9 @@ export type CompanyCreateWithoutSalesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutSalesInput = {
@@ -1069,6 +1483,9 @@ export type CompanyUncheckedCreateWithoutSalesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutSalesInput = {
@@ -1101,6 +1518,9 @@ export type CompanyUpdateWithoutSalesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutSalesInput = {
@@ -1117,6 +1537,9 @@ export type CompanyUncheckedUpdateWithoutSalesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutSaleCommissionsInput = {
@@ -1133,6 +1556,9 @@ export type CompanyCreateWithoutSaleCommissionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutSaleCommissionsInput = {
@@ -1149,6 +1575,9 @@ export type CompanyUncheckedCreateWithoutSaleCommissionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutSaleCommissionsInput = {
@@ -1181,6 +1610,9 @@ export type CompanyUpdateWithoutSaleCommissionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutSaleCommissionsInput = {
@@ -1197,6 +1629,9 @@ export type CompanyUncheckedUpdateWithoutSaleCommissionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutTransactionsInput = {
@@ -1213,6 +1648,9 @@ export type CompanyCreateWithoutTransactionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutTransactionsInput = {
@@ -1229,6 +1667,9 @@ export type CompanyUncheckedCreateWithoutTransactionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutTransactionsInput = {
@@ -1261,6 +1702,9 @@ export type CompanyUpdateWithoutTransactionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutTransactionsInput = {
@@ -1277,6 +1721,9 @@ export type CompanyUncheckedUpdateWithoutTransactionsInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateWithoutRecurrencesInput = {
@@ -1293,6 +1740,9 @@ export type CompanyCreateWithoutRecurrencesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutRecurrencesInput = {
@@ -1309,6 +1759,9 @@ export type CompanyUncheckedCreateWithoutRecurrencesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedCreateNestedManyWithoutCompanyInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedCreateNestedManyWithoutCompanyInput
   productCommissions?: Prisma.ProductCommissionUncheckedCreateNestedManyWithoutRecipientCompanyInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedCreateNestedManyWithoutCompanyInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutBeneficiaryCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutRecurrencesInput = {
@@ -1341,6 +1794,9 @@ export type CompanyUpdateWithoutRecurrencesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutRecurrencesInput = {
@@ -1357,6 +1813,9 @@ export type CompanyUncheckedUpdateWithoutRecurrencesInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyCreateManyOrganizationInput = {
@@ -1380,6 +1839,9 @@ export type CompanyUpdateWithoutOrganizationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutOrganizationInput = {
@@ -1396,6 +1858,9 @@ export type CompanyUncheckedUpdateWithoutOrganizationInput = {
   memberCompanyAccesses?: Prisma.MemberCompanyAccessUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissionScenarioConditions?: Prisma.ProductCommissionScenarioConditionUncheckedUpdateManyWithoutCompanyNestedInput
   productCommissions?: Prisma.ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyNestedInput
+  productBonusParticipants?: Prisma.ProductBonusScenarioParticipantUncheckedUpdateManyWithoutCompanyNestedInput
+  bonusSettlementResults?: Prisma.BonusSettlementResultUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutBeneficiaryCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1420,6 +1885,9 @@ export type CompanyCountOutputType = {
   memberCompanyAccesses: number
   productCommissionScenarioConditions: number
   productCommissions: number
+  productBonusParticipants: number
+  bonusSettlementResults: number
+  bonusInstallments: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1432,6 +1900,9 @@ export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   memberCompanyAccesses?: boolean | CompanyCountOutputTypeCountMemberCompanyAccessesArgs
   productCommissionScenarioConditions?: boolean | CompanyCountOutputTypeCountProductCommissionScenarioConditionsArgs
   productCommissions?: boolean | CompanyCountOutputTypeCountProductCommissionsArgs
+  productBonusParticipants?: boolean | CompanyCountOutputTypeCountProductBonusParticipantsArgs
+  bonusSettlementResults?: boolean | CompanyCountOutputTypeCountBonusSettlementResultsArgs
+  bonusInstallments?: boolean | CompanyCountOutputTypeCountBonusInstallmentsArgs
 }
 
 /**
@@ -1507,6 +1978,27 @@ export type CompanyCountOutputTypeCountProductCommissionsArgs<ExtArgs extends ru
   where?: Prisma.ProductCommissionWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountProductBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+}
+
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountBonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusSettlementResultWhereInput
+}
+
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountBonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusInstallmentWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1524,6 +2016,9 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   memberCompanyAccesses?: boolean | Prisma.Company$memberCompanyAccessesArgs<ExtArgs>
   productCommissionScenarioConditions?: boolean | Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Company$productCommissionsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Company$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Company$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Company$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -1565,6 +2060,9 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   memberCompanyAccesses?: boolean | Prisma.Company$memberCompanyAccessesArgs<ExtArgs>
   productCommissionScenarioConditions?: boolean | Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>
   productCommissions?: boolean | Prisma.Company$productCommissionsArgs<ExtArgs>
+  productBonusParticipants?: boolean | Prisma.Company$productBonusParticipantsArgs<ExtArgs>
+  bonusSettlementResults?: boolean | Prisma.Company$bonusSettlementResultsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Company$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1587,6 +2085,9 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     memberCompanyAccesses: Prisma.$MemberCompanyAccessPayload<ExtArgs>[]
     productCommissionScenarioConditions: Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>[]
     productCommissions: Prisma.$ProductCommissionPayload<ExtArgs>[]
+    productBonusParticipants: Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>[]
+    bonusSettlementResults: Prisma.$BonusSettlementResultPayload<ExtArgs>[]
+    bonusInstallments: Prisma.$BonusInstallmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1998,6 +2499,9 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   memberCompanyAccesses<T extends Prisma.Company$memberCompanyAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$memberCompanyAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberCompanyAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissionScenarioConditions<T extends Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$productCommissionScenarioConditionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productCommissions<T extends Prisma.Company$productCommissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$productCommissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productBonusParticipants<T extends Prisma.Company$productBonusParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$productBonusParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusSettlementResults<T extends Prisma.Company$bonusSettlementResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$bonusSettlementResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusSettlementResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusInstallments<T extends Prisma.Company$bonusInstallmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$bonusInstallmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusInstallmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2641,6 +3145,78 @@ export type Company$productCommissionsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.ProductCommissionScalarFieldEnum | Prisma.ProductCommissionScalarFieldEnum[]
+}
+
+/**
+ * Company.productBonusParticipants
+ */
+export type Company$productBonusParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductBonusScenarioParticipant
+   */
+  select?: Prisma.ProductBonusScenarioParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductBonusScenarioParticipant
+   */
+  omit?: Prisma.ProductBonusScenarioParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductBonusScenarioParticipantInclude<ExtArgs> | null
+  where?: Prisma.ProductBonusScenarioParticipantWhereInput
+  orderBy?: Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput | Prisma.ProductBonusScenarioParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.ProductBonusScenarioParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductBonusScenarioParticipantScalarFieldEnum | Prisma.ProductBonusScenarioParticipantScalarFieldEnum[]
+}
+
+/**
+ * Company.bonusSettlementResults
+ */
+export type Company$bonusSettlementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusSettlementResult
+   */
+  select?: Prisma.BonusSettlementResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusSettlementResult
+   */
+  omit?: Prisma.BonusSettlementResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusSettlementResultInclude<ExtArgs> | null
+  where?: Prisma.BonusSettlementResultWhereInput
+  orderBy?: Prisma.BonusSettlementResultOrderByWithRelationInput | Prisma.BonusSettlementResultOrderByWithRelationInput[]
+  cursor?: Prisma.BonusSettlementResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusSettlementResultScalarFieldEnum | Prisma.BonusSettlementResultScalarFieldEnum[]
+}
+
+/**
+ * Company.bonusInstallments
+ */
+export type Company$bonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusInstallment
+   */
+  select?: Prisma.BonusInstallmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusInstallment
+   */
+  omit?: Prisma.BonusInstallmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusInstallmentInclude<ExtArgs> | null
+  where?: Prisma.BonusInstallmentWhereInput
+  orderBy?: Prisma.BonusInstallmentOrderByWithRelationInput | Prisma.BonusInstallmentOrderByWithRelationInput[]
+  cursor?: Prisma.BonusInstallmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusInstallmentScalarFieldEnum | Prisma.BonusInstallmentScalarFieldEnum[]
 }
 
 /**

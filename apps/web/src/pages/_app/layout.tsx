@@ -2,9 +2,9 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/context/app-context";
 import { auth } from "@/hooks/auth";
+import { getAuthToken } from "@/lib/auth-token";
 import { PermissionsProvider } from "@/permissions/provider";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
-import Cookies from "js-cookie";
 import { AppTopHeader } from "./-components/app-top-header";
 import { AppSidebar } from "./-components/sidebar";
 import { QuickActionsCommand } from "./-components/quick-actions-command";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
 	const { data, isPending } = auth.useSession();
-	const token = Cookies.get("token");
+	const token = getAuthToken();
 
 	if (!token) {
 		return <Navigate to="/sign-in" replace />;

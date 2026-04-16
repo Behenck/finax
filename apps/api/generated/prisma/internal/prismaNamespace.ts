@@ -408,6 +408,12 @@ export const ModelName = {
   Seller: 'Seller',
   Product: 'Product',
   ProductCommissionReversalRule: 'ProductCommissionReversalRule',
+  ProductBonusScenario: 'ProductBonusScenario',
+  ProductBonusScenarioParticipant: 'ProductBonusScenarioParticipant',
+  ProductBonusScenarioPayoutInstallment: 'ProductBonusScenarioPayoutInstallment',
+  BonusSettlement: 'BonusSettlement',
+  BonusSettlementResult: 'BonusSettlementResult',
+  BonusInstallment: 'BonusInstallment',
   ProductSaleField: 'ProductSaleField',
   ProductSaleFieldOption: 'ProductSaleFieldOption',
   ProductCommissionScenario: 'ProductCommissionScenario',
@@ -439,7 +445,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleDelinquency" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productBonusScenario" | "productBonusScenarioParticipant" | "productBonusScenarioPayoutInstallment" | "bonusSettlement" | "bonusSettlementResult" | "bonusInstallment" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleDelinquency" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2219,6 +2225,450 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductBonusScenario: {
+      payload: Prisma.$ProductBonusScenarioPayload<ExtArgs>
+      fields: Prisma.ProductBonusScenarioFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductBonusScenarioFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductBonusScenarioFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductBonusScenarioFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductBonusScenarioFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        findMany: {
+          args: Prisma.ProductBonusScenarioFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>[]
+        }
+        create: {
+          args: Prisma.ProductBonusScenarioCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        createMany: {
+          args: Prisma.ProductBonusScenarioCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductBonusScenarioCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductBonusScenarioDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        update: {
+          args: Prisma.ProductBonusScenarioUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductBonusScenarioDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductBonusScenarioUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductBonusScenarioUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductBonusScenarioUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductBonusScenarioAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductBonusScenario>
+        }
+        groupBy: {
+          args: Prisma.ProductBonusScenarioGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductBonusScenarioCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductBonusScenarioParticipant: {
+      payload: Prisma.$ProductBonusScenarioParticipantPayload<ExtArgs>
+      fields: Prisma.ProductBonusScenarioParticipantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductBonusScenarioParticipantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductBonusScenarioParticipantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductBonusScenarioParticipantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductBonusScenarioParticipantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        findMany: {
+          args: Prisma.ProductBonusScenarioParticipantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>[]
+        }
+        create: {
+          args: Prisma.ProductBonusScenarioParticipantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        createMany: {
+          args: Prisma.ProductBonusScenarioParticipantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductBonusScenarioParticipantCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductBonusScenarioParticipantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        update: {
+          args: Prisma.ProductBonusScenarioParticipantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductBonusScenarioParticipantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductBonusScenarioParticipantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductBonusScenarioParticipantUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductBonusScenarioParticipantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioParticipantPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductBonusScenarioParticipantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductBonusScenarioParticipant>
+        }
+        groupBy: {
+          args: Prisma.ProductBonusScenarioParticipantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioParticipantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductBonusScenarioParticipantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioParticipantCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductBonusScenarioPayoutInstallment: {
+      payload: Prisma.$ProductBonusScenarioPayoutInstallmentPayload<ExtArgs>
+      fields: Prisma.ProductBonusScenarioPayoutInstallmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        findMany: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>[]
+        }
+        create: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        createMany: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        update: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBonusScenarioPayoutInstallmentPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductBonusScenarioPayoutInstallment>
+        }
+        groupBy: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioPayoutInstallmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductBonusScenarioPayoutInstallmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBonusScenarioPayoutInstallmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    BonusSettlement: {
+      payload: Prisma.$BonusSettlementPayload<ExtArgs>
+      fields: Prisma.BonusSettlementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BonusSettlementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BonusSettlementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        findFirst: {
+          args: Prisma.BonusSettlementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BonusSettlementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        findMany: {
+          args: Prisma.BonusSettlementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>[]
+        }
+        create: {
+          args: Prisma.BonusSettlementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        createMany: {
+          args: Prisma.BonusSettlementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BonusSettlementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>[]
+        }
+        delete: {
+          args: Prisma.BonusSettlementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        update: {
+          args: Prisma.BonusSettlementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        deleteMany: {
+          args: Prisma.BonusSettlementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BonusSettlementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BonusSettlementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>[]
+        }
+        upsert: {
+          args: Prisma.BonusSettlementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementPayload>
+        }
+        aggregate: {
+          args: Prisma.BonusSettlementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBonusSettlement>
+        }
+        groupBy: {
+          args: Prisma.BonusSettlementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusSettlementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BonusSettlementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusSettlementCountAggregateOutputType> | number
+        }
+      }
+    }
+    BonusSettlementResult: {
+      payload: Prisma.$BonusSettlementResultPayload<ExtArgs>
+      fields: Prisma.BonusSettlementResultFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BonusSettlementResultFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BonusSettlementResultFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        findFirst: {
+          args: Prisma.BonusSettlementResultFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BonusSettlementResultFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        findMany: {
+          args: Prisma.BonusSettlementResultFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>[]
+        }
+        create: {
+          args: Prisma.BonusSettlementResultCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        createMany: {
+          args: Prisma.BonusSettlementResultCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BonusSettlementResultCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>[]
+        }
+        delete: {
+          args: Prisma.BonusSettlementResultDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        update: {
+          args: Prisma.BonusSettlementResultUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        deleteMany: {
+          args: Prisma.BonusSettlementResultDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BonusSettlementResultUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BonusSettlementResultUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>[]
+        }
+        upsert: {
+          args: Prisma.BonusSettlementResultUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusSettlementResultPayload>
+        }
+        aggregate: {
+          args: Prisma.BonusSettlementResultAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBonusSettlementResult>
+        }
+        groupBy: {
+          args: Prisma.BonusSettlementResultGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusSettlementResultGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BonusSettlementResultCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusSettlementResultCountAggregateOutputType> | number
+        }
+      }
+    }
+    BonusInstallment: {
+      payload: Prisma.$BonusInstallmentPayload<ExtArgs>
+      fields: Prisma.BonusInstallmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BonusInstallmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BonusInstallmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        findFirst: {
+          args: Prisma.BonusInstallmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BonusInstallmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        findMany: {
+          args: Prisma.BonusInstallmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>[]
+        }
+        create: {
+          args: Prisma.BonusInstallmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        createMany: {
+          args: Prisma.BonusInstallmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BonusInstallmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>[]
+        }
+        delete: {
+          args: Prisma.BonusInstallmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        update: {
+          args: Prisma.BonusInstallmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.BonusInstallmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BonusInstallmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BonusInstallmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.BonusInstallmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BonusInstallmentPayload>
+        }
+        aggregate: {
+          args: Prisma.BonusInstallmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBonusInstallment>
+        }
+        groupBy: {
+          args: Prisma.BonusInstallmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusInstallmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BonusInstallmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BonusInstallmentCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductSaleField: {
       payload: Prisma.$ProductSaleFieldPayload<ExtArgs>
       fields: Prisma.ProductSaleFieldFieldRefs
@@ -3823,6 +4273,119 @@ export const ProductCommissionReversalRuleScalarFieldEnum = {
 export type ProductCommissionReversalRuleScalarFieldEnum = (typeof ProductCommissionReversalRuleScalarFieldEnum)[keyof typeof ProductCommissionReversalRuleScalarFieldEnum]
 
 
+export const ProductBonusScenarioScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  metric: 'metric',
+  targetAmount: 'targetAmount',
+  periodFrequency: 'periodFrequency',
+  payoutEnabled: 'payoutEnabled',
+  payoutTotalPercentage: 'payoutTotalPercentage',
+  payoutDueDay: 'payoutDueDay',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductBonusScenarioScalarFieldEnum = (typeof ProductBonusScenarioScalarFieldEnum)[keyof typeof ProductBonusScenarioScalarFieldEnum]
+
+
+export const ProductBonusScenarioParticipantScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  type: 'type',
+  companyId: 'companyId',
+  partnerId: 'partnerId',
+  sellerId: 'sellerId',
+  supervisorId: 'supervisorId',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductBonusScenarioParticipantScalarFieldEnum = (typeof ProductBonusScenarioParticipantScalarFieldEnum)[keyof typeof ProductBonusScenarioParticipantScalarFieldEnum]
+
+
+export const ProductBonusScenarioPayoutInstallmentScalarFieldEnum = {
+  id: 'id',
+  scenarioId: 'scenarioId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductBonusScenarioPayoutInstallmentScalarFieldEnum = (typeof ProductBonusScenarioPayoutInstallmentScalarFieldEnum)[keyof typeof ProductBonusScenarioPayoutInstallmentScalarFieldEnum]
+
+
+export const BonusSettlementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  productId: 'productId',
+  periodFrequency: 'periodFrequency',
+  periodYear: 'periodYear',
+  periodIndex: 'periodIndex',
+  settledById: 'settledById',
+  settledAt: 'settledAt',
+  winnersCount: 'winnersCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BonusSettlementScalarFieldEnum = (typeof BonusSettlementScalarFieldEnum)[keyof typeof BonusSettlementScalarFieldEnum]
+
+
+export const BonusSettlementResultScalarFieldEnum = {
+  id: 'id',
+  settlementId: 'settlementId',
+  scenarioId: 'scenarioId',
+  participantType: 'participantType',
+  beneficiaryCompanyId: 'beneficiaryCompanyId',
+  beneficiaryPartnerId: 'beneficiaryPartnerId',
+  beneficiarySellerId: 'beneficiarySellerId',
+  beneficiarySupervisorId: 'beneficiarySupervisorId',
+  beneficiaryLabel: 'beneficiaryLabel',
+  achievedAmount: 'achievedAmount',
+  targetAmount: 'targetAmount',
+  payoutEnabled: 'payoutEnabled',
+  payoutAmount: 'payoutAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type BonusSettlementResultScalarFieldEnum = (typeof BonusSettlementResultScalarFieldEnum)[keyof typeof BonusSettlementResultScalarFieldEnum]
+
+
+export const BonusInstallmentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  settlementId: 'settlementId',
+  resultId: 'resultId',
+  scenarioId: 'scenarioId',
+  productId: 'productId',
+  scenarioName: 'scenarioName',
+  periodFrequency: 'periodFrequency',
+  periodYear: 'periodYear',
+  periodIndex: 'periodIndex',
+  recipientType: 'recipientType',
+  direction: 'direction',
+  beneficiaryCompanyId: 'beneficiaryCompanyId',
+  beneficiaryPartnerId: 'beneficiaryPartnerId',
+  beneficiarySellerId: 'beneficiarySellerId',
+  beneficiarySupervisorId: 'beneficiarySupervisorId',
+  beneficiaryLabel: 'beneficiaryLabel',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  amount: 'amount',
+  status: 'status',
+  expectedPaymentDate: 'expectedPaymentDate',
+  paymentDate: 'paymentDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BonusInstallmentScalarFieldEnum = (typeof BonusInstallmentScalarFieldEnum)[keyof typeof BonusInstallmentScalarFieldEnum]
+
+
 export const ProductSaleFieldScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
@@ -4468,6 +5031,90 @@ export type ListEnumProductCommissionReversalModeFieldRefInput<$PrismaModel> = F
 
 
 /**
+ * Reference to a field of type 'ProductBonusMetric'
+ */
+export type EnumProductBonusMetricFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusMetric'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductBonusMetric[]'
+ */
+export type ListEnumProductBonusMetricFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusMetric[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductBonusPeriodFrequency'
+ */
+export type EnumProductBonusPeriodFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusPeriodFrequency'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductBonusPeriodFrequency[]'
+ */
+export type ListEnumProductBonusPeriodFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusPeriodFrequency[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductBonusParticipantType'
+ */
+export type EnumProductBonusParticipantTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusParticipantType'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductBonusParticipantType[]'
+ */
+export type ListEnumProductBonusParticipantTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductBonusParticipantType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionRecipientType'
+ */
+export type EnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionRecipientType[]'
+ */
+export type ListEnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionDirection'
+ */
+export type EnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionDirection[]'
+ */
+export type ListEnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionInstallmentStatus'
+ */
+export type EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleCommissionInstallmentStatus[]'
+ */
+export type ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'SaleDynamicFieldType'
  */
 export type EnumSaleDynamicFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleDynamicFieldType'>
@@ -4580,34 +5227,6 @@ export type ListEnumSaleCommissionSourceTypeFieldRefInput<$PrismaModel> = FieldR
 
 
 /**
- * Reference to a field of type 'SaleCommissionRecipientType'
- */
-export type EnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType'>
-    
-
-
-/**
- * Reference to a field of type 'SaleCommissionRecipientType[]'
- */
-export type ListEnumSaleCommissionRecipientTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionRecipientType[]'>
-    
-
-
-/**
- * Reference to a field of type 'SaleCommissionDirection'
- */
-export type EnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection'>
-    
-
-
-/**
- * Reference to a field of type 'SaleCommissionDirection[]'
- */
-export type ListEnumSaleCommissionDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionDirection[]'>
-    
-
-
-/**
  * Reference to a field of type 'SaleCommissionCalculationBase'
  */
 export type EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionCalculationBase'>
@@ -4618,20 +5237,6 @@ export type EnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel> = Field
  * Reference to a field of type 'SaleCommissionCalculationBase[]'
  */
 export type ListEnumSaleCommissionCalculationBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionCalculationBase[]'>
-    
-
-
-/**
- * Reference to a field of type 'SaleCommissionInstallmentStatus'
- */
-export type EnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus'>
-    
-
-
-/**
- * Reference to a field of type 'SaleCommissionInstallmentStatus[]'
- */
-export type ListEnumSaleCommissionInstallmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleCommissionInstallmentStatus[]'>
     
 
 
@@ -4837,6 +5442,12 @@ export type GlobalOmitConfig = {
   seller?: Prisma.SellerOmit
   product?: Prisma.ProductOmit
   productCommissionReversalRule?: Prisma.ProductCommissionReversalRuleOmit
+  productBonusScenario?: Prisma.ProductBonusScenarioOmit
+  productBonusScenarioParticipant?: Prisma.ProductBonusScenarioParticipantOmit
+  productBonusScenarioPayoutInstallment?: Prisma.ProductBonusScenarioPayoutInstallmentOmit
+  bonusSettlement?: Prisma.BonusSettlementOmit
+  bonusSettlementResult?: Prisma.BonusSettlementResultOmit
+  bonusInstallment?: Prisma.BonusInstallmentOmit
   productSaleField?: Prisma.ProductSaleFieldOmit
   productSaleFieldOption?: Prisma.ProductSaleFieldOptionOmit
   productCommissionScenario?: Prisma.ProductCommissionScenarioOmit

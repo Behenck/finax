@@ -1,6 +1,6 @@
 import { postAuthVerifyOtp } from "@/http/generated";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
+import { setAuthToken } from "@/lib/auth-token";
 
 type SignInInput = {
 	email: string;
@@ -17,7 +17,7 @@ export function useSignInOTP() {
 		},
 
 		onSuccess: async (data) => {
-			Cookies.set("token", data.accessToken);
+			setAuthToken(data.accessToken);
 
 			await queryClient.invalidateQueries({
 				queryKey: ["session"],

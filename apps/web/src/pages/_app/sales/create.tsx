@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAbility } from "@/permissions/access";
 import { ArrowLeft, ClipboardPlus } from "lucide-react";
-import { SaleForm } from "./-components/sale-form";
+import { SaleForm } from "./-components/sale-form/index";
 
 const createSaleSearchSchema = z.object({
 	customerId: z.uuid().optional(),
@@ -37,15 +37,22 @@ function CreateSalePage() {
 	if (duplicateSaleId && duplicateSaleQuery.isLoading) {
 		return (
 			<main className="w-full space-y-6">
-				<span className="text-muted-foreground">Carregando venda para duplicação...</span>
+				<span className="text-muted-foreground">
+					Carregando venda para duplicação...
+				</span>
 			</main>
 		);
 	}
 
-	if (duplicateSaleId && (duplicateSaleQuery.isError || !duplicateSaleQuery.data?.sale)) {
+	if (
+		duplicateSaleId &&
+		(duplicateSaleQuery.isError || !duplicateSaleQuery.data?.sale)
+	) {
 		return (
 			<main className="w-full space-y-6">
-				<span className="text-destructive">Não foi possível carregar a venda para duplicar.</span>
+				<span className="text-destructive">
+					Não foi possível carregar a venda para duplicar.
+				</span>
 			</main>
 		);
 	}

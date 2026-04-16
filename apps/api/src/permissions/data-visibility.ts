@@ -312,6 +312,53 @@ function toOrInstallmentsWhere(
 	};
 }
 
+function toOrBonusInstallmentsWhere(
+	conditions: Prisma.BonusInstallmentWhereInput[],
+): Prisma.BonusInstallmentWhereInput | null {
+	if (conditions.length === 0) {
+		return null;
+	}
+
+	if (conditions.length === 1) {
+		return conditions[0];
+	}
+
+	return {
+		OR: conditions,
+	};
+}
+
+function buildBonusInstallmentBeneficiaryMatchConditions(
+	context: Pick<
+		MemberDataVisibilityContext,
+		"memberId" | "linkedSellerIds" | "linkedPartnerIds"
+	>,
+) {
+	const conditions: Prisma.BonusInstallmentWhereInput[] = [
+		{
+			beneficiarySupervisorId: context.memberId,
+		},
+	];
+
+	if (context.linkedSellerIds.length > 0) {
+		conditions.push({
+			beneficiarySellerId: {
+				in: context.linkedSellerIds,
+			},
+		});
+	}
+
+	if (context.linkedPartnerIds.length > 0) {
+		conditions.push({
+			beneficiaryPartnerId: {
+				in: context.linkedPartnerIds,
+			},
+		});
+	}
+
+	return conditions;
+}
+
 export function buildCustomersVisibilityWhere(params: {
 	organizationId: string;
 	context: MemberDataVisibilityContext;
@@ -508,6 +555,36 @@ export function buildCommissionInstallmentsVisibilityWhere(
 	}
 
 	return linkedInstallmentsFilter;
+}
+
+export function buildBonusInstallmentsBeneficiaryVisibilityWhere(
+	context: MemberDataVisibilityContext,
+): Prisma.BonusInstallmentWhereInput | undefined {
+	if (context.commissionsScope === MemberDataScope.ORGANIZATION_ALL) {
+		return undefined;
+	}
+
+	if (context.commissionsScope === MemberDataScope.COMPANY_ONLY) {
+		const companyIds = Array.from(
+			new Set(context.memberCompanyAccesses.map((access) => access.companyId)),
+		);
+
+		return {
+			beneficiaryCompanyId: {
+				in: companyIds,
+			},
+		};
+	}
+
+	return (
+		toOrBonusInstallmentsWhere(
+			buildBonusInstallmentBeneficiaryMatchConditions(context),
+		) ?? {
+			id: {
+				in: [] as string[],
+			},
+		}
+	);
 }
 
 export function buildPartnersVisibilityWhere(

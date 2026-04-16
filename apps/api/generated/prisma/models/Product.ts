@@ -293,6 +293,9 @@ export type ProductWhereInput = {
   salesTransactionCostCenter?: Prisma.XOR<Prisma.CostCenterNullableScalarRelationFilter, Prisma.CostCenterWhereInput> | null
   commissionScenarios?: Prisma.ProductCommissionScenarioListRelationFilter
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleListRelationFilter
+  bonusScenarios?: Prisma.ProductBonusScenarioListRelationFilter
+  bonusSettlements?: Prisma.BonusSettlementListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }
 
 export type ProductOrderByWithRelationInput = {
@@ -318,6 +321,9 @@ export type ProductOrderByWithRelationInput = {
   salesTransactionCostCenter?: Prisma.CostCenterOrderByWithRelationInput
   commissionScenarios?: Prisma.ProductCommissionScenarioOrderByRelationAggregateInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleOrderByRelationAggregateInput
+  bonusScenarios?: Prisma.ProductBonusScenarioOrderByRelationAggregateInput
+  bonusSettlements?: Prisma.BonusSettlementOrderByRelationAggregateInput
+  bonusInstallments?: Prisma.BonusInstallmentOrderByRelationAggregateInput
 }
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -347,6 +353,9 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   salesTransactionCostCenter?: Prisma.XOR<Prisma.CostCenterNullableScalarRelationFilter, Prisma.CostCenterWhereInput> | null
   commissionScenarios?: Prisma.ProductCommissionScenarioListRelationFilter
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleListRelationFilter
+  bonusScenarios?: Prisma.ProductBonusScenarioListRelationFilter
+  bonusSettlements?: Prisma.BonusSettlementListRelationFilter
+  bonusInstallments?: Prisma.BonusInstallmentListRelationFilter
 }, "id" | "organizationId_parentId_name">
 
 export type ProductOrderByWithAggregationInput = {
@@ -408,6 +417,9 @@ export type ProductCreateInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateInput = {
@@ -429,6 +441,9 @@ export type ProductUncheckedCreateInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
@@ -450,6 +465,9 @@ export type ProductUpdateInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateInput = {
@@ -471,6 +489,9 @@ export type ProductUncheckedUpdateInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
@@ -811,6 +832,48 @@ export type ProductUpdateOneRequiredWithoutCommissionReversalRulesNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutCommissionReversalRulesInput, Prisma.ProductUpdateWithoutCommissionReversalRulesInput>, Prisma.ProductUncheckedUpdateWithoutCommissionReversalRulesInput>
 }
 
+export type ProductCreateNestedOneWithoutBonusScenariosInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusScenariosInput, Prisma.ProductUncheckedCreateWithoutBonusScenariosInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusScenariosInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneRequiredWithoutBonusScenariosNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusScenariosInput, Prisma.ProductUncheckedCreateWithoutBonusScenariosInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusScenariosInput
+  upsert?: Prisma.ProductUpsertWithoutBonusScenariosInput
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutBonusScenariosInput, Prisma.ProductUpdateWithoutBonusScenariosInput>, Prisma.ProductUncheckedUpdateWithoutBonusScenariosInput>
+}
+
+export type ProductCreateNestedOneWithoutBonusSettlementsInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusSettlementsInput, Prisma.ProductUncheckedCreateWithoutBonusSettlementsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusSettlementsInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneRequiredWithoutBonusSettlementsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusSettlementsInput, Prisma.ProductUncheckedCreateWithoutBonusSettlementsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusSettlementsInput
+  upsert?: Prisma.ProductUpsertWithoutBonusSettlementsInput
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutBonusSettlementsInput, Prisma.ProductUpdateWithoutBonusSettlementsInput>, Prisma.ProductUncheckedUpdateWithoutBonusSettlementsInput>
+}
+
+export type ProductCreateNestedOneWithoutBonusInstallmentsInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusInstallmentsInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneRequiredWithoutBonusInstallmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedCreateWithoutBonusInstallmentsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBonusInstallmentsInput
+  upsert?: Prisma.ProductUpsertWithoutBonusInstallmentsInput
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutBonusInstallmentsInput, Prisma.ProductUpdateWithoutBonusInstallmentsInput>, Prisma.ProductUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
 export type ProductCreateNestedOneWithoutSaleFieldsInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutSaleFieldsInput, Prisma.ProductUncheckedCreateWithoutSaleFieldsInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutSaleFieldsInput
@@ -871,6 +934,9 @@ export type ProductCreateWithoutOrganizationInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutOrganizationInput = {
@@ -891,6 +957,9 @@ export type ProductUncheckedCreateWithoutOrganizationInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutOrganizationInput = {
@@ -956,6 +1025,9 @@ export type ProductCreateWithoutSalesTransactionCategoryInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSalesTransactionCategoryInput = {
@@ -976,6 +1048,9 @@ export type ProductUncheckedCreateWithoutSalesTransactionCategoryInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSalesTransactionCategoryInput = {
@@ -1022,6 +1097,9 @@ export type ProductCreateWithoutSalesTransactionCostCenterInput = {
   salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSalesTransactionCostCenterInput = {
@@ -1042,6 +1120,9 @@ export type ProductUncheckedCreateWithoutSalesTransactionCostCenterInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSalesTransactionCostCenterInput = {
@@ -1088,6 +1169,9 @@ export type ProductCreateWithoutChildrenInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutChildrenInput = {
@@ -1108,6 +1192,9 @@ export type ProductUncheckedCreateWithoutChildrenInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutChildrenInput = {
@@ -1133,6 +1220,9 @@ export type ProductCreateWithoutParentInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutParentInput = {
@@ -1153,6 +1243,9 @@ export type ProductUncheckedCreateWithoutParentInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutParentInput = {
@@ -1194,6 +1287,9 @@ export type ProductUpdateWithoutChildrenInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutChildrenInput = {
@@ -1214,6 +1310,9 @@ export type ProductUncheckedUpdateWithoutChildrenInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUpsertWithWhereUniqueWithoutParentInput = {
@@ -1250,6 +1349,9 @@ export type ProductCreateWithoutCommissionReversalRulesInput = {
   salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCommissionReversalRulesInput = {
@@ -1270,6 +1372,9 @@ export type ProductUncheckedCreateWithoutCommissionReversalRulesInput = {
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCommissionReversalRulesInput = {
@@ -1306,6 +1411,9 @@ export type ProductUpdateWithoutCommissionReversalRulesInput = {
   salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCommissionReversalRulesInput = {
@@ -1326,6 +1434,333 @@ export type ProductUncheckedUpdateWithoutCommissionReversalRulesInput = {
   sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutBonusScenariosInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
+  parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutBonusScenariosInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutBonusScenariosInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusScenariosInput, Prisma.ProductUncheckedCreateWithoutBonusScenariosInput>
+}
+
+export type ProductUpsertWithoutBonusScenariosInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutBonusScenariosInput, Prisma.ProductUncheckedUpdateWithoutBonusScenariosInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusScenariosInput, Prisma.ProductUncheckedCreateWithoutBonusScenariosInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutBonusScenariosInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutBonusScenariosInput, Prisma.ProductUncheckedUpdateWithoutBonusScenariosInput>
+}
+
+export type ProductUpdateWithoutBonusScenariosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutBonusScenariosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutBonusSettlementsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
+  parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutBonusSettlementsInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutBonusSettlementsInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusSettlementsInput, Prisma.ProductUncheckedCreateWithoutBonusSettlementsInput>
+}
+
+export type ProductUpsertWithoutBonusSettlementsInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutBonusSettlementsInput, Prisma.ProductUncheckedUpdateWithoutBonusSettlementsInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusSettlementsInput, Prisma.ProductUncheckedCreateWithoutBonusSettlementsInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutBonusSettlementsInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutBonusSettlementsInput, Prisma.ProductUncheckedUpdateWithoutBonusSettlementsInput>
+}
+
+export type ProductUpdateWithoutBonusSettlementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutBonusSettlementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProductsInput
+  parent?: Prisma.ProductCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldCreateNestedManyWithoutProductInput
+  salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
+  salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutBonusInstallmentsInput = {
+  id?: string
+  organizationId: string
+  parentId?: string | null
+  name: string
+  description?: string | null
+  isActive?: boolean
+  sortOrder?: number
+  salesTransactionCategoryId?: string | null
+  salesTransactionCostCenterId?: string | null
+  commissionReversalMode?: $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ProductUncheckedCreateNestedManyWithoutParentInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutBonusInstallmentsInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedCreateWithoutBonusInstallmentsInput>
+}
+
+export type ProductUpsertWithoutBonusInstallmentsInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedUpdateWithoutBonusInstallmentsInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedCreateWithoutBonusInstallmentsInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutBonusInstallmentsInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutBonusInstallmentsInput, Prisma.ProductUncheckedUpdateWithoutBonusInstallmentsInput>
+}
+
+export type ProductUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  parent?: Prisma.ProductUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUpdateManyWithoutProductNestedInput
+  salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
+  salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutBonusInstallmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  salesTransactionCategoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesTransactionCostCenterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissionReversalMode?: Prisma.NullableEnumProductCommissionReversalModeFieldUpdateOperationsInput | $Enums.ProductCommissionReversalMode | null
+  commissionReversalTotalPercentage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ProductUncheckedUpdateManyWithoutParentNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
+  saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
+  commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
+  commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutSaleFieldsInput = {
@@ -1346,6 +1781,9 @@ export type ProductCreateWithoutSaleFieldsInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSaleFieldsInput = {
@@ -1366,6 +1804,9 @@ export type ProductUncheckedCreateWithoutSaleFieldsInput = {
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSaleFieldsInput = {
@@ -1402,6 +1843,9 @@ export type ProductUpdateWithoutSaleFieldsInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSaleFieldsInput = {
@@ -1422,6 +1866,9 @@ export type ProductUncheckedUpdateWithoutSaleFieldsInput = {
   sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutCommissionScenariosInput = {
@@ -1442,6 +1889,9 @@ export type ProductCreateWithoutCommissionScenariosInput = {
   salesTransactionCategory?: Prisma.CategoryCreateNestedOneWithoutSalesTransactionProductsInput
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCommissionScenariosInput = {
@@ -1462,6 +1912,9 @@ export type ProductUncheckedCreateWithoutCommissionScenariosInput = {
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutProductInput
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCommissionScenariosInput = {
@@ -1498,6 +1951,9 @@ export type ProductUpdateWithoutCommissionScenariosInput = {
   salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCommissionScenariosInput = {
@@ -1518,6 +1974,9 @@ export type ProductUncheckedUpdateWithoutCommissionScenariosInput = {
   sales?: Prisma.SaleUncheckedUpdateManyWithoutProductNestedInput
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutSalesInput = {
@@ -1538,6 +1997,9 @@ export type ProductCreateWithoutSalesInput = {
   salesTransactionCostCenter?: Prisma.CostCenterCreateNestedOneWithoutSalesTransactionProductsInput
   commissionScenarios?: Prisma.ProductCommissionScenarioCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSalesInput = {
@@ -1558,6 +2020,9 @@ export type ProductUncheckedCreateWithoutSalesInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedCreateNestedManyWithoutProductInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedCreateNestedManyWithoutProductInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedCreateNestedManyWithoutProductInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedCreateNestedManyWithoutProductInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedCreateNestedManyWithoutProductInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSalesInput = {
@@ -1594,6 +2059,9 @@ export type ProductUpdateWithoutSalesInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSalesInput = {
@@ -1614,6 +2082,9 @@ export type ProductUncheckedUpdateWithoutSalesInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyOrganizationInput = {
@@ -1649,6 +2120,9 @@ export type ProductUpdateWithoutOrganizationInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutOrganizationInput = {
@@ -1669,6 +2143,9 @@ export type ProductUncheckedUpdateWithoutOrganizationInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1719,6 +2196,9 @@ export type ProductUpdateWithoutSalesTransactionCategoryInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSalesTransactionCategoryInput = {
@@ -1739,6 +2219,9 @@ export type ProductUncheckedUpdateWithoutSalesTransactionCategoryInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutSalesTransactionCategoryInput = {
@@ -1789,6 +2272,9 @@ export type ProductUpdateWithoutSalesTransactionCostCenterInput = {
   salesTransactionCategory?: Prisma.CategoryUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput = {
@@ -1809,6 +2295,9 @@ export type ProductUncheckedUpdateWithoutSalesTransactionCostCenterInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutSalesTransactionCostCenterInput = {
@@ -1859,6 +2348,9 @@ export type ProductUpdateWithoutParentInput = {
   salesTransactionCostCenter?: Prisma.CostCenterUpdateOneWithoutSalesTransactionProductsNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutParentInput = {
@@ -1879,6 +2371,9 @@ export type ProductUncheckedUpdateWithoutParentInput = {
   saleFields?: Prisma.ProductSaleFieldUncheckedUpdateManyWithoutProductNestedInput
   commissionScenarios?: Prisma.ProductCommissionScenarioUncheckedUpdateManyWithoutProductNestedInput
   commissionReversalRules?: Prisma.ProductCommissionReversalRuleUncheckedUpdateManyWithoutProductNestedInput
+  bonusScenarios?: Prisma.ProductBonusScenarioUncheckedUpdateManyWithoutProductNestedInput
+  bonusSettlements?: Prisma.BonusSettlementUncheckedUpdateManyWithoutProductNestedInput
+  bonusInstallments?: Prisma.BonusInstallmentUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutParentInput = {
@@ -1907,6 +2402,9 @@ export type ProductCountOutputType = {
   saleFields: number
   commissionScenarios: number
   commissionReversalRules: number
+  bonusScenarios: number
+  bonusSettlements: number
+  bonusInstallments: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1915,6 +2413,9 @@ export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   saleFields?: boolean | ProductCountOutputTypeCountSaleFieldsArgs
   commissionScenarios?: boolean | ProductCountOutputTypeCountCommissionScenariosArgs
   commissionReversalRules?: boolean | ProductCountOutputTypeCountCommissionReversalRulesArgs
+  bonusScenarios?: boolean | ProductCountOutputTypeCountBonusScenariosArgs
+  bonusSettlements?: boolean | ProductCountOutputTypeCountBonusSettlementsArgs
+  bonusInstallments?: boolean | ProductCountOutputTypeCountBonusInstallmentsArgs
 }
 
 /**
@@ -1962,6 +2463,27 @@ export type ProductCountOutputTypeCountCommissionReversalRulesArgs<ExtArgs exten
   where?: Prisma.ProductCommissionReversalRuleWhereInput
 }
 
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountBonusScenariosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductBonusScenarioWhereInput
+}
+
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountBonusSettlementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusSettlementWhereInput
+}
+
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountBonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BonusInstallmentWhereInput
+}
+
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1986,6 +2508,9 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
   commissionScenarios?: boolean | Prisma.Product$commissionScenariosArgs<ExtArgs>
   commissionReversalRules?: boolean | Prisma.Product$commissionReversalRulesArgs<ExtArgs>
+  bonusScenarios?: boolean | Prisma.Product$bonusScenariosArgs<ExtArgs>
+  bonusSettlements?: boolean | Prisma.Product$bonusSettlementsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Product$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
@@ -2056,6 +2581,9 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   salesTransactionCostCenter?: boolean | Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>
   commissionScenarios?: boolean | Prisma.Product$commissionScenariosArgs<ExtArgs>
   commissionReversalRules?: boolean | Prisma.Product$commissionReversalRulesArgs<ExtArgs>
+  bonusScenarios?: boolean | Prisma.Product$bonusScenariosArgs<ExtArgs>
+  bonusSettlements?: boolean | Prisma.Product$bonusSettlementsArgs<ExtArgs>
+  bonusInstallments?: boolean | Prisma.Product$bonusInstallmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2083,6 +2611,9 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     salesTransactionCostCenter: Prisma.$CostCenterPayload<ExtArgs> | null
     commissionScenarios: Prisma.$ProductCommissionScenarioPayload<ExtArgs>[]
     commissionReversalRules: Prisma.$ProductCommissionReversalRulePayload<ExtArgs>[]
+    bonusScenarios: Prisma.$ProductBonusScenarioPayload<ExtArgs>[]
+    bonusSettlements: Prisma.$BonusSettlementPayload<ExtArgs>[]
+    bonusInstallments: Prisma.$BonusInstallmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2501,6 +3032,9 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   salesTransactionCostCenter<T extends Prisma.Product$salesTransactionCostCenterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$salesTransactionCostCenterArgs<ExtArgs>>): Prisma.Prisma__CostCenterClient<runtime.Types.Result.GetResult<Prisma.$CostCenterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   commissionScenarios<T extends Prisma.Product$commissionScenariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$commissionScenariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionScenarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissionReversalRules<T extends Prisma.Product$commissionReversalRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$commissionReversalRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductCommissionReversalRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusScenarios<T extends Prisma.Product$bonusScenariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$bonusScenariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductBonusScenarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusSettlements<T extends Prisma.Product$bonusSettlementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$bonusSettlementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusSettlementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bonusInstallments<T extends Prisma.Product$bonusInstallmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$bonusInstallmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BonusInstallmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3113,6 +3647,78 @@ export type Product$commissionReversalRulesArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.ProductCommissionReversalRuleScalarFieldEnum | Prisma.ProductCommissionReversalRuleScalarFieldEnum[]
+}
+
+/**
+ * Product.bonusScenarios
+ */
+export type Product$bonusScenariosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductBonusScenario
+   */
+  select?: Prisma.ProductBonusScenarioSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductBonusScenario
+   */
+  omit?: Prisma.ProductBonusScenarioOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductBonusScenarioInclude<ExtArgs> | null
+  where?: Prisma.ProductBonusScenarioWhereInput
+  orderBy?: Prisma.ProductBonusScenarioOrderByWithRelationInput | Prisma.ProductBonusScenarioOrderByWithRelationInput[]
+  cursor?: Prisma.ProductBonusScenarioWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductBonusScenarioScalarFieldEnum | Prisma.ProductBonusScenarioScalarFieldEnum[]
+}
+
+/**
+ * Product.bonusSettlements
+ */
+export type Product$bonusSettlementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusSettlement
+   */
+  select?: Prisma.BonusSettlementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusSettlement
+   */
+  omit?: Prisma.BonusSettlementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusSettlementInclude<ExtArgs> | null
+  where?: Prisma.BonusSettlementWhereInput
+  orderBy?: Prisma.BonusSettlementOrderByWithRelationInput | Prisma.BonusSettlementOrderByWithRelationInput[]
+  cursor?: Prisma.BonusSettlementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusSettlementScalarFieldEnum | Prisma.BonusSettlementScalarFieldEnum[]
+}
+
+/**
+ * Product.bonusInstallments
+ */
+export type Product$bonusInstallmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BonusInstallment
+   */
+  select?: Prisma.BonusInstallmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BonusInstallment
+   */
+  omit?: Prisma.BonusInstallmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BonusInstallmentInclude<ExtArgs> | null
+  where?: Prisma.BonusInstallmentWhereInput
+  orderBy?: Prisma.BonusInstallmentOrderByWithRelationInput | Prisma.BonusInstallmentOrderByWithRelationInput[]
+  cursor?: Prisma.BonusInstallmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BonusInstallmentScalarFieldEnum | Prisma.BonusInstallmentScalarFieldEnum[]
 }
 
 /**

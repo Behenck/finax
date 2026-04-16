@@ -16,7 +16,11 @@ import {
 } from "@/schemas/cost-center-schema";
 import type { CostCenter } from "@/schemas/types/cost-center";
 import { useApp } from "@/context/app-context";
-import { getOrganizationsSlugCostcentersQueryKey, usePostOrganizationsSlugCostcenters, usePutOrganizationsSlugCostcentersCostcenterid } from "@/http/generated";
+import {
+	getOrganizationsSlugCostcentersQueryKey,
+	usePostOrganizationsSlugCostcenters,
+	usePutOrganizationsSlugCostcentersCostcenterid,
+} from "@/http/generated";
 import { useQueryClient } from "@tanstack/react-query";
 
 export type CreateCostCenterType = z.infer<typeof costCenterSchema>;
@@ -32,14 +36,16 @@ export function CostCenterForm({
 	mode,
 	initialData,
 }: CreateCostCenterFormProps) {
-	const { organization } = useApp()
-	const queryClient = useQueryClient()
+	const { organization } = useApp();
+	const queryClient = useQueryClient();
 
-	const { mutateAsync: createCostCenter } = usePostOrganizationsSlugCostcenters();
-	const { mutateAsync: updateCostCenter } = usePutOrganizationsSlugCostcentersCostcenterid();
+	const { mutateAsync: createCostCenter } =
+		usePostOrganizationsSlugCostcenters();
+	const { mutateAsync: updateCostCenter } =
+		usePutOrganizationsSlugCostcentersCostcenterid();
 
 	const { handleSubmit, control } = useForm<CreateCostCenterType>({
-		resolver: zodResolver(costCenterSchema as any),
+		resolver: zodResolver(costCenterSchema),
 		defaultValues: {
 			name: initialData?.name ?? "",
 		},
@@ -47,32 +53,38 @@ export function CostCenterForm({
 
 	async function onSubmit(data: CostCenterFormData) {
 		if (mode === "edit" && initialData) {
-			await updateCostCenter({
-				slug: organization!.slug,
-				costCenterId: initialData.id,
-				data,
-			}, {
-				onSuccess: async () => {
-					await queryClient.invalidateQueries({
-						queryKey: getOrganizationsSlugCostcentersQueryKey({
-							slug: organization!.slug,
-						}),
-					})
+			await updateCostCenter(
+				{
+					slug: organization!.slug,
+					costCenterId: initialData.id,
+					data,
 				},
-			});
+				{
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: getOrganizationsSlugCostcentersQueryKey({
+								slug: organization!.slug,
+							}),
+						});
+					},
+				},
+			);
 		} else {
-			await createCostCenter({
-				slug: organization!.slug,
-				data,
-			}, {
-				onSuccess: async () => {
-					await queryClient.invalidateQueries({
-						queryKey: getOrganizationsSlugCostcentersQueryKey({
-							slug: organization!.slug,
-						}),
-					})
+			await createCostCenter(
+				{
+					slug: organization!.slug,
+					data,
 				},
-			});
+				{
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: getOrganizationsSlugCostcentersQueryKey({
+								slug: organization!.slug,
+							}),
+						});
+					},
+				},
+			);
 		}
 
 		onSuccess?.();

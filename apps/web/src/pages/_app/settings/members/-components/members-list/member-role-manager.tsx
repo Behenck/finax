@@ -19,6 +19,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { normalizeApiError } from "@/errors/api-error";
+import { resolveErrorMessage } from "@/errors";
 import { getOrganizationsSlugMembersQueryKey } from "@/http/generated";
 import { api } from "@/lib/axios";
 
@@ -65,10 +67,7 @@ export function MemberRoleManager({
 			toast.success("Permissão do membro atualizada com sucesso.");
 			onOpenChange(false);
 		} catch (error) {
-			toast.error(
-				(error as any)?.response?.data?.message ??
-					"Erro ao atualizar permissão.",
-			);
+			toast.error(resolveErrorMessage(normalizeApiError(error)));
 		} finally {
 			setIsPending(false);
 		}

@@ -3,7 +3,7 @@ import axios, {
 	type AxiosRequestConfig,
 	type AxiosResponse,
 } from "axios";
-import Cookies from "js-cookie";
+import { getAuthToken } from "./auth-token";
 
 export function resolveApiBaseUrl() {
 	const configuredUrl = import.meta.env.VITE_API_URL;
@@ -20,7 +20,10 @@ export function resolveApiBaseUrl() {
 
 	try {
 		const parsedUrl = new URL(configuredUrl);
-		if (parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1") {
+		if (
+			parsedUrl.hostname === "localhost" ||
+			parsedUrl.hostname === "127.0.0.1"
+		) {
 			parsedUrl.hostname = window.location.hostname;
 			return parsedUrl.toString().replace(/\/$/, "");
 		}
@@ -37,7 +40,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-	const token = Cookies.get("token");
+	const token = getAuthToken();
 
 	if (token) {
 		config.headers = config.headers ?? {};
@@ -97,11 +100,7 @@ export const setConfig = (config: RequestConfig) => {
 	return getConfig();
 };
 
-const requestClient = (async <
-	TData,
-	TError = unknown,
-	TRequestData = unknown,
->(
+const requestClient = (async <TData, TError = unknown, TRequestData = unknown>(
 	config: RequestConfig<TRequestData>,
 	errorType?: TError,
 ) => {
@@ -128,4 +127,4 @@ requestClient.setConfig = setConfig;
 
 export const client = requestClient;
 
-export default requestClient
+export default requestClient;
