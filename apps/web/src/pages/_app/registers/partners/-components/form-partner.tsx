@@ -26,6 +26,7 @@ import { router } from "@/router";
 import { partnerSchema, type PartnerForm } from "@/schemas/partner-schema";
 import { formatDocument } from "@/utils/format-document";
 import { formatPhone } from "@/utils/format-phone";
+import { formatTitleCase } from "@/utils/format-title-case";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -105,6 +106,24 @@ function onlyDigits(value?: string | null) {
 	return String(value ?? "").replace(/\D/g, "");
 }
 
+function formatEmail(value: string) {
+	return value.toLowerCase();
+}
+
+function normalizePartnerFormData(data: PartnerForm): PartnerForm {
+	return {
+		...data,
+		name: formatTitleCase(data.name),
+		companyName: formatTitleCase(data.companyName),
+		email: formatEmail(data.email),
+		city: data.city ? formatTitleCase(data.city) : data.city,
+		street: data.street ? formatTitleCase(data.street) : data.street,
+		neighborhood: data.neighborhood
+			? formatTitleCase(data.neighborhood)
+			: data.neighborhood,
+	};
+}
+
 export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
@@ -122,10 +141,12 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 	const form = useForm<PartnerForm>({
 		resolver: zodResolver(partnerSchema),
 		defaultValues: {
-			name: partner?.name ?? "",
-			email: partner?.email ?? "",
+			name: partner?.name ? formatTitleCase(partner.name) : "",
+			email: partner?.email ? formatEmail(partner.email) : "",
 			phone: formatPhone(partner?.phone ?? ""),
-			companyName: partner?.companyName ?? "",
+			companyName: partner?.companyName
+				? formatTitleCase(partner.companyName)
+				: "",
 			documentType: partner?.documentType ?? "CNPJ",
 			document: formatDocument({
 				type: partner?.documentType ?? "CNPJ",
@@ -134,9 +155,11 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 			country: partner?.country ?? "BR",
 			state: partner?.state ?? "RS",
 			zipCode: partner?.zipCode ?? "",
-			city: partner?.city ?? "",
-			street: partner?.street ?? "",
-			neighborhood: partner?.neighborhood ?? "",
+			city: partner?.city ? formatTitleCase(partner.city) : "",
+			street: partner?.street ? formatTitleCase(partner.street) : "",
+			neighborhood: partner?.neighborhood
+				? formatTitleCase(partner.neighborhood)
+				: "",
 			number: partner?.number ?? "",
 			complement: partner?.complement ?? "",
 		},
@@ -184,15 +207,15 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 				lastResolvedCnpjRef.current = digits;
 
 				const nextValues: Record<CompanyLookupField, string> = {
-					name: companyData.name,
-					companyName: companyData.companyName,
-					email: companyData.email,
+					name: formatTitleCase(companyData.name),
+					companyName: formatTitleCase(companyData.companyName),
+					email: formatEmail(companyData.email),
 					phone: formatPhone(companyData.phone),
 					zipCode: companyData.zipCode,
 					state: companyData.state.toUpperCase(),
-					city: companyData.city,
-					street: companyData.street,
-					neighborhood: companyData.neighborhood,
+					city: formatTitleCase(companyData.city),
+					street: formatTitleCase(companyData.street),
+					neighborhood: formatTitleCase(companyData.neighborhood),
 					number: companyData.number,
 					complement: companyData.complement,
 				};
@@ -260,12 +283,14 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 	}, [dirtyFields.state, document, documentType, getValues, setValue, type]);
 
 	async function onSubmit(data: PartnerForm) {
+		const normalizedData = normalizePartnerFormData(data);
+
 		try {
 			if (type === "CREATE") {
 				const response = await createPartner(
 					{
 						slug: organization!.slug,
-						data,
+						data: normalizedData,
 					},
 					{
 						onSuccess: async () => {
@@ -294,7 +319,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 				{
 					slug: organization!.slug,
 					partnerId: partner!.id,
-					data,
+					data: normalizedData,
 				},
 				{
 					onSuccess: async () => {
@@ -404,18 +429,43 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Nome do representante *</FieldLabel>
-							<Input placeholder="Ex: João da Silva" {...register("name")} />
-							<FieldError error={errors.name} />
+							<Controller
+								control={control}
+								name="name"
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											placeholder="Ex: João da Silva"
+											value={field.value ?? ""}
+											onChange={(event) =>
+												field.onChange(formatTitleCase(event.target.value))
+											}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
+							/>
 						</Field>
 					</FieldGroup>
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Empresa *</FieldLabel>
-							<Input
-								placeholder="Ex: Silva LTDA"
-								{...register("companyName")}
+							<Controller
+								control={control}
+								name="companyName"
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											placeholder="Ex: Silva LTDA"
+											value={field.value ?? ""}
+											onChange={(event) =>
+												field.onChange(formatTitleCase(event.target.value))
+											}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
 							/>
-							<FieldError error={errors.companyName} />
 						</Field>
 					</FieldGroup>
 				</div>
@@ -423,11 +473,22 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>email *</FieldLabel>
-							<Input
-								placeholder="Ex: joao.silva@empresa.com"
-								{...register("email")}
+							<Controller
+								control={control}
+								name="email"
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											placeholder="Ex: joao.silva@empresa.com"
+											value={field.value ?? ""}
+											onChange={(event) =>
+												field.onChange(formatEmail(event.target.value))
+											}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
 							/>
-							<FieldError error={errors.email} />
 						</Field>
 					</FieldGroup>
 					<FieldGroup>
@@ -524,8 +585,22 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 						<FieldGroup>
 							<Field className="gap-1">
 								<FieldLabel>Cidade</FieldLabel>
-								<Input placeholder="Ex: Uruguaiana" {...register("city")} />
-								<FieldError error={errors.city} />
+								<Controller
+									control={control}
+									name="city"
+									render={({ field, fieldState }) => (
+										<>
+											<Input
+												placeholder="Ex: Uruguaiana"
+												value={field.value ?? ""}
+												onChange={(event) =>
+													field.onChange(formatTitleCase(event.target.value))
+												}
+											/>
+											<FieldError error={fieldState.error} />
+										</>
+									)}
+								/>
 							</Field>
 						</FieldGroup>
 					</div>
@@ -533,18 +608,43 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 						<FieldGroup>
 							<Field className="gap-1">
 								<FieldLabel>Rua</FieldLabel>
-								<Input
-									placeholder="Ex: Av. Presidente"
-									{...register("street")}
+								<Controller
+									control={control}
+									name="street"
+									render={({ field, fieldState }) => (
+										<>
+											<Input
+												placeholder="Ex: Av. Presidente"
+												value={field.value ?? ""}
+												onChange={(event) =>
+													field.onChange(formatTitleCase(event.target.value))
+												}
+											/>
+											<FieldError error={fieldState.error} />
+										</>
+									)}
 								/>
-								<FieldError error={errors.street} />
 							</Field>
 						</FieldGroup>
 						<FieldGroup>
 							<Field className="gap-1">
 								<FieldLabel>Bairro</FieldLabel>
-								<Input placeholder="Ex: Centro" {...register("neighborhood")} />
-								<FieldError error={errors.neighborhood} />
+								<Controller
+									control={control}
+									name="neighborhood"
+									render={({ field, fieldState }) => (
+										<>
+											<Input
+												placeholder="Ex: Centro"
+												value={field.value ?? ""}
+												onChange={(event) =>
+													field.onChange(formatTitleCase(event.target.value))
+												}
+											/>
+											<FieldError error={fieldState.error} />
+										</>
+									)}
+								/>
 							</Field>
 						</FieldGroup>
 						<FieldGroup>
