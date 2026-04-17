@@ -2,7 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { getOrganizationsSlugProductsQueryKey } from "@/http/generated";
 import type { Product, ProductListItem } from "@/schemas/types/product";
 
-type ProductsCache = {
+export type ProductsCache = {
 	products: Product[];
 };
 
@@ -136,5 +136,22 @@ export function removeProductFromProductsCache(
 				products: removeProduct(currentData.products, productId),
 			};
 		},
+	);
+}
+
+export function getProductsCache(queryClient: QueryClient, slug: string) {
+	return queryClient.getQueryData<ProductsCache>(
+		getOrganizationsSlugProductsQueryKey({ slug }),
+	);
+}
+
+export function restoreProductsCache(
+	queryClient: QueryClient,
+	slug: string,
+	data: ProductsCache,
+) {
+	queryClient.setQueryData<ProductsCache>(
+		getOrganizationsSlugProductsQueryKey({ slug }),
+		data,
 	);
 }

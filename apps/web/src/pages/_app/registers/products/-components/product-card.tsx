@@ -26,7 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 import type { Product, ProductListItem } from "@/schemas/types/product";
 import {
+	getProductsCache,
 	removeProductFromProductsCache,
+	restoreProductsCache,
 	updateProductInProductsCache,
 } from "../-utils/product-cache";
 import { CreateProduct } from "./create-product";
@@ -61,19 +63,22 @@ export function ProductCard({ product }: ProductCardProps) {
 		);
 		if (!confirmed) return;
 
+		const slug = organization!.slug;
+		const previousProducts = getProductsCache(queryClient, slug);
+		removeProductFromProductsCache(queryClient, slug, target.id);
+
 		try {
 			await handleDeleteProduct({
-				slug: organization!.slug,
+				slug,
 				id: target.id,
 			});
 
-			removeProductFromProductsCache(
-				queryClient,
-				organization!.slug,
-				target.id,
-			);
 			toast.success(`Produto ${target.name} excluído com sucesso!`);
 		} catch (error) {
+			if (previousProducts) {
+				restoreProductsCache(queryClient, slug, previousProducts);
+			}
+
 			const message = resolveErrorMessage(normalizeApiError(error));
 			toast.error(message);
 		}
