@@ -64,8 +64,7 @@ async function denyViewAllPartners(params: {
 
 	await prisma.memberPermissionOverride.upsert({
 		where: {
-			organizationId_memberId_permissionId: {
-				organizationId: params.organizationId,
+			memberId_permissionId: {
 				memberId: params.memberId,
 				permissionId: permission.id,
 			},
@@ -87,7 +86,7 @@ async function createPartner(params: {
 	suffix: string;
 	supervisorId?: string | null;
 }) {
-	return prisma.partner.create({
+	const partner = await prisma.partner.create({
 		data: {
 			name: `Partner ${params.suffix}`,
 			email: `partner-${params.suffix}@example.com`,
@@ -98,9 +97,20 @@ async function createPartner(params: {
 			country: "BR",
 			state: "RS",
 			organizationId: params.organizationId,
-			supervisorId: params.supervisorId ?? null,
 		},
 	});
+
+	if (params.supervisorId) {
+		await prisma.partnerSupervisor.create({
+			data: {
+				organizationId: params.organizationId,
+				partnerId: partner.id,
+				supervisorId: params.supervisorId,
+			},
+		});
+	}
+
+	return partner;
 }
 
 describe("partners visibility", () => {
@@ -131,16 +141,19 @@ describe("partners visibility", () => {
 			.set("Authorization", `Bearer ${token}`);
 
 		expect(response.statusCode).toBe(200);
-		expect(response.body.partners.map((partner: { id: string }) => partner.id)).toEqual(
-			expect.arrayContaining([firstPartner.id, secondPartner.id]),
-		);
+		expect(
+			response.body.partners.map((partner: { id: string }) => partner.id),
+		).toEqual(expect.arrayContaining([firstPartner.id, secondPartner.id]));
 	});
 
 	it("should return only supervised partners and hide other partner details", async () => {
 		const { org } = await makeUser();
 		const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
 		const supervisor = await createSupervisorFixture(org.id, suffix);
-		const token = await authenticate(supervisor.user.email, supervisor.password);
+		const token = await authenticate(
+			supervisor.user.email,
+			supervisor.password,
+		);
 		await denyViewAllPartners({
 			organizationId: org.id,
 			memberId: supervisor.member.id,

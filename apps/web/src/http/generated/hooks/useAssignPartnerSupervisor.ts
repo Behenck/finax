@@ -51,7 +51,7 @@ export function assignPartnerSupervisorMutationOptions<TContext = unknown>(
 }
 
 /**
- * @summary Update employee
+ * @summary Assign supervisors to partner
  * {@link /organizations/:slug/partners/:partnerId/assign-supervisor}
  */
 export function useAssignPartnerSupervisor<TContext>(

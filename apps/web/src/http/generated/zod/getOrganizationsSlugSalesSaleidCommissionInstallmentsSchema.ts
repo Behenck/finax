@@ -32,7 +32,7 @@ export const getOrganizationsSlugSalesSaleidCommissionInstallments200Schema =
           "SUPERVISOR",
           "OTHER",
         ]),
-        sourceType: z.enum(["PULLED", "MANUAL"]),
+        sourceType: z.enum(["PULLED", "MANUAL", "BONUS"]),
         direction: z.enum(["INCOME", "OUTCOME"]),
         beneficiaryId: z.nullable(z.uuid()),
         beneficiaryKey: z.string().min(1),

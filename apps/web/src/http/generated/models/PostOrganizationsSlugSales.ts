@@ -31,6 +31,7 @@ export type ResponsibleTypeEnum5Key =
 export const commissionsSourceTypeEnum = {
   PULLED: "PULLED",
   MANUAL: "MANUAL",
+  BONUS: "BONUS",
 } as const;
 
 export type CommissionsSourceTypeEnumKey =

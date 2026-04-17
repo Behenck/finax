@@ -109,6 +109,7 @@ export type ItemsRecipientTypeEnumKey =
 export const itemsSourceTypeEnum = {
   PULLED: "PULLED",
   MANUAL: "MANUAL",
+  BONUS: "BONUS",
 } as const;
 
 export type ItemsSourceTypeEnumKey =
@@ -132,6 +133,15 @@ export const itemsStatusEnum = {
 export type ItemsStatusEnumKey =
   (typeof itemsStatusEnum)[keyof typeof itemsStatusEnum];
 
+export const bonusContextPeriodFrequencyEnum = {
+  MONTHLY: "MONTHLY",
+  SEMIANNUAL: "SEMIANNUAL",
+  ANNUAL: "ANNUAL",
+} as const;
+
+export type BonusContextPeriodFrequencyEnumKey =
+  (typeof bonusContextPeriodFrequencyEnum)[keyof typeof bonusContextPeriodFrequencyEnum];
+
 /**
  * @description Default Response
  */
@@ -147,15 +157,15 @@ export type GetOrganizationsSlugCommissionsInstallments200 = {
     /**
      * @type string, uuid
      */
-    saleId: string;
+    saleId: string | null;
     /**
      * @type string
      */
-    saleStatus: ItemsSaleStatusEnumKey;
+    saleStatus: ItemsSaleStatusEnumKey | null;
     /**
      * @type string, date-time
      */
-    saleDate: string;
+    saleDate: string | null;
     /**
      * @type object
      */
@@ -168,7 +178,7 @@ export type GetOrganizationsSlugCommissionsInstallments200 = {
        * @type string
        */
       name: string;
-    };
+    } | null;
     /**
      * @type object
      */
@@ -194,7 +204,7 @@ export type GetOrganizationsSlugCommissionsInstallments200 = {
        * @type string
        */
       name: string;
-    };
+    } | null;
     /**
      * @type object
      */
@@ -211,7 +221,7 @@ export type GetOrganizationsSlugCommissionsInstallments200 = {
     /**
      * @type string, uuid
      */
-    saleCommissionId: string;
+    saleCommissionId: string | null;
     /**
      * @type string, uuid
      */
@@ -277,6 +287,39 @@ export type GetOrganizationsSlugCommissionsInstallments200 = {
      * @type string, date-time
      */
     paymentDate: string | null;
+    /**
+     * @type object
+     */
+    bonusContext: {
+      /**
+       * @type string, uuid
+       */
+      settlementId: string;
+      /**
+       * @type string, uuid
+       */
+      resultId: string;
+      /**
+       * @type string
+       */
+      scenarioName: string;
+      /**
+       * @type string
+       */
+      periodFrequency: BonusContextPeriodFrequencyEnumKey;
+      /**
+       * @minLength -9007199254740991
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      periodYear: number;
+      /**
+       * @minLength -9007199254740991
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      periodIndex: number;
+    } | null;
   }[];
   /**
    * @type object

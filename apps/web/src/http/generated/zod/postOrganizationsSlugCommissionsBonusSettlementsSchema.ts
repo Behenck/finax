@@ -25,7 +25,7 @@ export const postOrganizationsSlugCommissionsBonusSettlementsMutationRequestSche
   z.object({
     productId: z.uuid(),
     periodFrequency: z.enum(["MONTHLY", "SEMIANNUAL", "ANNUAL"]),
-    periodYear: z.int().min(2000).max(9999),
+    periodYear: z.int().min(2000).max(2100),
     periodIndex: z.int().min(1).max(12),
     settledAt: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   });

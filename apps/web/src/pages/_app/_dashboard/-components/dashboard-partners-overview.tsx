@@ -1,4 +1,11 @@
-import { endOfMonth, format, parse, startOfMonth, subDays, subMonths } from "date-fns";
+import {
+	endOfMonth,
+	format,
+	parse,
+	startOfMonth,
+	subDays,
+	subMonths,
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
 import {
@@ -298,7 +305,9 @@ function isValidUuid(value: string | null | undefined): value is string {
 	return Boolean(value && UUID_REGEX.test(value));
 }
 
-function isValidDateFilterInput(value: string | null | undefined): value is string {
+function isValidDateFilterInput(
+	value: string | null | undefined,
+): value is string {
 	if (!value || !DATE_FILTER_REGEX.test(value)) {
 		return false;
 	}
@@ -461,7 +470,14 @@ function PartnerMultiSelectFilter({
 								<div className="flex flex-col gap-0.5">
 									<span className="font-medium">{option.name}</span>
 									<span className="text-xs text-muted-foreground">
-										{option.supervisorName ?? "Sem supervisor"}
+										{option.supervisors.length > 0
+											? option.supervisors
+													.map(
+														(supervisor) =>
+															supervisor.name ?? "Supervisor sem nome",
+													)
+													.join(", ")
+											: "Sem supervisor"}
 									</span>
 								</div>
 							</DropdownMenuCheckboxItem>
@@ -754,125 +770,130 @@ function PartnerRankingSection({
 						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-						<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
-							<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
-								<div className="grid grid-cols-3 items-end gap-1.5">
-									{[
-										{
-											rank: 2,
-											partner: topThree[1] ?? null,
-											pedestalClassName: "h-14",
-										},
-										{
-											rank: 1,
-											partner: topThree[0] ?? null,
-											pedestalClassName: "h-20",
-										},
-										{
-											rank: 3,
-											partner: topThree[2] ?? null,
-											pedestalClassName: "h-10",
-										},
-									].map((slot) => {
-										const partner = slot.partner;
-										const pedestalGradientByRank = {
-											1: "bg-gradient-to-t from-emerald-500/85 to-green-500/70 dark:from-emerald-400/80 dark:to-green-400/65",
-											2: "bg-gradient-to-t from-cyan-500/85 to-indigo-500/70 dark:from-cyan-400/80 dark:to-indigo-400/65",
-											3: "bg-gradient-to-t from-amber-500/80 to-amber-400/55 dark:from-amber-400/75 dark:to-amber-300/50",
-										} as const;
-										const pedestalLabelByRank = {
-											1: "text-primary-foreground",
-											2: "text-primary-foreground",
-											3: "text-amber-900 dark:text-amber-100",
-										} as const;
-										const avatarGradientByRank = {
-											1: "bg-gradient-to-br from-emerald-500 to-green-500",
-											2: "bg-gradient-to-br from-cyan-500 to-indigo-500",
-											3: "bg-gradient-to-br from-amber-500/60 to-amber-400/30 dark:from-amber-400/60 dark:to-amber-300/30",
-										} as const;
-										const avatarLabelByRank = {
-											1: "text-primary-foreground",
-											2: "text-primary-foreground",
-											3: "text-amber-900 dark:text-amber-100",
-										} as const;
-										const pedestalGradientClass =
-											pedestalGradientByRank[slot.rank as 1 | 2 | 3];
-										const pedestalLabelClass =
-											pedestalLabelByRank[slot.rank as 1 | 2 | 3];
-										const avatarGradientClass =
-											avatarGradientByRank[slot.rank as 1 | 2 | 3];
-										const avatarLabelClass =
-											avatarLabelByRank[slot.rank as 1 | 2 | 3];
+					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
+						<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
+							<div className="grid grid-cols-3 items-end gap-1.5">
+								{[
+									{
+										rank: 2,
+										partner: topThree[1] ?? null,
+										pedestalClassName: "h-14",
+									},
+									{
+										rank: 1,
+										partner: topThree[0] ?? null,
+										pedestalClassName: "h-20",
+									},
+									{
+										rank: 3,
+										partner: topThree[2] ?? null,
+										pedestalClassName: "h-10",
+									},
+								].map((slot) => {
+									const partner = slot.partner;
+									const pedestalGradientByRank = {
+										1: "bg-gradient-to-t from-emerald-500/85 to-green-500/70 dark:from-emerald-400/80 dark:to-green-400/65",
+										2: "bg-gradient-to-t from-cyan-500/85 to-indigo-500/70 dark:from-cyan-400/80 dark:to-indigo-400/65",
+										3: "bg-gradient-to-t from-amber-500/80 to-amber-400/55 dark:from-amber-400/75 dark:to-amber-300/50",
+									} as const;
+									const pedestalLabelByRank = {
+										1: "text-primary-foreground",
+										2: "text-primary-foreground",
+										3: "text-amber-900 dark:text-amber-100",
+									} as const;
+									const avatarGradientByRank = {
+										1: "bg-gradient-to-br from-emerald-500 to-green-500",
+										2: "bg-gradient-to-br from-cyan-500 to-indigo-500",
+										3: "bg-gradient-to-br from-amber-500/60 to-amber-400/30 dark:from-amber-400/60 dark:to-amber-300/30",
+									} as const;
+									const avatarLabelByRank = {
+										1: "text-primary-foreground",
+										2: "text-primary-foreground",
+										3: "text-amber-900 dark:text-amber-100",
+									} as const;
+									const pedestalGradientClass =
+										pedestalGradientByRank[slot.rank as 1 | 2 | 3];
+									const pedestalLabelClass =
+										pedestalLabelByRank[slot.rank as 1 | 2 | 3];
+									const avatarGradientClass =
+										avatarGradientByRank[slot.rank as 1 | 2 | 3];
+									const avatarLabelClass =
+										avatarLabelByRank[slot.rank as 1 | 2 | 3];
 
-											if (!partner) {
-												return (
-												<div key={`podium-empty-${slot.rank}`} className="flex flex-col">
-																<div
-																	className={cn(
-																		"relative flex items-center justify-center rounded-t-2xl",
-																		pedestalGradientClass,
-																		slot.pedestalClassName,
-																	)}
-																>
-																	<span className={cn(
-																		"font-bungee text-base font-black tabular-nums tracking-wide",
-																		pedestalLabelClass,
-																	)}>
-																		{slot.rank}
-																	</span>
-																</div>
+									if (!partner) {
+										return (
+											<div
+												key={`podium-empty-${slot.rank}`}
+												className="flex flex-col"
+											>
+												<div
+													className={cn(
+														"relative flex items-center justify-center rounded-t-2xl",
+														pedestalGradientClass,
+														slot.pedestalClassName,
+													)}
+												>
+													<span
+														className={cn(
+															"font-bungee text-base font-black tabular-nums tracking-wide",
+															pedestalLabelClass,
+														)}
+													>
+														{slot.rank}
+													</span>
+												</div>
 											</div>
 										);
 									}
 
-										const totalSoldAmount =
-											partner.salesBreakdown.concluded.grossAmount +
-											partner.salesBreakdown.pending.grossAmount;
+									const totalSoldAmount =
+										partner.salesBreakdown.concluded.grossAmount +
+										partner.salesBreakdown.pending.grossAmount;
 
-												return (
-													<div key={partner.partnerId} className="flex flex-col">
-															<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
-															<div className="relative mx-auto mt-1">
-															<Avatar className="size-13 border-2 border-background shadow-sm">
-																<AvatarFallback
-																	className={cn(
-																		"text-sm font-semibold",
-																		avatarGradientClass,
-																		avatarLabelClass,
-																	)}
-																>
-																	{getInitials(partner.partnerName)}
-																</AvatarFallback>
-														</Avatar>
-														</div>
-
-														<div className="mt-1 min-h-[26px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
-															{partner.partnerName}
-														</div>
-
-															<div
-																className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground"
-															>
-																{formatAmountFromCents(totalSoldAmount)}
-															</div>
-												</div>
-														<div
+									return (
+										<div key={partner.partnerId} className="flex flex-col">
+											<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
+												<div className="relative mx-auto mt-1">
+													<Avatar className="size-13 border-2 border-background shadow-sm">
+														<AvatarFallback
 															className={cn(
-																"relative flex items-center justify-center rounded-t-2xl",
-																pedestalGradientClass,
-																slot.pedestalClassName,
+																"text-sm font-semibold",
+																avatarGradientClass,
+																avatarLabelClass,
 															)}
 														>
-															<span className={cn(
-																"font-bungee text-base font-black tabular-nums tracking-wide",
-																pedestalLabelClass,
-															)}>
-																{slot.rank}
-															</span>
-													</div>
+															{getInitials(partner.partnerName)}
+														</AvatarFallback>
+													</Avatar>
+												</div>
+
+												<div className="mt-1 min-h-[26px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
+													{partner.partnerName}
+												</div>
+
+												<div className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground">
+													{formatAmountFromCents(totalSoldAmount)}
+												</div>
 											</div>
-										);
-									})}
+											<div
+												className={cn(
+													"relative flex items-center justify-center rounded-t-2xl",
+													pedestalGradientClass,
+													slot.pedestalClassName,
+												)}
+											>
+												<span
+													className={cn(
+														"font-bungee text-base font-black tabular-nums tracking-wide",
+														pedestalLabelClass,
+													)}
+												>
+													{slot.rank}
+												</span>
+											</div>
+										</div>
+									);
+								})}
 							</div>
 						</div>
 						<Separator className="xl:hidden" />
@@ -887,9 +908,9 @@ function PartnerRankingSection({
 									{soldPartners.map((partner, index) => {
 										const rank = index + 1;
 										const rowToneClass = "bg-transparent";
-											const productionAmount =
-												partner.salesBreakdown.concluded.grossAmount +
-												partner.salesBreakdown.pending.grossAmount;
+										const productionAmount =
+											partner.salesBreakdown.concluded.grossAmount +
+											partner.salesBreakdown.pending.grossAmount;
 										const productionCount =
 											partner.salesBreakdown.concluded.salesCount +
 											partner.salesBreakdown.pending.salesCount;
@@ -923,77 +944,86 @@ function PartnerRankingSection({
 															</span>
 														</div>
 													</TableCell>
-														<TableCell
-															className={cn(
-																"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
-																productionHasValue
-																	? "font-semibold text-foreground"
-																	: "font-normal text-muted-foreground",
-															)}
-														>
-															<div className="text-right leading-none">
-																{formatAmountFromCents(productionAmount)}
-															</div>
-														</TableCell>
+													<TableCell
+														className={cn(
+															"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
+															productionHasValue
+																? "font-semibold text-foreground"
+																: "font-normal text-muted-foreground",
+														)}
+													>
+														<div className="text-right leading-none">
+															{formatAmountFromCents(productionAmount)}
+														</div>
+													</TableCell>
 												</TableRow>
 												<TableRow className={cn("border-0", rowToneClass)}>
 													<TableCell className="py-0 pl-2 pr-1" />
 													<TableCell colSpan={2} className="px-3 pb-2 pt-0">
-															<div className="flex items-center gap-2">
-																<Tooltip>
-																	<TooltipTrigger asChild>
-																		<button
-																			type="button"
-																			className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-																			aria-label={`Detalhes de produção de ${partner.partnerName}`}
-																		>
-																	<div className="h-1.5 overflow-hidden rounded-full bg-muted">
-																				<div
+														<div className="flex items-center gap-2">
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<button
+																		type="button"
+																		className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+																		aria-label={`Detalhes de produção de ${partner.partnerName}`}
+																	>
+																		<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+																			<div
 																				className={cn(
 																					"h-full rounded-full transition-[width]",
 																					productionHasValue
 																						? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
 																						: "bg-muted-foreground/30",
 																				)}
-																					style={{
-																						width: `${productionShareWidth}%`,
-																					}}
-																				/>
-																			</div>
-																		</button>
-																	</TooltipTrigger>
-																	<TooltipContent
-																		side="top"
-																		sideOffset={8}
-																		className="min-w-[220px] space-y-1.5"
-																	>
-																		<div className="text-xs font-semibold">
-																			{partner.partnerName}
+																				style={{
+																					width: `${productionShareWidth}%`,
+																				}}
+																			/>
 																		</div>
-																		<div className="flex items-center justify-between gap-3">
-																			<span className="text-background/80">Concluídas</span>
-																			<span className="font-mono font-medium tabular-nums">
-																				{formatAmountFromCents(
-																					partner.salesBreakdown.concluded.grossAmount,
-																				)}
-																			</span>
-																		</div>
-																		<div className="flex items-center justify-between gap-3">
-																			<span className="text-background/80">Processando</span>
-																			<span className="font-mono font-medium tabular-nums">
-																				{formatAmountFromCents(
-																					partner.salesBreakdown.pending.grossAmount,
-																				)}
-																			</span>
-																		</div>
-																		<div className="flex items-center justify-between gap-3">
-																			<span className="text-background/80">Canceladas</span>
-																			<span className="font-mono font-medium tabular-nums">
-																				{formatAmountFromCents(
-																					partner.salesBreakdown.canceled.grossAmount,
-																				)}
-																			</span>
-																		</div>
+																	</button>
+																</TooltipTrigger>
+																<TooltipContent
+																	side="top"
+																	sideOffset={8}
+																	className="min-w-[220px] space-y-1.5"
+																>
+																	<div className="text-xs font-semibold">
+																		{partner.partnerName}
+																	</div>
+																	<div className="flex items-center justify-between gap-3">
+																		<span className="text-background/80">
+																			Concluídas
+																		</span>
+																		<span className="font-mono font-medium tabular-nums">
+																			{formatAmountFromCents(
+																				partner.salesBreakdown.concluded
+																					.grossAmount,
+																			)}
+																		</span>
+																	</div>
+																	<div className="flex items-center justify-between gap-3">
+																		<span className="text-background/80">
+																			Processando
+																		</span>
+																		<span className="font-mono font-medium tabular-nums">
+																			{formatAmountFromCents(
+																				partner.salesBreakdown.pending
+																					.grossAmount,
+																			)}
+																		</span>
+																	</div>
+																	<div className="flex items-center justify-between gap-3">
+																		<span className="text-background/80">
+																			Canceladas
+																		</span>
+																		<span className="font-mono font-medium tabular-nums">
+																			{formatAmountFromCents(
+																				partner.salesBreakdown.canceled
+																					.grossAmount,
+																			)}
+																		</span>
+																	</div>
 																</TooltipContent>
 															</Tooltip>
 															{productionShare >= 100 ? (
@@ -1011,9 +1041,9 @@ function PartnerRankingSection({
 													</TableCell>
 												</TableRow>
 											</Fragment>
-											);
-										})}
-									</TableBody>
+										);
+									})}
+								</TableBody>
 							</Table>
 						</div>
 					</div>
@@ -1038,9 +1068,9 @@ function SupervisorRankingSection({
 	>;
 	hasPreviousMonthCanceledData: boolean;
 }) {
-	const [openSupervisors, setOpenSupervisors] = useState<Record<string, boolean>>(
-		{},
-	);
+	const [openSupervisors, setOpenSupervisors] = useState<
+		Record<string, boolean>
+	>({});
 
 	const supervisors = useMemo(() => {
 		type AggregatedSupervisor = {
@@ -1061,30 +1091,37 @@ function SupervisorRankingSection({
 			const concludedCount = partner.salesBreakdown.concluded.salesCount;
 			const pendingCount = partner.salesBreakdown.pending.salesCount;
 			const canceledCount = partner.salesBreakdown.canceled.salesCount;
-			const totalTrackedAmount = concludedAmount + pendingAmount + canceledAmount;
+			const totalTrackedAmount =
+				concludedAmount + pendingAmount + canceledAmount;
 			const totalTrackedCount = concludedCount + pendingCount + canceledCount;
 
-			const supervisorId = partner.supervisor?.id ?? "UNASSIGNED";
-			const supervisorName =
-				partner.supervisor?.name?.trim() || "Sem supervisor";
-			const current = bySupervisor.get(supervisorId);
+			const partnerSupervisors =
+				partner.supervisors.length > 0
+					? partner.supervisors
+					: [{ id: "UNASSIGNED", name: "Sem supervisor" }];
 
-			if (!current) {
-				bySupervisor.set(supervisorId, {
-					supervisorId,
-					supervisorName,
-					partnersCount: 1,
-					salesCount: totalTrackedCount,
-					grossAmount: totalTrackedAmount,
-					partners: [partner],
-				});
-				continue;
+			for (const supervisor of partnerSupervisors) {
+				const supervisorId = supervisor.id;
+				const supervisorName = supervisor.name?.trim() || "Sem supervisor";
+				const current = bySupervisor.get(supervisorId);
+
+				if (!current) {
+					bySupervisor.set(supervisorId, {
+						supervisorId,
+						supervisorName,
+						partnersCount: 1,
+						salesCount: totalTrackedCount,
+						grossAmount: totalTrackedAmount,
+						partners: [partner],
+					});
+					continue;
+				}
+
+				current.partnersCount += 1;
+				current.salesCount += totalTrackedCount;
+				current.grossAmount += totalTrackedAmount;
+				current.partners.push(partner);
 			}
-
-			current.partnersCount += 1;
-			current.salesCount += totalTrackedCount;
-			current.grossAmount += totalTrackedAmount;
-			current.partners.push(partner);
 		}
 
 		return [...bySupervisor.values()].sort(
@@ -1111,8 +1148,8 @@ function SupervisorRankingSection({
 					Ranking de supervisores
 				</CardTitle>
 				<CardDescription>
-					Produção agregada por supervisor no período filtrado, com
-					canceladas do mês anterior.
+					Produção agregada por supervisor no período filtrado, com canceladas
+					do mês anterior.
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -1121,36 +1158,35 @@ function SupervisorRankingSection({
 						Nenhum supervisor com venda no período filtrado.
 					</div>
 				) : (
-						<div className="space-y-2">
-							{supervisors.map((supervisor, index) => {
-								const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
-								const supervisorHasValue =
-									supervisor.grossAmount > 0 || supervisor.salesCount > 0;
-								const supervisorShare =
-									totalSupervisorsGrossAmount > 0
-										? (supervisor.grossAmount / totalSupervisorsGrossAmount) * 100
-										: 0;
-								const supervisorShareWidth = Math.min(
-									Math.max(supervisorShare, 0),
-									100,
-								);
-								const partners = [...supervisor.partners]
-									.sort(
-									(left, right) =>
-										right.salesBreakdown.concluded.grossAmount +
-											right.salesBreakdown.pending.grossAmount +
-											right.salesBreakdown.canceled.grossAmount -
-											(left.salesBreakdown.concluded.grossAmount +
-												left.salesBreakdown.pending.grossAmount +
-												left.salesBreakdown.canceled.grossAmount) ||
-										right.salesBreakdown.concluded.salesCount +
-											right.salesBreakdown.pending.salesCount +
-											right.salesBreakdown.canceled.salesCount -
-											(left.salesBreakdown.concluded.salesCount +
-												left.salesBreakdown.pending.salesCount +
-												left.salesBreakdown.canceled.salesCount) ||
-										left.partnerName.localeCompare(right.partnerName, "pt-BR"),
-								);
+					<div className="space-y-2">
+						{supervisors.map((supervisor, index) => {
+							const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
+							const supervisorHasValue =
+								supervisor.grossAmount > 0 || supervisor.salesCount > 0;
+							const supervisorShare =
+								totalSupervisorsGrossAmount > 0
+									? (supervisor.grossAmount / totalSupervisorsGrossAmount) * 100
+									: 0;
+							const supervisorShareWidth = Math.min(
+								Math.max(supervisorShare, 0),
+								100,
+							);
+							const partners = [...supervisor.partners].sort(
+								(left, right) =>
+									right.salesBreakdown.concluded.grossAmount +
+										right.salesBreakdown.pending.grossAmount +
+										right.salesBreakdown.canceled.grossAmount -
+										(left.salesBreakdown.concluded.grossAmount +
+											left.salesBreakdown.pending.grossAmount +
+											left.salesBreakdown.canceled.grossAmount) ||
+									right.salesBreakdown.concluded.salesCount +
+										right.salesBreakdown.pending.salesCount +
+										right.salesBreakdown.canceled.salesCount -
+										(left.salesBreakdown.concluded.salesCount +
+											left.salesBreakdown.pending.salesCount +
+											left.salesBreakdown.canceled.salesCount) ||
+									left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+							);
 							return (
 								<Collapsible
 									key={supervisor.supervisorId}
@@ -1162,61 +1198,61 @@ function SupervisorRankingSection({
 										}))
 									}
 								>
-										<div className="overflow-hidden rounded-md border border-border/70 bg-background/80">
-											<CollapsibleTrigger className="w-full cursor-pointer px-3 py-2 text-left hover:bg-muted/20">
-												<div className="space-y-0.5">
-													<div className="flex items-center gap-2 pb-1">
-														<span className="inline-flex h-8 w-10 items-center font-mono font-medium leading-none tabular-nums text-foreground">
-															{String(index + 1).padStart(2, "0")}
+									<div className="overflow-hidden rounded-md border border-border/70 bg-background/80">
+										<CollapsibleTrigger className="w-full cursor-pointer px-3 py-2 text-left hover:bg-muted/20">
+											<div className="space-y-0.5">
+												<div className="flex items-center gap-2 pb-1">
+													<span className="inline-flex h-8 w-10 items-center font-mono font-medium leading-none tabular-nums text-foreground">
+														{String(index + 1).padStart(2, "0")}
+													</span>
+													<div className="flex min-w-0 flex-1 items-center gap-2">
+														<Avatar className="size-8 border border-border/70">
+															<AvatarFallback className="text-[11px] font-medium">
+																{getInitials(supervisor.supervisorName)}
+															</AvatarFallback>
+														</Avatar>
+														<span className="truncate font-medium text-foreground">
+															{supervisor.supervisorName}
 														</span>
-														<div className="flex min-w-0 flex-1 items-center gap-2">
-															<Avatar className="size-8 border border-border/70">
-																<AvatarFallback className="text-[11px] font-medium">
-																	{getInitials(supervisor.supervisorName)}
-																</AvatarFallback>
-															</Avatar>
-															<span className="truncate font-medium text-foreground">
-																{supervisor.supervisorName}
-															</span>
-															<ChevronDown
-																className={cn(
-																	"size-4 text-muted-foreground transition-transform",
-																	isOpen && "rotate-180",
-																)}
-															/>
-														</div>
-														<div className="shrink-0 pl-4 text-right sm:pl-6">
-															<div className="font-mono text-sm font-semibold tabular-nums text-foreground">
-																{formatAmountFromCents(supervisor.grossAmount)}
-															</div>
-														</div>
+														<ChevronDown
+															className={cn(
+																"size-4 text-muted-foreground transition-transform",
+																isOpen && "rotate-180",
+															)}
+														/>
 													</div>
-													<div className="flex items-center gap-2 pl-10">
-														<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-															<div
-																className={cn(
-																	"h-full rounded-full transition-[width]",
-																	supervisorHasValue
-																		? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
-																		: "bg-muted-foreground/30",
-																)}
-																style={{ width: `${supervisorShareWidth}%` }}
-															/>
+													<div className="shrink-0 pl-4 text-right sm:pl-6">
+														<div className="font-mono text-sm font-semibold tabular-nums text-foreground">
+															{formatAmountFromCents(supervisor.grossAmount)}
 														</div>
-														{supervisorShare >= 100 ? (
-															<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-																<TrendingUp className="size-3" />
-																{formatSharePercentage(supervisorShare)}
-															</span>
-														) : (
-															<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
-																<Minus className="size-3" />
-																{formatSharePercentage(supervisorShare)}
-															</span>
-														)}
 													</div>
 												</div>
-											</CollapsibleTrigger>
+												<div className="flex items-center gap-2 pl-10">
+													<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+														<div
+															className={cn(
+																"h-full rounded-full transition-[width]",
+																supervisorHasValue
+																	? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
+																	: "bg-muted-foreground/30",
+															)}
+															style={{ width: `${supervisorShareWidth}%` }}
+														/>
+													</div>
+													{supervisorShare >= 100 ? (
+														<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+															<TrendingUp className="size-3" />
+															{formatSharePercentage(supervisorShare)}
+														</span>
+													) : (
+														<span className="inline-flex w-[4.5rem] items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
+															<Minus className="size-3" />
+															{formatSharePercentage(supervisorShare)}
+														</span>
+													)}
+												</div>
+											</div>
+										</CollapsibleTrigger>
 										<CollapsibleContent className="border-t border-border/70 bg-muted/10">
 											<div className="overflow-x-auto p-2">
 												<Table className="min-w-[860px]">
@@ -1239,7 +1275,7 @@ function SupervisorRankingSection({
 															</TableHead>
 														</TableRow>
 													</TableHeader>
-														<TableBody className="[&_tr]:border-0">
+													<TableBody className="[&_tr]:border-0">
 														{partners.map((partner) => {
 															const canceledMetrics =
 																canceledByPartnerId[partner.partnerId] ??
@@ -1250,10 +1286,12 @@ function SupervisorRankingSection({
 																		}
 																	: partner.salesBreakdown.canceled);
 															const concludedHasValue =
-																partner.salesBreakdown.concluded.grossAmount > 0 ||
+																partner.salesBreakdown.concluded.grossAmount >
+																	0 ||
 																partner.salesBreakdown.concluded.salesCount > 0;
 															const pendingHasValue =
-																partner.salesBreakdown.pending.grossAmount > 0 ||
+																partner.salesBreakdown.pending.grossAmount >
+																	0 ||
 																partner.salesBreakdown.pending.salesCount > 0;
 															const delinquentHasValue =
 																partner.delinquentGrossAmount > 0 ||
@@ -1267,18 +1305,18 @@ function SupervisorRankingSection({
 																	key={partner.partnerId}
 																	className="bg-transparent hover:bg-muted/20"
 																>
-																<TableCell className="px-3 py-3">
-																	<div className="flex min-w-0 items-center gap-3">
-																		<Avatar className="size-7 border border-border/70">
-																			<AvatarFallback className="text-[10px] font-medium">
-																				{getInitials(partner.partnerName)}
-																			</AvatarFallback>
-																		</Avatar>
-																		<span className="truncate font-medium text-foreground">
-																			{partner.partnerName}
-																		</span>
-																	</div>
-																</TableCell>
+																	<TableCell className="px-3 py-3">
+																		<div className="flex min-w-0 items-center gap-3">
+																			<Avatar className="size-7 border border-border/70">
+																				<AvatarFallback className="text-[10px] font-medium">
+																					{getInitials(partner.partnerName)}
+																				</AvatarFallback>
+																			</Avatar>
+																			<span className="truncate font-medium text-foreground">
+																				{partner.partnerName}
+																			</span>
+																		</div>
+																	</TableCell>
 																	<TableCell
 																		className={cn(
 																			"px-3 py-3 text-right font-mono tabular-nums",
@@ -1290,15 +1328,16 @@ function SupervisorRankingSection({
 																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
 																			<span className="text-right leading-none">
 																				{formatAmountFromCents(
-																					partner.salesBreakdown.concluded.grossAmount,
+																					partner.salesBreakdown.concluded
+																						.grossAmount,
 																				)}
-																		</span>
-																		<span
-																			aria-hidden="true"
-																			className="leading-none opacity-70"
-																		>
-																			•
-																		</span>
+																			</span>
+																			<span
+																				aria-hidden="true"
+																				className="leading-none opacity-70"
+																			>
+																				•
+																			</span>
 																			<span
 																				className={cn(
 																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
@@ -1308,7 +1347,8 @@ function SupervisorRankingSection({
 																				)}
 																			>
 																				{formatCount(
-																					partner.salesBreakdown.concluded.salesCount,
+																					partner.salesBreakdown.concluded
+																						.salesCount,
 																				)}
 																			</span>
 																		</div>
@@ -1324,15 +1364,16 @@ function SupervisorRankingSection({
 																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
 																			<span className="text-right leading-none">
 																				{formatAmountFromCents(
-																					partner.salesBreakdown.pending.grossAmount,
+																					partner.salesBreakdown.pending
+																						.grossAmount,
 																				)}
-																		</span>
-																		<span
-																			aria-hidden="true"
-																			className="leading-none opacity-70"
-																		>
-																			•
-																		</span>
+																			</span>
+																			<span
+																				aria-hidden="true"
+																				className="leading-none opacity-70"
+																			>
+																				•
+																			</span>
 																			<span
 																				className={cn(
 																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
@@ -1342,7 +1383,8 @@ function SupervisorRankingSection({
 																				)}
 																			>
 																				{formatCount(
-																					partner.salesBreakdown.pending.salesCount,
+																					partner.salesBreakdown.pending
+																						.salesCount,
 																				)}
 																			</span>
 																		</div>
@@ -1357,14 +1399,16 @@ function SupervisorRankingSection({
 																	>
 																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
 																			<span className="text-right leading-none">
-																				{formatAmountFromCents(partner.delinquentGrossAmount)}
-																		</span>
-																		<span
-																			aria-hidden="true"
-																			className="leading-none opacity-70"
-																		>
-																			•
-																		</span>
+																				{formatAmountFromCents(
+																					partner.delinquentGrossAmount,
+																				)}
+																			</span>
+																			<span
+																				aria-hidden="true"
+																				className="leading-none opacity-70"
+																			>
+																				•
+																			</span>
 																			<span
 																				className={cn(
 																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
@@ -1373,7 +1417,9 @@ function SupervisorRankingSection({
 																						: "font-medium",
 																				)}
 																			>
-																				{formatCount(partner.delinquentSalesCount)}
+																				{formatCount(
+																					partner.delinquentSalesCount,
+																				)}
 																			</span>
 																		</div>
 																	</TableCell>
@@ -1388,15 +1434,15 @@ function SupervisorRankingSection({
 																		<div className="inline-grid w-full grid-cols-[1fr_auto_auto] items-baseline justify-end gap-x-1">
 																			<span className="text-right leading-none">
 																				{formatAmountFromCents(
-																				canceledMetrics.grossAmount,
-																			)}
-																		</span>
-																		<span
-																			aria-hidden="true"
-																			className="leading-none opacity-70"
-																		>
-																			•
-																		</span>
+																					canceledMetrics.grossAmount,
+																				)}
+																			</span>
+																			<span
+																				aria-hidden="true"
+																				className="leading-none opacity-70"
+																			>
+																				•
+																			</span>
 																			<span
 																				className={cn(
 																					"min-w-[4ch] text-left text-xs leading-none tabular-nums",
@@ -1408,10 +1454,10 @@ function SupervisorRankingSection({
 																				{formatCount(
 																					canceledMetrics.salesCount,
 																				)}
-																		</span>
-																	</div>
-																</TableCell>
-															</TableRow>
+																			</span>
+																		</div>
+																	</TableCell>
+																</TableRow>
 															);
 														})}
 														{partners.length === 0 ? (
@@ -1686,7 +1732,9 @@ function DelinquencyBreakdownCard({
 						</div>
 					</div>
 					<div className="rounded-xl border bg-muted/20 p-3 text-right">
-						<div className="text-xs text-muted-foreground">Produção em risco</div>
+						<div className="text-xs text-muted-foreground">
+							Produção em risco
+						</div>
 						<div className="mt-1 text-sm font-semibold text-foreground">
 							{formatAmountFromCents(totalDelinquentAmount)}
 						</div>
@@ -1862,10 +1910,12 @@ export function DashboardPartnersOverview() {
 
 	const defaultStartDate = useMemo(() => getDefaultStartDate(), []);
 	const defaultEndDate = useMemo(() => getDefaultEndDate(), []);
-	const effectiveStartDate =
-		isValidDateFilterInput(startDate) ? startDate : defaultStartDate;
-	const effectiveEndDate =
-		isValidDateFilterInput(endDate) ? endDate : defaultEndDate;
+	const effectiveStartDate = isValidDateFilterInput(startDate)
+		? startDate
+		: defaultStartDate;
+	const effectiveEndDate = isValidDateFilterInput(endDate)
+		? endDate
+		: defaultEndDate;
 	const effectiveSupervisorId = isValidUuid(supervisorId) ? supervisorId : "";
 	const effectiveDynamicFieldId = isValidUuid(dynamicFieldId)
 		? dynamicFieldId
@@ -1953,8 +2003,10 @@ export function DashboardPartnersOverview() {
 			return allPartners;
 		}
 
-		return allPartners.filter(
-			(partner) => partner.supervisorId === effectiveSupervisorId,
+		return allPartners.filter((partner) =>
+			partner.supervisors.some(
+				(supervisor) => supervisor.id === effectiveSupervisorId,
+			),
 		);
 	}, [data?.filters.partners, effectiveSupervisorId]);
 
@@ -2006,15 +2058,11 @@ export function DashboardPartnersOverview() {
 	);
 	const timelineDailyPeakAmount = useMemo(
 		() =>
-			Math.max(
-				...(data?.timeline ?? []).map((item) => item.grossAmount),
-				0,
-			),
+			Math.max(...(data?.timeline ?? []).map((item) => item.grossAmount), 0),
 		[data?.timeline],
 	);
 	const timelineDaysWithSales = useMemo(
-		() =>
-			(data?.timeline ?? []).filter((item) => item.salesCount > 0).length,
+		() => (data?.timeline ?? []).filter((item) => item.salesCount > 0).length,
 		[data?.timeline],
 	);
 	const timelineGranularity = data?.period.timelineGranularity ?? "DAY";
@@ -2300,140 +2348,134 @@ export function DashboardPartnersOverview() {
 				</Card>
 			) : null}
 
-				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
-					<Card className="overflow-hidden border-border/70">
-						<CardHeader className="border-b">
-							<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-								<div className="space-y-1">
-									<CardTitle>
-										{timelineGranularity === "DAY"
-											? "Vendas por dia"
-											: "Faturamento por mês"}
-									</CardTitle>
-									<CardDescription>
-										Visualize concluídas e processadas no período, com opção de
-										comparar as canceladas.
-									</CardDescription>
-								</div>
-								<TimelineSeriesSelectFilter
-									selectedKey={selectedTimelineSeries}
-									onChange={setSelectedTimelineSeries}
-								/>
+			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
+				<Card className="overflow-hidden border-border/70">
+					<CardHeader className="border-b">
+						<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+							<div className="space-y-1">
+								<CardTitle>
+									{timelineGranularity === "DAY"
+										? "Vendas por dia"
+										: "Faturamento por mês"}
+								</CardTitle>
+								<CardDescription>
+									Visualize concluídas e processadas no período, com opção de
+									comparar as canceladas.
+								</CardDescription>
 							</div>
-						</CardHeader>
-						<CardContent className="space-y-4 pt-6">
-							<ChartContainer
-								config={timelineChartConfig}
-								className="h-[290px] w-full"
-							>
-								<AreaChart data={timelineChartData}>
-									<defs>
-										{TIMELINE_SERIES_OPTIONS.map((option) => (
-											<linearGradient
-												key={option.key}
-												id={timelineAreaGradientIds[option.key]}
-												x1="0"
-												y1="0"
-												x2="0"
-												y2="1"
-											>
-												<stop
-													offset="5%"
-													stopColor={`var(--color-${option.key})`}
-													stopOpacity={0.7}
-												/>
-												<stop
-													offset="95%"
-													stopColor={`var(--color-${option.key})`}
-													stopOpacity={0.1}
-												/>
-											</linearGradient>
-										))}
-									</defs>
-									<CartesianGrid vertical={false} />
-									<XAxis
-										dataKey="label"
-										tickLine={false}
-										axisLine={false}
-										tickMargin={8}
-										minTickGap={24}
-									/>
-									<YAxis
-										tickLine={false}
-										axisLine={false}
-										tickFormatter={(value) => formatCurrencyBRL(Number(value))}
-									/>
-									<ChartTooltip
-										cursor={false}
-										content={
-											<ChartTooltipContent
-												labelFormatter={(_, payload) => {
-													const item = payload?.[0]?.payload as
-														| { label?: string }
-														| undefined;
-													return item?.label ?? "";
-												}}
-												formatter={(value, name) => {
-													const seriesKey = String(name) as TimelineSeriesKey;
-													const seriesLabel =
-														timelineChartConfig[seriesKey]?.label ?? name;
-													return (
-														<div className="flex w-full items-center justify-between gap-2">
-															<span className="text-muted-foreground">
-																{seriesLabel}
-															</span>
-															<div className="font-medium">
-																{formatCurrencyBRL(Number(value))}
-															</div>
-														</div>
-													);
-												}}
-												indicator="dot"
+							<TimelineSeriesSelectFilter
+								selectedKey={selectedTimelineSeries}
+								onChange={setSelectedTimelineSeries}
+							/>
+						</div>
+					</CardHeader>
+					<CardContent className="space-y-4 pt-6">
+						<ChartContainer
+							config={timelineChartConfig}
+							className="h-[290px] w-full"
+						>
+							<AreaChart data={timelineChartData}>
+								<defs>
+									{TIMELINE_SERIES_OPTIONS.map((option) => (
+										<linearGradient
+											key={option.key}
+											id={timelineAreaGradientIds[option.key]}
+											x1="0"
+											y1="0"
+											x2="0"
+											y2="1"
+										>
+											<stop
+												offset="5%"
+												stopColor={`var(--color-${option.key})`}
+												stopOpacity={0.7}
 											/>
-										}
-									/>
-									{timelineSeriesKeysToRender.map((seriesKey) => (
-										<Area
-											key={seriesKey}
-											dataKey={seriesKey}
-											type="natural"
-											stroke={`var(--color-${seriesKey})`}
-											strokeWidth={2}
-											fill={`url(#${timelineAreaGradientIds[seriesKey]})`}
-											activeDot={{ r: 5 }}
-										/>
+											<stop
+												offset="95%"
+												stopColor={`var(--color-${option.key})`}
+												stopOpacity={0.1}
+											/>
+										</linearGradient>
 									))}
-								</AreaChart>
-							</ChartContainer>
-
-							<div className="grid grid-cols-2 gap-3 text-sm">
-								<PartnerCompactMetric
-									label={
-										timelineGranularity === "DAY"
-											? "Pico diário"
-											: "Pico mensal"
-									}
-									value={formatAmountFromCents(timelineDailyPeakAmount)}
+								</defs>
+								<CartesianGrid vertical={false} />
+								<XAxis
+									dataKey="label"
+									tickLine={false}
+									axisLine={false}
+									tickMargin={8}
+									minTickGap={24}
 								/>
-								<PartnerCompactMetric
-									label={
-										timelineGranularity === "DAY"
-											? "Dias com venda"
-											: "Meses com venda"
-									}
-									value={String(timelineDaysWithSales)}
+								<YAxis
+									tickLine={false}
+									axisLine={false}
+									tickFormatter={(value) => formatCurrencyBRL(Number(value))}
 								/>
-							</div>
-						</CardContent>
-					</Card>
+								<ChartTooltip
+									cursor={false}
+									content={
+										<ChartTooltipContent
+											labelFormatter={(_, payload) => {
+												const item = payload?.[0]?.payload as
+													| { label?: string }
+													| undefined;
+												return item?.label ?? "";
+											}}
+											formatter={(value, name) => {
+												const seriesKey = String(name) as TimelineSeriesKey;
+												const seriesLabel =
+													timelineChartConfig[seriesKey]?.label ?? name;
+												return (
+													<div className="flex w-full items-center justify-between gap-2">
+														<span className="text-muted-foreground">
+															{seriesLabel}
+														</span>
+														<div className="font-medium">
+															{formatCurrencyBRL(Number(value))}
+														</div>
+													</div>
+												);
+											}}
+											indicator="dot"
+										/>
+									}
+								/>
+								{timelineSeriesKeysToRender.map((seriesKey) => (
+									<Area
+										key={seriesKey}
+										dataKey={seriesKey}
+										type="natural"
+										stroke={`var(--color-${seriesKey})`}
+										strokeWidth={2}
+										fill={`url(#${timelineAreaGradientIds[seriesKey]})`}
+										activeDot={{ r: 5 }}
+									/>
+								))}
+							</AreaChart>
+						</ChartContainer>
 
-					<PartnerSalesStatusCard
-						items={data?.statusFunnel.items ?? []}
-					/>
-					<PartnerCommissionsByCompetencyCard
-						summary={data?.summary}
-					/>
-				</div>
+						<div className="grid grid-cols-2 gap-3 text-sm">
+							<PartnerCompactMetric
+								label={
+									timelineGranularity === "DAY" ? "Pico diário" : "Pico mensal"
+								}
+								value={formatAmountFromCents(timelineDailyPeakAmount)}
+							/>
+							<PartnerCompactMetric
+								label={
+									timelineGranularity === "DAY"
+										? "Dias com venda"
+										: "Meses com venda"
+								}
+								value={String(timelineDaysWithSales)}
+							/>
+						</div>
+					</CardContent>
+				</Card>
+
+				<PartnerSalesStatusCard items={data?.statusFunnel.items ?? []} />
+				<PartnerCommissionsByCompetencyCard summary={data?.summary} />
+			</div>
 
 			<div className="space-y-6">
 				<PartnerRankingSection items={data?.ranking ?? []} />

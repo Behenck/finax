@@ -23,12 +23,12 @@ export const postOrganizationsSlugCommissionsBonusSettlementsPreview200Schema =
     }),
     periodFrequency: z.enum(["MONTHLY", "SEMIANNUAL", "ANNUAL"]),
     periodYear: z.int().min(-9007199254740991).max(9007199254740991),
-    periodIndex: z.int().min(1).max(9007199254740991),
+    periodIndex: z.int().min(-9007199254740991).max(9007199254740991),
     periodStart: z.iso.datetime(),
     periodEnd: z.iso.datetime(),
     settledAt: z.iso.datetime(),
     salesCount: z.int().min(0).max(9007199254740991),
-    salesTotalAmount: z.int().min(-9007199254740991).max(9007199254740991),
+    salesTotalAmount: z.int().min(0).max(9007199254740991),
     scenariosCount: z.int().min(0).max(9007199254740991),
     winnersCount: z.int().min(0).max(9007199254740991),
     installmentsCount: z.int().min(0).max(9007199254740991),
@@ -67,7 +67,7 @@ export const postOrganizationsSlugCommissionsBonusSettlementsPreviewMutationRequ
   z.object({
     productId: z.uuid(),
     periodFrequency: z.enum(["MONTHLY", "SEMIANNUAL", "ANNUAL"]),
-    periodYear: z.int().min(2000).max(9999),
+    periodYear: z.int().min(2000).max(2100),
     periodIndex: z.int().min(1).max(12),
     settledAt: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   });

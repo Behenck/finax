@@ -3,6 +3,7 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { auth } from "@/middleware/auth";
 import {
+	buildBonusInstallmentsBeneficiaryVisibilityWhere,
 	buildCommissionInstallmentsVisibilityWhere,
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
@@ -52,7 +53,8 @@ export async function getOrganizationCommissionInstallments(
 					expectedTo,
 				} = request.query;
 
-				const { organization, membership } = await request.getUserMembership(slug);
+				const { organization, membership } =
+					await request.getUserMembership(slug);
 				const canViewAllCommissions = await request.hasPermission(
 					slug,
 					"sales.commissions.view.all",
@@ -69,6 +71,9 @@ export async function getOrganizationCommissionInstallments(
 				});
 				const visibilityWhere =
 					buildCommissionInstallmentsVisibilityWhere(visibilityContext);
+				const bonusVisibilityWhere = canViewAllCommissions
+					? undefined
+					: buildBonusInstallmentsBeneficiaryVisibilityWhere(visibilityContext);
 
 				const expectedFromDate = expectedFrom
 					? parseSaleDateInput(expectedFrom)
@@ -100,6 +105,7 @@ export async function getOrganizationCommissionInstallments(
 					expectedFrom: expectedFromDate,
 					expectedTo: expectedToDate,
 					visibilityWhere,
+					bonusVisibilityWhere,
 				});
 			},
 		);

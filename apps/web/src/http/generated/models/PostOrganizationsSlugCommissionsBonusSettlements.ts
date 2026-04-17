@@ -59,7 +59,7 @@ export type PostOrganizationsSlugCommissionsBonusSettlementsMutationRequest = {
   periodFrequency: PostOrganizationsSlugCommissionsBonusSettlementsMutationRequestPeriodFrequencyEnumKey;
   /**
    * @minLength 2000
-   * @maxLength 9999
+   * @maxLength 2100
    * @type integer
    */
   periodYear: number;

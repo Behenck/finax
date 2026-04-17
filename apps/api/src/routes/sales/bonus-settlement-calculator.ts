@@ -149,10 +149,7 @@ function addUtcMonthOffset(params: {
 	};
 }
 
-function resolveFirstDueDate(params: {
-	baseDate: Date;
-	dueDay: number;
-}) {
+function resolveFirstDueDate(params: { baseDate: Date; dueDay: number }) {
 	const { baseDate, dueDay } = params;
 	const baseDateUtc = new Date(
 		Date.UTC(
@@ -272,7 +269,9 @@ function resolveBeneficiaryLabel(params: {
 	return supervisorName ?? supervisorEmail ?? "Supervisor";
 }
 
-export function toSaleCommissionRecipientType(type: ProductBonusParticipantType) {
+export function toSaleCommissionRecipientType(
+	type: ProductBonusParticipantType,
+) {
 	if (type === ProductBonusParticipantType.COMPANY) {
 		return SaleCommissionRecipientType.COMPANY;
 	}
@@ -429,75 +428,76 @@ export async function calculateBonusSettlementPreview(params: {
 		throw new BadRequestError("Este ciclo já foi apurado");
 	}
 
-	const scenarios: ScenarioWithRelations[] = await tx.productBonusScenario.findMany({
-		where: {
-			productId,
-			isActive: true,
-			periodFrequency,
-		},
-		orderBy: {
-			sortOrder: "asc",
-		},
-		select: {
-			id: true,
-			name: true,
-			targetAmount: true,
-			payoutEnabled: true,
-			payoutTotalPercentage: true,
-			payoutDueDay: true,
-			participants: {
-				orderBy: {
-					sortOrder: "asc",
-				},
-				select: {
-					type: true,
-					companyId: true,
-					partnerId: true,
-					sellerId: true,
-					supervisorId: true,
-					company: {
-						select: {
-							id: true,
-							name: true,
-						},
+	const scenarios: ScenarioWithRelations[] =
+		await tx.productBonusScenario.findMany({
+			where: {
+				productId,
+				isActive: true,
+				periodFrequency,
+			},
+			orderBy: {
+				sortOrder: "asc",
+			},
+			select: {
+				id: true,
+				name: true,
+				targetAmount: true,
+				payoutEnabled: true,
+				payoutTotalPercentage: true,
+				payoutDueDay: true,
+				participants: {
+					orderBy: {
+						sortOrder: "asc",
 					},
-					partner: {
-						select: {
-							id: true,
-							name: true,
+					select: {
+						type: true,
+						companyId: true,
+						partnerId: true,
+						sellerId: true,
+						supervisorId: true,
+						company: {
+							select: {
+								id: true,
+								name: true,
+							},
 						},
-					},
-					seller: {
-						select: {
-							id: true,
-							name: true,
+						partner: {
+							select: {
+								id: true,
+								name: true,
+							},
 						},
-					},
-					supervisor: {
-						select: {
-							id: true,
-							userId: true,
-							user: {
-								select: {
-									name: true,
-									email: true,
+						seller: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+						supervisor: {
+							select: {
+								id: true,
+								userId: true,
+								user: {
+									select: {
+										name: true,
+										email: true,
+									},
 								},
 							},
 						},
 					},
 				},
-			},
-			payoutInstallments: {
-				orderBy: {
-					installmentNumber: "asc",
+				payoutInstallments: {
+					orderBy: {
+						installmentNumber: "asc",
+					},
+					select: {
+						installmentNumber: true,
+						percentage: true,
+					},
 				},
-				select: {
-					installmentNumber: true,
-					percentage: true,
-				},
 			},
-		},
-	});
+		});
 
 	if (scenarios.length === 0) {
 		throw new BadRequestError(
@@ -551,28 +551,35 @@ export async function calculateBonusSettlementPreview(params: {
 		),
 	);
 	const partnerSupervisors = partnerResponsibleIds.length
-		? await tx.partner.findMany({
+		? await tx.partnerSupervisor.findMany({
 				where: {
 					organizationId,
-					id: {
+					partnerId: {
 						in: partnerResponsibleIds,
 					},
 				},
 				select: {
-					id: true,
 					supervisorId: true,
+					partnerId: true,
 				},
 			})
 		: [];
-	const supervisorUserIdByPartnerId = new Map(
-		partnerSupervisors.map((partner) => [partner.id, partner.supervisorId]),
-	);
+	const supervisorUserIdsByPartnerId = new Map<string, string[]>();
+	for (const partnerSupervisor of partnerSupervisors) {
+		const supervisors =
+			supervisorUserIdsByPartnerId.get(partnerSupervisor.partnerId) ?? [];
+		supervisors.push(partnerSupervisor.supervisorId);
+		supervisorUserIdsByPartnerId.set(partnerSupervisor.partnerId, supervisors);
+	}
 
 	const salesTotalByCompanyId = new Map<string, number>();
 	const salesTotalByPartnerId = new Map<string, number>();
 	const salesTotalBySellerId = new Map<string, number>();
 	const salesTotalBySupervisorUserId = new Map<string, number>();
-	const salesTotalAmount = sales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+	const salesTotalAmount = sales.reduce(
+		(sum, sale) => sum + sale.totalAmount,
+		0,
+	);
 
 	for (const sale of sales) {
 		salesTotalByCompanyId.set(
@@ -586,14 +593,12 @@ export async function calculateBonusSettlementPreview(params: {
 		) {
 			salesTotalByPartnerId.set(
 				sale.responsibleId,
-				(salesTotalByPartnerId.get(sale.responsibleId) ?? 0) +
-					sale.totalAmount,
+				(salesTotalByPartnerId.get(sale.responsibleId) ?? 0) + sale.totalAmount,
 			);
 
-			const supervisorUserId = supervisorUserIdByPartnerId.get(
-				sale.responsibleId,
-			);
-			if (supervisorUserId) {
+			const supervisorUserIds =
+				supervisorUserIdsByPartnerId.get(sale.responsibleId) ?? [];
+			for (const supervisorUserId of supervisorUserIds) {
 				salesTotalBySupervisorUserId.set(
 					supervisorUserId,
 					(salesTotalBySupervisorUserId.get(supervisorUserId) ?? 0) +
@@ -619,21 +624,22 @@ export async function calculateBonusSettlementPreview(params: {
 		for (const participant of scenario.participants) {
 			const achievedAmount =
 				participant.type === ProductBonusParticipantType.COMPANY
-					? (participant.companyId
-							? (salesTotalByCompanyId.get(participant.companyId) ?? 0)
-							: 0)
+					? participant.companyId
+						? (salesTotalByCompanyId.get(participant.companyId) ?? 0)
+						: 0
 					: participant.type === ProductBonusParticipantType.PARTNER
-						? (participant.partnerId
-								? (salesTotalByPartnerId.get(participant.partnerId) ?? 0)
-								: 0)
-					: participant.type === ProductBonusParticipantType.SELLER
-						? (participant.sellerId
+						? participant.partnerId
+							? (salesTotalByPartnerId.get(participant.partnerId) ?? 0)
+							: 0
+						: participant.type === ProductBonusParticipantType.SELLER
+							? participant.sellerId
 								? (salesTotalBySellerId.get(participant.sellerId) ?? 0)
-								: 0)
-					: participant.supervisor?.userId
-						? (salesTotalBySupervisorUserId.get(participant.supervisor.userId) ??
-							0)
-						: 0;
+								: 0
+							: participant.supervisor?.userId
+								? (salesTotalBySupervisorUserId.get(
+										participant.supervisor.userId,
+									) ?? 0)
+								: 0;
 
 			if (achievedAmount < scenario.targetAmount) {
 				continue;
@@ -752,7 +758,8 @@ export function mapBonusSettlementPreviewResponse(
 			targetAmount: winner.targetAmount,
 			payoutEnabled: winner.payoutEnabled,
 			payoutAmount: winner.payoutAmount,
-			payoutTotalPercentage: winner.payoutTotalPercentage / BONUS_PERCENTAGE_SCALE,
+			payoutTotalPercentage:
+				winner.payoutTotalPercentage / BONUS_PERCENTAGE_SCALE,
 			payoutInstallments: winner.payoutInstallments.map((installment) => ({
 				installmentNumber: installment.installmentNumber,
 				percentage: installment.percentage / BONUS_PERCENTAGE_SCALE,

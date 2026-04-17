@@ -10,10 +10,12 @@ let app: Awaited<ReturnType<typeof createTestApp>>;
 async function createAuthenticatedFixture() {
 	const { user, org } = await makeUser();
 
-	const loginResponse = await request(app.server).post("/sessions/password").send({
-		email: user.email,
-		password: user.password,
-	});
+	const loginResponse = await request(app.server)
+		.post("/sessions/password")
+		.send({
+			email: user.email,
+			password: user.password,
+		});
 
 	expect(loginResponse.statusCode).toBe(200);
 
@@ -52,7 +54,7 @@ describe("assign supervisor to partner", () => {
 		await app.close();
 	});
 
-	it("should assign a supervisor member to partner", async () => {
+	it("should assign supervisor members to partner", async () => {
 		const fixture = await createAuthenticatedFixture();
 		const partner = await createPartner(fixture.org.id, fixture.suffix);
 
@@ -71,30 +73,50 @@ describe("assign supervisor to partner", () => {
 			},
 		});
 
+		const secondSupervisorUser = await prisma.user.create({
+			data: {
+				name: `Supervisor 2 ${fixture.suffix}`,
+				email: `supervisor-2-${fixture.suffix}@example.com`,
+			},
+		});
+
+		await prisma.member.create({
+			data: {
+				organizationId: fixture.org.id,
+				userId: secondSupervisorUser.id,
+				role: Role.SUPERVISOR,
+			},
+		});
+
 		const response = await request(app.server)
 			.patch(
 				`/organizations/${fixture.org.slug}/partners/${partner.id}/assign-supervisor`,
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
-				supervisorId: supervisorUser.id,
+				supervisorIds: [supervisorUser.id, secondSupervisorUser.id],
 			});
 
 		expect(response.statusCode).toBe(204);
 
-		const updatedPartner = await prisma.partner.findUnique({
+		const partnerSupervisors = await prisma.partnerSupervisor.findMany({
 			where: {
-				id: partner.id,
+				partnerId: partner.id,
 			},
 			select: {
 				supervisorId: true,
 			},
+			orderBy: {
+				supervisorId: "asc",
+			},
 		});
 
-		expect(updatedPartner?.supervisorId).toBe(supervisorUser.id);
+		expect(partnerSupervisors.map((link) => link.supervisorId).sort()).toEqual(
+			[supervisorUser.id, secondSupervisorUser.id].sort(),
+		);
 	});
 
-	it("should remove supervisor when supervisorId is null", async () => {
+	it("should remove supervisors when supervisorIds is empty", async () => {
 		const fixture = await createAuthenticatedFixture();
 		const partner = await createPartner(fixture.org.id, fixture.suffix);
 
@@ -113,11 +135,10 @@ describe("assign supervisor to partner", () => {
 			},
 		});
 
-		await prisma.partner.update({
-			where: {
-				id: partner.id,
-			},
+		await prisma.partnerSupervisor.create({
 			data: {
+				organizationId: fixture.org.id,
+				partnerId: partner.id,
 				supervisorId: supervisorUser.id,
 			},
 		});
@@ -128,21 +149,18 @@ describe("assign supervisor to partner", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
-				supervisorId: null,
+				supervisorIds: [],
 			});
 
 		expect(response.statusCode).toBe(204);
 
-		const updatedPartner = await prisma.partner.findUnique({
+		const partnerSupervisors = await prisma.partnerSupervisor.findMany({
 			where: {
-				id: partner.id,
-			},
-			select: {
-				supervisorId: true,
+				partnerId: partner.id,
 			},
 		});
 
-		expect(updatedPartner?.supervisorId).toBeNull();
+		expect(partnerSupervisors).toHaveLength(0);
 	});
 
 	it("should return 400 when supervisor does not have SUPERVISOR role in organization", async () => {
@@ -170,10 +188,12 @@ describe("assign supervisor to partner", () => {
 			)
 			.set("Authorization", `Bearer ${fixture.token}`)
 			.send({
-				supervisorId: adminUser.id,
+				supervisorIds: [adminUser.id],
 			});
 
 		expect(response.statusCode).toBe(400);
-		expect(response.body.message).toBe("Supervisor not found");
+		expect(response.body.message).toBe(
+			"One or more supervisors were not found",
+		);
 	});
 });

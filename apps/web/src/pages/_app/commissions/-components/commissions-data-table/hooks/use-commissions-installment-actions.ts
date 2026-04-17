@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useApp } from "@/context/app-context";
@@ -14,6 +15,7 @@ import {
 import {
 	getOrganizationsSlugProductsIdCommissionReversalRules,
 	getOrganizationsSlugSalesSaleidCommissionInstallments,
+	usePatchOrganizationsSlugCommissionsBonusInstallmentsInstallmentidStatus,
 } from "@/http/generated";
 import {
 	formatCurrencyBRL,
@@ -52,6 +54,7 @@ export function useCommissionsInstallmentActions({
 	onDeselectInstallments,
 }: UseCommissionsInstallmentActionsParams) {
 	const { organization } = useApp();
+	const queryClient = useQueryClient();
 	const [payAction, setPayAction] = useState<InstallmentPayAction | null>(null);
 	const [editingInstallment, setEditingInstallment] =
 		useState<InstallmentEditState | null>(null);
@@ -73,6 +76,11 @@ export function useCommissionsInstallmentActions({
 
 	const { mutateAsync: patchInstallmentStatus, isPending: isPatchingStatus } =
 		usePatchSaleCommissionInstallmentStatus();
+	const {
+		mutateAsync: patchBonusInstallmentStatus,
+		isPending: isPatchingBonusStatus,
+	} =
+		usePatchOrganizationsSlugCommissionsBonusInstallmentsInstallmentidStatus();
 	const { mutateAsync: updateInstallment, isPending: isUpdatingInstallment } =
 		useUpdateSaleCommissionInstallment();
 	const {
@@ -89,7 +97,27 @@ export function useCommissionsInstallmentActions({
 		useDeleteSaleCommissionInstallment();
 
 	const isPaymentActionPending =
-		isApplyingBulkStatus || isUndoingPayments || isPatchingBulkStatus;
+		isApplyingBulkStatus ||
+		isUndoingPayments ||
+		isPatchingBulkStatus ||
+		isPatchingBonusStatus;
+
+	async function invalidateCommissionInstallments() {
+		if (!organization?.slug) {
+			return;
+		}
+
+		await queryClient.invalidateQueries({
+			queryKey: [
+				{
+					url: "/organizations/:slug/commissions/installments",
+					params: {
+						slug: organization.slug,
+					},
+				},
+			],
+		});
+	}
 
 	function requestInstallmentPayment(installment: CommissionInstallmentRow) {
 		if (!canChangeInstallmentStatus) {
@@ -106,6 +134,10 @@ export function useCommissionsInstallmentActions({
 
 	function requestInstallmentEdition(installment: CommissionInstallmentRow) {
 		if (!canEditInstallment) {
+			return;
+		}
+		if (!installment.saleId) {
+			toast.error("Parcelas de bônus não podem ser editadas por aqui.");
 			return;
 		}
 
@@ -125,6 +157,10 @@ export function useCommissionsInstallmentActions({
 		if (!canDeleteInstallment) {
 			return;
 		}
+		if (!installment.saleId) {
+			toast.error("Parcelas de bônus não podem ser excluídas por aqui.");
+			return;
+		}
 
 		setInstallmentToDelete(installment);
 	}
@@ -139,6 +175,11 @@ export function useCommissionsInstallmentActions({
 			);
 			return;
 		}
+		if (!installment.saleId) {
+			toast.error("Parcelas de bônus não podem ser estornadas por aqui.");
+			return;
+		}
+		const saleId = installment.saleId;
 
 		if (!organization?.slug) {
 			toast.error("Organização não encontrada.");
@@ -176,7 +217,7 @@ export function useCommissionsInstallmentActions({
 					}),
 					getOrganizationsSlugSalesSaleidCommissionInstallments({
 						slug: organization.slug,
-						saleId: installment.saleId,
+						saleId,
 					}),
 				]);
 
@@ -346,6 +387,10 @@ export function useCommissionsInstallmentActions({
 		if (!canChangeInstallmentStatus) {
 			return;
 		}
+		if (!installment.saleId) {
+			toast.error("Parcelas de bônus não têm estorno para desfazer.");
+			return;
+		}
 
 		setReversalUndoAction({ installment });
 	}
@@ -400,34 +445,66 @@ export function useCommissionsInstallmentActions({
 		const currentPayAction = payAction;
 
 		try {
-			await patchInstallmentStatus({
-				saleId: currentPayAction.installment.saleId,
-				installmentId: currentPayAction.installment.id,
-				status: "PAID",
-				amount: parseBRLCurrencyToCents(currentPayAction.amount),
-				paymentDate: currentPayAction.paymentDate || undefined,
-				silent: true,
-			});
+			if (currentPayAction.installment.sourceType === "BONUS") {
+				if (!organization?.slug) {
+					throw new Error("Organização não encontrada");
+				}
+
+				await patchBonusInstallmentStatus({
+					slug: organization.slug,
+					installmentId: currentPayAction.installment.id,
+					data: {
+						status: "PAID",
+						paymentDate: currentPayAction.paymentDate || undefined,
+					},
+				});
+			} else if (currentPayAction.installment.saleId) {
+				await patchInstallmentStatus({
+					saleId: currentPayAction.installment.saleId,
+					installmentId: currentPayAction.installment.id,
+					status: "PAID",
+					amount: parseBRLCurrencyToCents(currentPayAction.amount),
+					paymentDate: currentPayAction.paymentDate || undefined,
+					silent: true,
+				});
+			}
 
 			onDeselectInstallment(currentPayAction.installment.id);
 			setPayAction(null);
-			toast.success("Parcela marcada como paga.", {
-				action: {
-					label: "Desfazer",
-					onClick: () => {
-						void undoInstallmentsPayment([
-							{
-								id: currentPayAction.installment.id,
-								saleId: currentPayAction.installment.saleId,
-								amount: parseBRLCurrencyToCents(currentPayAction.amount),
-								status: "PAID",
+			toast.success(
+				currentPayAction.installment.sourceType === "BONUS"
+					? "Parcela de bônus marcada como paga."
+					: "Parcela marcada como paga.",
+				currentPayAction.installment.saleId
+					? {
+							action: {
+								label: "Desfazer",
+								onClick: () => {
+									if (!currentPayAction.installment.saleId) {
+										return;
+									}
+
+									void undoInstallmentsPayment([
+										{
+											id: currentPayAction.installment.id,
+											saleId: currentPayAction.installment.saleId,
+											amount: parseBRLCurrencyToCents(currentPayAction.amount),
+											status: "PAID",
+										},
+									]);
+								},
 							},
-						]);
-					},
-				},
-			});
-		} catch {
-			// erro tratado no hook
+						}
+					: undefined,
+			);
+			if (currentPayAction.installment.sourceType === "BONUS") {
+				await invalidateCommissionInstallments();
+			}
+		} catch (error) {
+			if (currentPayAction.installment.sourceType === "BONUS") {
+				const message = resolveErrorMessage(normalizeApiError(error));
+				toast.error(message);
+			}
 		}
 	}
 
@@ -439,33 +516,65 @@ export function useCommissionsInstallmentActions({
 		}
 
 		try {
-			await patchInstallmentStatus({
-				saleId: installment.saleId,
-				installmentId: installment.id,
-				status: "PAID",
-				paymentDate: getTodayDateInputValue(),
-				amount: installment.amount,
-				silent: true,
-			});
+			if (installment.sourceType === "BONUS") {
+				if (!organization?.slug) {
+					throw new Error("Organização não encontrada");
+				}
+
+				await patchBonusInstallmentStatus({
+					slug: organization.slug,
+					installmentId: installment.id,
+					data: {
+						status: "PAID",
+						paymentDate: getTodayDateInputValue(),
+					},
+				});
+			} else if (installment.saleId) {
+				await patchInstallmentStatus({
+					saleId: installment.saleId,
+					installmentId: installment.id,
+					status: "PAID",
+					paymentDate: getTodayDateInputValue(),
+					amount: installment.amount,
+					silent: true,
+				});
+			}
 
 			onDeselectInstallment(installment.id);
-			toast.success("Parcela marcada como paga.", {
-				action: {
-					label: "Desfazer",
-					onClick: () => {
-						void undoInstallmentsPayment([
-							{
-								id: installment.id,
-								saleId: installment.saleId,
-								amount: installment.amount,
-								status: "PAID",
+			toast.success(
+				installment.sourceType === "BONUS"
+					? "Parcela de bônus marcada como paga."
+					: "Parcela marcada como paga.",
+				installment.saleId
+					? {
+							action: {
+								label: "Desfazer",
+								onClick: () => {
+									if (!installment.saleId) {
+										return;
+									}
+
+									void undoInstallmentsPayment([
+										{
+											id: installment.id,
+											saleId: installment.saleId,
+											amount: installment.amount,
+											status: "PAID",
+										},
+									]);
+								},
 							},
-						]);
-					},
-				},
-			});
-		} catch {
-			// erro tratado no hook
+						}
+					: undefined,
+			);
+			if (installment.sourceType === "BONUS") {
+				await invalidateCommissionInstallments();
+			}
+		} catch (error) {
+			if (installment.sourceType === "BONUS") {
+				const message = resolveErrorMessage(normalizeApiError(error));
+				toast.error(message);
+			}
 		}
 	}
 
@@ -479,7 +588,10 @@ export function useCommissionsInstallmentActions({
 			return;
 		}
 
-		if ((bulkStatus === "PAID" || bulkStatus === "CANCELED") && !bulkStatusDate) {
+		if (
+			(bulkStatus === "PAID" || bulkStatus === "CANCELED") &&
+			!bulkStatusDate
+		) {
 			toast.error(
 				bulkStatus === "PAID"
 					? "Informe a data de pagamento."
@@ -492,7 +604,9 @@ export function useCommissionsInstallmentActions({
 
 		try {
 			const response = await patchInstallmentsStatusBulk({
-				installmentIds: selectedInstallments.map((installment) => installment.id),
+				installmentIds: selectedInstallments.map(
+					(installment) => installment.id,
+				),
 				saleIds: selectedInstallments.map((installment) => installment.saleId),
 				status: bulkStatus,
 				paymentDate:
@@ -547,12 +661,20 @@ export function useCommissionsInstallmentActions({
 			return;
 		}
 
-		if (editingInstallment.status === "CANCELED" && !editingInstallment.reversalDate) {
+		if (
+			editingInstallment.status === "CANCELED" &&
+			!editingInstallment.reversalDate
+		) {
 			toast.error("Informe a data do estorno.");
 			return;
 		}
 
 		try {
+			if (!editingInstallment.installment.saleId) {
+				toast.error("Parcelas de bônus não podem ser editadas por aqui.");
+				return;
+			}
+
 			const parsedAmount = parseBRLCurrencyToCents(editingInstallment.amount);
 			if (editingInstallment.status === "REVERSED" && parsedAmount >= 0) {
 				toast.error("Para parcela estornada, o valor deve ser negativo.");
@@ -594,6 +716,11 @@ export function useCommissionsInstallmentActions({
 		}
 
 		try {
+			if (!installmentToDelete.saleId) {
+				toast.error("Parcelas de bônus não podem ser excluídas por aqui.");
+				return;
+			}
+
 			await deleteInstallment({
 				saleId: installmentToDelete.saleId,
 				installmentId: installmentToDelete.id,
@@ -630,7 +757,9 @@ export function useCommissionsInstallmentActions({
 		let parsedManualAmount: number | undefined;
 
 		if (shouldSendManualAmount) {
-			const parsedAmount = parseManualAmountToCents(reversalAction.manualAmount);
+			const parsedAmount = parseManualAmountToCents(
+				reversalAction.manualAmount,
+			);
 			if (parsedAmount === null) {
 				toast.error("Informe um valor válido para o estorno.");
 				return;
@@ -648,6 +777,11 @@ export function useCommissionsInstallmentActions({
 		}
 
 		try {
+			if (!reversalAction.installment.saleId) {
+				toast.error("Parcelas de bônus não podem ser estornadas por aqui.");
+				return;
+			}
+
 			const payload: {
 				saleId: string;
 				installmentId: string;
@@ -681,6 +815,11 @@ export function useCommissionsInstallmentActions({
 		}
 
 		try {
+			if (!reversalUndoAction.installment.saleId) {
+				toast.error("Parcelas de bônus não têm estorno para desfazer.");
+				return;
+			}
+
 			await undoInstallmentReversal({
 				saleId: reversalUndoAction.installment.saleId,
 				installmentId: reversalUndoAction.installment.id,
@@ -721,7 +860,7 @@ export function useCommissionsInstallmentActions({
 		setBulkStatusDate,
 		isPaymentActionPending,
 		isPreparingReversal,
-		isPatchingStatus,
+		isPatchingStatus: isPatchingStatus || isPatchingBonusStatus,
 		isUpdatingInstallment,
 		isReversingInstallment,
 		isUndoingInstallmentReversal,

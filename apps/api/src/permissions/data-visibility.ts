@@ -71,13 +71,13 @@ export async function loadMemberDataVisibilityContext(params: {
 			},
 		}),
 		shouldLoadSupervisedPartners
-			? prisma.partner.findMany({
+			? prisma.partnerSupervisor.findMany({
 					where: {
 						organizationId: params.organizationId,
 						supervisorId: params.userId,
 					},
 					select: {
-						id: true,
+						partnerId: true,
 					},
 				})
 			: Promise.resolve([]),
@@ -93,7 +93,9 @@ export async function loadMemberDataVisibilityContext(params: {
 		memberCompanyAccesses,
 		linkedSellerIds: linkedSellers.map((seller) => seller.id),
 		linkedPartnerIds: linkedPartners.map((partner) => partner.id),
-		supervisedPartnerIds: supervisedPartners.map((partner) => partner.id),
+		supervisedPartnerIds: supervisedPartners.map(
+			(partner) => partner.partnerId,
+		),
 	} satisfies MemberDataVisibilityContext;
 }
 
@@ -595,6 +597,10 @@ export function buildPartnersVisibilityWhere(
 	}
 
 	return {
-		supervisorId: context.userId,
+		supervisors: {
+			some: {
+				supervisorId: context.userId,
+			},
+		},
 	};
 }

@@ -212,7 +212,6 @@ async function createFixture() {
 			state: "RS",
 			organizationId: org.id,
 			status: PartnerStatus.ACTIVE,
-			supervisorId: supervisorUser.id,
 		},
 	});
 
@@ -227,7 +226,6 @@ async function createFixture() {
 			state: "RS",
 			organizationId: org.id,
 			status: PartnerStatus.INACTIVE,
-			supervisorId: supervisorUser.id,
 		},
 	});
 
@@ -243,6 +241,14 @@ async function createFixture() {
 			organizationId: org.id,
 			status: PartnerStatus.ACTIVE,
 		},
+	});
+
+	await prisma.partnerSupervisor.createMany({
+		data: [partnerAlpha, partnerBeta].map((partner) => ({
+			organizationId: org.id,
+			partnerId: partner.id,
+			supervisorId: supervisorUser.id,
+		})),
 	});
 
 	return {
@@ -543,10 +549,12 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerAlpha.id,
 				partnerName: fixture.partnerAlpha.name,
 				status: "ACTIVE",
-				supervisor: {
-					id: fixture.supervisorUser.id,
-					name: fixture.supervisorUser.name,
-				},
+				supervisors: [
+					{
+						id: fixture.supervisorUser.id,
+						name: fixture.supervisorUser.name,
+					},
+				],
 				salesCount: 2,
 				grossAmount: 150_000,
 				averageTicket: 75_000,
@@ -576,10 +584,12 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerBeta.id,
 				partnerName: fixture.partnerBeta.name,
 				status: "INACTIVE",
-				supervisor: {
-					id: fixture.supervisorUser.id,
-					name: fixture.supervisorUser.name,
-				},
+				supervisors: [
+					{
+						id: fixture.supervisorUser.id,
+						name: fixture.supervisorUser.name,
+					},
+				],
 				salesCount: 1,
 				grossAmount: 80_000,
 				averageTicket: 80_000,
@@ -609,7 +619,7 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerGamma.id,
 				partnerName: fixture.partnerGamma.name,
 				status: "ACTIVE",
-				supervisor: null,
+				supervisors: [],
 				salesCount: 0,
 				grossAmount: 0,
 				averageTicket: 0,
@@ -744,10 +754,12 @@ describe("partner sales dashboard", () => {
 						partnerId: fixture.partnerAlpha.id,
 						partnerName: fixture.partnerAlpha.name,
 						status: "ACTIVE",
-						supervisor: {
-							id: fixture.supervisorUser.id,
-							name: fixture.supervisorUser.name,
-						},
+						supervisors: [
+							{
+								id: fixture.supervisorUser.id,
+								name: fixture.supervisorUser.name,
+							},
+						],
 						salesCount: 2,
 						grossAmount: 150_000,
 						pendingAmount: 4_000,
@@ -906,10 +918,12 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerAlpha.id,
 				partnerName: fixture.partnerAlpha.name,
 				status: "ACTIVE",
-				supervisor: {
-					id: fixture.supervisorUser.id,
-					name: fixture.supervisorUser.name,
-				},
+				supervisors: [
+					{
+						id: fixture.supervisorUser.id,
+						name: fixture.supervisorUser.name,
+					},
+				],
 				totalSales: 2,
 				grossAmount: 150_000,
 				delinquentSalesCount: 1,
@@ -922,10 +936,12 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerBeta.id,
 				partnerName: fixture.partnerBeta.name,
 				status: "INACTIVE",
-				supervisor: {
-					id: fixture.supervisorUser.id,
-					name: fixture.supervisorUser.name,
-				},
+				supervisors: [
+					{
+						id: fixture.supervisorUser.id,
+						name: fixture.supervisorUser.name,
+					},
+				],
 				totalSales: 1,
 				grossAmount: 80_000,
 				delinquentSalesCount: 0,
@@ -938,7 +954,7 @@ describe("partner sales dashboard", () => {
 				partnerId: fixture.partnerGamma.id,
 				partnerName: fixture.partnerGamma.name,
 				status: "ACTIVE",
-				supervisor: null,
+				supervisors: [],
 				totalSales: 0,
 				grossAmount: 0,
 				delinquentSalesCount: 0,
@@ -1031,10 +1047,12 @@ describe("partner sales dashboard", () => {
 						partnerId: fixture.partnerAlpha.id,
 						partnerName: fixture.partnerAlpha.name,
 						status: "ACTIVE",
-						supervisor: {
-							id: fixture.supervisorUser.id,
-							name: fixture.supervisorUser.name,
-						},
+						supervisors: [
+							{
+								id: fixture.supervisorUser.id,
+								name: fixture.supervisorUser.name,
+							},
+						],
 						salesCount: 0,
 						grossAmount: 0,
 						pendingAmount: 4_000,
@@ -1085,10 +1103,12 @@ describe("partner sales dashboard", () => {
 			partnerId: fixture.partnerBeta.id,
 			partnerName: fixture.partnerBeta.name,
 			status: "INACTIVE",
-			supervisor: {
-				id: fixture.supervisorUser.id,
-				name: fixture.supervisorUser.name,
-			},
+			supervisors: [
+				{
+					id: fixture.supervisorUser.id,
+					name: fixture.supervisorUser.name,
+				},
+			],
 			salesCount: 1,
 			grossAmount: 80_000,
 			averageTicket: 80_000,
@@ -1130,8 +1150,10 @@ describe("partner sales dashboard", () => {
 		expect(supervisorResponse.body.filters.partners).toHaveLength(2);
 		expect(
 			supervisorResponse.body.filters.partners.every(
-				(partner: { supervisorId: string | null }) =>
-					partner.supervisorId === fixture.supervisorUser.id,
+				(partner: { supervisors: Array<{ id: string }> }) =>
+					partner.supervisors.some(
+						(supervisor) => supervisor.id === fixture.supervisorUser.id,
+					),
 			),
 		).toBe(true);
 	});

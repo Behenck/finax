@@ -71,8 +71,10 @@ type VisiblePartner = {
 	id: string;
 	name: string;
 	status: "ACTIVE" | "INACTIVE";
-	supervisorId: string | null;
-	supervisorName: string | null;
+	supervisors: Array<{
+		id: string;
+		name: string | null;
+	}>;
 };
 
 type DashboardSaleRow = {
@@ -111,10 +113,10 @@ type PartnerSummaryMetrics = {
 	partnerId: string;
 	partnerName: string;
 	status: "ACTIVE" | "INACTIVE";
-	supervisor: {
+	supervisors: Array<{
 		id: string;
 		name: string | null;
-	} | null;
+	}>;
 	salesCount: number;
 	grossAmount: number;
 	averageTicket: number;
@@ -668,11 +670,14 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 							id: true,
 							name: true,
 							status: true,
-							supervisorId: true,
-							supervisor: {
+							supervisors: {
 								select: {
-									id: true,
-									name: true,
+									supervisor: {
+										select: {
+											id: true,
+											name: true,
+										},
+									},
 								},
 							},
 						},
@@ -681,28 +686,26 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					id: partner.id,
 					name: partner.name,
 					status: partner.status,
-					supervisorId: partner.supervisorId,
-					supervisorName: partner.supervisor?.name ?? null,
+					supervisors: partner.supervisors.map((link) => link.supervisor),
 				})) satisfies VisiblePartner[];
 
 				const filterSupervisors = Array.from(
 					new Map(
 						visiblePartners
-							.filter((partner) => partner.supervisorId)
-							.map((partner) => [
-								partner.supervisorId!,
-								{
-									id: partner.supervisorId!,
-									name: partner.supervisorName,
-								},
-							]),
+							.flatMap((partner) => partner.supervisors)
+							.map((supervisor) => [supervisor.id, supervisor]),
 					).values(),
 				).sort(buildPartnerNameSorter());
 				const filterPartners = [...visiblePartners].sort((left, right) =>
 					left.name.localeCompare(right.name, "pt-BR"),
 				);
 				const filteredPartners = visiblePartners.filter((partner) => {
-					if (supervisorId && partner.supervisorId !== supervisorId) {
+					if (
+						supervisorId &&
+						!partner.supervisors.some(
+							(supervisor) => supervisor.id === supervisorId,
+						)
+					) {
 						return false;
 					}
 
@@ -1298,12 +1301,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						partnerId: partner.id,
 						partnerName: partner.name,
 						status: partner.status,
-						supervisor: partner.supervisorId
-							? {
-									id: partner.supervisorId,
-									name: partner.supervisorName,
-								}
-							: null,
+						supervisors: partner.supervisors,
 						salesCount: partnerSales.length,
 						grossAmount: partnerGrossAmount,
 						averageTicket: toAverageAmount(
@@ -1368,7 +1366,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						partnerId: partner.partnerId,
 						partnerName: partner.partnerName,
 						status: partner.status,
-						supervisor: partner.supervisor,
+						supervisors: partner.supervisors,
 						salesCount: partner.salesCount,
 						grossAmount: partner.grossAmount,
 						averageTicket: partner.averageTicket,
@@ -1395,7 +1393,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 							partnerId: partner.partnerId,
 							partnerName: partner.partnerName,
 							status: partner.status,
-							supervisor: partner.supervisor,
+							supervisors: partner.supervisors,
 							totalSales: partner.salesCount,
 							grossAmount: partner.grossAmount,
 							delinquentSalesCount: partner.delinquentSalesCount,
@@ -1500,7 +1498,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 								partnerId: partner.partnerId,
 								partnerName: partner.partnerName,
 								status: partner.status,
-								supervisor: partner.supervisor,
+								supervisors: partner.supervisors,
 								salesCount: partner.salesCount,
 								grossAmount: partner.grossAmount,
 								pendingAmount: partner.commissionPendingAmount,

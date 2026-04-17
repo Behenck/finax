@@ -86,14 +86,18 @@ export function readStorageJson<T>(key: string, fallback: T): T {
 	}
 }
 
-export function canUpdateInstallments(saleStatus: SaleStatus) {
+export function canUpdateInstallments(saleStatus: SaleStatus | null) {
 	return saleStatus === "APPROVED" || saleStatus === "COMPLETED";
 }
 
 export function canPayInstallment(installment: CommissionInstallmentRow) {
+	if (installment.sourceType === "BONUS") {
+		return installment.status === "PENDING";
+	}
+
 	return (
 		installment.status === "PENDING" &&
-		canUpdateInstallments(installment.saleStatus as SaleStatus)
+		canUpdateInstallments(installment.saleStatus)
 	);
 }
 
@@ -101,10 +105,11 @@ export function canBulkChangeInstallmentStatus(
 	installment: CommissionInstallmentRow,
 ) {
 	return (
+		installment.sourceType !== "BONUS" &&
 		(installment.status === "PENDING" ||
 			installment.status === "PAID" ||
 			installment.status === "CANCELED") &&
-		canUpdateInstallments(installment.saleStatus as SaleStatus)
+		canUpdateInstallments(installment.saleStatus)
 	);
 }
 

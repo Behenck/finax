@@ -74,8 +74,7 @@ async function denyPermission(params: {
 
 	await prisma.memberPermissionOverride.upsert({
 		where: {
-			organizationId_memberId_permissionId: {
-				organizationId: params.organizationId,
+			memberId_permissionId: {
 				memberId: params.memberId,
 				permissionId: permission.id,
 			},
@@ -97,7 +96,7 @@ async function createPartner(params: {
 	suffix: string;
 	supervisorId?: string | null;
 }) {
-	return prisma.partner.create({
+	const partner = await prisma.partner.create({
 		data: {
 			name: `Partner ${params.suffix}`,
 			email: `customers-partner-${params.suffix}@example.com`,
@@ -109,9 +108,20 @@ async function createPartner(params: {
 			country: "BR",
 			status: PartnerStatus.ACTIVE,
 			organizationId: params.organizationId,
-			supervisorId: params.supervisorId ?? null,
 		},
 	});
+
+	if (params.supervisorId) {
+		await prisma.partnerSupervisor.create({
+			data: {
+				organizationId: params.organizationId,
+				partnerId: partner.id,
+				supervisorId: params.supervisorId,
+			},
+		});
+	}
+
+	return partner;
 }
 
 async function createCustomer(params: {

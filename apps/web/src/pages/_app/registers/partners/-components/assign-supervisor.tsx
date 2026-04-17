@@ -17,7 +17,7 @@ import {
 	useGetOrganizationsSlugMembersRole,
 	type GetOrganizationsSlugPartnersPartnerid200,
 } from "@/http/generated";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -50,11 +50,30 @@ export function AssignSupervisor({
 	const { mutateAsync: assignSupervisor } = useAssignPartnerSupervisor();
 	const queryClient = useQueryClient();
 
-	const [selectedSupervisorId, setSelectedSupervisorId] = useState<
-		string | null
-	>(partner.supervisor?.id ?? null);
+	const [selectedSupervisorIds, setSelectedSupervisorIds] = useState<string[]>(
+		() => partner.supervisors.map((supervisor) => supervisor.id),
+	);
 
-	const isSelected = (id: string | null) => selectedSupervisorId === id;
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		setSelectedSupervisorIds(
+			partner.supervisors.map((supervisor) => supervisor.id),
+		);
+	}, [open, partner.supervisors]);
+
+	const hasNoSupervisorSelected = selectedSupervisorIds.length === 0;
+	const isSelected = (id: string) => selectedSupervisorIds.includes(id);
+
+	const toggleSupervisor = (id: string) => {
+		setSelectedSupervisorIds((currentIds) =>
+			currentIds.includes(id)
+				? currentIds.filter((currentId) => currentId !== id)
+				: [...currentIds, id],
+		);
+	};
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -64,7 +83,7 @@ export function AssignSupervisor({
 				slug: partner.organization.slug,
 				partnerId: partner.id,
 				data: {
-					supervisorId: selectedSupervisorId,
+					supervisorIds: selectedSupervisorIds,
 				},
 			});
 
@@ -74,10 +93,10 @@ export function AssignSupervisor({
 				}),
 			});
 
-			toast.success("Supervisor atualizado com sucesso.");
+			toast.success("Supervisores atualizados com sucesso.");
 			setOpen(false);
 		} catch {
-			toast.error("Não foi possível atualizar o supervisor.");
+			toast.error("Não foi possível atualizar os supervisores.");
 		}
 	};
 
@@ -98,21 +117,28 @@ export function AssignSupervisor({
 				<DialogHeader>
 					<DialogTitle>Atribuir Supervisor</DialogTitle>
 					<DialogDescription>
-						Selecione um supervisor para <strong>{partner.name}</strong>.
+						Selecione os supervisores para <strong>{partner.name}</strong>.
 					</DialogDescription>
 				</DialogHeader>
 				<form className="space-y-2" onSubmit={handleSubmit}>
 					<Card
-						onClick={() => setSelectedSupervisorId(null)}
+						onClick={() => setSelectedSupervisorIds([])}
 						className={cn(
 							"p-3 cursor-pointer flex-row items-center justify-between transition-all hover:bg-muted",
-							isSelected(null) && "border-green-500 bg-green-500/10",
+							hasNoSupervisorSelected && "border-green-500 bg-green-500/10",
 						)}
 					>
 						<span className="text-sm">Sem supervisor</span>
 
-						{isSelected(null) && <Check className="size-4 text-green-500" />}
+						{hasNoSupervisorSelected && (
+							<Check className="size-4 text-green-500" />
+						)}
 					</Card>
+					{isLoading ? (
+						<p className="rounded-md border border-dashed p-3 text-center text-muted-foreground text-sm">
+							Carregando supervisores...
+						</p>
+					) : null}
 					{supervisors.map((supervisor) => {
 						const partnersCount =
 							supervisorPartnerCounts[supervisor.userId] ?? 0;
@@ -120,7 +146,7 @@ export function AssignSupervisor({
 						return (
 							<Card
 								key={supervisor.userId}
-								onClick={() => setSelectedSupervisorId(supervisor.userId)}
+								onClick={() => toggleSupervisor(supervisor.userId)}
 								className={cn(
 									"p-4 flex-row items-center justify-between cursor-pointer transition-all hover:bg-muted",
 									isSelected(supervisor.userId) &&

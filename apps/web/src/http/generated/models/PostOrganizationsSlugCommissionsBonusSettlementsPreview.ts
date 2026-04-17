@@ -79,7 +79,7 @@ export type PostOrganizationsSlugCommissionsBonusSettlementsPreview200 = {
    */
   periodYear: number;
   /**
-   * @minLength 1
+   * @minLength -9007199254740991
    * @maxLength 9007199254740991
    * @type integer
    */
@@ -103,7 +103,7 @@ export type PostOrganizationsSlugCommissionsBonusSettlementsPreview200 = {
    */
   salesCount: number;
   /**
-   * @minLength -9007199254740991
+   * @minLength 0
    * @maxLength 9007199254740991
    * @type integer
    */
@@ -230,7 +230,7 @@ export type PostOrganizationsSlugCommissionsBonusSettlementsPreviewMutationReque
     periodFrequency: PostOrganizationsSlugCommissionsBonusSettlementsPreviewMutationRequestPeriodFrequencyEnumKey;
     /**
      * @minLength 2000
-     * @maxLength 9999
+     * @maxLength 2100
      * @type integer
      */
     periodYear: number;

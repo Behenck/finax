@@ -88,7 +88,7 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
     commissions: z.array(
       z.object({
         id: z.uuid(),
-        sourceType: z.enum(["PULLED", "MANUAL"]),
+        sourceType: z.enum(["PULLED", "MANUAL", "BONUS"]),
         recipientType: z.enum([
           "COMPANY",
           "UNIT",

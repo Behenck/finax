@@ -13,7 +13,11 @@ export const SaleResponsibleTypeSchema = z.enum(["SELLER", "PARTNER"]);
 
 export type SaleResponsibleType = z.infer<typeof SaleResponsibleTypeSchema>;
 
-export const SaleCommissionSourceTypeSchema = z.enum(["PULLED", "MANUAL"]);
+export const SaleCommissionSourceTypeSchema = z.enum([
+	"PULLED",
+	"MANUAL",
+	"BONUS",
+]);
 
 export type SaleCommissionSourceType = z.infer<
 	typeof SaleCommissionSourceTypeSchema
@@ -68,6 +72,7 @@ export const SALE_COMMISSION_SOURCE_TYPE_LABEL: Record<
 > = {
 	PULLED: "Vinculo",
 	MANUAL: "Manual",
+	BONUS: "Bônus",
 };
 
 export const SALE_COMMISSION_RECIPIENT_TYPE_LABEL: Record<

@@ -211,13 +211,18 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        */
       status: PartnersStatusEnum2Key;
       /**
-       * @type string, uuid
+       * @type array
        */
-      supervisorId: string | null;
-      /**
-       * @type string
-       */
-      supervisorName: string | null;
+      supervisors: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string | null;
+      }[];
     }[];
   };
   /**
@@ -344,9 +349,9 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      */
     status: RankingStatusEnumKey;
     /**
-     * @type object
+     * @type array
      */
-    supervisor: {
+    supervisors: {
       /**
        * @type string, uuid
        */
@@ -355,7 +360,7 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        * @type string
        */
       name: string | null;
-    } | null;
+    }[];
     /**
      * @minLength 0
      * @maxLength 9007199254740991
@@ -802,9 +807,9 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
          */
         status: ItemsStatusEnum3Key;
         /**
-         * @type object
+         * @type array
          */
-        supervisor: {
+        supervisors: {
           /**
            * @type string, uuid
            */
@@ -813,7 +818,7 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
            * @type string
            */
           name: string | null;
-        } | null;
+        }[];
         /**
          * @minLength 0
          * @maxLength 9007199254740991
@@ -920,9 +925,9 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        */
       status: ItemsStatusEnum3Key;
       /**
-       * @type object
+       * @type array
        */
-      supervisor: {
+      supervisors: {
         /**
          * @type string, uuid
          */
@@ -931,7 +936,7 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
          * @type string
          */
         name: string | null;
-      } | null;
+      }[];
       /**
        * @minLength 0
        * @maxLength 9007199254740991

@@ -29,6 +29,7 @@ export type InstallmentsRecipientTypeEnumKey =
 export const installmentsSourceTypeEnum = {
   PULLED: "PULLED",
   MANUAL: "MANUAL",
+  BONUS: "BONUS",
 } as const;
 
 export type InstallmentsSourceTypeEnumKey =

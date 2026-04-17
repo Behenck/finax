@@ -33,28 +33,34 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
   items: z.array(
     z.object({
       id: z.uuid(),
-      saleId: z.uuid(),
-      saleStatus: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
-      saleDate: z.iso.datetime(),
-      customer: z.object({
-        id: z.uuid(),
-        name: z.string(),
-      }),
+      saleId: z.nullable(z.uuid()),
+      saleStatus: z.nullable(
+        z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+      ),
+      saleDate: z.nullable(z.iso.datetime()),
+      customer: z.nullable(
+        z.object({
+          id: z.uuid(),
+          name: z.string(),
+        }),
+      ),
       product: z.object({
         id: z.uuid(),
         name: z.string(),
       }),
-      company: z.object({
-        id: z.uuid(),
-        name: z.string(),
-      }),
+      company: z.nullable(
+        z.object({
+          id: z.uuid(),
+          name: z.string(),
+        }),
+      ),
       unit: z.nullable(
         z.object({
           id: z.uuid(),
           name: z.string(),
         }),
       ),
-      saleCommissionId: z.uuid(),
+      saleCommissionId: z.nullable(z.uuid()),
       originInstallmentId: z.nullable(z.uuid()),
       originInstallmentNumber: z.nullable(z.int().min(1).max(9007199254740991)),
       installmentNumber: z.int().min(1).max(9007199254740991),
@@ -66,7 +72,7 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
         "SUPERVISOR",
         "OTHER",
       ]),
-      sourceType: z.enum(["PULLED", "MANUAL"]),
+      sourceType: z.enum(["PULLED", "MANUAL", "BONUS"]),
       direction: z.enum(["INCOME", "OUTCOME"]),
       beneficiaryId: z.nullable(z.uuid()),
       beneficiaryLabel: z.nullable(z.string()),
@@ -76,6 +82,16 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
       status: z.enum(["PENDING", "PAID", "CANCELED", "REVERSED"]),
       expectedPaymentDate: z.iso.datetime(),
       paymentDate: z.nullable(z.iso.datetime()),
+      bonusContext: z.nullable(
+        z.object({
+          settlementId: z.uuid(),
+          resultId: z.uuid(),
+          scenarioName: z.string(),
+          periodFrequency: z.enum(["MONTHLY", "SEMIANNUAL", "ANNUAL"]),
+          periodYear: z.int().min(-9007199254740991).max(9007199254740991),
+          periodIndex: z.int().min(-9007199254740991).max(9007199254740991),
+        }),
+      ),
     }),
   ),
   pagination: z.object({

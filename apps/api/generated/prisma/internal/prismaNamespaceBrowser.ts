@@ -72,6 +72,7 @@ export const ModelName = {
   CustomerPF: 'CustomerPF',
   CustomerPJ: 'CustomerPJ',
   Partner: 'Partner',
+  PartnerSupervisor: 'PartnerSupervisor',
   Seller: 'Seller',
   Product: 'Product',
   ProductCommissionReversalRule: 'ProductCommissionReversalRule',
@@ -429,7 +430,6 @@ export const PartnerScalarFieldEnum = {
   zipCode: 'zipCode',
   country: 'country',
   userId: 'userId',
-  supervisorId: 'supervisorId',
   status: 'status',
   organizationId: 'organizationId',
   createdAt: 'createdAt',
@@ -437,6 +437,16 @@ export const PartnerScalarFieldEnum = {
 } as const
 
 export type PartnerScalarFieldEnum = (typeof PartnerScalarFieldEnum)[keyof typeof PartnerScalarFieldEnum]
+
+
+export const PartnerSupervisorScalarFieldEnum = {
+  partnerId: 'partnerId',
+  supervisorId: 'supervisorId',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type PartnerSupervisorScalarFieldEnum = (typeof PartnerSupervisorScalarFieldEnum)[keyof typeof PartnerSupervisorScalarFieldEnum]
 
 
 export const SellerScalarFieldEnum = {

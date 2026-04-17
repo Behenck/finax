@@ -26,7 +26,7 @@ function getAssignPartnerSupervisorUrl({
 }
 
 /**
- * @summary Update employee
+ * @summary Assign supervisors to partner
  * {@link /organizations/:slug/partners/:partnerId/assign-supervisor}
  */
 export async function assignPartnerSupervisor(

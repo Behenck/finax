@@ -2,90 +2,78 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { Role } from "generated/prisma/enums";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
-import { db } from "@/lib/db";
+import {
+	assertSupervisorUserIds,
+	replacePartnerSupervisors,
+} from "./partner-supervisors";
 
 export async function assignSupervisorPartner(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>()
-    .register(auth)
-    .patch("/organizations/:slug/partners/:partnerId/assign-supervisor", {
-      schema: {
-        tags: ["partners"],
-        summary: "Update employee",
-        operationId: "assignPartnerSupervisor",
-        security: [{ bearerAuth: [] }],
-        params: z.object({
-          slug: z.string(),
-          partnerId: z.uuid(),
-        }),
-        body: z.object({
-          supervisorId: z.uuid().nullable(),
-        }),
-        response: {
-          204: z.null()
-        }
-      }
-    },
-      async (request, reply) => {
-        const { slug, partnerId } = request.params
-        const { supervisorId } = request.body
+	app
+		.withTypeProvider<ZodTypeProvider>()
+		.register(auth)
+		.patch(
+			"/organizations/:slug/partners/:partnerId/assign-supervisor",
+			{
+				schema: {
+					tags: ["partners"],
+					summary: "Assign supervisors to partner",
+					operationId: "assignPartnerSupervisor",
+					security: [{ bearerAuth: [] }],
+					params: z.object({
+						slug: z.string(),
+						partnerId: z.uuid(),
+					}),
+					body: z.object({
+						supervisorIds: z.array(z.uuid()),
+					}),
+					response: {
+						204: z.null(),
+					},
+				},
+			},
+			async (request, reply) => {
+				const { slug, partnerId } = request.params;
+				const { supervisorIds } = request.body;
 
-        const organization = await prisma.organization.findUnique({
-          where: {
-            slug,
-          },
-          select: {
-            id: true,
-          },
-        })
+				const organization = await prisma.organization.findUnique({
+					where: {
+						slug,
+					},
+					select: {
+						id: true,
+					},
+				});
 
-        if (!organization) {
-          throw new BadRequestError("Organization not found")
-        }
+				if (!organization) {
+					throw new BadRequestError("Organization not found");
+				}
 
-        const partner = await prisma.partner.findFirst({
-          where: {
-            id: partnerId,
-            organizationId: organization.id
-          },
-          select: { id: true },
-        })
+				const partner = await prisma.partner.findFirst({
+					where: {
+						id: partnerId,
+						organizationId: organization.id,
+					},
+					select: { id: true },
+				});
 
-        if (!partner) {
-          throw new BadRequestError("Partner not found")
-        }
+				if (!partner) {
+					throw new BadRequestError("Partner not found");
+				}
 
-        if (supervisorId) {
-          const supervisor = await prisma.member.findFirst({
-            where: {
-              organizationId: organization.id,
-              userId: supervisorId,
-              role: Role.SUPERVISOR,
-            },
-            select: {
-              id: true,
-            },
-          })
+				const uniqueSupervisorIds = await assertSupervisorUserIds(
+					organization.id,
+					supervisorIds,
+				);
 
-          if (!supervisor) {
-            throw new BadRequestError("Supervisor not found")
-          }
-        }
+				await replacePartnerSupervisors({
+					organizationId: organization.id,
+					partnerId,
+					supervisorIds: uniqueSupervisorIds,
+				});
 
-        await db(() => prisma.partner.update({
-          where: {
-            id: partnerId,
-            organizationId: organization.id
-          },
-          data: {
-            supervisorId,
-          }
-        })
-        )
-
-        return reply.status(204).send()
-      }
-    )
+				return reply.status(204).send();
+			},
+		);
 }

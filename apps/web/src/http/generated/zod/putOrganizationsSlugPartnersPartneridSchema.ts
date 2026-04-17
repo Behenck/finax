@@ -34,7 +34,7 @@ export const putOrganizationsSlugPartnersPartneridMutationRequestSchema =
     number: z.optional(z.string()),
     complement: z.optional(z.string()),
     status: z.optional(z.enum(["ACTIVE", "INACTIVE"])),
-    supervisorId: z.optional(z.uuid()),
+    supervisorIds: z.optional(z.array(z.uuid())),
   });
 
 export const putOrganizationsSlugPartnersPartneridMutationResponseSchema =

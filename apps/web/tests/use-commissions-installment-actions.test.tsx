@@ -68,7 +68,23 @@ vi.mock("@/http/generated", () => ({
 		mocks.getRules(params),
 	getOrganizationsSlugSalesSaleidCommissionInstallments: (params: unknown) =>
 		mocks.getSaleInstallments(params),
+	usePatchOrganizationsSlugCommissionsBonusInstallmentsInstallmentidStatus:
+		() => ({
+			mutateAsync: vi.fn().mockResolvedValue(undefined),
+			isPending: false,
+		}),
 }));
+
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+
+	return {
+		...actual,
+		useQueryClient: () => ({
+			invalidateQueries: vi.fn().mockResolvedValue(undefined),
+		}),
+	};
+});
 
 vi.mock("sonner", () => ({
 	toast: {
@@ -111,6 +127,7 @@ const installmentRow: CommissionInstallmentRow = {
 	status: "PENDING",
 	expectedPaymentDate: "2026-03-30T00:00:00.000Z",
 	paymentDate: null,
+	bonusContext: null,
 };
 
 describe("useCommissionsInstallmentActions - reversal amount", () => {
@@ -252,8 +269,12 @@ describe("useCommissionsInstallmentActions - reversal amount", () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.reversalAction?.pendingFutureInstallmentsCount).toBe(1);
-			expect(result.current.reversalAction?.cancelPendingInstallments).toBe(true);
+			expect(
+				result.current.reversalAction?.pendingFutureInstallmentsCount,
+			).toBe(1);
+			expect(result.current.reversalAction?.cancelPendingInstallments).toBe(
+				true,
+			);
 		});
 
 		await act(async () => {
@@ -313,7 +334,9 @@ describe("useCommissionsInstallmentActions - reversal amount", () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.reversalAction?.pendingFutureInstallmentsCount).toBe(1);
+			expect(
+				result.current.reversalAction?.pendingFutureInstallmentsCount,
+			).toBe(1);
 		});
 
 		act(() => {
@@ -569,7 +592,9 @@ describe("useCommissionsInstallmentActions - reversal amount", () => {
 			silent: true,
 		});
 		expect(onDeselectInstallments).toHaveBeenCalledWith(["installment-1"]);
-		expect(mocks.toastSuccess).toHaveBeenCalledWith("1 parcela(s) atualizada(s).");
+		expect(mocks.toastSuccess).toHaveBeenCalledWith(
+			"1 parcela(s) atualizada(s).",
+		);
 		expect(mocks.toastWarning).toHaveBeenCalledWith(
 			"1 parcela(s) não puderam ser atualizadas.",
 		);

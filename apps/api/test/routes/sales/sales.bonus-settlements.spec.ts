@@ -119,6 +119,13 @@ async function createFixture() {
 			companyName: "Partner Co",
 			state: "RS",
 			organizationId: org.id,
+		},
+	});
+
+	await prisma.partnerSupervisor.create({
+		data: {
+			organizationId: org.id,
+			partnerId: partner.id,
 			supervisorId: supervisorUser.id,
 		},
 	});
@@ -191,7 +198,8 @@ async function saveBonusScenario(params: {
 						{ type: "SUPERVISOR", valueId: params.fixture.supervisor.id },
 					],
 					payoutEnabled: params.payoutEnabled ?? true,
-					payoutTotalPercentage: params.payoutEnabled === false ? undefined : 10,
+					payoutTotalPercentage:
+						params.payoutEnabled === false ? undefined : 10,
 					payoutDueDay: params.payoutEnabled === false ? undefined : 31,
 					payoutInstallments:
 						params.payoutEnabled === false
@@ -348,12 +356,16 @@ describe("sales bonus settlements", () => {
 			previewResponse.body.winners.map(
 				(winner: { beneficiaryLabel: string }) => winner.beneficiaryLabel,
 			),
-		).toEqual(expect.arrayContaining([fixture.company.name, fixture.seller.name]));
-		expect(previewResponse.body.winners[0].payoutInstallments[0]).toMatchObject({
-			installmentNumber: 1,
-			amount: expect.any(Number),
-			expectedPaymentDate: "2026-03-31T00:00:00.000Z",
-		});
+		).toEqual(
+			expect.arrayContaining([fixture.company.name, fixture.seller.name]),
+		);
+		expect(previewResponse.body.winners[0].payoutInstallments[0]).toMatchObject(
+			{
+				installmentNumber: 1,
+				amount: expect.any(Number),
+				expectedPaymentDate: "2026-03-31T00:00:00.000Z",
+			},
+		);
 
 		const afterCounts = await Promise.all([
 			prisma.bonusSettlement.count(),
@@ -474,7 +486,9 @@ describe("sales bonus settlements", () => {
 			.send(requestPayload);
 		expect(previewResponse.statusCode).toBe(200);
 		expect(previewResponse.body.isSettled).toBe(true);
-		expect(previewResponse.body.settlementId).toBe(settleResponse.body.settlementId);
+		expect(previewResponse.body.settlementId).toBe(
+			settleResponse.body.settlementId,
+		);
 	});
 
 	it("should block duplicate settlement for same product and cycle", async () => {

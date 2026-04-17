@@ -104,9 +104,9 @@ export type PutOrganizationsSlugPartnersPartneridMutationRequest = {
    */
   status?: PutOrganizationsSlugPartnersPartneridMutationRequestStatusEnumKey;
   /**
-   * @type string | undefined, uuid
+   * @type array | undefined
    */
-  supervisorId?: string;
+  supervisorIds?: string[];
 };
 
 export type PutOrganizationsSlugPartnersPartneridMutationResponse =

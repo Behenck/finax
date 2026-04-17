@@ -115,10 +115,12 @@ function buildRankingItem(item: RankingItem) {
 		partnerId: item.partnerId,
 		partnerName: item.partnerName,
 		status: "ACTIVE",
-		supervisor: {
-			id: item.supervisorId,
-			name: item.supervisorName,
-		},
+		supervisors: [
+			{
+				id: item.supervisorId,
+				name: item.supervisorName,
+			},
+		],
 		salesCount: item.concludedCount + item.pendingCount,
 		grossAmount: item.concludedAmount + item.pendingAmount,
 		averageTicket: 0,
@@ -146,11 +148,12 @@ function buildRankingItem(item: RankingItem) {
 	};
 }
 
-function buildDashboardData(rankingItems: ReturnType<typeof buildRankingItem>[]) {
+function buildDashboardData(
+	rankingItems: ReturnType<typeof buildRankingItem>[],
+) {
 	const supervisorsMap = new Map<string, { id: string; name: string }>();
 	const partners = rankingItems.map((item) => {
-		const supervisor = item.supervisor;
-		if (supervisor) {
+		for (const supervisor of item.supervisors) {
 			supervisorsMap.set(supervisor.id, {
 				id: supervisor.id,
 				name: supervisor.name ?? "",
@@ -161,13 +164,18 @@ function buildDashboardData(rankingItems: ReturnType<typeof buildRankingItem>[])
 			id: item.partnerId,
 			name: item.partnerName,
 			status: "ACTIVE",
-			supervisorId: supervisor?.id ?? null,
-			supervisorName: supervisor?.name ?? null,
+			supervisors: item.supervisors,
 		};
 	});
 
-	const totalSales = rankingItems.reduce((sum, item) => sum + item.salesCount, 0);
-	const grossAmount = rankingItems.reduce((sum, item) => sum + item.grossAmount, 0);
+	const totalSales = rankingItems.reduce(
+		(sum, item) => sum + item.salesCount,
+		0,
+	);
+	const grossAmount = rankingItems.reduce(
+		(sum, item) => sum + item.grossAmount,
+		0,
+	);
 
 	return {
 		period: {
@@ -227,9 +235,24 @@ function buildDashboardData(rankingItems: ReturnType<typeof buildRankingItem>[])
 		statusFunnel: {
 			items: [
 				{ status: "PENDING", label: "Pendente", salesCount: 0, grossAmount: 0 },
-				{ status: "APPROVED", label: "Aprovada", salesCount: 0, grossAmount: 0 },
-				{ status: "COMPLETED", label: "Concluída", salesCount: totalSales, grossAmount },
-				{ status: "CANCELED", label: "Cancelada", salesCount: 0, grossAmount: 0 },
+				{
+					status: "APPROVED",
+					label: "Aprovada",
+					salesCount: 0,
+					grossAmount: 0,
+				},
+				{
+					status: "COMPLETED",
+					label: "Concluída",
+					salesCount: totalSales,
+					grossAmount,
+				},
+				{
+					status: "CANCELED",
+					label: "Cancelada",
+					salesCount: 0,
+					grossAmount: 0,
+				},
 			],
 		},
 		pareto: { items: [] },
@@ -474,10 +497,12 @@ describe("DashboardPartnersOverview", () => {
 			.getByText("Inadimplentes (R$ + qtd)")
 			.closest("table");
 		expect(supervisorTable).not.toBeNull();
-		expect(within(supervisorTable as HTMLTableElement).getByText(/1\.200,00/))
-			.toBeInTheDocument();
-		expect(within(supervisorTable as HTMLTableElement).getByText(/9\.876,54/))
-			.toBeInTheDocument();
+		expect(
+			within(supervisorTable as HTMLTableElement).getByText(/1\.200,00/),
+		).toBeInTheDocument();
+		expect(
+			within(supervisorTable as HTMLTableElement).getByText(/9\.876,54/),
+		).toBeInTheDocument();
 		expect(
 			within(supervisorTable as HTMLTableElement).queryByText(/123,45/),
 		).not.toBeInTheDocument();

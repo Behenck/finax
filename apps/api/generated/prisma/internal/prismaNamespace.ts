@@ -405,6 +405,7 @@ export const ModelName = {
   CustomerPF: 'CustomerPF',
   CustomerPJ: 'CustomerPJ',
   Partner: 'Partner',
+  PartnerSupervisor: 'PartnerSupervisor',
   Seller: 'Seller',
   Product: 'Product',
   ProductCommissionReversalRule: 'ProductCommissionReversalRule',
@@ -445,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "seller" | "product" | "productCommissionReversalRule" | "productBonusScenario" | "productBonusScenarioParticipant" | "productBonusScenarioPayoutInstallment" | "bonusSettlement" | "bonusSettlementResult" | "bonusInstallment" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleDelinquency" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
+    modelProps: "user" | "token" | "refreshToken" | "account" | "invite" | "member" | "memberCompanyAccess" | "organization" | "permission" | "organizationRolePermission" | "memberPermissionOverride" | "permissionAuditLog" | "company" | "unit" | "category" | "costCenter" | "employee" | "customer" | "customerPF" | "customerPJ" | "partner" | "partnerSupervisor" | "seller" | "product" | "productCommissionReversalRule" | "productBonusScenario" | "productBonusScenarioParticipant" | "productBonusScenarioPayoutInstallment" | "bonusSettlement" | "bonusSettlementResult" | "bonusInstallment" | "productSaleField" | "productSaleFieldOption" | "productCommissionScenario" | "productCommissionScenarioCondition" | "productCommission" | "productCommissionInstallment" | "sale" | "saleHistoryEvent" | "saleDelinquency" | "saleImportTemplate" | "saleImportAudit" | "saleCommission" | "saleCommissionInstallment" | "transaction" | "transactionItem" | "recurrence"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2000,6 +2001,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PartnerCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PartnerCountAggregateOutputType> | number
+        }
+      }
+    }
+    PartnerSupervisor: {
+      payload: Prisma.$PartnerSupervisorPayload<ExtArgs>
+      fields: Prisma.PartnerSupervisorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PartnerSupervisorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PartnerSupervisorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        findFirst: {
+          args: Prisma.PartnerSupervisorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PartnerSupervisorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        findMany: {
+          args: Prisma.PartnerSupervisorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>[]
+        }
+        create: {
+          args: Prisma.PartnerSupervisorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        createMany: {
+          args: Prisma.PartnerSupervisorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PartnerSupervisorCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>[]
+        }
+        delete: {
+          args: Prisma.PartnerSupervisorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        update: {
+          args: Prisma.PartnerSupervisorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        deleteMany: {
+          args: Prisma.PartnerSupervisorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PartnerSupervisorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PartnerSupervisorUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>[]
+        }
+        upsert: {
+          args: Prisma.PartnerSupervisorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerSupervisorPayload>
+        }
+        aggregate: {
+          args: Prisma.PartnerSupervisorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePartnerSupervisor>
+        }
+        groupBy: {
+          args: Prisma.PartnerSupervisorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartnerSupervisorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PartnerSupervisorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartnerSupervisorCountAggregateOutputType> | number
         }
       }
     }
@@ -4206,7 +4281,6 @@ export const PartnerScalarFieldEnum = {
   zipCode: 'zipCode',
   country: 'country',
   userId: 'userId',
-  supervisorId: 'supervisorId',
   status: 'status',
   organizationId: 'organizationId',
   createdAt: 'createdAt',
@@ -4214,6 +4288,16 @@ export const PartnerScalarFieldEnum = {
 } as const
 
 export type PartnerScalarFieldEnum = (typeof PartnerScalarFieldEnum)[keyof typeof PartnerScalarFieldEnum]
+
+
+export const PartnerSupervisorScalarFieldEnum = {
+  partnerId: 'partnerId',
+  supervisorId: 'supervisorId',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type PartnerSupervisorScalarFieldEnum = (typeof PartnerSupervisorScalarFieldEnum)[keyof typeof PartnerSupervisorScalarFieldEnum]
 
 
 export const SellerScalarFieldEnum = {
@@ -5439,6 +5523,7 @@ export type GlobalOmitConfig = {
   customerPF?: Prisma.CustomerPFOmit
   customerPJ?: Prisma.CustomerPJOmit
   partner?: Prisma.PartnerOmit
+  partnerSupervisor?: Prisma.PartnerSupervisorOmit
   seller?: Prisma.SellerOmit
   product?: Prisma.ProductOmit
   productCommissionReversalRule?: Prisma.ProductCommissionReversalRuleOmit

@@ -121,9 +121,9 @@ export type GetOrganizationsSlugPartners200 = {
       name: string | null;
     } | null;
     /**
-     * @type object
+     * @type array
      */
-    supervisor: {
+    supervisors: {
       /**
        * @type string, uuid
        */
@@ -132,7 +132,7 @@ export type GetOrganizationsSlugPartners200 = {
        * @type string
        */
       name: string | null;
-    } | null;
+    }[];
   }[];
 };
 

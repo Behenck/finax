@@ -123,6 +123,11 @@ export type CustomerPJ = Prisma.CustomerPJModel
  */
 export type Partner = Prisma.PartnerModel
 /**
+ * Model PartnerSupervisor
+ * 
+ */
+export type PartnerSupervisor = Prisma.PartnerSupervisorModel
+/**
  * Model Seller
  * 
  */

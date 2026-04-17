@@ -58,6 +58,7 @@ export type DynamicFieldSchemaTypeEnumKey =
 export const commissionsSourceTypeEnum3 = {
   PULLED: "PULLED",
   MANUAL: "MANUAL",
+  BONUS: "BONUS",
 } as const;
 
 export type CommissionsSourceTypeEnum3Key =

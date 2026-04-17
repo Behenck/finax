@@ -76,8 +76,7 @@ async function denyPermission(params: {
 
 	await prisma.memberPermissionOverride.upsert({
 		where: {
-			organizationId_memberId_permissionId: {
-				organizationId: params.organizationId,
+			memberId_permissionId: {
 				memberId: params.memberId,
 				permissionId: permission.id,
 			},
@@ -99,7 +98,7 @@ async function createPartner(params: {
 	suffix: string;
 	supervisorId?: string | null;
 }) {
-	return prisma.partner.create({
+	const partner = await prisma.partner.create({
 		data: {
 			name: `Partner ${params.suffix}`,
 			email: `sales-partner-${params.suffix}@example.com`,
@@ -111,9 +110,20 @@ async function createPartner(params: {
 			country: "BR",
 			status: PartnerStatus.ACTIVE,
 			organizationId: params.organizationId,
-			supervisorId: params.supervisorId ?? null,
 		},
 	});
+
+	if (params.supervisorId) {
+		await prisma.partnerSupervisor.create({
+			data: {
+				organizationId: params.organizationId,
+				partnerId: partner.id,
+				supervisorId: params.supervisorId,
+			},
+		});
+	}
+
+	return partner;
 }
 
 async function createCustomer(params: {
@@ -342,48 +352,48 @@ describe("sales visibility by supervisor linked partner", () => {
 		expect(updateResponse.statusCode).toBe(204);
 	});
 
-	it.each([SaleStatus.APPROVED, SaleStatus.COMPLETED])(
-		"should return 403 on sales update with sales.create fallback when sale status is %s",
-		async (saleStatus) => {
-			const fixture = await createVisibilityFixture();
+	it.each([
+		SaleStatus.APPROVED,
+		SaleStatus.COMPLETED,
+	])("should return 403 on sales update with sales.create fallback when sale status is %s", async (saleStatus) => {
+		const fixture = await createVisibilityFixture();
 
-			await denyPermission({
-				organizationId: fixture.org.id,
-				memberId: fixture.supervisor.member.id,
-				permissionKey: "sales.view.all",
-			});
-			await denyPermission({
-				organizationId: fixture.org.id,
-				memberId: fixture.supervisor.member.id,
-				permissionKey: "sales.update",
-			});
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: fixture.supervisor.member.id,
+			permissionKey: "sales.view.all",
+		});
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: fixture.supervisor.member.id,
+			permissionKey: "sales.update",
+		});
 
-			await prisma.sale.update({
-				where: {
-					id: fixture.visibleSale.id,
+		await prisma.sale.update({
+			where: {
+				id: fixture.visibleSale.id,
+			},
+			data: {
+				status: saleStatus,
+			},
+		});
+
+		const updateResponse = await request(app.server)
+			.put(`/organizations/${fixture.org.slug}/sales/${fixture.visibleSale.id}`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleDate: "2026-03-04",
+				customerId: fixture.visibleCustomer.id,
+				productId: fixture.product.id,
+				totalAmount: 130_000,
+				responsible: {
+					type: "PARTNER",
+					id: fixture.visiblePartner.id,
 				},
-				data: {
-					status: saleStatus,
-				},
+				companyId: fixture.company.id,
+				notes: "Permission fallback blocked by status",
 			});
 
-			const updateResponse = await request(app.server)
-				.put(`/organizations/${fixture.org.slug}/sales/${fixture.visibleSale.id}`)
-				.set("Authorization", `Bearer ${fixture.token}`)
-				.send({
-					saleDate: "2026-03-04",
-					customerId: fixture.visibleCustomer.id,
-					productId: fixture.product.id,
-					totalAmount: 130_000,
-					responsible: {
-						type: "PARTNER",
-						id: fixture.visiblePartner.id,
-					},
-					companyId: fixture.company.id,
-					notes: "Permission fallback blocked by status",
-				});
-
-			expect(updateResponse.statusCode).toBe(403);
-		},
-	);
+		expect(updateResponse.statusCode).toBe(403);
+	});
 });

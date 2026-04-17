@@ -53,8 +53,12 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
         id: z.uuid(),
         name: z.string(),
         status: z.enum(["ACTIVE", "INACTIVE"]),
-        supervisorId: z.nullable(z.uuid()),
-        supervisorName: z.nullable(z.string()),
+        supervisors: z.array(
+          z.object({
+            id: z.uuid(),
+            name: z.nullable(z.string()),
+          }),
+        ),
       }),
     ),
   }),
@@ -82,7 +86,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       partnerId: z.uuid(),
       partnerName: z.string(),
       status: z.enum(["ACTIVE", "INACTIVE"]),
-      supervisor: z.nullable(
+      supervisors: z.array(
         z.object({
           id: z.uuid(),
           name: z.nullable(z.string()),
@@ -211,7 +215,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
           partnerId: z.uuid(),
           partnerName: z.string(),
           status: z.enum(["ACTIVE", "INACTIVE"]),
-          supervisor: z.nullable(
+          supervisors: z.array(
             z.object({
               id: z.uuid(),
               name: z.nullable(z.string()),
@@ -262,7 +266,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
         partnerId: z.uuid(),
         partnerName: z.string(),
         status: z.enum(["ACTIVE", "INACTIVE"]),
-        supervisor: z.nullable(
+        supervisors: z.array(
           z.object({
             id: z.uuid(),
             name: z.nullable(z.string()),

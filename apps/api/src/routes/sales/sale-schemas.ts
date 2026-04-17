@@ -305,14 +305,14 @@ const SaleContextEntitySchema = z.object({
 
 export const OrganizationCommissionInstallmentRowSchema = z.object({
 	id: z.uuid(),
-	saleId: z.uuid(),
-	saleStatus: z.enum(SaleStatus),
-	saleDate: z.date(),
-	customer: SaleContextEntitySchema,
+	saleId: z.uuid().nullable(),
+	saleStatus: z.enum(SaleStatus).nullable(),
+	saleDate: z.date().nullable(),
+	customer: SaleContextEntitySchema.nullable(),
 	product: SaleContextEntitySchema,
-	company: SaleContextEntitySchema,
+	company: SaleContextEntitySchema.nullable(),
 	unit: SaleContextEntitySchema.nullable(),
-	saleCommissionId: z.uuid(),
+	saleCommissionId: z.uuid().nullable(),
 	originInstallmentId: z.uuid().nullable(),
 	originInstallmentNumber: z.number().int().min(1).nullable(),
 	installmentNumber: z.number().int().min(1),
@@ -327,6 +327,16 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 	status: SaleCommissionInstallmentStatusSchema,
 	expectedPaymentDate: z.date(),
 	paymentDate: z.date().nullable(),
+	bonusContext: z
+		.object({
+			settlementId: z.uuid(),
+			resultId: z.uuid(),
+			scenarioName: z.string(),
+			periodFrequency: ProductBonusPeriodFrequencySchema,
+			periodYear: z.number().int(),
+			periodIndex: z.number().int(),
+		})
+		.nullable(),
 });
 
 export const CommissionInstallmentSummaryBucketSchema = z.object({
@@ -476,8 +486,7 @@ const PartnerSalesDashboardPartnerFilterItemSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
-	supervisorId: z.uuid().nullable(),
-	supervisorName: z.string().nullable(),
+	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 });
 
 const PartnerSalesDashboardTimelineGranularitySchema = z.enum([
@@ -505,7 +514,7 @@ const PartnerSalesDashboardRankingItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
-	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 	averageTicket: z.number().int().nonnegative(),
@@ -592,7 +601,7 @@ const PartnerSalesDashboardCommissionPendingByPartnerItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
-	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 	pendingAmount: z.number().int().nonnegative(),
@@ -617,7 +626,7 @@ const PartnerSalesDashboardRiskRankingItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
-	supervisor: PartnerSalesDashboardSupervisorSummarySchema.nullable(),
+	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	totalSales: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 	delinquentSalesCount: z.number().int().nonnegative(),

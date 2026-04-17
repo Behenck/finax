@@ -34,7 +34,7 @@ model User {
   resolvedSaleDelinquencies SaleDelinquency[]    @relation("SaleDelinquencyResolvedBy")
   saleImportTemplates       SaleImportTemplate[] @relation("SaleImportTemplateCreatedBy")
   saleImportAudits          SaleImportAudit[]    @relation("SaleImportAuditActor")
-  supervisedPartners        Partner[]            @relation("PartnerSupervisor")
+  supervisedPartnerLinks    PartnerSupervisor[]  @relation("PartnerSupervisorUser")
   linkedPartners            Partner[]            @relation("PartnerUser")
   linkedSellers             Seller[]             @relation("SellerUser")
   permissionAuditLogs       PermissionAuditLog[] @relation("PermissionAuditActor")
@@ -222,6 +222,7 @@ model Organization {
   rolePermissions           OrganizationRolePermission[]
   memberPermissionOverrides MemberPermissionOverride[]
   permissionAuditLogs       PermissionAuditLog[]
+  partnerSupervisors        PartnerSupervisor[]
   bonusSettlements          BonusSettlement[]
   bonusInstallments         BonusInstallment[]
 
@@ -591,8 +592,7 @@ model Partner {
   zipCode      String?
   country      String  @default("BR")
 
-  userId       String? @map("user_id")
-  supervisorId String? @map("supervisor_id")
+  userId String? @map("user_id")
 
   status PartnerStatus @default(ACTIVE)
 
@@ -601,9 +601,9 @@ model Partner {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  supervisor                          User?                                @relation("PartnerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
   user                                User?                                @relation("PartnerUser", fields: [userId], references: [id], onDelete: SetNull)
   organization                        Organization                         @relation(fields: [organizationId], references: [id])
+  supervisors                         PartnerSupervisor[]                  @relation("PartnerSupervisorPartner")
   productCommissionScenarioConditions ProductCommissionScenarioCondition[] @relation("ProductCommissionConditionPartner")
   saleCommissions                     SaleCommission[]                     @relation("SaleCommissionBeneficiaryPartner")
   productBonusParticipants            ProductBonusScenarioParticipant[]    @relation("ProductBonusParticipantPartner")
@@ -615,6 +615,23 @@ model Partner {
   @@index([organizationId])
   @@index([organizationId, status])
   @@map("partners")
+}
+
+model PartnerSupervisor {
+  partnerId      String @map("partner_id")
+  supervisorId   String @map("supervisor_id")
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  partner      Partner      @relation("PartnerSupervisorPartner", fields: [partnerId], references: [id], onDelete: Cascade)
+  supervisor   User         @relation("PartnerSupervisorUser", fields: [supervisorId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([partnerId, supervisorId])
+  @@index([organizationId])
+  @@index([supervisorId])
+  @@map("partner_supervisors")
 }
 
 enum SellerStatus {

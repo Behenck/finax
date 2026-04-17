@@ -45,7 +45,6 @@ import {
 	SALE_COMMISSION_INSTALLMENT_STATUS_LABEL,
 	SALE_COMMISSION_RECIPIENT_TYPE_LABEL,
 	SALE_COMMISSION_SOURCE_TYPE_LABEL,
-	type SaleStatus,
 } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { CommissionsFiltersPanel } from "./commissions-filters-panel";
@@ -213,7 +212,9 @@ export function CommissionsDataTable() {
 		return map;
 	}, [installments]);
 
-	function resolveDisplayInstallmentAmount(installment: CommissionInstallmentRow) {
+	function resolveDisplayInstallmentAmount(
+		installment: CommissionInstallmentRow,
+	) {
 		if (installment.originInstallmentId) {
 			return installment.amount;
 		}
@@ -325,6 +326,9 @@ export function CommissionsDataTable() {
 			const next = new Map(current);
 
 			if (checked) {
+				if (!installment.saleId) {
+					return next;
+				}
 				next.set(installment.id, {
 					id: installment.id,
 					saleId: installment.saleId,
@@ -349,6 +353,9 @@ export function CommissionsDataTable() {
 
 			for (const installment of eligibleInstallmentsOnPage) {
 				if (checked) {
+					if (!installment.saleId) {
+						continue;
+					}
 					next.set(installment.id, {
 						id: installment.id,
 						saleId: installment.saleId,
@@ -394,6 +401,9 @@ export function CommissionsDataTable() {
 				}
 
 				if (checked) {
+					if (!installment.saleId) {
+						continue;
+					}
 					next.set(installment.id, {
 						id: installment.id,
 						saleId: installment.saleId,
@@ -595,7 +605,7 @@ export function CommissionsDataTable() {
 									) : (
 										installments.map((installment) => {
 											const canEditRow = canUpdateInstallments(
-												installment.saleStatus as SaleStatus,
+												installment.saleStatus,
 											);
 											const isReversalMovement = Boolean(
 												installment.originInstallmentId,
@@ -625,24 +635,26 @@ export function CommissionsDataTable() {
 												canReverseRow ||
 												canUndoReversalRow ||
 												canDeleteRowAction;
-										const isSelected = selectedInstallmentsById.has(
-											installment.id,
-										);
-										const displayAmount =
-											resolveDisplayInstallmentAmount(installment);
-										const hasLinkedReversal =
-											!installment.originInstallmentId &&
-											displayAmount !== installment.amount;
-										const productLabel =
-											productPathById.get(installment.product.id) ??
-											installment.product.name;
+											const isSelected = selectedInstallmentsById.has(
+												installment.id,
+											);
+											const displayAmount =
+												resolveDisplayInstallmentAmount(installment);
+											const hasLinkedReversal =
+												!installment.originInstallmentId &&
+												displayAmount !== installment.amount;
+											const productLabel =
+												productPathById.get(installment.product.id) ??
+												installment.product.name;
 
 											return (
 												<Card key={installment.id} className="space-y-3 p-4">
 													<div className="flex items-start justify-between gap-3">
 														<div className="min-w-0">
 															<p className="truncate text-sm font-medium">
-																{installment.customer.name}
+																{installment.customer?.name ??
+																	installment.bonusContext?.scenarioName ??
+																	"Bônus"}
 															</p>
 															<p className="truncate text-xs text-muted-foreground">
 																{productLabel}
@@ -739,15 +751,22 @@ export function CommissionsDataTable() {
 													</div>
 
 													<div className="grid grid-cols-2 gap-2">
-														<Button variant="outline" size="sm" asChild>
-															<Link
-																to="/sales/$saleId"
-																params={{ saleId: installment.saleId }}
-															>
+														{installment.saleId ? (
+															<Button variant="outline" size="sm" asChild>
+																<Link
+																	to="/sales/$saleId"
+																	params={{ saleId: installment.saleId }}
+																>
+																	<Eye className="size-4" />
+																	Ver venda
+																</Link>
+															</Button>
+														) : (
+															<Button variant="outline" size="sm" disabled>
 																<Eye className="size-4" />
-																Ver venda
-															</Link>
-														</Button>
+																Bônus
+															</Button>
+														)}
 														<Button
 															type="button"
 															variant="outline"
@@ -907,7 +926,7 @@ export function CommissionsDataTable() {
 											) : (
 												installments.map((installment) => {
 													const canEditRow = canUpdateInstallments(
-														installment.saleStatus as SaleStatus,
+														installment.saleStatus,
 													);
 													const isReversalMovement = Boolean(
 														installment.originInstallmentId,
@@ -1012,13 +1031,15 @@ export function CommissionsDataTable() {
 															</TableCell>
 															<TableCell>
 																<p className="font-medium">
-																	{installment.customer.name}
+																	{installment.customer?.name ??
+																		installment.bonusContext?.scenarioName ??
+																		"Bônus"}
 																</p>
 																<p className="text-xs text-muted-foreground">
 																	{productLabel}
 																</p>
 																<p className="text-xs text-muted-foreground">
-																	{installment.company.name}
+																	{installment.company?.name ?? "Bônus"}
 																	{installment.unit
 																		? ` -> ${installment.unit.name}`
 																		: ""}
@@ -1029,7 +1050,9 @@ export function CommissionsDataTable() {
 																{hasLinkedReversal ? (
 																	<p className="text-xs text-muted-foreground">
 																		Valor base:{" "}
-																		{formatCurrencyBRL(installment.amount / 100)}
+																		{formatCurrencyBRL(
+																			installment.amount / 100,
+																		)}
 																	</p>
 																) : null}
 															</TableCell>
@@ -1065,18 +1088,22 @@ export function CommissionsDataTable() {
 																			</Button>
 																		</DropdownMenuTrigger>
 																		<DropdownMenuContent align="end">
-																			<DropdownMenuItem asChild>
-																				<Link
-																					to="/sales/$saleId"
-																					params={{
-																						saleId: installment.saleId,
-																					}}
-																				>
-																					<Eye className="size-4" />
-																					Ver venda
-																				</Link>
-																			</DropdownMenuItem>
-																			<DropdownMenuSeparator />
+																			{installment.saleId ? (
+																				<>
+																					<DropdownMenuItem asChild>
+																						<Link
+																							to="/sales/$saleId"
+																							params={{
+																								saleId: installment.saleId,
+																							}}
+																						>
+																							<Eye className="size-4" />
+																							Ver venda
+																						</Link>
+																					</DropdownMenuItem>
+																					<DropdownMenuSeparator />
+																				</>
+																			) : null}
 																			<DropdownMenuItem
 																				disabled={!canEditRowAction}
 																				onSelect={(event) => {

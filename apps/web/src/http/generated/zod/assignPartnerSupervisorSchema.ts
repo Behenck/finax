@@ -16,7 +16,7 @@ export const assignPartnerSupervisorPathParamsSchema = z.object({
 export const assignPartnerSupervisor204Schema = z.enum([]).nullable();
 
 export const assignPartnerSupervisorMutationRequestSchema = z.object({
-  supervisorId: z.nullable(z.uuid()),
+  supervisorIds: z.array(z.uuid()),
 });
 
 export const assignPartnerSupervisorMutationResponseSchema = z.lazy(

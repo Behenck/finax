@@ -32,7 +32,7 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
   commissions: z.optional(
     z.array(
       z.object({
-        sourceType: z.enum(["PULLED", "MANUAL"]),
+        sourceType: z.enum(["PULLED", "MANUAL", "BONUS"]),
         recipientType: z.enum([
           "COMPANY",
           "UNIT",

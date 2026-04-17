@@ -644,15 +644,15 @@ export async function recalculatePersistedSaleCommissionsAmounts(
 			calculationBase: true,
 			baseCommissionId: true,
 			sortOrder: true,
-				totalPercentage: true,
-				installments: {
-					where: {
-						originInstallmentId: null,
-					},
-					orderBy: {
-						installmentNumber: "asc",
-					},
-					select: {
+			totalPercentage: true,
+			installments: {
+				where: {
+					originInstallmentId: null,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
 					id: true,
 					percentage: true,
 				},
@@ -725,15 +725,15 @@ export async function recalculatePersistedSalePendingCommissionsAmounts(
 			calculationBase: true,
 			baseCommissionId: true,
 			sortOrder: true,
-				totalPercentage: true,
-				installments: {
-					where: {
-						originInstallmentId: null,
-					},
-					orderBy: {
-						installmentNumber: "asc",
-					},
-					select: {
+			totalPercentage: true,
+			installments: {
+				where: {
+					originInstallmentId: null,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
 					id: true,
 					percentage: true,
 					amount: true,
@@ -846,15 +846,15 @@ export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
 			calculationBase: true,
 			baseCommissionId: true,
 			sortOrder: true,
-				totalPercentage: true,
-				installments: {
-					where: {
-						originInstallmentId: null,
-					},
-					orderBy: {
-						installmentNumber: "asc",
-					},
-					select: {
+			totalPercentage: true,
+			installments: {
+				where: {
+					originInstallmentId: null,
+				},
+				orderBy: {
+					installmentNumber: "asc",
+				},
+				select: {
 					id: true,
 					originInstallmentId: true,
 					installmentNumber: true,
@@ -911,7 +911,10 @@ export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
 				commission.installments.map((installment) => installment.percentage),
 		});
 
-		for (const [installmentIndex, installment] of commission.installments.entries()) {
+		for (const [
+			installmentIndex,
+			installment,
+		] of commission.installments.entries()) {
 			if (
 				installment.status !== SaleCommissionInstallmentStatus.PAID ||
 				installment.originInstallmentId !== null
@@ -919,7 +922,8 @@ export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
 				continue;
 			}
 
-			const installmentTargetAmount = installmentTargetAmounts[installmentIndex] ?? 0;
+			const installmentTargetAmount =
+				installmentTargetAmounts[installmentIndex] ?? 0;
 			const desiredReversalAmountAbsolute = Math.max(
 				0,
 				installment.amount - installmentTargetAmount,
@@ -947,19 +951,18 @@ export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
 	const paidInstallmentIds = paidInstallmentCandidates.map(
 		(candidate) => candidate.installmentId,
 	);
-	const existingReversedByOrigin =
-		await tx.saleCommissionInstallment.groupBy({
-			by: ["originInstallmentId"],
-			where: {
-				originInstallmentId: {
-					in: paidInstallmentIds,
-				},
-				status: SaleCommissionInstallmentStatus.REVERSED,
+	const existingReversedByOrigin = await tx.saleCommissionInstallment.groupBy({
+		by: ["originInstallmentId"],
+		where: {
+			originInstallmentId: {
+				in: paidInstallmentIds,
 			},
-			_sum: {
-				amount: true,
-			},
-		});
+			status: SaleCommissionInstallmentStatus.REVERSED,
+		},
+		_sum: {
+			amount: true,
+		},
+	});
 	const existingReversedAmountAbsoluteByOriginInstallmentId = new Map<
 		string,
 		number
@@ -1472,9 +1475,19 @@ type OrganizationCommissionInstallmentsFilters = {
 	expectedTo?: Date;
 	direction?: SaleCommissionDirection;
 	visibilityWhere?: Prisma.SaleCommissionInstallmentWhereInput;
+	bonusVisibilityWhere?: Prisma.BonusInstallmentWhereInput;
 };
 
 const saleCommissionDirections = ["INCOME", "OUTCOME"] as const;
+const commissionInstallmentStatusOrder: Record<
+	SaleCommissionInstallmentStatus,
+	number
+> = {
+	PENDING: 0,
+	PAID: 1,
+	CANCELED: 2,
+	REVERSED: 3,
+};
 
 function buildOrganizationCommissionInstallmentsWhere({
 	organizationId,
@@ -1708,6 +1721,157 @@ function buildOrganizationCommissionInstallmentsWhere({
 	};
 }
 
+function buildOrganizationBonusInstallmentsWhere({
+	organizationId,
+	q,
+	companyId,
+	unitId,
+	productId,
+	status,
+	expectedFrom,
+	expectedTo,
+	direction,
+	bonusVisibilityWhere,
+	statusOverride,
+}: OrganizationCommissionInstallmentsFilters & {
+	statusOverride?: SaleCommissionInstallmentStatus;
+}): Prisma.BonusInstallmentWhereInput {
+	const searchTerm = q.trim();
+	const andConditions: Prisma.BonusInstallmentWhereInput[] = [
+		{
+			organizationId,
+		},
+	];
+
+	if (bonusVisibilityWhere) {
+		andConditions.push(bonusVisibilityWhere);
+	}
+
+	if (direction) {
+		andConditions.push({ direction });
+	}
+
+	if (productId) {
+		andConditions.push({ productId });
+	}
+
+	if (companyId || unitId) {
+		andConditions.push({
+			id: {
+				in: [] as string[],
+			},
+		});
+	}
+
+	const requestedStatus = status === "ALL" ? undefined : status;
+
+	if (statusOverride) {
+		if (requestedStatus && requestedStatus !== statusOverride) {
+			andConditions.push({
+				status: {
+					in: [] as SaleCommissionInstallmentStatus[],
+				},
+			});
+		} else {
+			andConditions.push({
+				status: statusOverride,
+			});
+		}
+	} else if (requestedStatus) {
+		andConditions.push({
+			status: requestedStatus,
+		});
+	}
+
+	if (expectedFrom || expectedTo) {
+		andConditions.push({
+			expectedPaymentDate: {
+				gte: expectedFrom,
+				lte: expectedTo,
+			},
+		});
+	}
+
+	if (searchTerm) {
+		andConditions.push({
+			OR: [
+				{
+					scenarioName: {
+						contains: searchTerm,
+						mode: "insensitive",
+					},
+				},
+				{
+					product: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+				{
+					beneficiaryLabel: {
+						contains: searchTerm,
+						mode: "insensitive",
+					},
+				},
+				{
+					beneficiaryCompany: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+				{
+					beneficiaryPartner: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+				{
+					beneficiarySeller: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+				{
+					beneficiarySupervisor: {
+						user: {
+							OR: [
+								{
+									name: {
+										contains: searchTerm,
+										mode: "insensitive",
+									},
+								},
+								{
+									email: {
+										contains: searchTerm,
+										mode: "insensitive",
+									},
+								},
+							],
+						},
+					},
+				},
+			],
+		});
+	}
+
+	if (andConditions.length === 1) {
+		return andConditions[0] as Prisma.BonusInstallmentWhereInput;
+	}
+
+	return {
+		AND: andConditions,
+	};
+}
+
 type InstallmentSummaryBucket = {
 	count: number;
 	amount: number;
@@ -1733,6 +1897,16 @@ function toInstallmentSummaryBucket(aggregate: {
 	return {
 		count: aggregate._count._all,
 		amount: aggregate._sum.amount ?? 0,
+	};
+}
+
+function addInstallmentSummaryBuckets(
+	left: InstallmentSummaryBucket,
+	right: InstallmentSummaryBucket,
+): InstallmentSummaryBucket {
+	return {
+		count: left.count + right.count,
+		amount: left.amount + right.amount,
 	};
 }
 
@@ -1807,15 +1981,102 @@ export async function loadOrganizationInstallmentsSummaryByDirection(
 					},
 				}),
 			]);
+			const [
+				bonusTotal,
+				bonusPending,
+				bonusPaid,
+				bonusCanceled,
+				bonusReversed,
+			] = await Promise.all([
+				prisma.bonusInstallment.aggregate({
+					where: buildOrganizationBonusInstallmentsWhere({
+						...filters,
+						direction,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.bonusInstallment.aggregate({
+					where: buildOrganizationBonusInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.PENDING,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.bonusInstallment.aggregate({
+					where: buildOrganizationBonusInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.PAID,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.bonusInstallment.aggregate({
+					where: buildOrganizationBonusInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.CANCELED,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+				prisma.bonusInstallment.aggregate({
+					where: buildOrganizationBonusInstallmentsWhere({
+						...filters,
+						direction,
+						statusOverride: SaleCommissionInstallmentStatus.REVERSED,
+					}),
+					_count: {
+						_all: true,
+					},
+					_sum: {
+						amount: true,
+					},
+				}),
+			]);
 
 			return [
 				direction,
 				{
-					total: toInstallmentSummaryBucket(total),
-					pending: toInstallmentSummaryBucket(pending),
-					paid: toInstallmentSummaryBucket(paid),
-					canceled: toInstallmentSummaryBucket(canceled),
-					reversed: toInstallmentSummaryBucket(reversed),
+					total: addInstallmentSummaryBuckets(
+						toInstallmentSummaryBucket(total),
+						toInstallmentSummaryBucket(bonusTotal),
+					),
+					pending: addInstallmentSummaryBuckets(
+						toInstallmentSummaryBucket(pending),
+						toInstallmentSummaryBucket(bonusPending),
+					),
+					paid: addInstallmentSummaryBuckets(
+						toInstallmentSummaryBucket(paid),
+						toInstallmentSummaryBucket(bonusPaid),
+					),
+					canceled: addInstallmentSummaryBuckets(
+						toInstallmentSummaryBucket(canceled),
+						toInstallmentSummaryBucket(bonusCanceled),
+					),
+					reversed: addInstallmentSummaryBuckets(
+						toInstallmentSummaryBucket(reversed),
+						toInstallmentSummaryBucket(bonusReversed),
+					),
 				},
 			] as const;
 		}),
@@ -1837,6 +2098,7 @@ export async function loadOrganizationCommissionInstallments({
 	expectedFrom,
 	expectedTo,
 	visibilityWhere,
+	bonusVisibilityWhere,
 }: OrganizationCommissionInstallmentsFilters & {
 	page: number;
 	pageSize: number;
@@ -1853,11 +2115,33 @@ export async function loadOrganizationCommissionInstallments({
 		direction,
 		visibilityWhere,
 	});
+	const bonusWhere = buildOrganizationBonusInstallmentsWhere({
+		organizationId,
+		q,
+		companyId,
+		unitId,
+		productId,
+		status,
+		expectedFrom,
+		expectedTo,
+		direction,
+		bonusVisibilityWhere,
+	});
 	const skip = (page - 1) * pageSize;
+	const take = skip + pageSize;
 
-	const [total, installments, summaryByDirection] = await Promise.all([
+	const [
+		saleTotal,
+		bonusTotal,
+		installments,
+		bonusInstallments,
+		summaryByDirection,
+	] = await Promise.all([
 		prisma.saleCommissionInstallment.count({
 			where,
+		}),
+		prisma.bonusInstallment.count({
+			where: bonusWhere,
 		}),
 		prisma.saleCommissionInstallment.findMany({
 			where,
@@ -1866,8 +2150,7 @@ export async function loadOrganizationCommissionInstallments({
 				{ expectedPaymentDate: "asc" },
 				{ createdAt: "desc" },
 			],
-			skip,
-			take: pageSize,
+			take,
 			select: {
 				id: true,
 				saleCommissionId: true,
@@ -1965,6 +2248,43 @@ export async function loadOrganizationCommissionInstallments({
 				},
 			},
 		}),
+		prisma.bonusInstallment.findMany({
+			where: bonusWhere,
+			orderBy: [
+				{ status: "asc" },
+				{ expectedPaymentDate: "asc" },
+				{ createdAt: "desc" },
+			],
+			take,
+			select: {
+				id: true,
+				settlementId: true,
+				resultId: true,
+				scenarioName: true,
+				periodFrequency: true,
+				periodYear: true,
+				periodIndex: true,
+				recipientType: true,
+				direction: true,
+				beneficiaryCompanyId: true,
+				beneficiaryPartnerId: true,
+				beneficiarySellerId: true,
+				beneficiarySupervisorId: true,
+				beneficiaryLabel: true,
+				installmentNumber: true,
+				percentage: true,
+				amount: true,
+				status: true,
+				expectedPaymentDate: true,
+				paymentDate: true,
+				product: {
+					select: {
+						id: true,
+						name: true,
+					},
+				},
+			},
+		}),
 		loadOrganizationInstallmentsSummaryByDirection({
 			organizationId,
 			q,
@@ -1975,62 +2295,138 @@ export async function loadOrganizationCommissionInstallments({
 			expectedFrom,
 			expectedTo,
 			visibilityWhere,
+			bonusVisibilityWhere,
 		}),
 	]);
 
-	return {
-		items: installments.map((installment) => {
-			const beneficiaryId = resolveSaleCommissionBeneficiaryId({
-				recipientType: installment.saleCommission.recipientType,
-				beneficiaryCompanyId: installment.saleCommission.beneficiaryCompanyId,
-				beneficiaryUnitId: installment.saleCommission.beneficiaryUnitId,
-				beneficiarySellerId: installment.saleCommission.beneficiarySellerId,
-				beneficiaryPartnerId: installment.saleCommission.beneficiaryPartnerId,
-				beneficiarySupervisorId:
-					installment.saleCommission.beneficiarySupervisorId,
-			});
-			const beneficiaryLabel = resolveSaleCommissionBeneficiaryLabel({
-				recipientType: installment.saleCommission.recipientType,
-				beneficiaryLabel: installment.saleCommission.beneficiaryLabel,
-				beneficiaryCompany: installment.saleCommission.beneficiaryCompany,
-				beneficiaryUnit: installment.saleCommission.beneficiaryUnit,
-				beneficiarySeller: installment.saleCommission.beneficiarySeller,
-				beneficiaryPartner: installment.saleCommission.beneficiaryPartner,
-				beneficiarySupervisor: installment.saleCommission.beneficiarySupervisor,
-			});
+	const saleRows = installments.map((installment) => {
+		const beneficiaryId = resolveSaleCommissionBeneficiaryId({
+			recipientType: installment.saleCommission.recipientType,
+			beneficiaryCompanyId: installment.saleCommission.beneficiaryCompanyId,
+			beneficiaryUnitId: installment.saleCommission.beneficiaryUnitId,
+			beneficiarySellerId: installment.saleCommission.beneficiarySellerId,
+			beneficiaryPartnerId: installment.saleCommission.beneficiaryPartnerId,
+			beneficiarySupervisorId:
+				installment.saleCommission.beneficiarySupervisorId,
+		});
+		const beneficiaryLabel = resolveSaleCommissionBeneficiaryLabel({
+			recipientType: installment.saleCommission.recipientType,
+			beneficiaryLabel: installment.saleCommission.beneficiaryLabel,
+			beneficiaryCompany: installment.saleCommission.beneficiaryCompany,
+			beneficiaryUnit: installment.saleCommission.beneficiaryUnit,
+			beneficiarySeller: installment.saleCommission.beneficiarySeller,
+			beneficiaryPartner: installment.saleCommission.beneficiaryPartner,
+			beneficiarySupervisor: installment.saleCommission.beneficiarySupervisor,
+		});
 
-			return {
-				id: installment.id,
-				saleId: installment.saleCommission.sale.id,
-				saleStatus: installment.saleCommission.sale.status,
-				saleDate: installment.saleCommission.sale.saleDate,
-				customer: installment.saleCommission.sale.customer,
-				product: installment.saleCommission.sale.product,
-				company: installment.saleCommission.sale.company,
-				unit: installment.saleCommission.sale.unit,
+		return {
+			id: installment.id,
+			saleId: installment.saleCommission.sale.id,
+			saleStatus: installment.saleCommission.sale.status,
+			saleDate: installment.saleCommission.sale.saleDate,
+			customer: installment.saleCommission.sale.customer,
+			product: installment.saleCommission.sale.product,
+			company: installment.saleCommission.sale.company,
+			unit: installment.saleCommission.sale.unit,
+			saleCommissionId: installment.saleCommissionId,
+			originInstallmentId: installment.originInstallmentId,
+			originInstallmentNumber:
+				installment.originInstallment?.installmentNumber ?? null,
+			installmentNumber: installment.installmentNumber,
+			recipientType: installment.saleCommission.recipientType,
+			sourceType: installment.saleCommission.sourceType,
+			direction: installment.saleCommission.direction,
+			beneficiaryId,
+			beneficiaryLabel,
+			beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
 				saleCommissionId: installment.saleCommissionId,
-				originInstallmentId: installment.originInstallmentId,
-				originInstallmentNumber:
-					installment.originInstallment?.installmentNumber ?? null,
-				installmentNumber: installment.installmentNumber,
 				recipientType: installment.saleCommission.recipientType,
-				sourceType: installment.saleCommission.sourceType,
-				direction: installment.saleCommission.direction,
 				beneficiaryId,
 				beneficiaryLabel,
-				beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
-					saleCommissionId: installment.saleCommissionId,
-					recipientType: installment.saleCommission.recipientType,
-					beneficiaryId,
-					beneficiaryLabel,
-				}),
-				percentage: fromScaledPercentage(installment.percentage),
-				amount: installment.amount,
-				status: installment.status,
-				expectedPaymentDate: installment.expectedPaymentDate,
-				paymentDate: installment.paymentDate,
-			};
-		}),
+			}),
+			percentage: fromScaledPercentage(installment.percentage),
+			amount: installment.amount,
+			status: installment.status,
+			expectedPaymentDate: installment.expectedPaymentDate,
+			paymentDate: installment.paymentDate,
+			bonusContext: null,
+		};
+	});
+	const bonusRows = bonusInstallments.map((installment) => {
+		const beneficiaryId = resolveSaleCommissionBeneficiaryId({
+			recipientType: installment.recipientType,
+			beneficiaryCompanyId: installment.beneficiaryCompanyId,
+			beneficiaryUnitId: null,
+			beneficiarySellerId: installment.beneficiarySellerId,
+			beneficiaryPartnerId: installment.beneficiaryPartnerId,
+			beneficiarySupervisorId: installment.beneficiarySupervisorId,
+		});
+		const beneficiaryLabel = installment.beneficiaryLabel.trim()
+			? installment.beneficiaryLabel.trim()
+			: null;
+
+		return {
+			id: installment.id,
+			saleId: null,
+			saleStatus: null,
+			saleDate: null,
+			customer: null,
+			product: installment.product,
+			company: null,
+			unit: null,
+			saleCommissionId: null,
+			originInstallmentId: null,
+			originInstallmentNumber: null,
+			installmentNumber: installment.installmentNumber,
+			recipientType: installment.recipientType,
+			sourceType: "BONUS" as const,
+			direction: installment.direction,
+			beneficiaryId,
+			beneficiaryLabel,
+			beneficiaryKey: resolveSaleCommissionBeneficiaryKey({
+				saleCommissionId: installment.id,
+				recipientType: installment.recipientType,
+				beneficiaryId,
+				beneficiaryLabel,
+			}),
+			percentage: fromScaledPercentage(installment.percentage),
+			amount: installment.amount,
+			status: installment.status,
+			expectedPaymentDate: installment.expectedPaymentDate,
+			paymentDate: installment.paymentDate,
+			bonusContext: {
+				settlementId: installment.settlementId,
+				resultId: installment.resultId,
+				scenarioName: installment.scenarioName,
+				periodFrequency: installment.periodFrequency,
+				periodYear: installment.periodYear,
+				periodIndex: installment.periodIndex,
+			},
+		};
+	});
+	const items = [...saleRows, ...bonusRows]
+		.sort((left, right) => {
+			const statusDiff =
+				commissionInstallmentStatusOrder[left.status] -
+				commissionInstallmentStatusOrder[right.status];
+			if (statusDiff !== 0) {
+				return statusDiff;
+			}
+
+			const expectedDateDiff =
+				left.expectedPaymentDate.getTime() -
+				right.expectedPaymentDate.getTime();
+			if (expectedDateDiff !== 0) {
+				return expectedDateDiff;
+			}
+
+			return right.id.localeCompare(left.id);
+		})
+		.slice(skip, skip + pageSize);
+	const total = saleTotal + bonusTotal;
+
+	return {
+		items,
 		pagination: {
 			page,
 			pageSize,

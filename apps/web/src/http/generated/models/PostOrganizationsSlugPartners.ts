@@ -98,9 +98,9 @@ export type PostOrganizationsSlugPartnersMutationRequest = {
    */
   status?: PostOrganizationsSlugPartnersMutationRequestStatusEnumKey;
   /**
-   * @type string | undefined, uuid
+   * @type array | undefined
    */
-  supervisorId?: string;
+  supervisorIds?: string[];
 };
 
 export type PostOrganizationsSlugPartnersMutationResponse =
