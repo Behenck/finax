@@ -19,6 +19,7 @@ import { FieldError } from '@/components/field-error'
 import type { CustomerFormInput } from '@/schemas/customer-schema'
 import { formatDocument } from '@/utils/format-document'
 import { formatPhone } from '@/utils/format-phone'
+import { formatTitleCase } from '@/utils/format-title-case'
 
 export function TabCustomerPF() {
   const {
@@ -35,8 +36,24 @@ export function TabCustomerPF() {
       <FieldGroup>
         <Field className="gap-1">
           <FieldLabel>Nome completo *</FieldLabel>
-          <Input placeholder='Ex: João da Silva' {...register("name")} />
-          <FieldError error={errors.name} />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <>
+                <Input
+                  placeholder='Ex: João da Silva'
+                  value={field.value ?? ""}
+                  onChange={(event) =>
+                    field.onChange(formatTitleCase(event.target.value))
+                  }
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                />
+                <FieldError error={fieldState.error} />
+              </>
+            )}
+          />
         </Field>
       </FieldGroup>
       <div className='flex items-center gap-4'>
@@ -173,8 +190,24 @@ export function TabCustomerPF() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Naturalidade</FieldLabel>
-              <Input placeholder='Ex: São Paulo - SP' {...register("naturality")} />
-              <FieldError error={errors.naturality} />
+              <Controller
+                control={control}
+                name="naturality"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Ex: São Paulo - SP'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>
@@ -182,15 +215,47 @@ export function TabCustomerPF() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Nome da mãe</FieldLabel>
-              <Input placeholder='Nome completo' {...register("motherName")} />
-              <FieldError error={errors.motherName} />
+              <Controller
+                control={control}
+                name="motherName"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Nome completo'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Nome do pai</FieldLabel>
-              <Input placeholder='Nome completo' {...register("fatherName")} />
-              <FieldError error={errors.fatherName} />
+              <Controller
+                control={control}
+                name="fatherName"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Nome completo'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>
@@ -198,8 +263,24 @@ export function TabCustomerPF() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Profissão</FieldLabel>
-              <Input placeholder='Ex: Engenheiro' {...register("profession")} />
-              <FieldError error={errors.profession} />
+              <Controller
+                control={control}
+                name="profession"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Ex: Engenheiro'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
           <FieldGroup>

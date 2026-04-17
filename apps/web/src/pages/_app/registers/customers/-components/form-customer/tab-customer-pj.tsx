@@ -19,6 +19,7 @@ import type { CustomerFormInput } from '@/schemas/customer-schema'
 import { FieldError } from '@/components/field-error'
 import { formatDocument } from '@/utils/format-document'
 import { formatPhone } from '@/utils/format-phone'
+import { formatTitleCase } from '@/utils/format-title-case'
 
 export function TabCustomerPJ() {
   const {
@@ -35,8 +36,24 @@ export function TabCustomerPJ() {
       <FieldGroup>
         <Field className='gap-1'>
           <FieldLabel>Nome da empresa *</FieldLabel>
-          <Input placeholder='Ex: Razão social ou nome fantasia' {...register("name")} />
-          <FieldError error={errors.name} />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <>
+                <Input
+                  placeholder='Ex: Razão social ou nome fantasia'
+                  value={field.value ?? ""}
+                  onChange={(event) =>
+                    field.onChange(formatTitleCase(event.target.value))
+                  }
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                />
+                <FieldError error={fieldState.error} />
+              </>
+            )}
+          />
         </Field>
       </FieldGroup>
       <div className='flex items-center gap-4'>
@@ -137,15 +154,47 @@ export function TabCustomerPJ() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Nome fantasia</FieldLabel>
-              <Input placeholder='Nome fantasia' {...register("tradeName")} />
-              <FieldError error={errors.tradeName} />
+              <Controller
+                control={control}
+                name="tradeName"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Nome fantasia'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Razão social</FieldLabel>
-              <Input placeholder='Razão social completa' {...register("legalName")} />
-              <FieldError error={errors.legalName} />
+              <Controller
+                control={control}
+                name="legalName"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Razão social completa'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>
@@ -204,8 +253,24 @@ export function TabCustomerPJ() {
           <FieldGroup>
             <Field className='gap-1'>
               <FieldLabel>Atividade empresarial</FieldLabel>
-              <Input placeholder='Ex: Comércio varejista' {...register("businessActivity")} />
-              <FieldError error={errors.businessActivity} />
+              <Controller
+                control={control}
+                name="businessActivity"
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      placeholder='Ex: Comércio varejista'
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(formatTitleCase(event.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    <FieldError error={fieldState.error} />
+                  </>
+                )}
+              />
             </Field>
           </FieldGroup>
         </div>

@@ -1,4 +1,5 @@
 import z from "zod";
+import { formatTitleCase } from "@/utils/format-title-case";
 
 export type QuickCustomerDocumentType = "CPF" | "CNPJ";
 
@@ -7,13 +8,7 @@ function toDigitsOnly(value: string) {
 }
 
 export function normalizeQuickCustomerName(value: string) {
-	return value
-		.toLocaleLowerCase("pt-BR")
-		.replace(
-			/(^|[\s.]+)([^\s.])/gu,
-			(_match, prefix: string, character: string) =>
-				`${prefix}${character.toLocaleUpperCase("pt-BR")}`,
-		);
+	return formatTitleCase(value);
 }
 
 export function resolveQuickCustomerDocumentType(

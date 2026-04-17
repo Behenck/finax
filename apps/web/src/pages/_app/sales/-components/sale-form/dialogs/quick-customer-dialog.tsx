@@ -37,16 +37,6 @@ export function QuickCustomerDialog({
 	isPending,
 	onSubmit,
 }: QuickCustomerDialogProps) {
-	const nameField = form.register("name", {
-		onBlur: (event) => {
-			form.setValue("name", normalizeQuickCustomerName(event.target.value), {
-				shouldDirty: true,
-				shouldTouch: true,
-				shouldValidate: true,
-			});
-		},
-	});
-
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
@@ -61,8 +51,25 @@ export function QuickCustomerDialog({
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Nome completo *</FieldLabel>
-							<Input {...nameField} />
-							<FieldError error={form.formState.errors.name} />
+							<Controller
+								control={form.control}
+								name="name"
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											value={field.value ?? ""}
+											onChange={(event) =>
+												field.onChange(
+													normalizeQuickCustomerName(event.target.value),
+												)
+											}
+											onBlur={field.onBlur}
+											ref={field.ref}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
+							/>
 						</Field>
 					</FieldGroup>
 

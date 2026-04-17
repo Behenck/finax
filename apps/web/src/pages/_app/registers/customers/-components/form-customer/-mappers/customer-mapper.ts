@@ -1,5 +1,6 @@
 import type { CustomerFormData, CustomerFormInput } from "@/schemas/customer-schema"
 import type { GetOrganizationsSlugCustomersCustomerid200, PostOrganizationsSlugCustomersMutationRequest } from "@/http/generated"
+import { formatTitleCase } from "@/utils/format-title-case"
 
 type CustomerResponsible =
   | {
@@ -32,13 +33,17 @@ function mapResponsible(data: CustomerFormData) {
   } as const
 }
 
+function formatOptionalTitleCase(value?: string) {
+  return value ? formatTitleCase(value) : value
+}
+
 export function mapCustomerFormToRequest(
   data: CustomerFormData
 ): CustomerMutationRequestWithResponsible {
 
   if (data.personType === "PF") {
     return {
-      name: data.name,
+      name: formatTitleCase(data.name),
       personType: "PF",
       documentType: data.documentType,
       documentNumber: data.documentNumber,
@@ -49,18 +54,18 @@ export function mapCustomerFormToRequest(
       pf: {
         birthDate: data.birthDate,
         monthlyIncome: data.monthlyIncome,
-        profession: data.profession,
-        placeOfBirth: data.naturality,
-        fatherName: data.fatherName,
-        motherName: data.motherName,
-        naturality: data.naturality,
+        profession: formatOptionalTitleCase(data.profession),
+        placeOfBirth: formatOptionalTitleCase(data.naturality),
+        fatherName: formatOptionalTitleCase(data.fatherName),
+        motherName: formatOptionalTitleCase(data.motherName),
+        naturality: formatOptionalTitleCase(data.naturality),
       },
     }
   }
 
   // PJ
   return {
-    name: data.name,
+    name: formatTitleCase(data.name),
     personType: "PJ",
     documentType: data.documentType,
     documentNumber: data.documentNumber,
@@ -69,11 +74,11 @@ export function mapCustomerFormToRequest(
     responsible: mapResponsible(data),
 
     pj: {
-      businessActivity: data.businessActivity,
+      businessActivity: formatOptionalTitleCase(data.businessActivity),
       municipalRegistration: data.municipalRegistration,
       stateRegistration: data.stateRegistration,
-      legalName: data.legalName,
-      tradeName: data.tradeName,
+      legalName: formatOptionalTitleCase(data.legalName),
+      tradeName: formatOptionalTitleCase(data.tradeName),
       foundationDate: data.foundationDate,
     },
   }
@@ -89,17 +94,23 @@ export function buildCustomerDefaultValues(
       documentType:
         (customer.documentType as "CNPJ" | "IE" | "OTHER") ?? "CNPJ",
       documentNumber: customer.documentNumber ?? "",
-      name: customer.name ?? "",
+      name: customer.name ? formatTitleCase(customer.name) : "",
       email: customer.email ?? "",
       phone: customer.phone ?? "",
-      tradeName: customer.pj?.tradeName ?? "",
-      legalName: customer.pj?.legalName ?? "",
+      tradeName: customer.pj?.tradeName
+        ? formatTitleCase(customer.pj.tradeName)
+        : "",
+      legalName: customer.pj?.legalName
+        ? formatTitleCase(customer.pj.legalName)
+        : "",
       stateRegistration: customer.pj?.stateRegistration ?? "",
       municipalRegistration: customer.pj?.municipalRegistration ?? "",
       foundationDate: customer.pj?.foundationDate
         ? new Date(customer.pj.foundationDate)
         : undefined,
-      businessActivity: customer.pj?.businessActivity ?? "",
+      businessActivity: customer.pj?.businessActivity
+        ? formatTitleCase(customer.pj.businessActivity)
+        : "",
       responsibleType: customer.responsible?.type,
       responsibleId: customer.responsible?.id,
     }
@@ -110,16 +121,24 @@ export function buildCustomerDefaultValues(
     documentType:
       (customer?.documentType as "CPF" | "RG" | "PASSPORT" | "OTHER") ?? "CPF",
     documentNumber: customer?.documentNumber ?? "",
-    name: customer?.name ?? "",
+    name: customer?.name ? formatTitleCase(customer.name) : "",
     email: customer?.email ?? "",
     phone: customer?.phone ?? "",
     birthDate: customer?.pf?.birthDate
       ? new Date(customer.pf.birthDate)
       : undefined,
-    naturality: customer?.pf?.naturality ?? "",
-    motherName: customer?.pf?.motherName ?? "",
-    fatherName: customer?.pf?.fatherName ?? "",
-    profession: customer?.pf?.profession ?? "",
+    naturality: customer?.pf?.naturality
+      ? formatTitleCase(customer.pf.naturality)
+      : "",
+    motherName: customer?.pf?.motherName
+      ? formatTitleCase(customer.pf.motherName)
+      : "",
+    fatherName: customer?.pf?.fatherName
+      ? formatTitleCase(customer.pf.fatherName)
+      : "",
+    profession: customer?.pf?.profession
+      ? formatTitleCase(customer.pf.profession)
+      : "",
     monthlyIncome: customer?.pf?.monthlyIncome ?? 0,
     responsibleType: customer?.responsible?.type,
     responsibleId: customer?.responsible?.id,
