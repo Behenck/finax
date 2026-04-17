@@ -29,7 +29,7 @@ import { formatPhone } from "@/utils/format-phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -111,6 +111,8 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 	const lastResolvedCnpjRef = useRef(
 		type === "UPDATE" ? onlyDigits(partner?.document) : "",
 	);
+	const [isLookingUpCompanyDocument, setIsLookingUpCompanyDocument] =
+		useState(false);
 
 	const { mutateAsync: createPartner } = usePostOrganizationsSlugPartners();
 
@@ -157,14 +159,17 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 		const digits = onlyDigits(document);
 
 		if (documentType !== "CNPJ" || digits.length !== 14) {
+			setIsLookingUpCompanyDocument(false);
 			return;
 		}
 
 		if (lastResolvedCnpjRef.current === digits) {
+			setIsLookingUpCompanyDocument(false);
 			return;
 		}
 
 		const abortController = new AbortController();
+		setIsLookingUpCompanyDocument(true);
 
 		const resolveCompanyDocument = async () => {
 			try {
@@ -239,6 +244,10 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 			} catch (error) {
 				if (error instanceof DOMException && error.name === "AbortError") {
 					return;
+				}
+			} finally {
+				if (!abortController.signal.aborted) {
+					setIsLookingUpCompanyDocument(false);
 				}
 			}
 		};
@@ -377,6 +386,14 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 											}
 										/>
 										<FieldError error={fieldState.error} />
+										{isLookingUpCompanyDocument ? (
+											<p
+												className="text-muted-foreground text-xs"
+												role="status"
+											>
+												Buscando dados do CNPJ...
+											</p>
+										) : null}
 									</>
 								)}
 							/>
