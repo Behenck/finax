@@ -163,6 +163,52 @@ describe("assign supervisor to partner", () => {
 		expect(partnerSupervisors).toHaveLength(0);
 	});
 
+	it("should accept legacy supervisorId payload", async () => {
+		const fixture = await createAuthenticatedFixture();
+		const partner = await createPartner(fixture.org.id, fixture.suffix);
+
+		const supervisorUser = await prisma.user.create({
+			data: {
+				name: `Supervisor legacy ${fixture.suffix}`,
+				email: `supervisor-legacy-${fixture.suffix}@example.com`,
+			},
+		});
+
+		await prisma.member.create({
+			data: {
+				organizationId: fixture.org.id,
+				userId: supervisorUser.id,
+				role: Role.SUPERVISOR,
+			},
+		});
+
+		const response = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/partners/${partner.id}/assign-supervisor`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				supervisorId: supervisorUser.id,
+			});
+
+		expect(response.statusCode).toBe(204);
+
+		const partnerSupervisors = await prisma.partnerSupervisor.findMany({
+			where: {
+				partnerId: partner.id,
+			},
+			select: {
+				supervisorId: true,
+			},
+		});
+
+		expect(partnerSupervisors).toEqual([
+			{
+				supervisorId: supervisorUser.id,
+			},
+		]);
+	});
+
 	it("should return 400 when supervisor does not have SUPERVISOR role in organization", async () => {
 		const fixture = await createAuthenticatedFixture();
 		const partner = await createPartner(fixture.org.id, fixture.suffix);

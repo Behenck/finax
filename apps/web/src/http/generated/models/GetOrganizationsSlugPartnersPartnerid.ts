@@ -125,6 +125,19 @@ export type GetOrganizationsSlugPartnersPartnerid200 = {
       name: string | null;
     } | null;
     /**
+     * @type object
+     */
+    supervisor: {
+      /**
+       * @type string, uuid
+       */
+      id: string;
+      /**
+       * @type string
+       */
+      name: string | null;
+    } | null;
+    /**
      * @type array
      */
     supervisors: {

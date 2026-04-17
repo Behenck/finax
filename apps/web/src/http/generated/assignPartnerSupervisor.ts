@@ -37,7 +37,7 @@ export async function assignPartnerSupervisor(
   }: {
     slug: AssignPartnerSupervisorPathParams["slug"];
     partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-    data: AssignPartnerSupervisorMutationRequest;
+    data?: AssignPartnerSupervisorMutationRequest;
   },
   config: Partial<RequestConfig<AssignPartnerSupervisorMutationRequest>> & {
     client?: typeof fetch;

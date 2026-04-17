@@ -9,6 +9,20 @@ import {
 	replacePartnerSupervisors,
 } from "./partner-supervisors";
 
+const assignSupervisorBodySchema = z
+	.object({
+		supervisorIds: z.array(z.uuid()).optional(),
+		supervisorId: z.uuid().nullable().optional(),
+	})
+	.refine(
+		(body) =>
+			Array.isArray(body.supervisorIds) ||
+			Object.hasOwn(body, "supervisorId"),
+		{
+			message: "supervisorIds or supervisorId is required",
+		},
+	);
+
 export async function assignSupervisorPartner(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
@@ -25,9 +39,7 @@ export async function assignSupervisorPartner(app: FastifyInstance) {
 						slug: z.string(),
 						partnerId: z.uuid(),
 					}),
-					body: z.object({
-						supervisorIds: z.array(z.uuid()),
-					}),
+					body: assignSupervisorBodySchema,
 					response: {
 						204: z.null(),
 					},
@@ -35,7 +47,11 @@ export async function assignSupervisorPartner(app: FastifyInstance) {
 			},
 			async (request, reply) => {
 				const { slug, partnerId } = request.params;
-				const { supervisorIds } = request.body;
+				const supervisorIds = Array.isArray(request.body.supervisorIds)
+					? request.body.supervisorIds
+					: request.body.supervisorId
+						? [request.body.supervisorId]
+						: [];
 
 				const organization = await prisma.organization.findUnique({
 					where: {

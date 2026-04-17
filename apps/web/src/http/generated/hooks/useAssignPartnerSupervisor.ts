@@ -39,7 +39,7 @@ export function assignPartnerSupervisorMutationOptions<TContext = unknown>(
     {
       slug: AssignPartnerSupervisorPathParams["slug"];
       partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-      data: AssignPartnerSupervisorMutationRequest;
+      data?: AssignPartnerSupervisorMutationRequest;
     },
     TContext
   >({
@@ -62,7 +62,7 @@ export function useAssignPartnerSupervisor<TContext>(
       {
         slug: AssignPartnerSupervisorPathParams["slug"];
         partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-        data: AssignPartnerSupervisorMutationRequest;
+        data?: AssignPartnerSupervisorMutationRequest;
       },
       TContext
     > & { client?: QueryClient };
@@ -84,7 +84,7 @@ export function useAssignPartnerSupervisor<TContext>(
     {
       slug: AssignPartnerSupervisorPathParams["slug"];
       partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-      data: AssignPartnerSupervisorMutationRequest;
+      data?: AssignPartnerSupervisorMutationRequest;
     },
     TContext
   >;
@@ -95,7 +95,7 @@ export function useAssignPartnerSupervisor<TContext>(
     {
       slug: AssignPartnerSupervisorPathParams["slug"];
       partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-      data: AssignPartnerSupervisorMutationRequest;
+      data?: AssignPartnerSupervisorMutationRequest;
     },
     TContext
   >(
@@ -111,7 +111,7 @@ export function useAssignPartnerSupervisor<TContext>(
     {
       slug: AssignPartnerSupervisorPathParams["slug"];
       partnerId: AssignPartnerSupervisorPathParams["partnerId"];
-      data: AssignPartnerSupervisorMutationRequest;
+      data?: AssignPartnerSupervisorMutationRequest;
     },
     TContext
   >;

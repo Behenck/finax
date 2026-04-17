@@ -40,6 +40,12 @@ export const getOrganizationsSlugPartners200Schema = z.object({
           name: z.nullable(z.string()),
         }),
       ),
+      supervisor: z.nullable(
+        z.object({
+          id: z.uuid(),
+          name: z.nullable(z.string()),
+        }),
+      ),
       supervisors: z.array(
         z.object({
           id: z.uuid(),

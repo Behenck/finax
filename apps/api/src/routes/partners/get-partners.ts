@@ -53,6 +53,12 @@ export async function getPartners(app: FastifyInstance) {
 											name: z.string().nullable(),
 										})
 										.nullable(),
+									supervisor: z
+										.object({
+											id: z.uuid(),
+											name: z.string().nullable(),
+										})
+										.nullable(),
 									supervisors: z.array(
 										z.object({
 											id: z.uuid(),
@@ -127,10 +133,17 @@ export async function getPartners(app: FastifyInstance) {
 				});
 
 				return {
-					partners: partners.map((partner) => ({
-						...partner,
-						supervisors: partner.supervisors.map((link) => link.supervisor),
-					})),
+					partners: partners.map((partner) => {
+						const supervisors = partner.supervisors.map(
+							(link) => link.supervisor,
+						);
+
+						return {
+							...partner,
+							supervisor: supervisors[0] ?? null,
+							supervisors,
+						};
+					}),
 				};
 			},
 		);

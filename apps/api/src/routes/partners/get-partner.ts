@@ -54,6 +54,12 @@ export async function getPartner(app: FastifyInstance) {
 										name: z.string().nullable(),
 									})
 									.nullable(),
+								supervisor: z
+									.object({
+										id: z.uuid(),
+										name: z.string().nullable(),
+									})
+									.nullable(),
 								supervisors: z.array(
 									z.object({
 										id: z.uuid(),
@@ -134,6 +140,8 @@ export async function getPartner(app: FastifyInstance) {
 				return {
 					partner: {
 						...partner,
+						supervisor:
+							partner.supervisors.map((link) => link.supervisor)[0] ?? null,
 						supervisors: partner.supervisors.map((link) => link.supervisor),
 					},
 				};

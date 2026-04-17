@@ -27,9 +27,13 @@ export type AssignPartnerSupervisor204 =
 
 export type AssignPartnerSupervisorMutationRequest = {
   /**
-   * @type array
+   * @type array | undefined
    */
-  supervisorIds: string[];
+  supervisorIds?: string[];
+  /**
+   * @type string, uuid
+   */
+  supervisorId?: string | null;
 };
 
 export type AssignPartnerSupervisorMutationResponse =
