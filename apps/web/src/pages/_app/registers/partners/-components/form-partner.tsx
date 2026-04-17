@@ -21,6 +21,7 @@ import {
 	usePutOrganizationsSlugPartnersPartnerid,
 	type GetOrganizationsSlugPartnersPartnerid200,
 } from "@/http/generated";
+import { lookupCompanyDocument } from "@/lib/company-document-lookup";
 import { router } from "@/router";
 import { partnerSchema, type PartnerForm } from "@/schemas/partner-schema";
 import { formatDocument } from "@/utils/format-document";
@@ -28,6 +29,7 @@ import { formatPhone } from "@/utils/format-phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -36,9 +38,79 @@ interface FormPartnerProps {
 	partner?: GetOrganizationsSlugPartnersPartnerid200["partner"];
 }
 
+const BRAZILIAN_STATE_OPTIONS = [
+	{ value: "AC", label: "Acre" },
+	{ value: "AL", label: "Alagoas" },
+	{ value: "AP", label: "Amapá" },
+	{ value: "AM", label: "Amazonas" },
+	{ value: "BA", label: "Bahia" },
+	{ value: "CE", label: "Ceará" },
+	{ value: "DF", label: "Distrito Federal" },
+	{ value: "ES", label: "Espírito Santo" },
+	{ value: "GO", label: "Goiás" },
+	{ value: "MA", label: "Maranhão" },
+	{ value: "MT", label: "Mato Grosso" },
+	{ value: "MS", label: "Mato Grosso do Sul" },
+	{ value: "MG", label: "Minas Gerais" },
+	{ value: "PA", label: "Pará" },
+	{ value: "PB", label: "Paraíba" },
+	{ value: "PR", label: "Paraná" },
+	{ value: "PE", label: "Pernambuco" },
+	{ value: "PI", label: "Piauí" },
+	{ value: "RJ", label: "Rio de Janeiro" },
+	{ value: "RN", label: "Rio Grande do Norte" },
+	{ value: "RS", label: "Rio Grande do Sul" },
+	{ value: "RO", label: "Rondônia" },
+	{ value: "RR", label: "Roraima" },
+	{ value: "SC", label: "Santa Catarina" },
+	{ value: "SP", label: "São Paulo" },
+	{ value: "SE", label: "Sergipe" },
+	{ value: "TO", label: "Tocantins" },
+] as const;
+
+type CompanyLookupField = keyof Pick<
+	PartnerForm,
+	| "name"
+	| "companyName"
+	| "email"
+	| "phone"
+	| "zipCode"
+	| "state"
+	| "city"
+	| "street"
+	| "neighborhood"
+	| "number"
+	| "complement"
+>;
+
+const COMPANY_LOOKUP_FIELD_LABELS: Record<CompanyLookupField, string> = {
+	name: "Nome do representante",
+	companyName: "Empresa",
+	email: "Email",
+	phone: "Telefone",
+	zipCode: "CEP",
+	state: "Estado",
+	city: "Cidade",
+	street: "Rua",
+	neighborhood: "Bairro",
+	number: "Número",
+	complement: "Complemento",
+};
+
+function normalizeValue(value: unknown) {
+	return String(value ?? "").trim();
+}
+
+function onlyDigits(value?: string | null) {
+	return String(value ?? "").replace(/\D/g, "");
+}
+
 export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
+	const lastResolvedCnpjRef = useRef(
+		type === "UPDATE" ? onlyDigits(partner?.document) : "",
+	);
 
 	const { mutateAsync: createPartner } = usePostOrganizationsSlugPartners();
 
@@ -73,10 +145,110 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 		register,
 		control,
 		watch,
-		formState: { errors },
+		setValue,
+		getValues,
+		formState: { errors, dirtyFields },
 	} = form;
 
 	const documentType = watch("documentType");
+	const document = watch("document");
+
+	useEffect(() => {
+		const digits = onlyDigits(document);
+
+		if (documentType !== "CNPJ" || digits.length !== 14) {
+			return;
+		}
+
+		if (lastResolvedCnpjRef.current === digits) {
+			return;
+		}
+
+		const abortController = new AbortController();
+
+		const resolveCompanyDocument = async () => {
+			try {
+				const companyData = await lookupCompanyDocument(digits, {
+					signal: abortController.signal,
+				});
+
+				if (!companyData) {
+					return;
+				}
+
+				lastResolvedCnpjRef.current = digits;
+
+				const nextValues: Record<CompanyLookupField, string> = {
+					name: companyData.name,
+					companyName: companyData.companyName,
+					email: companyData.email,
+					phone: formatPhone(companyData.phone),
+					zipCode: companyData.zipCode,
+					state: companyData.state.toUpperCase(),
+					city: companyData.city,
+					street: companyData.street,
+					neighborhood: companyData.neighborhood,
+					number: companyData.number,
+					complement: companyData.complement,
+				};
+
+				const nextEntries = (
+					Object.entries(nextValues) as Array<[CompanyLookupField, string]>
+				).filter(([, value]) => normalizeValue(value).length > 0);
+
+				const conflictingFields = nextEntries.filter(([field, nextValue]) => {
+					const currentValue = normalizeValue(getValues(field));
+					const normalizedNextValue = normalizeValue(nextValue);
+					if (!currentValue || currentValue === normalizedNextValue) {
+						return false;
+					}
+
+					if (
+						type === "CREATE" &&
+						field === "state" &&
+						currentValue === "RS" &&
+						!dirtyFields.state
+					) {
+						return false;
+					}
+
+					return true;
+				});
+
+				if (conflictingFields.length > 0) {
+					const fieldNames = conflictingFields
+						.map(([field]) => COMPANY_LOOKUP_FIELD_LABELS[field])
+						.join(", ");
+					const shouldOverwrite = window.confirm(
+						`Encontramos dados para este CNPJ. Deseja substituir os campos já preenchidos (${fieldNames})?`,
+					);
+
+					if (!shouldOverwrite) {
+						return;
+					}
+				}
+
+				for (const [field, value] of nextEntries) {
+					setValue(field, value, {
+						shouldDirty: true,
+						shouldValidate: true,
+					});
+				}
+
+				toast.success("Dados do CNPJ preenchidos automaticamente.");
+			} catch (error) {
+				if (error instanceof DOMException && error.name === "AbortError") {
+					return;
+				}
+			}
+		};
+
+		void resolveCompanyDocument();
+
+		return () => {
+			abortController.abort();
+		};
+	}, [dirtyFields.state, document, documentType, getValues, setValue, type]);
 
 	async function onSubmit(data: PartnerForm) {
 		try {
@@ -136,6 +308,82 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 		<FormProvider {...form}>
 			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<FieldGroup className="md:max-w-48">
+						<Field className="gap-1">
+							<FieldLabel>Tipo de documento *</FieldLabel>
+							<Controller
+								name="documentType"
+								control={control}
+								render={({ field, fieldState }) => (
+									<>
+										<Select
+											value={field.value ?? ""}
+											onValueChange={(value) => {
+												const nextDocumentType =
+													value as PartnerForm["documentType"];
+												field.onChange(nextDocumentType);
+												lastResolvedCnpjRef.current = "";
+												setValue(
+													"document",
+													formatDocument({
+														type: nextDocumentType,
+														value: getValues("document"),
+													}),
+													{
+														shouldDirty: true,
+														shouldValidate: true,
+													},
+												);
+											}}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Selecione" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectGroup>
+													<SelectItem value="CPF">CPF</SelectItem>
+													<SelectItem value="CNPJ">CNPJ</SelectItem>
+												</SelectGroup>
+											</SelectContent>
+										</Select>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
+							/>
+						</Field>
+					</FieldGroup>
+					<FieldGroup>
+						<Field className="gap-1">
+							<FieldLabel>CNPJ / CPF *</FieldLabel>
+							<Controller
+								control={control}
+								name="document"
+								render={({ field, fieldState }) => (
+									<>
+										<Input
+											placeholder={
+												documentType === "CPF"
+													? "000.000.000-00"
+													: "00.000.000/0000-00"
+											}
+											value={field.value ?? ""}
+											onChange={(e) =>
+												field.onChange(
+													formatDocument({
+														type: documentType,
+														value: e.target.value,
+													}),
+												)
+											}
+										/>
+										<FieldError error={fieldState.error} />
+									</>
+								)}
+							/>
+						</Field>
+					</FieldGroup>
+				</div>
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup>
 						<Field className="gap-1">
 							<FieldLabel>Nome do representante *</FieldLabel>
@@ -178,62 +426,6 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 											value={field.value ?? ""}
 											onChange={(e) =>
 												field.onChange(formatPhone(e.target.value))
-											}
-										/>
-										<FieldError error={fieldState.error} />
-									</>
-								)}
-							/>
-						</Field>
-					</FieldGroup>
-				</div>
-				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-					<FieldGroup className="w-40">
-						<Field className="gap-1">
-							<FieldLabel>Tipo de documento *</FieldLabel>
-							<Controller
-								name="documentType"
-								control={control}
-								render={({ field, fieldState }) => (
-									<>
-										<Select
-											value={field.value ?? ""}
-											onValueChange={field.onChange}
-										>
-											<SelectTrigger className="w-full">
-												<SelectValue placeholder="Selecione" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectGroup>
-													<SelectItem value="CPF">CPF</SelectItem>
-													<SelectItem value="CNPJ">CNPJ</SelectItem>
-												</SelectGroup>
-											</SelectContent>
-										</Select>
-										<FieldError error={fieldState.error} />
-									</>
-								)}
-							/>
-						</Field>
-					</FieldGroup>
-					<FieldGroup className="flex-1">
-						<Field className="gap-1">
-							<FieldLabel>CNPJ / CPF *</FieldLabel>
-							<Controller
-								control={control}
-								name="document"
-								render={({ field, fieldState }) => (
-									<>
-										<Input
-											placeholder="00.000.000/0000-00"
-											value={field.value ?? ""}
-											onChange={(e) =>
-												field.onChange(
-													formatDocument({
-														type: documentType,
-														value: e.target.value,
-													}),
-												)
 											}
 										/>
 										<FieldError error={fieldState.error} />
@@ -298,9 +490,11 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 												</SelectTrigger>
 												<SelectContent>
 													<SelectGroup>
-														<SelectItem value="RS">
-															Rio Grande do Sul
-														</SelectItem>
+														{BRAZILIAN_STATE_OPTIONS.map((state) => (
+															<SelectItem key={state.value} value={state.value}>
+																{state.label}
+															</SelectItem>
+														))}
 													</SelectGroup>
 												</SelectContent>
 											</Select>
@@ -321,18 +515,18 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 						<FieldGroup>
 							<Field className="gap-1">
-								<FieldLabel>Bairro</FieldLabel>
-								<Input placeholder="Ex: Centro" {...register("street")} />
+								<FieldLabel>Rua</FieldLabel>
+								<Input
+									placeholder="Ex: Av. Presidente"
+									{...register("street")}
+								/>
 								<FieldError error={errors.street} />
 							</Field>
 						</FieldGroup>
 						<FieldGroup>
 							<Field className="gap-1">
-								<FieldLabel>Rua</FieldLabel>
-								<Input
-									placeholder="Ex: Av. Presidente"
-									{...register("neighborhood")}
-								/>
+								<FieldLabel>Bairro</FieldLabel>
+								<Input placeholder="Ex: Centro" {...register("neighborhood")} />
 								<FieldError error={errors.neighborhood} />
 							</Field>
 						</FieldGroup>
