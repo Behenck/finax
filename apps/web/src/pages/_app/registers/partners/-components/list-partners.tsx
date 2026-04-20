@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { formatCurrencyBRL } from "@/utils/format-amount";
 import { formatPhone } from "@/utils/format-phone";
 import { AssignSupervisor } from "./assign-supervisor";
 import { DetailsPartner } from "./details-partner";
@@ -209,6 +210,12 @@ export function ListPartners({
 										</p>
 									</div>
 									<div className="space-y-0.5">
+										<p className="text-muted-foreground">Vendas no mês</p>
+										<p className="font-medium text-green-600">
+											{formatCurrencyBRL(partner.currentMonthSalesAmount / 100)}
+										</p>
+									</div>
+									<div className="space-y-0.5">
 										<p className="text-muted-foreground">Supervisores</p>
 										{renderSupervisorBadges(partner.supervisors)}
 									</div>
@@ -345,7 +352,9 @@ export function ListPartners({
 										</TableCell>
 										<TableCell>
 											<span className="text-medium text-green-600">
-												R$ 0,00
+												{formatCurrencyBRL(
+													partner.currentMonthSalesAmount / 100,
+												)}
 											</span>
 										</TableCell>
 										<TableCell>

@@ -294,7 +294,7 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_1fr_260px_120px_120px_120px] xl:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_200px_minmax(280px,1fr)_120px_120px_120px] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>

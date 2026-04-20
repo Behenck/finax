@@ -232,6 +232,145 @@ async function createFixture() {
 	};
 }
 
+function createCurrentMonthDate(day: number) {
+	const now = new Date();
+
+	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), day));
+}
+
+function createPreviousMonthDate(day: number) {
+	const now = new Date();
+
+	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, day));
+}
+
+async function createListMetricsFixture() {
+	const { user, org } = await makeUser();
+	const token = await authenticate(user.email, user.password);
+	const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+	const member = await prisma.member.findFirstOrThrow({
+		where: {
+			organizationId: org.id,
+			userId: user.id,
+		},
+	});
+
+	const company = await prisma.company.create({
+		data: {
+			name: `Metrics company ${suffix}`,
+			organizationId: org.id,
+		},
+	});
+	const product = await prisma.product.create({
+		data: {
+			name: `Metrics product ${suffix}`,
+			description: "Partner list metrics test product",
+			organizationId: org.id,
+		},
+	});
+	const customer = await createCustomer(org.id, `${suffix}-metrics`);
+	const targetPartner = await createPartner(org.id, `${suffix}-metrics-target`);
+	const otherPartner = await createPartner(org.id, `${suffix}-metrics-other`);
+	const seller = await prisma.seller.create({
+		data: {
+			name: `Metrics seller ${suffix}`,
+			email: `metrics-seller-${suffix}@example.com`,
+			phone: "55999999999",
+			documentType: SellerDocumentType.CPF,
+			document: `${Math.floor(Math.random() * 1_000_000_000_000)}`,
+			companyName: `Metrics seller company ${suffix}`,
+			state: "RS",
+			organizationId: org.id,
+			status: SellerStatus.ACTIVE,
+		},
+	});
+
+	await prisma.sale.createMany({
+		data: [
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createCurrentMonthDate(3),
+				totalAmount: 120_000,
+				status: SaleStatus.COMPLETED,
+				responsibleType: SaleResponsibleType.PARTNER,
+				responsibleId: targetPartner.id,
+				createdById: user.id,
+			},
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createCurrentMonthDate(4),
+				totalAmount: 50_000,
+				status: SaleStatus.PENDING,
+				responsibleType: SaleResponsibleType.PARTNER,
+				responsibleId: targetPartner.id,
+				createdById: user.id,
+			},
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createCurrentMonthDate(5),
+				totalAmount: 900_000,
+				status: SaleStatus.CANCELED,
+				responsibleType: SaleResponsibleType.PARTNER,
+				responsibleId: targetPartner.id,
+				createdById: user.id,
+			},
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createPreviousMonthDate(6),
+				totalAmount: 70_000,
+				status: SaleStatus.COMPLETED,
+				responsibleType: SaleResponsibleType.PARTNER,
+				responsibleId: targetPartner.id,
+				createdById: user.id,
+			},
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createCurrentMonthDate(7),
+				totalAmount: 80_000,
+				status: SaleStatus.COMPLETED,
+				responsibleType: SaleResponsibleType.SELLER,
+				responsibleId: seller.id,
+				createdById: user.id,
+			},
+			{
+				organizationId: org.id,
+				companyId: company.id,
+				customerId: customer.id,
+				productId: product.id,
+				saleDate: createCurrentMonthDate(8),
+				totalAmount: 30_000,
+				status: SaleStatus.APPROVED,
+				responsibleType: SaleResponsibleType.PARTNER,
+				responsibleId: otherPartner.id,
+				createdById: user.id,
+			},
+		],
+	});
+
+	return {
+		org,
+		member,
+		token,
+		targetPartner,
+		otherPartner,
+	};
+}
+
 describe("partner sales detail", () => {
 	beforeAll(async () => {
 		app = await createTestApp();
@@ -311,5 +450,66 @@ describe("partner sales detail", () => {
 		expect(response.statusCode).toBe(200);
 		expect(response.body.partner.id).toBe(fixture.targetPartner.id);
 		expect(response.body.partner.sales).toEqual([]);
+	});
+
+	it("should return current month sales metrics in partners list", async () => {
+		const fixture = await createListMetricsFixture();
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/partners`)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+
+		const targetPartner = response.body.partners.find(
+			(partner: { id: string }) => partner.id === fixture.targetPartner.id,
+		);
+		const otherPartner = response.body.partners.find(
+			(partner: { id: string }) => partner.id === fixture.otherPartner.id,
+		);
+
+		expect(targetPartner).toMatchObject({
+			id: fixture.targetPartner.id,
+			currentMonthSalesAmount: 170_000,
+			currentMonthSalesCount: 2,
+		});
+		expect(otherPartner).toMatchObject({
+			id: fixture.otherPartner.id,
+			currentMonthSalesAmount: 30_000,
+			currentMonthSalesCount: 1,
+		});
+	});
+
+	it("should keep partners list visible and zero sales metrics when member cannot view sales", async () => {
+		const fixture = await createListMetricsFixture();
+		const memberFixture = await createMember(
+			fixture.org.id,
+			`${Date.now()}-${Math.floor(Math.random() * 10_000)}`,
+		);
+		const memberToken = await authenticate(
+			memberFixture.user.email,
+			memberFixture.password,
+		);
+		await denyPermission({
+			organizationId: fixture.org.id,
+			memberId: memberFixture.member.id,
+			permissionKey: "sales.view",
+		});
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/partners`)
+			.set("Authorization", `Bearer ${memberToken}`);
+
+		expect(response.statusCode).toBe(200);
+
+		const targetPartner = response.body.partners.find(
+			(partner: { id: string }) => partner.id === fixture.targetPartner.id,
+		);
+
+		expect(targetPartner).toMatchObject({
+			id: fixture.targetPartner.id,
+			currentMonthSalesAmount: 0,
+			currentMonthSalesCount: 0,
+		});
 	});
 });

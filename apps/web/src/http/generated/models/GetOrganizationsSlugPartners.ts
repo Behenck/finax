@@ -146,6 +146,18 @@ export type GetOrganizationsSlugPartners200 = {
        */
       name: string | null;
     }[];
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    currentMonthSalesAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    currentMonthSalesCount: number;
   }[];
 };
 

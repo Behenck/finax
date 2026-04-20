@@ -52,6 +52,8 @@ export const getOrganizationsSlugPartners200Schema = z.object({
           name: z.nullable(z.string()),
         }),
       ),
+      currentMonthSalesAmount: z.int().min(0).max(9007199254740991),
+      currentMonthSalesCount: z.int().min(0).max(9007199254740991),
     }),
   ),
 });

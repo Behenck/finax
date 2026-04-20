@@ -152,7 +152,7 @@ export function ScenarioCommissionCard({
 
 	return (
 		<Card className="space-y-4 p-4">
-			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_220px_1fr_120px_120px_120px_auto] xl:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_180px_minmax(300px,1fr)_120px_120px_120px_auto] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>

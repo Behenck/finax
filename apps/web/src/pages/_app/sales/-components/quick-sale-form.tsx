@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueries } from "@tanstack/react-query";
-import { Copy, Plus, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, Copy, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
 	Controller,
 	useFieldArray,
@@ -26,6 +26,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useApp } from "@/context/app-context";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import type {
@@ -52,8 +53,18 @@ import {
 	MIN_SALE_CUSTOMER_SEARCH_LENGTH,
 	normalizeCustomerSearchValue,
 } from "./sale-form/customer-search";
-import { OPTIONAL_NONE_VALUE } from "./sale-form/constants";
+import {
+	OPTIONAL_NONE_VALUE,
+	QUICK_CUSTOMER_DEFAULT_VALUES,
+} from "./sale-form/constants";
 import { EditSelectedCustomerDialog } from "./sale-form/dialogs/edit-selected-customer-dialog";
+import { QuickCustomerDialog } from "./sale-form/dialogs/quick-customer-dialog";
+import { useQuickCustomer } from "./sale-form/hooks/use-quick-customer";
+import {
+	quickCustomerSchema,
+	type QuickCustomerData,
+	type QuickCustomerInput,
+} from "./sale-form/quick-customer-schema";
 import {
 	buildQuickSaleBatchPayload,
 	canAddQuickSaleItem,
@@ -440,6 +451,8 @@ export function QuickSaleForm({
 	isSubmitting = false,
 	initialValues,
 }: QuickSaleFormProps) {
+	const { organization } = useApp();
+	const queryClient = useQueryClient();
 	const defaultParentProductId =
 		initialValues?.parentProductId ?? rootProducts[0]?.id ?? "";
 	const defaultItems =
@@ -461,6 +474,14 @@ export function QuickSaleForm({
 			responsibleId: initialValues?.responsibleId ?? "",
 			items: defaultItems,
 		},
+	});
+	const quickCustomerForm = useForm<
+		QuickCustomerInput,
+		unknown,
+		QuickCustomerData
+	>({
+		resolver: zodResolver(quickCustomerSchema),
+		defaultValues: QUICK_CUSTOMER_DEFAULT_VALUES,
 	});
 
 	const {
@@ -515,10 +536,105 @@ export function QuickSaleForm({
 		shouldValidateItemCustomersAfterRefresh,
 		setShouldValidateItemCustomersAfterRefresh,
 	] = useState(false);
+	const [activeItemIndex, setActiveItemIndex] = useState(0);
 	const [isRefreshingCustomers, setIsRefreshingCustomers] = useState(false);
 	const [editingCustomerItemFieldId, setEditingCustomerItemFieldId] = useState<
 		string | null
 	>(null);
+	const [creatingCustomerItemFieldId, setCreatingCustomerItemFieldId] =
+		useState<string | null>(null);
+	const itemCarouselRef = useRef<HTMLDivElement | null>(null);
+	const itemCardRefs = useRef<Array<HTMLDivElement | null>>([]);
+	const pendingItemScrollIndexRef = useRef<number | null>(null);
+
+	const scrollToItem = useCallback(
+		(itemIndex: number, behavior: ScrollBehavior = "smooth") => {
+			const carousel = itemCarouselRef.current;
+			const itemCard = itemCardRefs.current[itemIndex];
+			if (!carousel || !itemCard) {
+				return;
+			}
+
+			carousel.scrollTo({
+				left: itemCard.offsetLeft - carousel.offsetLeft,
+				behavior,
+			});
+		},
+		[],
+	);
+
+	const queueScrollToItem = useCallback((itemIndex: number) => {
+		pendingItemScrollIndexRef.current = itemIndex;
+	}, []);
+
+	const handleNavigateToItem = useCallback(
+		(itemIndex: number) => {
+			const lastItemIndex = Math.max(fields.length - 1, 0);
+			const nextItemIndex = Math.min(Math.max(itemIndex, 0), lastItemIndex);
+
+			setActiveItemIndex(nextItemIndex);
+			scrollToItem(nextItemIndex);
+		},
+		[fields.length, scrollToItem],
+	);
+
+	const { quickCreatedCustomer, createQuickCustomer, isCreatingQuickCustomer } =
+		useQuickCustomer({
+			organizationSlug: organization?.slug,
+			queryClient,
+			setSaleCustomerId: (customerId) => {
+				if (!creatingCustomerItemFieldId) {
+					return;
+				}
+
+				const itemIndex = fields.findIndex(
+					(field) => field.id === creatingCustomerItemFieldId,
+				);
+				if (itemIndex < 0) {
+					return;
+				}
+
+				setValue(`items.${itemIndex}.customerId`, customerId, {
+					shouldDirty: true,
+					shouldTouch: true,
+					shouldValidate: true,
+				});
+				setItemCustomerQueryByFieldId((currentValue) => ({
+					...currentValue,
+					[creatingCustomerItemFieldId]: null,
+				}));
+			},
+			onQuickCustomerCreated: () => {
+				quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+				setCreatingCustomerItemFieldId(null);
+				if (onRefreshCustomers) {
+					void onRefreshCustomers();
+				}
+			},
+		});
+
+	const customersForSelect = useMemo(() => {
+		if (!quickCreatedCustomer) {
+			return customers;
+		}
+
+		const hasQuickCustomerInQuery = customers.some(
+			(customer) => customer.id === quickCreatedCustomer.id,
+		);
+		if (hasQuickCustomerInQuery) {
+			return customers;
+		}
+
+		const quickCustomerOption: QuickSaleFormCustomerOption = {
+			id: quickCreatedCustomer.id,
+			name: quickCreatedCustomer.name,
+			documentType: quickCreatedCustomer.documentType,
+			documentNumber: quickCreatedCustomer.documentNumber,
+			phone: quickCreatedCustomer.phone,
+		};
+
+		return [quickCustomerOption, ...customers];
+	}, [customers, quickCreatedCustomer]);
 
 	const scopedItemProducts = useMemo(
 		() =>
@@ -551,14 +667,57 @@ export function QuickSaleForm({
 	);
 	const activePartnerResponsibleOptions = useMemo(
 		() =>
-			responsibleOptions.filter((responsible) => responsible.status !== "INACTIVE"),
+			responsibleOptions.filter(
+				(responsible) => responsible.status !== "INACTIVE",
+			),
 		[responsibleOptions],
 	);
 	const inactivePartnerResponsibleOptions = useMemo(
 		() =>
-			responsibleOptions.filter((responsible) => responsible.status === "INACTIVE"),
+			responsibleOptions.filter(
+				(responsible) => responsible.status === "INACTIVE",
+			),
 		[responsibleOptions],
 	);
+
+	useEffect(() => {
+		itemCardRefs.current = itemCardRefs.current.slice(0, fields.length);
+	}, [fields.length]);
+
+	useEffect(() => {
+		const pendingItemIndex = pendingItemScrollIndexRef.current;
+		if (pendingItemIndex === null || fields.length === 0) {
+			return;
+		}
+
+		const lastItemIndex = Math.max(fields.length - 1, 0);
+		const nextItemIndex = Math.min(
+			Math.max(pendingItemIndex, 0),
+			lastItemIndex,
+		);
+		pendingItemScrollIndexRef.current = null;
+
+		const animationFrameId = window.requestAnimationFrame(() => {
+			scrollToItem(nextItemIndex);
+		});
+
+		return () => window.cancelAnimationFrame(animationFrameId);
+	}, [fields.length, scrollToItem]);
+
+	useEffect(() => {
+		setActiveItemIndex((currentIndex) => {
+			const lastItemIndex = Math.max(fields.length - 1, 0);
+			if (currentIndex > lastItemIndex) {
+				return lastItemIndex;
+			}
+
+			if (currentIndex < 0) {
+				return 0;
+			}
+
+			return currentIndex;
+		});
+	}, [fields.length]);
 
 	useEffect(() => {
 		if (responsibleOptions.length === 0) {
@@ -619,7 +778,9 @@ export function QuickSaleForm({
 
 		setShouldValidateItemCustomersAfterRefresh(false);
 
-		const customersIdSet = new Set(customers.map((customer) => customer.id));
+		const customersIdSet = new Set(
+			customersForSelect.map((customer) => customer.id),
+		);
 		for (const [itemIndex, item] of itemValues.entries()) {
 			if (!item.customerId) {
 				continue;
@@ -636,7 +797,7 @@ export function QuickSaleForm({
 			});
 		}
 	}, [
-		customers,
+		customersForSelect,
 		isRefreshingCustomers,
 		itemValues,
 		setValue,
@@ -730,7 +891,7 @@ export function QuickSaleForm({
 		value: string,
 	) {
 		const selectedCustomerId = itemValues[itemIndex]?.customerId ?? "";
-		const selectedCustomer = customers.find(
+		const selectedCustomer = customersForSelect.find(
 			(customer) => customer.id === selectedCustomerId,
 		);
 		if (!selectedCustomer) {
@@ -783,6 +944,11 @@ export function QuickSaleForm({
 		setEditingCustomerItemFieldId(itemFieldId);
 	}
 
+	function handleOpenItemQuickCustomerDialog(itemFieldId: string) {
+		setCreatingCustomerItemFieldId(itemFieldId);
+		quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+	}
+
 	async function handleSelectedCustomerUpdated() {
 		try {
 			if (onRefreshCustomers) {
@@ -793,6 +959,14 @@ export function QuickSaleForm({
 			setShouldValidateItemCustomersAfterRefresh(true);
 			setEditingCustomerItemFieldId(null);
 			setIsRefreshingCustomers(false);
+		}
+	}
+
+	async function handleQuickCustomerCreate(data: QuickCustomerData) {
+		try {
+			await createQuickCustomer(data);
+		} catch {
+			// erro tratado no hook
 		}
 	}
 
@@ -810,6 +984,35 @@ export function QuickSaleForm({
 		} catch (error) {
 			setSubmitError(resolveErrorMessage(normalizeApiError(error)));
 		}
+	}
+
+	function handleItemsCarouselScroll() {
+		const carousel = itemCarouselRef.current;
+		if (!carousel || fields.length <= 1) {
+			return;
+		}
+
+		let closestItemIndex = 0;
+		let closestItemDistance = Number.POSITIVE_INFINITY;
+
+		for (let itemIndex = 0; itemIndex < fields.length; itemIndex += 1) {
+			const itemCard = itemCardRefs.current[itemIndex];
+			if (!itemCard) {
+				continue;
+			}
+
+			const itemDistance = Math.abs(
+				carousel.scrollLeft - (itemCard.offsetLeft - carousel.offsetLeft),
+			);
+			if (itemDistance < closestItemDistance) {
+				closestItemDistance = itemDistance;
+				closestItemIndex = itemIndex;
+			}
+		}
+
+		setActiveItemIndex((currentIndex) =>
+			currentIndex === closestItemIndex ? currentIndex : closestItemIndex,
+		);
 	}
 
 	function handleAddItem() {
@@ -830,6 +1033,8 @@ export function QuickSaleForm({
 				lastItemCustomerId || undefined,
 			),
 		);
+		setActiveItemIndex(fields.length);
+		queueScrollToItem(fields.length);
 	}
 
 	function handleCopyItem(itemIndex: number) {
@@ -847,6 +1052,30 @@ export function QuickSaleForm({
 			...sourceItem,
 			dynamicFields: cloneQuickSaleItemDynamicFields(sourceItem.dynamicFields),
 		});
+		setActiveItemIndex(fields.length);
+		queueScrollToItem(fields.length);
+	}
+
+	function handleRemoveItem(itemIndex: number) {
+		if (!canRemoveQuickSaleItem(fields.length)) {
+			return;
+		}
+
+		const nextItemsLength = Math.max(fields.length - 1, 0);
+		let nextItemIndex = 0;
+		if (nextItemsLength > 0) {
+			if (itemIndex < activeItemIndex) {
+				nextItemIndex = Math.max(activeItemIndex - 1, 0);
+			} else if (itemIndex === activeItemIndex) {
+				nextItemIndex = activeItemIndex > 0 ? activeItemIndex - 1 : 0;
+			} else {
+				nextItemIndex = Math.min(activeItemIndex, nextItemsLength - 1);
+			}
+		}
+
+		remove(itemIndex);
+		setActiveItemIndex(nextItemIndex);
+		queueScrollToItem(nextItemIndex);
 	}
 
 	return (
@@ -1022,28 +1251,32 @@ export function QuickSaleForm({
 													<>
 														<SelectGroup>
 															<SelectLabel>Ativos</SelectLabel>
-															{activePartnerResponsibleOptions.map((responsible) => (
-																<SelectItem
-																	key={responsible.id}
-																	value={responsible.id}
-																>
-																	{responsible.name}
-																</SelectItem>
-															))}
+															{activePartnerResponsibleOptions.map(
+																(responsible) => (
+																	<SelectItem
+																		key={responsible.id}
+																		value={responsible.id}
+																	>
+																		{responsible.name}
+																	</SelectItem>
+																),
+															)}
 														</SelectGroup>
 														{inactivePartnerResponsibleOptions.length > 0 ? (
 															<>
 																<SelectSeparator />
 																<SelectGroup>
 																	<SelectLabel>Inativos</SelectLabel>
-																	{inactivePartnerResponsibleOptions.map((responsible) => (
-																		<SelectItem
-																			key={responsible.id}
-																			value={responsible.id}
-																		>
-																			{responsible.name}
-																		</SelectItem>
-																	))}
+																	{inactivePartnerResponsibleOptions.map(
+																		(responsible) => (
+																			<SelectItem
+																				key={responsible.id}
+																				value={responsible.id}
+																			>
+																				{responsible.name}
+																			</SelectItem>
+																		),
+																	)}
 																</SelectGroup>
 															</>
 														) : null}
@@ -1077,7 +1310,20 @@ export function QuickSaleForm({
 						limitado a {QUICK_SALE_BATCH_MAX_ITEMS}.
 					</p>
 				</div>
-				<div className="sticky top-[calc(env(safe-area-inset-top)+4rem)] z-40 flex justify-end">
+				<div
+					className={cn(
+						"sticky top-[calc(env(safe-area-inset-top)+4rem)] z-40 flex flex-col gap-3 rounded-md bg-background/95 p-2 backdrop-blur sm:flex-row sm:items-center",
+						fields.length > 1 ? "sm:justify-between" : "sm:justify-end",
+					)}
+				>
+					{fields.length > 1 ? (
+						<div className="flex items-center justify-between gap-3 sm:justify-start">
+							<p className="text-muted-foreground text-sm">
+								Item {Math.min(activeItemIndex + 1, fields.length)} de{" "}
+								{fields.length}
+							</p>
+						</div>
+					) : null}
 					<Button
 						type="button"
 						variant="outline"
@@ -1089,362 +1335,426 @@ export function QuickSaleForm({
 					</Button>
 				</div>
 
-				<div className="space-y-4">
-					{fields.map((itemField, index) => {
-						const itemProductId = itemValues[index]?.productId ?? "";
-						const itemCustomerId = itemValues[index]?.customerId ?? "";
-						const selectedItemCustomer = customers.find(
-							(customer) => customer.id === itemCustomerId,
-						);
-						const itemCustomerQueryInput =
-							itemCustomerQueryByFieldId[itemField.id] ?? null;
-						const itemCustomerQuery =
-							itemCustomerQueryInput ?? selectedItemCustomer?.name ?? "";
-						const isItemQueryingCustomers = itemCustomerQueryInput !== null;
-						const trimmedItemCustomerQuery = itemCustomerQuery.trim();
-						const normalizedItemCustomerQuery =
-							normalizeCustomerSearchValue(itemCustomerQuery);
-						const hasMinimumItemCustomerQueryLength =
-							normalizedItemCustomerQuery.length >=
-							MIN_SALE_CUSTOMER_SEARCH_LENGTH;
-						const suggestedItemCustomers = filterCustomersForSaleSearch(
-							customers,
-							itemCustomerQuery,
-						);
-						const itemDynamicFieldSchema =
-							dynamicFieldSchemaByProductId[itemProductId] ?? [];
-						const itemDynamicFieldQuery =
-							dynamicFieldQueryByProductId.get(itemProductId);
-						const isItemDynamicFieldsLoading = Boolean(
-							itemProductId &&
-								(itemDynamicFieldQuery?.isLoading ||
-									itemDynamicFieldQuery?.isFetching),
-						);
+				<div className="relative">
+					{fields.length > 1 ? (
+						<>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="absolute top-1/2 left-2 z-30 size-10 -translate-y-1/2 rounded-full bg-background/95 shadow-md backdrop-blur"
+								onClick={() => handleNavigateToItem(activeItemIndex - 1)}
+								disabled={activeItemIndex <= 0}
+								aria-label="Item anterior"
+							>
+								<ChevronLeft className="size-5" />
+							</Button>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="absolute top-1/2 right-2 z-30 size-10 -translate-y-1/2 rounded-full bg-background/95 shadow-md backdrop-blur"
+								onClick={() => handleNavigateToItem(activeItemIndex + 1)}
+								disabled={activeItemIndex >= fields.length - 1}
+								aria-label="Próximo item"
+							>
+								<ChevronRight className="size-5" />
+							</Button>
+						</>
+					) : null}
 
-						return (
-							<Card key={itemField.id} className="gap-4 rounded-sm border p-4">
-								<div className="flex items-center justify-between gap-3">
-									<h3 className="font-medium text-sm">Item {index + 1}</h3>
-									<div className="flex items-center gap-1">
-										<Button
-											type="button"
-											variant="ghost"
-											size="icon"
-											onClick={() => handleCopyItem(index)}
-											disabled={
-												!canAddQuickSaleItem(
-													totalReplicatedItems +
-														resolveQuickSaleItemQuantity(
-															itemValues[index] ?? {},
-														) -
-														1,
-												)
-											}
-											aria-label={`Duplicar item ${index + 1}`}
-										>
-											<Copy className="size-4" />
-										</Button>
-										<Button
-											type="button"
-											variant="ghost"
-											size="icon"
-											onClick={() => {
-												if (!canRemoveQuickSaleItem(fields.length)) {
-													return;
-												}
+					<div
+						ref={itemCarouselRef}
+						className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pb-3"
+						onScroll={handleItemsCarouselScroll}
+					>
+						{fields.map((itemField, index) => {
+							const itemProductId = itemValues[index]?.productId ?? "";
+							const itemCustomerId = itemValues[index]?.customerId ?? "";
+							const selectedItemCustomer = customersForSelect.find(
+								(customer) => customer.id === itemCustomerId,
+							);
+							const itemCustomerQueryInput =
+								itemCustomerQueryByFieldId[itemField.id] ?? null;
+							const itemCustomerQuery =
+								itemCustomerQueryInput ?? selectedItemCustomer?.name ?? "";
+							const isItemQueryingCustomers = itemCustomerQueryInput !== null;
+							const trimmedItemCustomerQuery = itemCustomerQuery.trim();
+							const normalizedItemCustomerQuery =
+								normalizeCustomerSearchValue(itemCustomerQuery);
+							const hasMinimumItemCustomerQueryLength =
+								normalizedItemCustomerQuery.length >=
+								MIN_SALE_CUSTOMER_SEARCH_LENGTH;
+							const suggestedItemCustomers = filterCustomersForSaleSearch(
+								customersForSelect,
+								itemCustomerQuery,
+							);
+							const itemDynamicFieldSchema =
+								dynamicFieldSchemaByProductId[itemProductId] ?? [];
+							const itemDynamicFieldQuery =
+								dynamicFieldQueryByProductId.get(itemProductId);
+							const isItemDynamicFieldsLoading = Boolean(
+								itemProductId &&
+									(itemDynamicFieldQuery?.isLoading ||
+										itemDynamicFieldQuery?.isFetching),
+							);
 
-												remove(index);
-											}}
-											disabled={!canRemoveQuickSaleItem(fields.length)}
-											aria-label={`Remover item ${index + 1}`}
-										>
-											<Trash2 className="size-4 text-destructive" />
-										</Button>
-									</div>
-								</div>
+							return (
+								<div
+									key={itemField.id}
+									ref={(node) => {
+										itemCardRefs.current[index] = node;
+									}}
+									className="min-w-full shrink-0 snap-start scroll-ml-1 md:min-w-[calc(100%-2rem)]"
+								>
+									<Card className="gap-4 rounded-sm border p-4">
+										<div className="flex items-center justify-between gap-3">
+											<h3 className="font-medium text-sm">Item {index + 1}</h3>
+											<div className="flex items-center gap-1">
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={() => handleCopyItem(index)}
+													disabled={
+														!canAddQuickSaleItem(
+															totalReplicatedItems +
+																resolveQuickSaleItemQuantity(
+																	itemValues[index] ?? {},
+																) -
+																1,
+														)
+													}
+													aria-label={`Duplicar item ${index + 1}`}
+												>
+													<Copy className="size-4" />
+												</Button>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={() => handleRemoveItem(index)}
+													disabled={!canRemoveQuickSaleItem(fields.length)}
+													aria-label={`Remover item ${index + 1}`}
+												>
+													<Trash2 className="size-4 text-destructive" />
+												</Button>
+											</div>
+										</div>
 
-								<div className="overflow-x-auto pb-2">
-									<div className="pr-2">
-										<div className="grid min-w-[1040px] gap-3 px-0.5 py-1 md:grid-cols-4">
-											<FieldGroup>
-												<Field className="gap-1">
-													<FieldLabel>Produto do item *</FieldLabel>
+										<div className="overflow-x-auto pb-2">
+											<div className="pr-2">
+												<div className="grid min-w-[1040px] gap-3 px-0.5 py-1 md:grid-cols-4">
+													<FieldGroup>
+														<Field className="gap-1">
+															<FieldLabel>Produto do item *</FieldLabel>
+															<Controller
+																control={control}
+																name={`items.${index}.productId`}
+																render={({ field, fieldState }) => (
+																	<>
+																		<Select
+																			value={field.value || undefined}
+																			onValueChange={(value) => {
+																				field.onChange(value);
+																				setValue(
+																					`items.${index}.dynamicFields`,
+																					{},
+																					{
+																						shouldDirty: true,
+																					},
+																				);
+																			}}
+																			disabled={!selectedParentProductId}
+																		>
+																			<SelectTrigger>
+																				<SelectValue placeholder="Selecione o produto do item" />
+																			</SelectTrigger>
+																			<SelectContent>
+																				{scopedItemProducts.map(
+																					(productOption) => (
+																						<SelectItem
+																							key={productOption.id}
+																							value={productOption.id}
+																						>
+																							{productOption.depth > 0
+																								? "-> "
+																								: ""}
+																							{productOption.label}
+																						</SelectItem>
+																					),
+																				)}
+																			</SelectContent>
+																		</Select>
+																		<FieldError error={fieldState.error} />
+																	</>
+																)}
+															/>
+														</Field>
+													</FieldGroup>
+
+													<FieldGroup>
+														<Field className="gap-1">
+															<FieldLabel>Data da venda *</FieldLabel>
+															<Controller
+																control={control}
+																name={`items.${index}.saleDate`}
+																render={({ field, fieldState }) => (
+																	<>
+																		<CalendarDateInput
+																			value={field.value ?? ""}
+																			onChange={field.onChange}
+																			aria-invalid={fieldState.invalid}
+																		/>
+																		<FieldError error={fieldState.error} />
+																	</>
+																)}
+															/>
+														</Field>
+													</FieldGroup>
+
+													<FieldGroup>
+														<Field className="gap-1">
+															<FieldLabel>Quantidade *</FieldLabel>
+															<Controller
+																control={control}
+																name={`items.${index}.quantity`}
+																render={({ field, fieldState }) => (
+																	<>
+																		<Input
+																			type="number"
+																			min={1}
+																			step={1}
+																			value={field.value ?? "1"}
+																			onChange={(event) => {
+																				const nextValue = event.target.value
+																					.replace(/\D/g, "")
+																					.slice(0, 3);
+																				field.onChange(nextValue);
+																			}}
+																		/>
+																		<FieldError error={fieldState.error} />
+																	</>
+																)}
+															/>
+														</Field>
+													</FieldGroup>
+
+													<FieldGroup>
+														<Field className="gap-1">
+															<FieldLabel>Valor da venda *</FieldLabel>
+															<Controller
+																control={control}
+																name={`items.${index}.totalAmount`}
+																render={({ field, fieldState }) => (
+																	<>
+																		<Input
+																			value={field.value ?? ""}
+																			placeholder="R$ 0,00"
+																			onChange={(event) =>
+																				field.onChange(
+																					formatCurrencyBRL(event.target.value),
+																				)
+																			}
+																		/>
+																		<FieldError error={fieldState.error} />
+																	</>
+																)}
+															/>
+														</Field>
+													</FieldGroup>
+												</div>
+											</div>
+										</div>
+
+										<div className="space-y-3 rounded-md border bg-muted/20 p-3">
+											<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+												<p className="font-medium text-sm">Cliente do item *</p>
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() =>
+														handleOpenItemQuickCustomerDialog(itemField.id)
+													}
+													disabled={
+														isCreatingQuickCustomer || isRefreshingCustomers
+													}
+												>
+													<Plus className="size-4" />
+													Adicionar cliente
+												</Button>
+											</div>
+											<div className="grid gap-3 md:grid-cols-2">
+												<div className="space-y-2">
+													<p className="text-muted-foreground text-xs">
+														Buscar cliente
+													</p>
 													<Controller
 														control={control}
-														name={`items.${index}.productId`}
-														render={({ field, fieldState }) => (
-															<>
-																<Select
-																	value={field.value || undefined}
-																	onValueChange={(value) => {
-																		field.onChange(value);
-																		setValue(
-																			`items.${index}.dynamicFields`,
-																			{},
-																			{
-																				shouldDirty: true,
-																			},
-																		);
-																	}}
-																	disabled={!selectedParentProductId}
-																>
-																	<SelectTrigger>
-																		<SelectValue placeholder="Selecione o produto do item" />
-																	</SelectTrigger>
-																	<SelectContent>
-																		{scopedItemProducts.map((productOption) => (
-																			<SelectItem
-																				key={productOption.id}
-																				value={productOption.id}
-																			>
-																				{productOption.depth > 0 ? "-> " : ""}
-																				{productOption.label}
-																			</SelectItem>
-																		))}
-																	</SelectContent>
-																</Select>
-																<FieldError error={fieldState.error} />
-															</>
-														)}
-													/>
-												</Field>
-											</FieldGroup>
-
-											<FieldGroup>
-												<Field className="gap-1">
-													<FieldLabel>Data da venda *</FieldLabel>
-													<Controller
-														control={control}
-														name={`items.${index}.saleDate`}
-														render={({ field, fieldState }) => (
-															<>
-																<CalendarDateInput
-																	value={field.value ?? ""}
-																	onChange={field.onChange}
-																	aria-invalid={fieldState.invalid}
-																/>
-																<FieldError error={fieldState.error} />
-															</>
-														)}
-													/>
-												</Field>
-											</FieldGroup>
-
-											<FieldGroup>
-												<Field className="gap-1">
-													<FieldLabel>Quantidade *</FieldLabel>
-													<Controller
-														control={control}
-														name={`items.${index}.quantity`}
-														render={({ field, fieldState }) => (
+														name={`items.${index}.customerId`}
+														render={({ fieldState }) => (
 															<>
 																<Input
-																	type="number"
-																	min={1}
-																	step={1}
-																	value={field.value ?? "1"}
-																	onChange={(event) => {
-																		const nextValue = event.target.value
-																			.replace(/\D/g, "")
-																			.slice(0, 3);
-																		field.onChange(nextValue);
-																	}}
-																/>
-																<FieldError error={fieldState.error} />
-															</>
-														)}
-													/>
-												</Field>
-											</FieldGroup>
-
-											<FieldGroup>
-												<Field className="gap-1">
-													<FieldLabel>Valor da venda *</FieldLabel>
-													<Controller
-														control={control}
-														name={`items.${index}.totalAmount`}
-														render={({ field, fieldState }) => (
-															<>
-																<Input
-																	value={field.value ?? ""}
-																	placeholder="R$ 0,00"
+																	value={itemCustomerQuery}
 																	onChange={(event) =>
-																		field.onChange(
-																			formatCurrencyBRL(event.target.value),
+																		handleItemCustomerQueryChange(
+																			index,
+																			itemField.id,
+																			event.target.value,
 																		)
 																	}
+																	placeholder="Digite o nome, documento ou celular do cliente"
+																	disabled={
+																		isRefreshingCustomers ||
+																		isCreatingQuickCustomer
+																	}
 																/>
+																{isItemQueryingCustomers &&
+																!isRefreshingCustomers &&
+																!isCreatingQuickCustomer ? (
+																	<div className="space-y-2">
+																		{hasMinimumItemCustomerQueryLength ? (
+																			<div className="max-h-64 overflow-y-auto rounded-md border bg-background">
+																				{suggestedItemCustomers.length === 0 ? (
+																					<p className="p-2 text-sm text-muted-foreground">
+																						Nenhum cliente encontrado.
+																					</p>
+																				) : (
+																					suggestedItemCustomers.map(
+																						(customer) => {
+																							const isSelected =
+																								selectedItemCustomer?.id ===
+																								customer.id;
+																							const customerDocumentLabel =
+																								customer.documentType === "CPF"
+																									? formatDocument({
+																											type: "CPF",
+																											value:
+																												customer.documentNumber,
+																										})
+																									: customer.documentNumber;
+																							const customerPhoneLabel =
+																								customer.phone
+																									? formatPhone(customer.phone)
+																									: "Sem celular";
+
+																							return (
+																								<button
+																									key={customer.id}
+																									type="button"
+																									className={cn(
+																										"flex w-full flex-col items-start gap-0.5 px-2 py-2 text-left text-sm transition-colors hover:bg-accent",
+																										isSelected && "bg-accent",
+																									)}
+																									onClick={() =>
+																										handleSelectItemCustomer(
+																											index,
+																											itemField.id,
+																											customer.id,
+																										)
+																									}
+																								>
+																									<span className="font-medium">
+																										{customer.name}
+																									</span>
+																									<span className="text-xs text-muted-foreground">
+																										{customerDocumentLabel} •{" "}
+																										{customerPhoneLabel}
+																									</span>
+																								</button>
+																							);
+																						},
+																					)
+																				)}
+																			</div>
+																		) : trimmedItemCustomerQuery.length > 0 ? (
+																			<p className="text-muted-foreground text-xs">
+																				Digite pelo menos{" "}
+																				{MIN_SALE_CUSTOMER_SEARCH_LENGTH} letras
+																				para buscar clientes.
+																			</p>
+																		) : null}
+																	</div>
+																) : null}
 																<FieldError error={fieldState.error} />
 															</>
 														)}
 													/>
-												</Field>
-											</FieldGroup>
-										</div>
-									</div>
-								</div>
+												</div>
 
-								<div className="space-y-3 rounded-md border bg-muted/20 p-3">
-									<p className="font-medium text-sm">Cliente do item *</p>
-									<div className="grid gap-3 md:grid-cols-2">
-										<div className="space-y-2">
-											<p className="text-muted-foreground text-xs">
-												Buscar cliente
-											</p>
-											<Controller
-												control={control}
-												name={`items.${index}.customerId`}
-												render={({ fieldState }) => (
-													<>
-														<Input
-															value={itemCustomerQuery}
-															onChange={(event) =>
-																handleItemCustomerQueryChange(
-																	index,
-																	itemField.id,
-																	event.target.value,
-																)
-															}
-															placeholder="Digite o nome, documento ou celular do cliente"
-															disabled={isRefreshingCustomers}
-														/>
-														{isItemQueryingCustomers &&
-														!isRefreshingCustomers ? (
-															<div className="space-y-2">
-																{hasMinimumItemCustomerQueryLength ? (
-																	<div className="max-h-64 overflow-y-auto rounded-md border bg-background">
-																		{suggestedItemCustomers.length === 0 ? (
-																			<p className="p-2 text-sm text-muted-foreground">
-																				Nenhum cliente encontrado.
-																			</p>
-																		) : (
-																			suggestedItemCustomers.map((customer) => {
-																				const isSelected =
-																					selectedItemCustomer?.id ===
-																					customer.id;
-																				const customerDocumentLabel =
-																					customer.documentType === "CPF"
-																						? formatDocument({
-																								type: "CPF",
-																								value: customer.documentNumber,
-																							})
-																						: customer.documentNumber;
-																				const customerPhoneLabel =
-																					customer.phone
-																						? formatPhone(customer.phone)
-																						: "Sem celular";
-
-																				return (
-																					<button
-																						key={customer.id}
-																						type="button"
-																						className={cn(
-																							"flex w-full flex-col items-start gap-0.5 px-2 py-2 text-left text-sm transition-colors hover:bg-accent",
-																							isSelected && "bg-accent",
-																						)}
-																						onClick={() =>
-																							handleSelectItemCustomer(
-																								index,
-																								itemField.id,
-																								customer.id,
-																							)
-																						}
-																					>
-																						<span className="font-medium">
-																							{customer.name}
-																						</span>
-																						<span className="text-xs text-muted-foreground">
-																							{customerDocumentLabel} •{" "}
-																							{customerPhoneLabel}
-																						</span>
-																					</button>
-																				);
-																			})
-																		)}
-																	</div>
-																) : trimmedItemCustomerQuery.length > 0 ? (
-																	<p className="text-muted-foreground text-xs">
-																		Digite pelo menos{" "}
-																		{MIN_SALE_CUSTOMER_SEARCH_LENGTH} letras
-																		para buscar clientes.
-																	</p>
-																) : null}
-															</div>
+												<div className="space-y-2 rounded-md border bg-background/70 p-3">
+													<div className="flex items-center justify-between gap-2">
+														<p className="text-muted-foreground text-xs">
+															Resumo do cliente
+														</p>
+														{selectedItemCustomer ? (
+															<Button
+																type="button"
+																variant="link"
+																className="h-auto px-0 text-xs"
+																onClick={() =>
+																	handleOpenItemCustomerEdit(itemField.id)
+																}
+															>
+																Editar cliente
+															</Button>
 														) : null}
-														<FieldError error={fieldState.error} />
-													</>
-												)}
+													</div>
+													{selectedItemCustomer ? (
+														<div className="space-y-1 text-sm">
+															<p>
+																<strong>Nome:</strong>{" "}
+																{selectedItemCustomer.name}
+															</p>
+															<p>
+																<strong>
+																	{selectedItemCustomer.documentType === "CPF"
+																		? "CPF"
+																		: selectedItemCustomer.documentType}
+																	:
+																</strong>{" "}
+																{selectedItemCustomer.documentType === "CPF"
+																	? formatDocument({
+																			type: "CPF",
+																			value:
+																				selectedItemCustomer.documentNumber,
+																		})
+																	: selectedItemCustomer.documentNumber}
+															</p>
+															<p>
+																<strong>Celular:</strong>{" "}
+																{selectedItemCustomer.phone
+																	? formatPhone(selectedItemCustomer.phone)
+																	: "Não informado"}
+															</p>
+														</div>
+													) : (
+														<p className="text-muted-foreground text-sm">
+															Nenhum cliente selecionado.
+														</p>
+													)}
+												</div>
+											</div>
+										</div>
+
+										<div className="space-y-2 border-t pt-4">
+											<p className="font-medium text-sm">
+												Campos personalizados do item
+											</p>
+											<QuickSaleItemDynamicFieldsSection
+												itemIndex={index}
+												itemProductId={itemProductId}
+												control={control}
+												dynamicFieldSchema={itemDynamicFieldSchema}
+												isLoading={isItemDynamicFieldsLoading}
 											/>
 										</div>
-
-										<div className="space-y-2 rounded-md border bg-background/70 p-3">
-											<div className="flex items-center justify-between gap-2">
-												<p className="text-muted-foreground text-xs">
-													Resumo do cliente
-												</p>
-												{selectedItemCustomer ? (
-													<Button
-														type="button"
-														variant="link"
-														className="h-auto px-0 text-xs"
-														onClick={() =>
-															handleOpenItemCustomerEdit(itemField.id)
-														}
-													>
-														Editar cliente
-													</Button>
-												) : null}
-											</div>
-											{selectedItemCustomer ? (
-												<div className="space-y-1 text-sm">
-													<p>
-														<strong>Nome:</strong> {selectedItemCustomer.name}
-													</p>
-													<p>
-														<strong>
-															{selectedItemCustomer.documentType === "CPF"
-																? "CPF"
-																: selectedItemCustomer.documentType}
-															:
-														</strong>{" "}
-														{selectedItemCustomer.documentType === "CPF"
-															? formatDocument({
-																	type: "CPF",
-																	value: selectedItemCustomer.documentNumber,
-																})
-															: selectedItemCustomer.documentNumber}
-													</p>
-													<p>
-														<strong>Celular:</strong>{" "}
-														{selectedItemCustomer.phone
-															? formatPhone(selectedItemCustomer.phone)
-															: "Não informado"}
-													</p>
-												</div>
-											) : (
-												<p className="text-muted-foreground text-sm">
-													Nenhum cliente selecionado.
-												</p>
-											)}
-										</div>
-									</div>
+									</Card>
 								</div>
-
-								<div className="space-y-2 border-t pt-4">
-									<p className="font-medium text-sm">
-										Campos personalizados do item
-									</p>
-									<QuickSaleItemDynamicFieldsSection
-										itemIndex={index}
-										itemProductId={itemProductId}
-										control={control}
-										dynamicFieldSchema={itemDynamicFieldSchema}
-										isLoading={isItemDynamicFieldsLoading}
-									/>
-								</div>
-							</Card>
-						);
-					})}
+							);
+						})}
+					</div>
 				</div>
 				<p
 					className={cn(
@@ -1467,6 +1777,18 @@ export function QuickSaleForm({
 					<p className="text-destructive text-sm">{submitError}</p>
 				</Card>
 			) : null}
+			<QuickCustomerDialog
+				open={Boolean(creatingCustomerItemFieldId)}
+				onOpenChange={(open) => {
+					if (!open) {
+						setCreatingCustomerItemFieldId(null);
+						quickCustomerForm.reset(QUICK_CUSTOMER_DEFAULT_VALUES);
+					}
+				}}
+				form={quickCustomerForm}
+				isPending={isCreatingQuickCustomer}
+				onSubmit={handleQuickCustomerCreate}
+			/>
 			{(() => {
 				const editingItemIndex = fields.findIndex(
 					(field) => field.id === editingCustomerItemFieldId,
