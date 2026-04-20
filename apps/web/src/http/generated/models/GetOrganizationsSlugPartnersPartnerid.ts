@@ -30,6 +30,24 @@ export const partnerStatusEnum = {
 export type PartnerStatusEnumKey =
   (typeof partnerStatusEnum)[keyof typeof partnerStatusEnum];
 
+export const salesStatusEnum2 = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  COMPLETED: "COMPLETED",
+  CANCELED: "CANCELED",
+} as const;
+
+export type SalesStatusEnum2Key =
+  (typeof salesStatusEnum2)[keyof typeof salesStatusEnum2];
+
+export const responsibleTypeEnum5 = {
+  SELLER: "SELLER",
+  PARTNER: "PARTNER",
+} as const;
+
+export type ResponsibleTypeEnum5Key =
+  (typeof responsibleTypeEnum5)[keyof typeof responsibleTypeEnum5];
+
 /**
  * @description Default Response
  */
@@ -149,6 +167,188 @@ export type GetOrganizationsSlugPartnersPartnerid200 = {
        * @type string
        */
       name: string | null;
+    }[];
+    /**
+     * @type array
+     */
+    sales: {
+      /**
+       * @type string, uuid
+       */
+      id: string;
+      /**
+       * @type string, date-time
+       */
+      saleDate: string;
+      /**
+       * @minLength -9007199254740991
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      totalAmount: number;
+      /**
+       * @type string
+       */
+      status: SalesStatusEnum2Key;
+      /**
+       * @type string, date-time
+       */
+      createdAt: string;
+      /**
+       * @type string, date-time
+       */
+      updatedAt: string;
+      /**
+       * @type object
+       */
+      customer: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string;
+      };
+      /**
+       * @type object
+       */
+      product: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string;
+      };
+      /**
+       * @type object
+       */
+      company: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string;
+      };
+      /**
+       * @type object
+       */
+      unit: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string;
+      } | null;
+      /**
+       * @type object
+       */
+      responsible: {
+        /**
+         * @type string
+         */
+        type: ResponsibleTypeEnum5Key;
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string
+         */
+        name: string;
+      } | null;
+      /**
+       * @type object
+       */
+      delinquencySummary: {
+        /**
+         * @type boolean
+         */
+        hasOpen: boolean;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        openCount: number;
+        /**
+         * @type string, date-time
+         */
+        oldestDueDate: string | null;
+        /**
+         * @type string, date-time
+         */
+        latestDueDate: string | null;
+      };
+      /**
+       * @type array
+       */
+      openDelinquencies: {
+        /**
+         * @type string, uuid
+         */
+        id: string;
+        /**
+         * @type string, date-time
+         */
+        dueDate: string;
+        /**
+         * @type string, date-time
+         */
+        resolvedAt: string | null;
+        /**
+         * @type string, date-time
+         */
+        createdAt: string;
+        /**
+         * @type string, date-time
+         */
+        updatedAt: string;
+        /**
+         * @type object
+         */
+        createdBy: {
+          /**
+           * @type string, uuid
+           */
+          id: string;
+          /**
+           * @type string
+           */
+          name: string | null;
+          /**
+           * @type string
+           */
+          avatarUrl: string | null;
+        };
+        /**
+         * @type object
+         */
+        resolvedBy: {
+          /**
+           * @type string, uuid
+           */
+          id: string;
+          /**
+           * @type string
+           */
+          name: string | null;
+          /**
+           * @type string
+           */
+          avatarUrl: string | null;
+        } | null;
+      }[];
     }[];
   };
 };

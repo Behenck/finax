@@ -220,7 +220,12 @@ export function ListPartners({
 
 								<div className="grid grid-cols-3 gap-2">
 									<Button variant="outline" size="sm" asChild>
-										<Link to="/">Ver Vendas</Link>
+										<Link
+											to="/registers/partners/update"
+											search={{ partnerId: partner.id, tab: "vendas" }}
+										>
+											Ver Vendas
+										</Link>
 									</Button>
 
 									<Button
@@ -262,7 +267,11 @@ export function ListPartners({
 													</Link>
 												</DropdownMenuItem>
 												<DropdownMenuItem asChild>
-													<Link to="/" className="cursor-pointer">
+													<Link
+														to="/registers/partners/update"
+														search={{ partnerId: partner.id, tab: "vendas" }}
+														className="cursor-pointer"
+													>
 														<div className="flex gap-4 items-center">
 															<Receipt className="size-3.5 text-foreground" />
 															<span className="font-light text-sm">
@@ -401,7 +410,14 @@ export function ListPartners({
 																</Link>
 															</DropdownMenuItem>
 															<DropdownMenuItem asChild>
-																<Link to="/" className="cursor-pointer">
+																<Link
+																	to="/registers/partners/update"
+																	search={{
+																		partnerId: partner.id,
+																		tab: "vendas",
+																	}}
+																	className="cursor-pointer"
+																>
 																	<div className="flex gap-4 items-center">
 																		<Receipt className="size-3.5 text-foreground" />
 																		<span className="font-light text-sm">

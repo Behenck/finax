@@ -71,6 +71,7 @@ const RECENCY_BUCKETS = [
 type VisiblePartner = {
 	id: string;
 	name: string;
+	companyName: string;
 	displayName: string;
 	status: "ACTIVE" | "INACTIVE";
 	supervisors: Array<{
@@ -114,6 +115,7 @@ type TimelineBucket = {
 type PartnerSummaryMetrics = {
 	partnerId: string;
 	partnerName: string;
+	partnerCompanyName: string;
 	status: "ACTIVE" | "INACTIVE";
 	supervisors: Array<{
 		id: string;
@@ -124,6 +126,10 @@ type PartnerSummaryMetrics = {
 	averageTicket: number;
 	commissionReceivedAmount: number;
 	commissionPendingAmount: number;
+	commissionReceivableCanceledAmount: number;
+	commissionPayablePaidAmount: number;
+	commissionPayablePendingAmount: number;
+	commissionPayableCanceledAmount: number;
 	netRevenueAmount: number;
 	delinquentSalesCount: number;
 	delinquentGrossAmount: number;
@@ -152,6 +158,17 @@ type DashboardBreakdownItem = {
 	label: string;
 	salesCount: number;
 	grossAmount: number;
+};
+
+type PartnerCommissionDirectionTotals = {
+	paidAmount: number;
+	pendingAmount: number;
+	canceledAmount: number;
+};
+
+type PartnerCommissionTotals = {
+	income: PartnerCommissionDirectionTotals;
+	outcome: PartnerCommissionDirectionTotals;
 };
 
 function createUtcDate(year: number, monthIndex: number, day: number) {
@@ -599,6 +616,21 @@ function createEmptyRankingSalesBreakdown() {
 	};
 }
 
+function createEmptyPartnerCommissionTotals(): PartnerCommissionTotals {
+	return {
+		income: {
+			paidAmount: 0,
+			pendingAmount: 0,
+			canceledAmount: 0,
+		},
+		outcome: {
+			paidAmount: 0,
+			pendingAmount: 0,
+			canceledAmount: 0,
+		},
+	};
+}
+
 export async function getPartnerSalesDashboard(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
@@ -688,6 +720,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				).map((partner) => ({
 					id: partner.id,
 					name: partner.name,
+					companyName: partner.companyName,
 					displayName: getPartnerDisplayName(partner),
 					status: partner.status,
 					supervisors: partner.supervisors.map((link) => link.supervisor),
@@ -704,6 +737,8 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					.map((partner) => ({
 						id: partner.id,
 						name: partner.displayName,
+						partnerName: partner.name,
+						partnerCompanyName: partner.companyName,
 						status: partner.status,
 						supervisors: partner.supervisors,
 					}))
@@ -998,41 +1033,37 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					salesByPartnerId.set(sale.responsibleId, currentSales);
 				}
 
-				const paidCommissionByPartnerId = new Map<
+				const commissionTotalsByPartnerId = new Map<
 					string,
-					{ income: number; outcome: number }
+					PartnerCommissionTotals
 				>();
-				const pendingIncomeByPartnerId = new Map<string, number>();
 				for (const installment of commissionInstallmentsInCompetencyRange) {
 					const partnerId = installment.saleCommission.sale.responsibleId;
 					if (!partnerId) {
 						continue;
 					}
 
+					const currentTotals =
+						commissionTotalsByPartnerId.get(partnerId) ??
+						createEmptyPartnerCommissionTotals();
+					const directionTotals =
+						installment.saleCommission.direction === "INCOME"
+							? currentTotals.income
+							: currentTotals.outcome;
+
 					if (installment.status === SaleCommissionInstallmentStatus.PAID) {
-						const currentTotals = paidCommissionByPartnerId.get(partnerId) ?? {
-							income: 0,
-							outcome: 0,
-						};
-						if (installment.saleCommission.direction === "INCOME") {
-							currentTotals.income += installment.amount;
-						} else {
-							currentTotals.outcome += installment.amount;
-						}
-						paidCommissionByPartnerId.set(partnerId, currentTotals);
-						continue;
+						directionTotals.paidAmount += installment.amount;
+					} else if (
+						installment.status === SaleCommissionInstallmentStatus.PENDING
+					) {
+						directionTotals.pendingAmount += installment.amount;
+					} else if (
+						installment.status === SaleCommissionInstallmentStatus.CANCELED
+					) {
+						directionTotals.canceledAmount += installment.amount;
 					}
 
-					if (
-						installment.status === SaleCommissionInstallmentStatus.PENDING &&
-						installment.saleCommission.direction === "INCOME"
-					) {
-						const currentAmount = pendingIncomeByPartnerId.get(partnerId) ?? 0;
-						pendingIncomeByPartnerId.set(
-							partnerId,
-							currentAmount + installment.amount,
-						);
-					}
+					commissionTotalsByPartnerId.set(partnerId, currentTotals);
 				}
 
 				const timelineGranularity = resolveTimelineGranularity(
@@ -1241,16 +1272,12 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						(sum, sale) => sum + sale.totalAmount,
 						0,
 					);
-					const paidCommissionTotals = paidCommissionByPartnerId.get(
-						partner.id,
-					) ?? {
-						income: 0,
-						outcome: 0,
-					};
-					const partnerPendingAmount =
-						pendingIncomeByPartnerId.get(partner.id) ?? 0;
+					const commissionTotals =
+						commissionTotalsByPartnerId.get(partner.id) ??
+						createEmptyPartnerCommissionTotals();
 					const partnerNetRevenue =
-						paidCommissionTotals.income - paidCommissionTotals.outcome;
+						commissionTotals.income.paidAmount -
+						commissionTotals.outcome.paidAmount;
 					const partnerSalesBreakdown =
 						partnerSalesBreakdownByPartnerId.get(partner.id) ??
 						createEmptyRankingSalesBreakdown();
@@ -1309,6 +1336,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					return {
 						partnerId: partner.id,
 						partnerName: partner.name,
+						partnerCompanyName: partner.companyName,
 						status: partner.status,
 						supervisors: partner.supervisors,
 						salesCount: partnerSales.length,
@@ -1317,8 +1345,15 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 							partnerGrossAmount,
 							partnerSales.length,
 						),
-						commissionReceivedAmount: paidCommissionTotals.income,
-						commissionPendingAmount: partnerPendingAmount,
+						commissionReceivedAmount: commissionTotals.income.paidAmount,
+						commissionPendingAmount: commissionTotals.income.pendingAmount,
+						commissionReceivableCanceledAmount:
+							commissionTotals.income.canceledAmount,
+						commissionPayablePaidAmount: commissionTotals.outcome.paidAmount,
+						commissionPayablePendingAmount:
+							commissionTotals.outcome.pendingAmount,
+						commissionPayableCanceledAmount:
+							commissionTotals.outcome.canceledAmount,
 						netRevenueAmount: partnerNetRevenue,
 						delinquentSalesCount: partnerDelinquentSalesCount,
 						delinquentGrossAmount: partnerDelinquentGrossAmount,
@@ -1351,6 +1386,22 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					(sum, partner) => sum + partner.commissionPendingAmount,
 					0,
 				);
+				const commissionReceivableCanceledAmount = partnerMetrics.reduce(
+					(sum, partner) => sum + partner.commissionReceivableCanceledAmount,
+					0,
+				);
+				const commissionPayablePaidAmount = partnerMetrics.reduce(
+					(sum, partner) => sum + partner.commissionPayablePaidAmount,
+					0,
+				);
+				const commissionPayablePendingAmount = partnerMetrics.reduce(
+					(sum, partner) => sum + partner.commissionPayablePendingAmount,
+					0,
+				);
+				const commissionPayableCanceledAmount = partnerMetrics.reduce(
+					(sum, partner) => sum + partner.commissionPayableCanceledAmount,
+					0,
+				);
 				const netRevenueAmount = partnerMetrics.reduce(
 					(sum, partner) => sum + partner.netRevenueAmount,
 					0,
@@ -1374,6 +1425,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					.map((partner) => ({
 						partnerId: partner.partnerId,
 						partnerName: partner.partnerName,
+						partnerCompanyName: partner.partnerCompanyName,
 						status: partner.status,
 						supervisors: partner.supervisors,
 						salesCount: partner.salesCount,
@@ -1401,6 +1453,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						.map((partner) => ({
 							partnerId: partner.partnerId,
 							partnerName: partner.partnerName,
+							partnerCompanyName: partner.partnerCompanyName,
 							status: partner.status,
 							supervisors: partner.supervisors,
 							totalSales: partner.salesCount,
@@ -1457,6 +1510,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						return {
 							partnerId: partner.partnerId,
 							partnerName: partner.partnerName,
+							partnerCompanyName: partner.partnerCompanyName,
 							salesCount: partner.salesCount,
 							grossAmount: partner.grossAmount,
 							cumulativeGrossAmount,
@@ -1483,6 +1537,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						.map((partner) => ({
 							partnerId: partner.partnerId,
 							partnerName: partner.partnerName,
+							partnerCompanyName: partner.partnerCompanyName,
 							salesCount: partner.salesCount,
 							grossAmount: partner.grossAmount,
 							averageTicket: partner.averageTicket,
@@ -1491,6 +1546,10 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				const commissionBreakdown = {
 					receivedAmount: commissionReceivedAmount,
 					pendingAmount: commissionPendingAmount,
+					canceledAmount: commissionReceivableCanceledAmount,
+					payablePaidAmount: commissionPayablePaidAmount,
+					payablePendingAmount: commissionPayablePendingAmount,
+					payableCanceledAmount: commissionPayableCanceledAmount,
 					netRevenueAmount,
 					pendingByPartner: {
 						items: [...partnerMetrics]
@@ -1506,6 +1565,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 							.map((partner) => ({
 								partnerId: partner.partnerId,
 								partnerName: partner.partnerName,
+								partnerCompanyName: partner.partnerCompanyName,
 								status: partner.status,
 								supervisors: partner.supervisors,
 								salesCount: partner.salesCount,

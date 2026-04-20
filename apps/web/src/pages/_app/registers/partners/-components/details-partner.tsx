@@ -15,7 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { type GetOrganizationsSlugPartnersPartnerid200 } from "@/http/generated";
+import { type GetOrganizationsSlugPartners200 } from "@/http/generated";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/utils/get-initials";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,7 @@ import { formatDocument } from "@/utils/format-document";
 import { Card } from "@/components/ui/card";
 
 interface DetailsPartnerProps {
-	partner: GetOrganizationsSlugPartnersPartnerid200["partner"];
+	partner: GetOrganizationsSlugPartners200["partners"][number];
 }
 
 export function DetailsPartner({ partner }: DetailsPartnerProps) {

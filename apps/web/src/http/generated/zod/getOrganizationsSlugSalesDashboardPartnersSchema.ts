@@ -52,6 +52,8 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       z.object({
         id: z.uuid(),
         name: z.string(),
+        partnerName: z.string(),
+        partnerCompanyName: z.string(),
         status: z.enum(["ACTIVE", "INACTIVE"]),
         supervisors: z.array(
           z.object({
@@ -85,6 +87,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
     z.object({
       partnerId: z.uuid(),
       partnerName: z.string(),
+      partnerCompanyName: z.string(),
       status: z.enum(["ACTIVE", "INACTIVE"]),
       supervisors: z.array(
         z.object({
@@ -175,6 +178,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       z.object({
         partnerId: z.uuid(),
         partnerName: z.string(),
+        partnerCompanyName: z.string(),
         salesCount: z.int().min(0).max(9007199254740991),
         grossAmount: z.int().min(0).max(9007199254740991),
         cumulativeGrossAmount: z.int().min(0).max(9007199254740991),
@@ -188,6 +192,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       z.object({
         partnerId: z.uuid(),
         partnerName: z.string(),
+        partnerCompanyName: z.string(),
         salesCount: z.int().min(0).max(9007199254740991),
         grossAmount: z.int().min(0).max(9007199254740991),
         averageTicket: z.int().min(0).max(9007199254740991),
@@ -208,12 +213,17 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
   commissionBreakdown: z.object({
     receivedAmount: z.int().min(0).max(9007199254740991),
     pendingAmount: z.int().min(0).max(9007199254740991),
+    canceledAmount: z.int().min(0).max(9007199254740991),
+    payablePaidAmount: z.int().min(0).max(9007199254740991),
+    payablePendingAmount: z.int().min(0).max(9007199254740991),
+    payableCanceledAmount: z.int().min(0).max(9007199254740991),
     netRevenueAmount: z.int().min(-9007199254740991).max(9007199254740991),
     pendingByPartner: z.object({
       items: z.array(
         z.object({
           partnerId: z.uuid(),
           partnerName: z.string(),
+          partnerCompanyName: z.string(),
           status: z.enum(["ACTIVE", "INACTIVE"]),
           supervisors: z.array(
             z.object({
@@ -265,6 +275,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       z.object({
         partnerId: z.uuid(),
         partnerName: z.string(),
+        partnerCompanyName: z.string(),
         status: z.enum(["ACTIVE", "INACTIVE"]),
         supervisors: z.array(
           z.object({

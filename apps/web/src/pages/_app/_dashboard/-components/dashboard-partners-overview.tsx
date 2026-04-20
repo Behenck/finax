@@ -209,10 +209,20 @@ const delinquencyChartConfig = {
 
 type PartnerDashboardData = GetOrganizationsSlugSalesDashboardPartners200;
 type PartnerFilterOption = PartnerDashboardData["filters"]["partners"][number];
+type PartnerCommissionBreakdown = PartnerDashboardData["commissionBreakdown"] & {
+	canceledAmount?: number;
+	payablePaidAmount?: number;
+	payablePendingAmount?: number;
+	payableCanceledAmount?: number;
+};
 type DashboardBreakdownItem =
 	PartnerDashboardData["dynamicFieldBreakdown"]["items"][number];
 type StatusFunnelItem = PartnerDashboardData["statusFunnel"]["items"][number];
 type StatusFunnelKey = StatusFunnelItem["status"];
+type PartnerDashboardIdentity = {
+	partnerName: string;
+	partnerCompanyName?: string | null;
+};
 type BreakdownPieDataItem = DashboardBreakdownItem & {
 	fill: string;
 };
@@ -338,6 +348,19 @@ function formatSharePercentage(value: number) {
 	})}%`;
 }
 
+function getPartnerPrimaryName(partner: PartnerDashboardIdentity) {
+	return partner.partnerCompanyName?.trim() || partner.partnerName;
+}
+
+function getPartnerSecondaryName(partner: PartnerDashboardIdentity) {
+	const companyName = partner.partnerCompanyName?.trim();
+	if (!companyName || companyName === partner.partnerName) {
+		return null;
+	}
+
+	return partner.partnerName;
+}
+
 function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
 	return items.map((item, index) => ({
 		...item,
@@ -416,7 +439,9 @@ function PartnerMultiSelectFilter({
 		selectedPartners.length === 0 || hasAllPartnersSelected
 			? "Todos os parceiros"
 			: selectedPartners.length === 1
-				? (selectedPartners[0]?.name ?? "1 parceiro")
+				? selectedPartners[0]
+					? getPartnerPrimaryName(selectedPartners[0])
+					: "1 parceiro"
 				: `${selectedPartners.length} parceiros`;
 
 	function togglePartner(id: string, checked: boolean) {
@@ -459,29 +484,39 @@ function PartnerMultiSelectFilter({
 							Todos os parceiros
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						{options.map((option) => (
-							<DropdownMenuCheckboxItem
-								key={option.id}
-								checked={selectedIdSet.has(option.id)}
-								onCheckedChange={(checked) =>
-									togglePartner(option.id, Boolean(checked))
-								}
-							>
-								<div className="flex flex-col gap-0.5">
-									<span className="font-medium">{option.name}</span>
-									<span className="text-xs text-muted-foreground">
-										{option.supervisors.length > 0
-											? option.supervisors
-													.map(
-														(supervisor) =>
-															supervisor.name ?? "Supervisor sem nome",
-													)
-													.join(", ")
-											: "Sem supervisor"}
-									</span>
-								</div>
-							</DropdownMenuCheckboxItem>
-						))}
+						{options.map((option) => {
+							const secondaryName = getPartnerSecondaryName(option);
+							return (
+								<DropdownMenuCheckboxItem
+									key={option.id}
+									checked={selectedIdSet.has(option.id)}
+									onCheckedChange={(checked) =>
+										togglePartner(option.id, Boolean(checked))
+									}
+								>
+									<div className="flex flex-col gap-0.5">
+										<span className="font-medium">
+											{getPartnerPrimaryName(option)}
+										</span>
+										{secondaryName ? (
+											<span className="text-xs text-muted-foreground">
+												{secondaryName}
+											</span>
+										) : null}
+										<span className="text-xs text-muted-foreground">
+											{option.supervisors.length > 0
+												? option.supervisors
+														.map(
+															(supervisor) =>
+																supervisor.name ?? "Supervisor sem nome",
+														)
+														.join(", ")
+												: "Sem supervisor"}
+										</span>
+									</div>
+								</DropdownMenuCheckboxItem>
+							);
+						})}
 					</>
 				)}
 				{selectedIds.length > 0 ? (
@@ -736,7 +771,10 @@ function PartnerRankingSection({
 					(left, right) =>
 						right.grossAmount - left.grossAmount ||
 						right.salesCount - left.salesCount ||
-						left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+						getPartnerPrimaryName(left).localeCompare(
+							getPartnerPrimaryName(right),
+							"pt-BR",
+						),
 				),
 		[items],
 	);
@@ -849,6 +887,8 @@ function PartnerRankingSection({
 									const totalSoldAmount =
 										partner.salesBreakdown.concluded.grossAmount +
 										partner.salesBreakdown.pending.grossAmount;
+									const primaryName = getPartnerPrimaryName(partner);
+									const secondaryName = getPartnerSecondaryName(partner);
 
 									return (
 										<div key={partner.partnerId} className="flex flex-col">
@@ -862,13 +902,20 @@ function PartnerRankingSection({
 																avatarLabelClass,
 															)}
 														>
-															{getInitials(partner.partnerName)}
+															{getInitials(primaryName)}
 														</AvatarFallback>
 													</Avatar>
 												</div>
 
-												<div className="mt-1 min-h-[26px] px-1 text-center text-[12px] leading-tight font-semibold text-foreground break-words">
-													{partner.partnerName}
+												<div className="mt-1 min-h-[40px] px-1 text-center leading-tight">
+													<div className="break-words text-[12px] font-semibold text-foreground">
+														{primaryName}
+													</div>
+													{secondaryName ? (
+														<div className="mt-0.5 break-words text-[10px] text-muted-foreground">
+															{secondaryName}
+														</div>
+													) : null}
 												</div>
 
 												<div className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground">
@@ -924,6 +971,8 @@ function PartnerRankingSection({
 											Math.max(productionShare, 0),
 											100,
 										);
+										const primaryName = getPartnerPrimaryName(partner);
+										const secondaryName = getPartnerSecondaryName(partner);
 										return (
 											<Fragment key={partner.partnerId}>
 												<TableRow className={cn("border-0", rowToneClass)}>
@@ -936,12 +985,19 @@ function PartnerRankingSection({
 														<div className="flex min-w-0 items-center gap-2">
 															<Avatar className="size-8 border border-border/70">
 																<AvatarFallback className="text-[11px] font-medium">
-																	{getInitials(partner.partnerName)}
+																	{getInitials(primaryName)}
 																</AvatarFallback>
 															</Avatar>
-															<span className="truncate font-medium text-foreground">
-																{partner.partnerName}
-															</span>
+															<div className="min-w-0">
+																<div className="truncate font-medium text-foreground">
+																	{primaryName}
+																</div>
+																{secondaryName ? (
+																	<div className="truncate text-xs text-muted-foreground">
+																		{secondaryName}
+																	</div>
+																) : null}
+															</div>
 														</div>
 													</TableCell>
 													<TableCell
@@ -966,7 +1022,7 @@ function PartnerRankingSection({
 																	<button
 																		type="button"
 																		className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-																		aria-label={`Detalhes de produção de ${partner.partnerName}`}
+																		aria-label={`Detalhes de produção de ${primaryName}`}
 																	>
 																		<div className="h-1.5 overflow-hidden rounded-full bg-muted">
 																			<div
@@ -989,8 +1045,13 @@ function PartnerRankingSection({
 																	className="min-w-[220px] space-y-1.5"
 																>
 																	<div className="text-xs font-semibold">
-																		{partner.partnerName}
+																		{primaryName}
 																	</div>
+																	{secondaryName ? (
+																		<div className="text-[11px] text-background/80">
+																			{secondaryName}
+																		</div>
+																	) : null}
 																	<div className="flex items-center justify-between gap-3">
 																		<span className="text-background/80">
 																			Concluídas
@@ -1185,7 +1246,10 @@ function SupervisorRankingSection({
 										(left.salesBreakdown.concluded.salesCount +
 											left.salesBreakdown.pending.salesCount +
 											left.salesBreakdown.canceled.salesCount) ||
-									left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+									getPartnerPrimaryName(left).localeCompare(
+										getPartnerPrimaryName(right),
+										"pt-BR",
+									),
 							);
 							return (
 								<Collapsible
@@ -1299,6 +1363,10 @@ function SupervisorRankingSection({
 															const canceledHasValue =
 																canceledMetrics.grossAmount > 0 ||
 																canceledMetrics.salesCount > 0;
+															const primaryName =
+																getPartnerPrimaryName(partner);
+															const secondaryName =
+																getPartnerSecondaryName(partner);
 
 															return (
 																<TableRow
@@ -1309,12 +1377,19 @@ function SupervisorRankingSection({
 																		<div className="flex min-w-0 items-center gap-3">
 																			<Avatar className="size-7 border border-border/70">
 																				<AvatarFallback className="text-[10px] font-medium">
-																					{getInitials(partner.partnerName)}
+																					{getInitials(primaryName)}
 																				</AvatarFallback>
 																			</Avatar>
-																			<span className="truncate font-medium text-foreground">
-																				{partner.partnerName}
-																			</span>
+																			<div className="min-w-0">
+																				<div className="truncate font-medium text-foreground">
+																					{primaryName}
+																				</div>
+																				{secondaryName ? (
+																					<div className="truncate text-xs text-muted-foreground">
+																						{secondaryName}
+																					</div>
+																				) : null}
+																			</div>
 																		</div>
 																	</TableCell>
 																	<TableCell
@@ -1654,17 +1729,22 @@ function PartnerCommissionDirectionPanel({
 }
 
 function PartnerCommissionsByCompetencyCard({
-	summary,
+	commissionBreakdown,
 }: {
-	summary: PartnerDashboardData["summary"] | undefined;
+	commissionBreakdown: PartnerCommissionBreakdown | undefined;
 }) {
-	const incomePaidAmount = summary?.commissionReceivedAmount ?? 0;
-	const incomePendingAmount = summary?.commissionPendingAmount ?? 0;
-	const incomeTotalAmount = incomePaidAmount + incomePendingAmount;
-	const outcomePaidAmount = Math.max(
-		incomePaidAmount - (summary?.netRevenueAmount ?? 0),
-		0,
-	);
+	const incomePaidAmount = commissionBreakdown?.receivedAmount ?? 0;
+	const incomePendingAmount = commissionBreakdown?.pendingAmount ?? 0;
+	const incomeCanceledAmount = commissionBreakdown?.canceledAmount ?? 0;
+	const incomeTotalAmount =
+		incomePaidAmount + incomePendingAmount + incomeCanceledAmount;
+	const outcomePaidAmount =
+		commissionBreakdown?.payablePaidAmount ??
+		Math.max(incomePaidAmount - (commissionBreakdown?.netRevenueAmount ?? 0), 0);
+	const outcomePendingAmount = commissionBreakdown?.payablePendingAmount ?? 0;
+	const outcomeCanceledAmount = commissionBreakdown?.payableCanceledAmount ?? 0;
+	const outcomeTotalAmount =
+		outcomePaidAmount + outcomePendingAmount + outcomeCanceledAmount;
 
 	return (
 		<Card className="border-border/70">
@@ -1680,15 +1760,15 @@ function PartnerCommissionsByCompetencyCard({
 					totalAmount={incomeTotalAmount}
 					pendingAmount={incomePendingAmount}
 					paidAmount={incomePaidAmount}
-					canceledAmount={0}
+					canceledAmount={incomeCanceledAmount}
 					intent="income"
 				/>
 				<PartnerCommissionDirectionPanel
 					title="A pagar"
-					totalAmount={outcomePaidAmount}
-					pendingAmount={0}
+					totalAmount={outcomeTotalAmount}
+					pendingAmount={outcomePendingAmount}
 					paidAmount={outcomePaidAmount}
-					canceledAmount={0}
+					canceledAmount={outcomeCanceledAmount}
 					intent="outcome"
 				/>
 			</CardContent>
@@ -2474,7 +2554,9 @@ export function DashboardPartnersOverview() {
 				</Card>
 
 				<PartnerSalesStatusCard items={data?.statusFunnel.items ?? []} />
-				<PartnerCommissionsByCompetencyCard summary={data?.summary} />
+				<PartnerCommissionsByCompetencyCard
+					commissionBreakdown={data?.commissionBreakdown}
+				/>
 			</div>
 
 			<div className="space-y-6">

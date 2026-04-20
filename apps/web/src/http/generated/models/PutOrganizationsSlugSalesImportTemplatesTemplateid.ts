@@ -26,13 +26,13 @@ export type PutOrganizationsSlugSalesImportTemplatesTemplateid204EnumKey =
 export type PutOrganizationsSlugSalesImportTemplatesTemplateid204 =
   PutOrganizationsSlugSalesImportTemplatesTemplateid204EnumKey | null;
 
-export const responsibleTypeEnum13 = {
+export const responsibleTypeEnum14 = {
   SELLER: "SELLER",
   PARTNER: "PARTNER",
 } as const;
 
-export type ResponsibleTypeEnum13Key =
-  (typeof responsibleTypeEnum13)[keyof typeof responsibleTypeEnum13];
+export type ResponsibleTypeEnum14Key =
+  (typeof responsibleTypeEnum14)[keyof typeof responsibleTypeEnum14];
 
 export type PutOrganizationsSlugSalesImportTemplatesTemplateidMutationRequest =
   {
@@ -149,7 +149,7 @@ export type PutOrganizationsSlugSalesImportTemplatesTemplateidMutationRequest =
         /**
          * @type string
          */
-        type: ResponsibleTypeEnum13Key;
+        type: ResponsibleTypeEnum14Key;
         /**
          * @type string, uuid
          */

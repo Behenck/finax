@@ -485,6 +485,8 @@ const PartnerSalesDashboardSupervisorSummarySchema = z.object({
 const PartnerSalesDashboardPartnerFilterItemSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
+	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
 	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 });
@@ -513,6 +515,7 @@ const PartnerSalesDashboardRankingSalesBreakdownBucketSchema = z.object({
 const PartnerSalesDashboardRankingItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
 	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	salesCount: z.number().int().nonnegative(),
@@ -574,6 +577,7 @@ const PartnerSalesDashboardStatusFunnelItemSchema = z.object({
 const PartnerSalesDashboardParetoItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 	cumulativeGrossAmount: z.number().int().nonnegative(),
@@ -584,6 +588,7 @@ const PartnerSalesDashboardParetoItemSchema = z.object({
 const PartnerSalesDashboardTicketByPartnerItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 	averageTicket: z.number().int().nonnegative(),
@@ -600,6 +605,7 @@ const PartnerSalesDashboardProductionHealthTimelineItemSchema = z.object({
 const PartnerSalesDashboardCommissionPendingByPartnerItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
 	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	salesCount: z.number().int().nonnegative(),
@@ -625,6 +631,7 @@ const PartnerSalesDashboardRecencyBucketSchema = z.object({
 const PartnerSalesDashboardRiskRankingItemSchema = z.object({
 	partnerId: z.uuid(),
 	partnerName: z.string(),
+	partnerCompanyName: z.string(),
 	status: z.enum(["ACTIVE", "INACTIVE"] as const),
 	supervisors: z.array(PartnerSalesDashboardSupervisorSummarySchema),
 	totalSales: z.number().int().nonnegative(),
@@ -689,6 +696,10 @@ export const PartnerSalesDashboardResponseSchema = z.object({
 	commissionBreakdown: z.object({
 		receivedAmount: z.number().int().nonnegative(),
 		pendingAmount: z.number().int().nonnegative(),
+		canceledAmount: z.number().int().nonnegative(),
+		payablePaidAmount: z.number().int().nonnegative(),
+		payablePendingAmount: z.number().int().nonnegative(),
+		payableCanceledAmount: z.number().int().nonnegative(),
 		netRevenueAmount: z.number().int(),
 		pendingByPartner: z.object({
 			items: z.array(PartnerSalesDashboardCommissionPendingByPartnerItemSchema),

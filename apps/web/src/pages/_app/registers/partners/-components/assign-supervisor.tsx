@@ -15,7 +15,7 @@ import {
 	getOrganizationsSlugPartnersQueryKey,
 	useAssignPartnerSupervisor,
 	useGetOrganizationsSlugMembersRole,
-	type GetOrganizationsSlugPartnersPartnerid200,
+	type GetOrganizationsSlugPartners200,
 } from "@/http/generated";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface AssignSupervisorProps {
-	partner: GetOrganizationsSlugPartnersPartnerid200["partner"];
+	partner: GetOrganizationsSlugPartners200["partners"][number];
 	supervisorPartnerCounts: Record<string, number>;
 }
 

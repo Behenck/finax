@@ -63,6 +63,8 @@ type CommissionInstallmentSeed = {
 	status: SaleCommissionInstallmentStatus;
 	expectedPaymentDate: string;
 	paymentDate?: string | null;
+	recipientType?: SaleCommissionRecipientType;
+	beneficiarySupervisorId?: string | null;
 };
 
 async function login(email: string, password: string) {
@@ -208,7 +210,7 @@ async function createFixture() {
 			phone: "55999888888",
 			documentType: PartnerDocumentType.CPF,
 			document: `222222222${Math.floor(Math.random() * 9)}`,
-			companyName: "Partner Company",
+			companyName: "Alpha Seguros",
 			state: "RS",
 			organizationId: org.id,
 			status: PartnerStatus.ACTIVE,
@@ -222,7 +224,7 @@ async function createFixture() {
 			phone: "55999777777",
 			documentType: PartnerDocumentType.CPF,
 			document: `333333333${Math.floor(Math.random() * 9)}`,
-			companyName: "Partner Company",
+			companyName: "Beta Beneficios",
 			state: "RS",
 			organizationId: org.id,
 			status: PartnerStatus.INACTIVE,
@@ -236,7 +238,7 @@ async function createFixture() {
 			phone: "55999666666",
 			documentType: PartnerDocumentType.CPF,
 			document: `444444444${Math.floor(Math.random() * 9)}`,
-			companyName: "Partner Company",
+			companyName: "Gamma Corretora",
 			state: "RS",
 			organizationId: org.id,
 			status: PartnerStatus.ACTIVE,
@@ -256,6 +258,7 @@ async function createFixture() {
 		user,
 		token,
 		supervisorUser,
+		supervisorMember,
 		supervisorToken,
 		company,
 		unit,
@@ -302,31 +305,40 @@ async function createSaleSeed(
 			dynamicFieldValues: input.dynamicFieldValues ?? {},
 			commissions: input.commissions?.length
 				? {
-						create: input.commissions.map((commission, index) => ({
-							sourceType: SaleCommissionSourceType.MANUAL,
-							recipientType: SaleCommissionRecipientType.OTHER,
-							direction: commission.direction,
-							beneficiaryLabel: `${commission.direction} ${index + 1}`,
-							startDate: new Date(
-								`${commission.expectedPaymentDate}T00:00:00.000Z`,
-							),
-							totalPercentage: 100_000,
-							sortOrder: index,
-							installments: {
-								create: {
-									installmentNumber: 1,
-									percentage: 100_000,
-									amount: commission.amount,
-									status: commission.status,
-									expectedPaymentDate: new Date(
-										`${commission.expectedPaymentDate}T00:00:00.000Z`,
-									),
-									paymentDate: commission.paymentDate
-										? new Date(`${commission.paymentDate}T00:00:00.000Z`)
+						create: input.commissions.map((commission, index) => {
+							const recipientType =
+								commission.recipientType ?? SaleCommissionRecipientType.OTHER;
+
+							return {
+								sourceType: SaleCommissionSourceType.MANUAL,
+								recipientType,
+								direction: commission.direction,
+								beneficiarySupervisorId:
+									recipientType === SaleCommissionRecipientType.SUPERVISOR
+										? (commission.beneficiarySupervisorId ?? null)
 										: null,
+								beneficiaryLabel: `${commission.direction} ${index + 1}`,
+								startDate: new Date(
+									`${commission.expectedPaymentDate}T00:00:00.000Z`,
+								),
+								totalPercentage: 100_000,
+								sortOrder: index,
+								installments: {
+									create: {
+										installmentNumber: 1,
+										percentage: 100_000,
+										amount: commission.amount,
+										status: commission.status,
+										expectedPaymentDate: new Date(
+											`${commission.expectedPaymentDate}T00:00:00.000Z`,
+										),
+										paymentDate: commission.paymentDate
+											? new Date(`${commission.paymentDate}T00:00:00.000Z`)
+											: null,
+									},
 								},
-							},
-						})),
+							};
+						}),
 					}
 				: undefined,
 		},
@@ -365,6 +377,14 @@ async function seedDashboardData(fixture: PartnerDashboardFixture) {
 				amount: 4_000,
 				status: SaleCommissionInstallmentStatus.PENDING,
 				expectedPaymentDate: "2026-04-05",
+			},
+			{
+				direction: "OUTCOME",
+				amount: 2_500,
+				status: SaleCommissionInstallmentStatus.PENDING,
+				expectedPaymentDate: "2026-04-05",
+				recipientType: SaleCommissionRecipientType.SUPERVISOR,
+				beneficiarySupervisorId: fixture.supervisorMember.id,
 			},
 			{
 				direction: "INCOME",
@@ -544,10 +564,20 @@ describe("partner sales dashboard", () => {
 			},
 		]);
 		expect(response.body.filters.partners).toHaveLength(3);
+		expect(response.body.filters.partners).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: fixture.partnerAlpha.id,
+					partnerName: fixture.partnerAlpha.name,
+					partnerCompanyName: fixture.partnerAlpha.companyName,
+				}),
+			]),
+		);
 		expect(response.body.ranking.slice(0, 3)).toEqual([
 			{
 				partnerId: fixture.partnerAlpha.id,
 				partnerName: fixture.partnerAlpha.name,
+				partnerCompanyName: fixture.partnerAlpha.companyName,
 				status: "ACTIVE",
 				supervisors: [
 					{
@@ -583,6 +613,7 @@ describe("partner sales dashboard", () => {
 			{
 				partnerId: fixture.partnerBeta.id,
 				partnerName: fixture.partnerBeta.name,
+				partnerCompanyName: fixture.partnerBeta.companyName,
 				status: "INACTIVE",
 				supervisors: [
 					{
@@ -618,6 +649,7 @@ describe("partner sales dashboard", () => {
 			{
 				partnerId: fixture.partnerGamma.id,
 				partnerName: fixture.partnerGamma.name,
+				partnerCompanyName: fixture.partnerGamma.companyName,
 				status: "ACTIVE",
 				supervisors: [],
 				salesCount: 0,
@@ -679,6 +711,7 @@ describe("partner sales dashboard", () => {
 				{
 					partnerId: fixture.partnerAlpha.id,
 					partnerName: fixture.partnerAlpha.name,
+					partnerCompanyName: fixture.partnerAlpha.companyName,
 					salesCount: 2,
 					grossAmount: 150_000,
 					cumulativeGrossAmount: 150_000,
@@ -688,6 +721,7 @@ describe("partner sales dashboard", () => {
 				{
 					partnerId: fixture.partnerBeta.id,
 					partnerName: fixture.partnerBeta.name,
+					partnerCompanyName: fixture.partnerBeta.companyName,
 					salesCount: 1,
 					grossAmount: 80_000,
 					cumulativeGrossAmount: 230_000,
@@ -701,6 +735,7 @@ describe("partner sales dashboard", () => {
 				{
 					partnerId: fixture.partnerBeta.id,
 					partnerName: fixture.partnerBeta.name,
+					partnerCompanyName: fixture.partnerBeta.companyName,
 					salesCount: 1,
 					grossAmount: 80_000,
 					averageTicket: 80_000,
@@ -708,6 +743,7 @@ describe("partner sales dashboard", () => {
 				{
 					partnerId: fixture.partnerAlpha.id,
 					partnerName: fixture.partnerAlpha.name,
+					partnerCompanyName: fixture.partnerAlpha.companyName,
 					salesCount: 2,
 					grossAmount: 150_000,
 					averageTicket: 75_000,
@@ -747,12 +783,17 @@ describe("partner sales dashboard", () => {
 		expect(response.body.commissionBreakdown).toEqual({
 			receivedAmount: 15_000,
 			pendingAmount: 4_000,
+			canceledAmount: 0,
+			payablePaidAmount: 3_000,
+			payablePendingAmount: 2_500,
+			payableCanceledAmount: 0,
 			netRevenueAmount: 12_000,
 			pendingByPartner: {
 				items: [
 					{
 						partnerId: fixture.partnerAlpha.id,
 						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
 						status: "ACTIVE",
 						supervisors: [
 							{
@@ -917,6 +958,7 @@ describe("partner sales dashboard", () => {
 			{
 				partnerId: fixture.partnerAlpha.id,
 				partnerName: fixture.partnerAlpha.name,
+				partnerCompanyName: fixture.partnerAlpha.companyName,
 				status: "ACTIVE",
 				supervisors: [
 					{
@@ -935,6 +977,7 @@ describe("partner sales dashboard", () => {
 			{
 				partnerId: fixture.partnerBeta.id,
 				partnerName: fixture.partnerBeta.name,
+				partnerCompanyName: fixture.partnerBeta.companyName,
 				status: "INACTIVE",
 				supervisors: [
 					{
@@ -953,6 +996,7 @@ describe("partner sales dashboard", () => {
 			{
 				partnerId: fixture.partnerGamma.id,
 				partnerName: fixture.partnerGamma.name,
+				partnerCompanyName: fixture.partnerGamma.companyName,
 				status: "ACTIVE",
 				supervisors: [],
 				totalSales: 0,
@@ -1040,12 +1084,17 @@ describe("partner sales dashboard", () => {
 		expect(response.body.commissionBreakdown).toEqual({
 			receivedAmount: 0,
 			pendingAmount: 4_000,
+			canceledAmount: 0,
+			payablePaidAmount: 0,
+			payablePendingAmount: 2_500,
+			payableCanceledAmount: 0,
 			netRevenueAmount: 0,
 			pendingByPartner: {
 				items: [
 					{
 						partnerId: fixture.partnerAlpha.id,
 						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
 						status: "ACTIVE",
 						supervisors: [
 							{
@@ -1102,6 +1151,7 @@ describe("partner sales dashboard", () => {
 		expect(adminFilteredResponse.body.ranking[0]).toEqual({
 			partnerId: fixture.partnerBeta.id,
 			partnerName: fixture.partnerBeta.name,
+			partnerCompanyName: fixture.partnerBeta.companyName,
 			status: "INACTIVE",
 			supervisors: [
 				{

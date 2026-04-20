@@ -52,6 +52,68 @@ export const getOrganizationsSlugPartnersPartnerid200Schema = z.object({
         name: z.nullable(z.string()),
       }),
     ),
+    sales: z.array(
+      z.object({
+        id: z.uuid(),
+        saleDate: z.iso.datetime(),
+        totalAmount: z.int().min(-9007199254740991).max(9007199254740991),
+        status: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+        createdAt: z.iso.datetime(),
+        updatedAt: z.iso.datetime(),
+        customer: z.object({
+          id: z.uuid(),
+          name: z.string(),
+        }),
+        product: z.object({
+          id: z.uuid(),
+          name: z.string(),
+        }),
+        company: z.object({
+          id: z.uuid(),
+          name: z.string(),
+        }),
+        unit: z.nullable(
+          z.object({
+            id: z.uuid(),
+            name: z.string(),
+          }),
+        ),
+        responsible: z.nullable(
+          z.object({
+            type: z.enum(["SELLER", "PARTNER"]),
+            id: z.uuid(),
+            name: z.string(),
+          }),
+        ),
+        delinquencySummary: z.object({
+          hasOpen: z.boolean(),
+          openCount: z.int().min(0).max(9007199254740991),
+          oldestDueDate: z.nullable(z.iso.datetime()),
+          latestDueDate: z.nullable(z.iso.datetime()),
+        }),
+        openDelinquencies: z.array(
+          z.object({
+            id: z.uuid(),
+            dueDate: z.iso.datetime(),
+            resolvedAt: z.nullable(z.iso.datetime()),
+            createdAt: z.iso.datetime(),
+            updatedAt: z.iso.datetime(),
+            createdBy: z.object({
+              id: z.uuid(),
+              name: z.nullable(z.string()),
+              avatarUrl: z.nullable(z.string()),
+            }),
+            resolvedBy: z.nullable(
+              z.object({
+                id: z.uuid(),
+                name: z.nullable(z.string()),
+                avatarUrl: z.nullable(z.string()),
+              }),
+            ),
+          }),
+        ),
+      }),
+    ),
   }),
 });
 

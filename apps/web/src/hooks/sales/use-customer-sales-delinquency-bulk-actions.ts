@@ -2,30 +2,45 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/app-context";
 import {
 	getOrganizationsSlugCustomersCustomeridQueryKey,
+	getOrganizationsSlugPartnersPartneridQueryKey,
 	getOrganizationsSlugSalesDelinquencyQueryKey,
 	getOrganizationsSlugSalesQueryKey,
 	getOrganizationsSlugSalesSaleidHistoryQueryKey,
 	getOrganizationsSlugSalesSaleidQueryKey,
 	patchOrganizationsSlugSalesSaleidDelinquenciesDelinquencyidResolve,
 	postOrganizationsSlugSalesSaleidDelinquencies,
-	type GetOrganizationsSlugCustomersCustomerid200,
 } from "@/http/generated";
 
-type CustomerSale =
-	GetOrganizationsSlugCustomersCustomerid200["customer"]["sales"][number];
+export type LinkedSalesOwner =
+	| {
+			type: "CUSTOMER";
+			id: string;
+	  }
+	| {
+			type: "PARTNER";
+			id: string;
+	  };
 
-interface CustomerSalesDelinquencyBulkInput {
-	customerId: string;
-	sales: CustomerSale[];
+export type LinkedSaleForDelinquencyActions = {
+	id: string;
+	status: string;
+	openDelinquencies: Array<{
+		id: string;
+	}>;
+};
+
+interface LinkedSalesDelinquencyBulkInput {
+	owner: LinkedSalesOwner;
+	sales: LinkedSaleForDelinquencyActions[];
 	selectedSaleIds: string[];
 }
 
-interface MarkCustomerSalesAsDelinquentInput
-	extends CustomerSalesDelinquencyBulkInput {
+interface MarkLinkedSalesAsDelinquentInput
+	extends LinkedSalesDelinquencyBulkInput {
 	dueDate: string;
 }
 
-export interface MarkCustomerSalesAsDelinquentResult {
+export interface MarkLinkedSalesAsDelinquentResult {
 	selectedCount: number;
 	attemptedCount: number;
 	successCount: number;
@@ -33,7 +48,7 @@ export interface MarkCustomerSalesAsDelinquentResult {
 	ignoredNotCompletedCount: number;
 }
 
-export interface ResolveCustomerSalesDelinquenciesResult {
+export interface ResolveLinkedSalesDelinquenciesResult {
 	selectedCount: number;
 	attemptedOccurrenceCount: number;
 	resolvedCount: number;
@@ -41,18 +56,36 @@ export interface ResolveCustomerSalesDelinquenciesResult {
 	skippedWithoutOpenCount: number;
 }
 
-function getSelectedSales(sales: CustomerSale[], selectedSaleIds: string[]) {
+export type MarkCustomerSalesAsDelinquentResult =
+	MarkLinkedSalesAsDelinquentResult;
+export type ResolveCustomerSalesDelinquenciesResult =
+	ResolveLinkedSalesDelinquenciesResult;
+
+function getSelectedSales(
+	sales: LinkedSaleForDelinquencyActions[],
+	selectedSaleIds: string[],
+) {
 	const selectedIds = new Set(selectedSaleIds);
 	return sales.filter((sale) => selectedIds.has(sale.id));
 }
 
-async function invalidateCustomerSalesQueries(params: {
+async function invalidateLinkedSalesQueries(params: {
 	queryClient: ReturnType<typeof useQueryClient>;
 	slug: string;
-	customerId: string;
+	owner: LinkedSalesOwner;
 	saleIds: string[];
 }) {
 	const uniqueSaleIds = Array.from(new Set(params.saleIds));
+	const ownerQueryKey =
+		params.owner.type === "CUSTOMER"
+			? getOrganizationsSlugCustomersCustomeridQueryKey({
+					slug: params.slug,
+					customerId: params.owner.id,
+				})
+			: getOrganizationsSlugPartnersPartneridQueryKey({
+					slug: params.slug,
+					partnerId: params.owner.id,
+				});
 
 	await Promise.all([
 		params.queryClient.invalidateQueries({
@@ -66,10 +99,7 @@ async function invalidateCustomerSalesQueries(params: {
 			}),
 		}),
 		params.queryClient.invalidateQueries({
-			queryKey: getOrganizationsSlugCustomersCustomeridQueryKey({
-				slug: params.slug,
-				customerId: params.customerId,
-			}),
+			queryKey: ownerQueryKey,
 		}),
 		...uniqueSaleIds.flatMap((saleId) => [
 			params.queryClient.invalidateQueries({
@@ -88,17 +118,17 @@ async function invalidateCustomerSalesQueries(params: {
 	]);
 }
 
-export function useCustomerSalesDelinquencyBulkActions() {
+export function useLinkedSalesDelinquencyBulkActions() {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
 
 	const markSalesAsDelinquentMutation = useMutation({
 		mutationFn: async ({
-			customerId,
+			owner,
 			sales,
 			selectedSaleIds,
 			dueDate,
-		}: MarkCustomerSalesAsDelinquentInput): Promise<MarkCustomerSalesAsDelinquentResult> => {
+		}: MarkLinkedSalesAsDelinquentInput): Promise<MarkLinkedSalesAsDelinquentResult> => {
 			if (!organization?.slug) {
 				throw new Error("Organização não encontrada");
 			}
@@ -133,10 +163,10 @@ export function useCustomerSalesDelinquencyBulkActions() {
 			).length;
 			const failedCount = responses.length - successCount;
 
-			await invalidateCustomerSalesQueries({
+			await invalidateLinkedSalesQueries({
 				queryClient,
 				slug: organization.slug,
-				customerId,
+				owner,
 				saleIds: eligibleSales.map((sale) => sale.id),
 			});
 
@@ -152,10 +182,10 @@ export function useCustomerSalesDelinquencyBulkActions() {
 
 	const resolveSalesDelinquenciesMutation = useMutation({
 		mutationFn: async ({
-			customerId,
+			owner,
 			sales,
 			selectedSaleIds,
-		}: CustomerSalesDelinquencyBulkInput): Promise<ResolveCustomerSalesDelinquenciesResult> => {
+		}: LinkedSalesDelinquencyBulkInput): Promise<ResolveLinkedSalesDelinquenciesResult> => {
 			if (!organization?.slug) {
 				throw new Error("Organização não encontrada");
 			}
@@ -197,10 +227,10 @@ export function useCustomerSalesDelinquencyBulkActions() {
 			).length;
 			const failedCount = responses.length - resolvedCount;
 
-			await invalidateCustomerSalesQueries({
+			await invalidateLinkedSalesQueries({
 				queryClient,
 				slug: organization.slug,
-				customerId,
+				owner,
 				saleIds: salesWithOpenDelinquencies.map((sale) => sale.id),
 			});
 
@@ -214,14 +244,24 @@ export function useCustomerSalesDelinquencyBulkActions() {
 		},
 	});
 
+	const markLinkedSalesAsDelinquent = markSalesAsDelinquentMutation.mutateAsync;
+	const resolveLinkedSalesDelinquencies =
+		resolveSalesDelinquenciesMutation.mutateAsync;
+
 	return {
-		markCustomerSalesAsDelinquent:
-			markSalesAsDelinquentMutation.mutateAsync,
+		markLinkedSalesAsDelinquent,
+		isMarkingLinkedSalesAsDelinquent: markSalesAsDelinquentMutation.isPending,
+		resolveLinkedSalesDelinquencies,
+		isResolvingLinkedSalesDelinquencies:
+			resolveSalesDelinquenciesMutation.isPending,
+		markCustomerSalesAsDelinquent: markLinkedSalesAsDelinquent,
 		isMarkingCustomerSalesAsDelinquent:
 			markSalesAsDelinquentMutation.isPending,
-		resolveCustomerSalesDelinquencies:
-			resolveSalesDelinquenciesMutation.mutateAsync,
+		resolveCustomerSalesDelinquencies: resolveLinkedSalesDelinquencies,
 		isResolvingCustomerSalesDelinquencies:
 			resolveSalesDelinquenciesMutation.isPending,
 	};
 }
+
+export const useCustomerSalesDelinquencyBulkActions =
+	useLinkedSalesDelinquencyBulkActions;

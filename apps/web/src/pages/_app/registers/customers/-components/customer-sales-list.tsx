@@ -44,9 +44,10 @@ import {
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
 import {
-	type MarkCustomerSalesAsDelinquentResult,
-	type ResolveCustomerSalesDelinquenciesResult,
-	useCustomerSalesDelinquencyBulkActions,
+	type LinkedSalesOwner,
+	type MarkLinkedSalesAsDelinquentResult,
+	type ResolveLinkedSalesDelinquenciesResult,
+	useLinkedSalesDelinquencyBulkActions,
 } from "@/hooks/sales";
 import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import type { GetOrganizationsSlugCustomersCustomerid200 } from "@/http/generated";
@@ -55,14 +56,61 @@ import { SaleDelinquencyBadge } from "@/pages/_app/sales/-components/sale-delinq
 import { SaleStatusBadge } from "@/pages/_app/sales/-components/sale-status-badge";
 import type { SaleStatus } from "@/schemas/types/sales";
 
+export type LinkedSale = {
+	id: string;
+	saleDate: string;
+	totalAmount: number;
+	status: string;
+	createdAt: string;
+	updatedAt: string;
+	customer?: {
+		id: string;
+		name: string;
+	};
+	product: {
+		id: string;
+		name: string;
+	};
+	company: {
+		id: string;
+		name: string;
+	};
+	unit: {
+		id: string;
+		name: string;
+	} | null;
+	responsible: {
+		type: string;
+		id: string;
+		name: string;
+	} | null;
+	delinquencySummary: {
+		hasOpen: boolean;
+		openCount: number;
+		oldestDueDate: string | null;
+		latestDueDate: string | null;
+	};
+	openDelinquencies: Array<{
+		id: string;
+	}>;
+};
+
 interface CustomerSalesListProps {
 	sales: GetOrganizationsSlugCustomersCustomerid200["customer"]["sales"];
 	customerId: string;
 	canManageDelinquencies: boolean;
 }
 
-interface CustomerSaleActionsProps {
-	sale: GetOrganizationsSlugCustomersCustomerid200["customer"]["sales"][number];
+interface LinkedSalesListProps<TSale extends LinkedSale> {
+	sales: TSale[];
+	owner: LinkedSalesOwner;
+	canManageDelinquencies: boolean;
+	showCustomer?: boolean;
+	emptyMessage?: string;
+}
+
+interface LinkedSaleActionsProps {
+	sale: LinkedSale;
 	canManageDelinquencies: boolean;
 	onOpenMarkDelinquencyForSale: (saleId: string) => void;
 	onOpenResolveDelinquencyForSale: (saleId: string) => void;
@@ -72,12 +120,12 @@ function formatDate(value: string) {
 	return format(parse(value.slice(0, 10), "yyyy-MM-dd", new Date()), "dd/MM/yyyy");
 }
 
-function CustomerSaleActions({
+function LinkedSaleActions({
 	sale,
 	canManageDelinquencies,
 	onOpenMarkDelinquencyForSale,
 	onOpenResolveDelinquencyForSale,
-}: CustomerSaleActionsProps) {
+}: LinkedSaleActionsProps) {
 	const hasOpenDelinquency = sale.delinquencySummary.hasOpen;
 	const canHandleDelinquencyAction = hasOpenDelinquency || sale.status === "COMPLETED";
 	const delinquencyActionLabel = hasOpenDelinquency
@@ -128,11 +176,13 @@ function CustomerSaleActions({
 	);
 }
 
-export function CustomerSalesList({
+export function LinkedSalesList<TSale extends LinkedSale>({
 	sales,
-	customerId,
+	owner,
 	canManageDelinquencies,
-}: CustomerSalesListProps) {
+	showCustomer = false,
+	emptyMessage = "Nenhum registro de venda visível.",
+}: LinkedSalesListProps<TSale>) {
 	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 	const [isMarkDialogOpen, setIsMarkDialogOpen] = useState(false);
 	const [markDialogSaleIds, setMarkDialogSaleIds] = useState<string[] | null>(
@@ -145,11 +195,11 @@ export function CustomerSalesList({
 		string[] | null
 	>(null);
 	const {
-		markCustomerSalesAsDelinquent,
-		isMarkingCustomerSalesAsDelinquent,
-		resolveCustomerSalesDelinquencies,
-		isResolvingCustomerSalesDelinquencies,
-	} = useCustomerSalesDelinquencyBulkActions();
+		markLinkedSalesAsDelinquent,
+		isMarkingLinkedSalesAsDelinquent,
+		resolveLinkedSalesDelinquencies,
+		isResolvingLinkedSalesDelinquencies,
+	} = useLinkedSalesDelinquencyBulkActions();
 
 	const visibleSaleIds = useMemo(() => sales.map((sale) => sale.id), [sales]);
 	const selectedSaleIds = useMemo(
@@ -206,7 +256,7 @@ export function CustomerSalesList({
 	if (sales.length === 0) {
 		return (
 			<Card className="p-6 text-sm text-muted-foreground">
-				Este cliente ainda não possui vendas visíveis.
+				{emptyMessage}
 			</Card>
 		);
 	}
@@ -235,7 +285,7 @@ export function CustomerSalesList({
 		return null;
 	}
 
-	function notifyMarkResult(result: MarkCustomerSalesAsDelinquentResult) {
+	function notifyMarkResult(result: MarkLinkedSalesAsDelinquentResult) {
 		if (result.attemptedCount === 0) {
 			if (result.ignoredNotCompletedCount > 0) {
 				toast.warning(
@@ -275,7 +325,7 @@ export function CustomerSalesList({
 		toast.success(summary);
 	}
 
-	function notifyResolveResult(result: ResolveCustomerSalesDelinquenciesResult) {
+	function notifyResolveResult(result: ResolveLinkedSalesDelinquenciesResult) {
 		if (result.attemptedOccurrenceCount === 0) {
 			if (result.skippedWithoutOpenCount > 0) {
 				toast.warning(
@@ -329,8 +379,8 @@ export function CustomerSalesList({
 				return;
 			}
 
-			const result = await markCustomerSalesAsDelinquent({
-				customerId,
+			const result = await markLinkedSalesAsDelinquent({
+				owner,
 				sales,
 				selectedSaleIds: markTargetSaleIds,
 				dueDate,
@@ -356,8 +406,8 @@ export function CustomerSalesList({
 				return;
 			}
 
-			const result = await resolveCustomerSalesDelinquencies({
-				customerId,
+			const result = await resolveLinkedSalesDelinquencies({
+				owner,
 				sales,
 				selectedSaleIds: resolveTargetSaleIds,
 			});
@@ -387,8 +437,8 @@ export function CustomerSalesList({
 							variant="outline"
 							onClick={() => openMarkDelinquencyDialog()}
 							disabled={
-								isMarkingCustomerSalesAsDelinquent ||
-								isResolvingCustomerSalesDelinquencies
+								isMarkingLinkedSalesAsDelinquent ||
+								isResolvingLinkedSalesDelinquencies
 							}
 						>
 							Marcar inadimplente
@@ -398,8 +448,8 @@ export function CustomerSalesList({
 							variant="outline"
 							onClick={() => openResolveDelinquencyDialog()}
 							disabled={
-								isResolvingCustomerSalesDelinquencies ||
-								isMarkingCustomerSalesAsDelinquent
+								isResolvingLinkedSalesDelinquencies ||
+								isMarkingLinkedSalesAsDelinquent
 							}
 						>
 							Remover inadimplências
@@ -409,8 +459,8 @@ export function CustomerSalesList({
 							variant="ghost"
 							onClick={clearSelection}
 							disabled={
-								isMarkingCustomerSalesAsDelinquent ||
-								isResolvingCustomerSalesDelinquencies
+								isMarkingLinkedSalesAsDelinquent ||
+								isResolvingLinkedSalesDelinquencies
 							}
 						>
 							Limpar seleção
@@ -467,6 +517,11 @@ export function CustomerSalesList({
 											{sale.company.name}
 											{sale.unit ? ` • ${sale.unit.name}` : ""}
 										</p>
+										{showCustomer && sale.customer ? (
+											<p className="text-xs text-muted-foreground">
+												Cliente: {sale.customer.name}
+											</p>
+										) : null}
 									</div>
 									{canManageDelinquencies ? (
 										<Checkbox
@@ -503,7 +558,7 @@ export function CustomerSalesList({
 									<SaleDelinquencyBadge summary={sale.delinquencySummary} />
 								</div>
 
-								<CustomerSaleActions
+								<LinkedSaleActions
 									sale={sale}
 									canManageDelinquencies={canManageDelinquencies}
 									onOpenMarkDelinquencyForSale={(saleId) =>
@@ -543,6 +598,7 @@ export function CustomerSalesList({
 										</TableHead>
 									) : null}
 									<TableHead>Venda</TableHead>
+									{showCustomer ? <TableHead>Cliente</TableHead> : null}
 									<TableHead>Empresa/Unidade</TableHead>
 									<TableHead>Status</TableHead>
 									<TableHead>Inadimplência</TableHead>
@@ -578,6 +634,13 @@ export function CustomerSalesList({
 												</p>
 											</div>
 										</TableCell>
+										{showCustomer ? (
+											<TableCell>
+												<span className="text-sm">
+													{sale.customer?.name ?? "Cliente não informado"}
+												</span>
+											</TableCell>
+										) : null}
 										<TableCell>
 											<div className="space-y-1 text-sm">
 												<p>{sale.company.name}</p>
@@ -601,7 +664,7 @@ export function CustomerSalesList({
 										</TableCell>
 										<TableCell>
 											<div className="flex justify-end">
-												<CustomerSaleActions
+												<LinkedSaleActions
 													sale={sale}
 													canManageDelinquencies={canManageDelinquencies}
 													onOpenMarkDelinquencyForSale={(saleId) =>
@@ -663,7 +726,7 @@ export function CustomerSalesList({
 							type="button"
 							variant="outline"
 							onClick={() => setIsMarkDialogOpen(false)}
-							disabled={isMarkingCustomerSalesAsDelinquent}
+							disabled={isMarkingLinkedSalesAsDelinquent}
 						>
 							Cancelar
 						</Button>
@@ -671,11 +734,11 @@ export function CustomerSalesList({
 							type="button"
 							onClick={() => void handleMarkSalesAsDelinquent()}
 							disabled={
-								isMarkingCustomerSalesAsDelinquent ||
+								isMarkingLinkedSalesAsDelinquent ||
 								markTargetSaleIds.length === 0
 							}
 						>
-							{isMarkingCustomerSalesAsDelinquent
+							{isMarkingLinkedSalesAsDelinquent
 								? "Aplicando..."
 								: "Marcar inadimplente"}
 						</Button>
@@ -704,17 +767,17 @@ export function CustomerSalesList({
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isResolvingCustomerSalesDelinquencies}>
+						<AlertDialogCancel disabled={isResolvingLinkedSalesDelinquencies}>
 							Cancelar
 						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => void handleResolveSalesDelinquencies()}
 							disabled={
-								isResolvingCustomerSalesDelinquencies ||
+								isResolvingLinkedSalesDelinquencies ||
 								resolveTargetSaleIds.length === 0
 							}
 						>
-							{isResolvingCustomerSalesDelinquencies
+							{isResolvingLinkedSalesDelinquencies
 								? "Removendo..."
 								: "Remover inadimplências"}
 						</AlertDialogAction>
@@ -722,5 +785,20 @@ export function CustomerSalesList({
 				</AlertDialogContent>
 			</AlertDialog>
 		</div>
+	);
+}
+
+export function CustomerSalesList({
+	sales,
+	customerId,
+	canManageDelinquencies,
+}: CustomerSalesListProps) {
+	return (
+		<LinkedSalesList
+			sales={sales}
+			owner={{ type: "CUSTOMER", id: customerId }}
+			canManageDelinquencies={canManageDelinquencies}
+			emptyMessage="Este cliente ainda não possui vendas visíveis."
+		/>
 	);
 }

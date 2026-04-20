@@ -209,6 +209,14 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
       /**
        * @type string
        */
+      partnerName: string;
+      /**
+       * @type string
+       */
+      partnerCompanyName: string;
+      /**
+       * @type string
+       */
       status: PartnersStatusEnum2Key;
       /**
        * @type array
@@ -344,6 +352,10 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      * @type string
      */
     partnerName: string;
+    /**
+     * @type string
+     */
+    partnerCompanyName: string;
     /**
      * @type string
      */
@@ -661,6 +673,10 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        */
       partnerName: string;
       /**
+       * @type string
+       */
+      partnerCompanyName: string;
+      /**
        * @minLength 0
        * @maxLength 9007199254740991
        * @type integer
@@ -708,6 +724,10 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        * @type string
        */
       partnerName: string;
+      /**
+       * @type string
+       */
+      partnerCompanyName: string;
       /**
        * @minLength 0
        * @maxLength 9007199254740991
@@ -781,6 +801,30 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      */
     pendingAmount: number;
     /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    canceledAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    payablePaidAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    payablePendingAmount: number;
+    /**
+     * @minLength 0
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    payableCanceledAmount: number;
+    /**
      * @minLength -9007199254740991
      * @maxLength 9007199254740991
      * @type integer
@@ -802,6 +846,10 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
          * @type string
          */
         partnerName: string;
+        /**
+         * @type string
+         */
+        partnerCompanyName: string;
         /**
          * @type string
          */
@@ -920,6 +968,10 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
        * @type string
        */
       partnerName: string;
+      /**
+       * @type string
+       */
+      partnerCompanyName: string;
       /**
        * @type string
        */

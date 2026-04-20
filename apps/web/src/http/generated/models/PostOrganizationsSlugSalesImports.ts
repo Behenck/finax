@@ -72,13 +72,13 @@ export const postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum = {
 export type PostOrganizationsSlugSalesImportsMutationRequestFileTypeEnumKey =
   (typeof postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum)[keyof typeof postOrganizationsSlugSalesImportsMutationRequestFileTypeEnum];
 
-export const responsibleTypeEnum14 = {
+export const responsibleTypeEnum15 = {
   SELLER: "SELLER",
   PARTNER: "PARTNER",
 } as const;
 
-export type ResponsibleTypeEnum14Key =
-  (typeof responsibleTypeEnum14)[keyof typeof responsibleTypeEnum14];
+export type ResponsibleTypeEnum15Key =
+  (typeof responsibleTypeEnum15)[keyof typeof responsibleTypeEnum15];
 
 export type PostOrganizationsSlugSalesImportsMutationRequest = {
   /**
@@ -177,7 +177,7 @@ export type PostOrganizationsSlugSalesImportsMutationRequest = {
         /**
          * @type string
          */
-        type: ResponsibleTypeEnum14Key;
+        type: ResponsibleTypeEnum15Key;
         /**
          * @type string, uuid
          */
