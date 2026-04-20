@@ -39,6 +39,126 @@ describe("sale-history-presenter", () => {
 		);
 
 		expect(timelineEvent.messages).toEqual(["Venda criada."]);
+		expect(timelineEvent.summaryMessages).toEqual(["Venda criada."]);
+		expect(timelineEvent.detailMessages).toEqual(["Venda criada."]);
+		expect(timelineEvent.isCompact).toBe(false);
+	});
+
+	it("should keep small update events with detailed messages", () => {
+		const timelineEvent = toSaleHistoryTimelineEvent(
+			createEvent({
+				changes: [
+					{
+						path: "sale.totalAmount",
+						before: 200_000,
+						after: 300_000,
+					},
+					{
+						path: "sale.status",
+						before: "PENDING",
+						after: "APPROVED",
+					},
+					{
+						path: "commissions[0].totalPercentage",
+						before: 10,
+						after: 12.5,
+					},
+				],
+			}),
+		);
+
+		expect(timelineEvent.isCompact).toBe(false);
+		expect(timelineEvent.messages).toHaveLength(3);
+		expect(timelineEvent.summaryMessages).toEqual(timelineEvent.messages);
+		expect(timelineEvent.detailMessages).toEqual(timelineEvent.messages);
+		expect(timelineEvent.messages[1]).toBe(
+			"Status alterado de Pendente para Aprovada.",
+		);
+	});
+
+	it("should summarize large update events and preserve detailed messages", () => {
+		const timelineEvent = toSaleHistoryTimelineEvent(
+			createEvent({
+				changes: [
+					{
+						path: "sale.totalAmount",
+						before: 200_000,
+						after: 300_000,
+					},
+					{
+						path: "sale.status",
+						before: "PENDING",
+						after: "APPROVED",
+					},
+					{
+						path: "sale.dynamicFieldValues.field-grupo",
+						before: {
+							fieldId: "field-grupo",
+							label: "Grupo",
+							type: "TEXT",
+							options: [],
+							value: "A",
+						},
+						after: {
+							fieldId: "field-grupo",
+							label: "Grupo",
+							type: "TEXT",
+							options: [],
+							value: "B",
+						},
+					},
+					{
+						path: "commissions[0].totalPercentage",
+						before: 10,
+						after: 12.5,
+					},
+					{
+						path: "commissions[1].startDate",
+						before: "2026-03-10",
+						after: "2026-04-10",
+					},
+					{
+						path: "commissions[0].installments[0].amount",
+						before: 2_500,
+						after: 3_000,
+					},
+					{
+						path: "commissions[1].installments[2].status",
+						before: "PENDING",
+						after: "PAID",
+					},
+					{
+						path: "delinquency.dueDate",
+						before: null,
+						after: "2026-03-15",
+					},
+					{
+						path: "externalSystem.lastPayloadId",
+						before: "old",
+						after: "new",
+					},
+				],
+			}),
+		);
+
+		expect(timelineEvent.isCompact).toBe(true);
+		expect(timelineEvent.detailsCount).toBe(9);
+		expect(timelineEvent.messages).toEqual([
+			"Dados da venda atualizados (2 campos).",
+			"Campos personalizados atualizados (1 campo).",
+			"Comissões atualizadas (2 comissões).",
+			"Parcelas de comissão atualizadas (2 parcelas em 2 comissões).",
+			"Inadimplência atualizada.",
+			"Outras alterações registradas (1).",
+		]);
+		expect(timelineEvent.summaryMessages).toEqual(timelineEvent.messages);
+		expect(timelineEvent.detailMessages).toHaveLength(9);
+		expect(timelineEvent.detailMessages).toContain(
+			"Status alterado de Pendente para Aprovada.",
+		);
+		expect(timelineEvent.detailMessages).toContain(
+			"Grupo alterado de A para B.",
+		);
 	});
 
 	it("should format total amount and status as human sentences", () => {

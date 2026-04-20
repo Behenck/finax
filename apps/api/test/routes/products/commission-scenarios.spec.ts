@@ -145,6 +145,7 @@ describe("product commission scenarios", () => {
 							recipientType: "COMPANY",
 							beneficiaryId: fixture.company.id,
 							totalPercentage: 5,
+							dueDay: 10,
 							installments: [
 								{ installmentNumber: 1, percentage: 1 },
 								{ installmentNumber: 2, percentage: 1.5 },
@@ -206,6 +207,8 @@ describe("product commission scenarios", () => {
 		expect(getResponse.body.scenarios[0].commissions[0].totalPercentage).toBe(
 			5,
 		);
+		expect(getResponse.body.scenarios[0].commissions[0].dueDay).toBe(10);
+		expect(getResponse.body.scenarios[0].commissions[1].dueDay).toBeUndefined();
 	});
 
 	it("should save and fetch a commission linked to another commission", async () => {
@@ -563,6 +566,37 @@ describe("product commission scenarios", () => {
 			});
 
 		expect(response.statusCode).toBe(400);
+	});
+
+	it("should reject commission due day outside calendar range", async () => {
+		const fixture = await createFixture();
+
+		for (const dueDay of [0, 32]) {
+			const response = await request(app.server)
+				.put(
+					`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+				)
+				.set("Authorization", `Bearer ${fixture.token}`)
+				.send({
+					scenarios: [
+						{
+							name: `Venda padrão ${dueDay}`,
+							conditions: [],
+							commissions: [
+								{
+									recipientType: "COMPANY",
+									beneficiaryId: fixture.company.id,
+									totalPercentage: 1,
+									dueDay,
+									installments: [{ installmentNumber: 1, percentage: 1 }],
+								},
+							],
+						},
+					],
+				});
+
+			expect(response.statusCode).toBe(400);
+		}
 	});
 
 	it("should accept installments with zero percentage when totals match", async () => {

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useDeleteSale, useSale, useSaleNavigation } from "@/hooks/sales";
 import { useAbility } from "@/permissions/access";
+import type { SaleStatus } from "@/schemas/types/sales";
 import { useState } from "react";
 import { SaleForm } from "../-components/sale-form/index";
 import {
@@ -23,6 +24,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { SaleActionsDropdown } from "../-components/sale-actions-dropdown";
+import { SaleStatusAction } from "../-components/sale-status-action";
 
 export const Route = createFileRoute("/_app/sales/update/$saleId")({
 	component: UpdateSalePage,
@@ -30,8 +32,10 @@ export const Route = createFileRoute("/_app/sales/update/$saleId")({
 
 export function UpdateSalePage() {
 	const ability = useAbility();
+	const canViewSale = ability.can("access", "sales.view");
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canCreateSale = ability.can("access", "sales.create");
+	const canChangeSaleStatus = ability.can("access", "sales.status.change");
 	const canDeleteSalePermission = ability.can("access", "sales.delete");
 	const { saleId } = Route.useParams();
 	const navigate = useNavigate();
@@ -128,7 +132,7 @@ export function UpdateSalePage() {
 		<main className="w-full space-y-6">
 			<PageHeader
 				title="Editar Venda"
-				description="Atualize os dados da venda sem alterar o status."
+				description="Atualize os dados da venda e ajuste o status quando necessário."
 				actions={
 					<>
 						<Tooltip>
@@ -173,11 +177,20 @@ export function UpdateSalePage() {
 							saleId={data.sale.id}
 							customerId={data.sale.customer.id}
 							canCreateSale={canCreateSale}
+							canViewSale={canViewSale}
 							canEditSale={canEditSale}
 							canDeleteSale={canDeleteSalePermission}
 							isDeleting={isDeletingSale}
+							saleNavigationAction="details"
 							onRequestDelete={() => setDeleteDialogOpen(true)}
 						/>
+						{canChangeSaleStatus ? (
+							<SaleStatusAction
+								saleId={data.sale.id}
+								currentStatus={data.sale.status as SaleStatus}
+								buttonMode="modal-only"
+							/>
+						) : null}
 					</>
 				}
 			/>

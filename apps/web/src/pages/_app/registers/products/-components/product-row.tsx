@@ -2,11 +2,14 @@ import {
 	ChevronRight,
 	ChevronUp,
 	CirclePlus,
+	Copy,
 	Package,
 	Power,
+	Settings2,
 	Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -16,10 +19,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import type { ProductChild, ProductListItem } from "@/schemas/types/product";
-import { CreateProduct } from "./create-product";
-import { DuplicateProduct } from "./duplicate-product";
 import { ProductScenarioBadges } from "./product-scenario-badges";
-import { UpdateProduct } from "./update-product";
 
 interface ProductRowProps {
 	product: ProductChild;
@@ -95,23 +95,62 @@ export function ProductRow({
 					</CollapsibleTrigger>
 
 					<div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto">
-						<CreateProduct
-							fixedParentId={product.id}
-							trigger={
-								<Button
-									variant="ghost"
-									size="icon"
-									disabled={isLoading}
-									aria-label="Adicionar produto filho"
-									title="Adicionar produto filho"
+						{isLoading ? (
+							<Button
+								variant="ghost"
+								size="icon"
+								disabled
+								aria-label="Adicionar produto filho"
+								title="Adicionar produto filho"
+							>
+								<CirclePlus className="text-foreground" />
+							</Button>
+						) : (
+							<Button
+								asChild
+								variant="ghost"
+								size="icon"
+								aria-label="Adicionar produto filho"
+								title="Adicionar produto filho"
+							>
+								<Link
+									to="/registers/products/create"
+									search={{ parentId: product.id }}
 								>
 									<CirclePlus className="text-foreground" />
-								</Button>
-							}
-						/>
+								</Link>
+							</Button>
+						)}
 
-						<UpdateProduct product={product} />
-						<DuplicateProduct product={product} />
+						<Button
+							asChild
+							variant="ghost"
+							size="icon"
+							aria-label="Editar produto"
+							title="Editar produto"
+						>
+							<Link
+								to="/registers/products/update"
+								search={{ productId: product.id }}
+							>
+								<Settings2 className="text-foreground" />
+							</Link>
+						</Button>
+
+						<Button
+							asChild
+							variant="ghost"
+							size="icon"
+							aria-label="Duplicar produto"
+							title="Duplicar produto"
+						>
+							<Link
+								to="/registers/products/duplicate"
+								search={{ productId: product.id }}
+							>
+								<Copy className="text-foreground" />
+							</Link>
+						</Button>
 
 						<Button
 							variant="ghost"

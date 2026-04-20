@@ -90,6 +90,7 @@ function mapCommission(commission: {
 	} | null;
 	description: string;
 	totalPercentage: number;
+	dueDay: number | null;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
@@ -170,6 +171,7 @@ function mapCommission(commission: {
 			? commission.baseCommission?.sortOrder
 			: undefined,
 		totalPercentage: fromScaledPercentage(commission.totalPercentage),
+		dueDay: commission.dueDay ?? undefined,
 		installments: commission.installments.map((installment) => ({
 			installmentNumber: installment.installmentNumber,
 			percentage: fromScaledPercentage(installment.percentage),
@@ -255,6 +257,7 @@ export async function getProductCommissionScenarios(app: FastifyInstance) {
 									recipientOtherDescription: true,
 									description: true,
 									totalPercentage: true,
+									dueDay: true,
 									installments: {
 										select: {
 											installmentNumber: true,

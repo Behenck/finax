@@ -71,6 +71,7 @@ export const ProductCommissionSchema = z
 		calculationBase: ProductCommissionCalculationBaseSchema.optional(),
 		baseCommissionIndex: z.number().int().min(0).optional(),
 		totalPercentage: TotalPercentageSchema,
+		dueDay: z.number().int().min(1).max(31).optional(),
 		installments: z.array(CommissionInstallmentSchema).min(1),
 	})
 	.superRefine((commission, ctx) => {

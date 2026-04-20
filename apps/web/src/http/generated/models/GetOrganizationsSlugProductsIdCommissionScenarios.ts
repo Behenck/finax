@@ -152,6 +152,12 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
        */
       totalPercentage: number;
       /**
+       * @minLength 1
+       * @maxLength 31
+       * @type integer | undefined
+       */
+      dueDay?: number;
+      /**
        * @type array
        */
       installments: {

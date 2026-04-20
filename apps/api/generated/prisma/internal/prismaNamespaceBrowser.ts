@@ -690,6 +690,7 @@ export const ProductCommissionScalarFieldEnum = {
   recipientSupervisorId: 'recipientSupervisorId',
   recipientOtherDescription: 'recipientOtherDescription',
   totalPercentage: 'totalPercentage',
+  dueDay: 'dueDay',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

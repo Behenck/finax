@@ -53,6 +53,12 @@ const ROUTE_TITLE_MATCHERS: Array<{
 	{ pattern: /^\/registers\/partners\/create\/?$/, title: "Novo parceiro" },
 	{ pattern: /^\/registers\/partners\/update\/?$/, title: "Editar parceiro" },
 	{ pattern: /^\/registers\/partners\/?$/, title: "Parceiros" },
+	{ pattern: /^\/registers\/products\/create\/?$/, title: "Novo produto" },
+	{ pattern: /^\/registers\/products\/update\/?$/, title: "Editar produto" },
+	{
+		pattern: /^\/registers\/products\/duplicate\/?$/,
+		title: "Duplicar produto",
+	},
 	{ pattern: /^\/registers\/products\/?$/, title: "Produtos" },
 	{ pattern: /^\/registers\/companies\/?$/, title: "Empresas" },
 	{ pattern: /^\/registers\/cost-centers\/?$/, title: "Centro de custos" },

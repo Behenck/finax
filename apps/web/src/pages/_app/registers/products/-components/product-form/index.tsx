@@ -55,6 +55,7 @@ import {
 	SALE_DYNAMIC_FIELD_TYPE_VALUES,
 	type SaleDynamicFieldType,
 } from "@/schemas/types/sale-dynamic-fields";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import {
 	addProductToProductsCache,
 	updateProductInProductsCache,
@@ -412,7 +413,7 @@ export function ProductForm({
 		const partners = partnersData?.partners ?? [];
 		return partners.map((partner) => ({
 			id: partner.id,
-			label: partner.name,
+			label: getPartnerDisplayName(partner),
 		}));
 	}, [partnersData?.partners]);
 

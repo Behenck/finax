@@ -32,6 +32,7 @@ const COMMISSION_PATH_REGEX = /^commissions\[(\d+)\]\.(.+)$/;
 const INSTALLMENT_PATH_REGEX =
 	/^commissions\[(\d+)\]\.installments\[(\d+)\]\.(.+)$/;
 const DELINQUENCY_PATH_REGEX = /^delinquency\.(.+)$/;
+const COMPACT_HISTORY_CHANGE_LIMIT = 3;
 
 const SALE_FIELD_LABEL: Record<string, string> = {
 	totalAmount: "valor total",
@@ -106,6 +107,10 @@ export type SaleHistoryTimelineEvent = {
 	createdAt: string;
 	actor: SaleHistoryEvent["actor"];
 	messages: string[];
+	summaryMessages: string[];
+	detailMessages: string[];
+	isCompact: boolean;
+	detailsCount: number;
 };
 
 type ParsedHistoryPath =
@@ -411,6 +416,10 @@ function buildFallbackSentence(
 	return `Campo ${fieldName} alterado de ${beforeValue} para ${afterValue}.`;
 }
 
+function formatCountLabel(count: number, singular: string, plural: string) {
+	return `${count} ${count === 1 ? singular : plural}`;
+}
+
 function toSentenceLabel(value: string) {
 	const normalized = value.trim();
 	if (!normalized) {
@@ -672,21 +681,141 @@ export function formatSaleHistoryChange(change: SaleHistoryChange) {
 	return buildFallbackSentence(fallbackFieldName, beforeValue, afterValue);
 }
 
+function summarizeSaleHistoryChanges(changes: SaleHistoryChange[]) {
+	const saleFields = new Set<string>();
+	const dynamicFieldIds = new Set<string>();
+	const commissionIndexes = new Set<number>();
+	const installmentKeys = new Set<string>();
+	const installmentCommissionIndexes = new Set<number>();
+	let hasDelinquencyChanges = false;
+	let unknownChangesCount = 0;
+
+	for (const change of changes) {
+		const parsedPath = parseHistoryPath(change.path);
+
+		if (parsedPath.type === "dynamicField") {
+			dynamicFieldIds.add(parsedPath.fieldId);
+			continue;
+		}
+
+		if (parsedPath.type === "sale") {
+			saleFields.add(parsedPath.field);
+			continue;
+		}
+
+		if (parsedPath.type === "commission") {
+			commissionIndexes.add(parsedPath.commissionIndex);
+			continue;
+		}
+
+		if (parsedPath.type === "installment") {
+			installmentKeys.add(
+				`${parsedPath.commissionIndex}:${parsedPath.installmentIndex}`,
+			);
+			installmentCommissionIndexes.add(parsedPath.commissionIndex);
+			continue;
+		}
+
+		if (parsedPath.type === "delinquency") {
+			hasDelinquencyChanges = true;
+			continue;
+		}
+
+		unknownChangesCount += 1;
+	}
+
+	const messages: string[] = [];
+
+	if (saleFields.size > 0) {
+		messages.push(
+			`Dados da venda atualizados (${formatCountLabel(
+				saleFields.size,
+				"campo",
+				"campos",
+			)}).`,
+		);
+	}
+
+	if (dynamicFieldIds.size > 0) {
+		messages.push(
+			`Campos personalizados atualizados (${formatCountLabel(
+				dynamicFieldIds.size,
+				"campo",
+				"campos",
+			)}).`,
+		);
+	}
+
+	if (commissionIndexes.size > 0) {
+		messages.push(
+			`Comissões atualizadas (${formatCountLabel(
+				commissionIndexes.size,
+				"comissão",
+				"comissões",
+			)}).`,
+		);
+	}
+
+	if (installmentKeys.size > 0) {
+		messages.push(
+			`Parcelas de comissão atualizadas (${formatCountLabel(
+				installmentKeys.size,
+				"parcela",
+				"parcelas",
+			)} em ${formatCountLabel(
+				installmentCommissionIndexes.size,
+				"comissão",
+				"comissões",
+			)}).`,
+		);
+	}
+
+	if (hasDelinquencyChanges) {
+		messages.push("Inadimplência atualizada.");
+	}
+
+	if (unknownChangesCount > 0) {
+		messages.push(`Outras alterações registradas (${unknownChangesCount}).`);
+	}
+
+	return messages;
+}
+
 export function toSaleHistoryTimelineEvent(
 	event: SaleHistoryEvent,
 ): SaleHistoryTimelineEvent {
 	if (event.action === "CREATED") {
+		const creationMessages = ["Venda criada."];
+
 		return {
 			id: event.id,
 			action: event.action,
 			title: SALE_HISTORY_ACTION_LABEL[event.action],
 			createdAt: event.createdAt,
 			actor: event.actor,
-			messages: ["Venda criada."],
+			messages: creationMessages,
+			summaryMessages: creationMessages,
+			detailMessages: creationMessages,
+			isCompact: false,
+			detailsCount: 0,
 		};
 	}
 
-	const messages = event.changes.map((change) => formatSaleHistoryChange(change));
+	const detailMessages = event.changes.map((change) =>
+		formatSaleHistoryChange(change),
+	);
+	const fallbackMessages =
+		detailMessages.length > 0
+			? detailMessages
+			: ["Alteração registrada sem diffs detalhados."];
+	const isCompact = event.changes.length > COMPACT_HISTORY_CHANGE_LIMIT;
+	const summaryMessages = isCompact
+		? summarizeSaleHistoryChanges(event.changes)
+		: fallbackMessages;
+	const safeSummaryMessages =
+		summaryMessages.length > 0
+			? summaryMessages
+			: ["Alteração registrada sem diffs detalhados."];
 
 	return {
 		id: event.id,
@@ -694,7 +823,10 @@ export function toSaleHistoryTimelineEvent(
 		title: SALE_HISTORY_ACTION_LABEL[event.action],
 		createdAt: event.createdAt,
 		actor: event.actor,
-		messages:
-			messages.length > 0 ? messages : ["Alteração registrada sem diffs detalhados."],
+		messages: isCompact ? safeSummaryMessages : fallbackMessages,
+		summaryMessages: safeSummaryMessages,
+		detailMessages: fallbackMessages,
+		isCompact,
+		detailsCount: event.changes.length,
 	};
 }

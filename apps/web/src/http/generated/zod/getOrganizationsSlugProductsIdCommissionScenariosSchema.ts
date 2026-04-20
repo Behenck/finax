@@ -57,6 +57,7 @@ export const getOrganizationsSlugProductsIdCommissionScenarios200Schema =
                 z.int().min(0).max(9007199254740991),
               ),
               totalPercentage: z.number().max(100).gt(0),
+              dueDay: z.optional(z.int().min(1).max(31)),
               installments: z
                 .array(
                   z.object({

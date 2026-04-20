@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { PartnerStatus, SellerStatus } from "generated/prisma/enums";
 import { BadRequestError } from "../_errors/bad-request-error";
 import type { SaleResponsibleInput } from "./sale-schemas";
@@ -109,6 +110,7 @@ export async function loadSaleResponsible(
 			select: {
 				id: true,
 				name: true,
+				companyName: true,
 			},
 		});
 
@@ -119,7 +121,7 @@ export async function loadSaleResponsible(
 		return {
 			type: "PARTNER" as const,
 			id: partner.id,
-			name: partner.name,
+			name: getPartnerDisplayName(partner),
 		};
 	}
 
@@ -178,6 +180,7 @@ export async function loadSalesResponsible(
 					select: {
 						id: true,
 						name: true,
+						companyName: true,
 					},
 			  })
 			: Promise.resolve([]),
@@ -203,7 +206,11 @@ export async function loadSalesResponsible(
 				return [
 					sale.id,
 					partner
-						? ({ type: "PARTNER", id: partner.id, name: partner.name } as const)
+						? ({
+								type: "PARTNER",
+								id: partner.id,
+								name: getPartnerDisplayName(partner),
+							} as const)
 						: null,
 				];
 			}

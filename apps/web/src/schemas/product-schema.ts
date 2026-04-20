@@ -63,6 +63,7 @@ const productCommissionSchema = z
 		calculationBase: z.enum(["SALE_TOTAL", "COMMISSION"]).optional(),
 		baseCommissionIndex: z.number().int().min(0).optional(),
 		totalPercentage: totalPercentageSchema,
+		dueDay: z.number().int().min(1).max(31).optional(),
 		installments: z
 			.array(commissionInstallmentSchema)
 			.min(1, "Informe ao menos uma parcela"),

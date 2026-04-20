@@ -1087,6 +1087,7 @@ model ProductCommission {
   recipientSupervisorId     String?                          @map("recipient_supervisor_id")
   recipientOtherDescription String?                          @map("recipient_other_description")
   totalPercentage           Int                              @map("total_percentage")
+  dueDay                    Int?                             @map("due_day")
   sortOrder                 Int                              @default(0) @map("sort_order")
 
   createdAt DateTime @default(now()) @map("created_at")

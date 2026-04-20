@@ -368,6 +368,48 @@ function normalizeDateOnly(value: Date | string | null | undefined) {
 	return new Date();
 }
 
+function resolveMonthFixedDayDate(year: number, monthIndex: number, day: number) {
+	const lastDayOfMonth = new Date(year, monthIndex + 1, 0).getDate();
+	return new Date(year, monthIndex, Math.min(day, lastDayOfMonth));
+}
+
+export function resolveSaleCommissionStartDateFromDueDay(
+	saleDate: Date | string | null | undefined,
+	dueDay: number | null | undefined,
+) {
+	const normalizedSaleDate = normalizeDateOnly(saleDate);
+	const safeDueDay = Number(dueDay);
+
+	if (
+		!Number.isInteger(safeDueDay) ||
+		safeDueDay < 1 ||
+		safeDueDay > 31
+	) {
+		return normalizedSaleDate;
+	}
+
+	const baseDate = new Date(
+		normalizedSaleDate.getFullYear(),
+		normalizedSaleDate.getMonth(),
+		normalizedSaleDate.getDate(),
+	);
+	let candidateDate = resolveMonthFixedDayDate(
+		baseDate.getFullYear(),
+		baseDate.getMonth(),
+		safeDueDay,
+	);
+
+	if (candidateDate.getTime() < baseDate.getTime()) {
+		candidateDate = resolveMonthFixedDayDate(
+			baseDate.getFullYear(),
+			baseDate.getMonth() + 1,
+			safeDueDay,
+		);
+	}
+
+	return candidateDate;
+}
+
 export function createDefaultManualSaleCommission(
 	startDate?: Date,
 ): SaleCommissionFormData {
@@ -471,7 +513,9 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 					: undefined,
 			beneficiaryId: resolvedBeneficiaryId,
 			beneficiaryLabel: commission.beneficiaryLabel,
-			startDate,
+			startDate: commission.dueDay
+				? resolveSaleCommissionStartDateFromDueDay(startDate, commission.dueDay)
+				: startDate,
 			totalPercentage: commission.totalPercentage,
 			installments: commission.installments.map((installment) => ({
 				installmentNumber: installment.installmentNumber,

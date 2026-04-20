@@ -33,9 +33,11 @@ interface SaleActionsDropdownProps {
 	saleId: string;
 	customerId?: string;
 	canCreateSale: boolean;
+	canViewSale?: boolean;
 	canEditSale: boolean;
 	canDeleteSale: boolean;
 	isDeleting?: boolean;
+	saleNavigationAction?: "details" | "edit";
 	onRequestDelete(): void;
 }
 
@@ -43,15 +45,19 @@ export function SaleActionsDropdown({
 	saleId,
 	customerId,
 	canCreateSale,
+	canViewSale = false,
 	canEditSale,
 	canDeleteSale,
 	isDeleting = false,
+	saleNavigationAction = "edit",
 	onRequestDelete,
 }: SaleActionsDropdownProps) {
 	const navigate = useNavigate();
 	const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+	const canShowSaleNavigationAction =
+		saleNavigationAction === "details" ? canViewSale : canEditSale;
 	const canRenderActions =
-		canCreateSale || canEditSale || canDeleteSale || isDeleting;
+		canCreateSale || canShowSaleNavigationAction || canDeleteSale || isDeleting;
 
 	if (!canRenderActions) {
 		return null;
@@ -117,7 +123,15 @@ export function SaleActionsDropdown({
 							</DropdownMenuItem>
 						</>
 					) : null}
-					{canEditSale ? (
+					{saleNavigationAction === "details" && canViewSale ? (
+						<DropdownMenuItem asChild>
+							<Link to="/sales/$saleId" params={{ saleId }}>
+								<Eye className="size-4" />
+								Detalhes
+							</Link>
+						</DropdownMenuItem>
+					) : null}
+					{saleNavigationAction === "edit" && canEditSale ? (
 						<DropdownMenuItem asChild>
 							<Link to="/sales/update/$saleId" params={{ saleId }}>
 								<Pencil className="size-4" />

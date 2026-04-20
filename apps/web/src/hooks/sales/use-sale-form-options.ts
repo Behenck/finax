@@ -10,6 +10,7 @@ import {
 } from "@/http/generated";
 import { isAxiosError } from "@/lib/axios";
 import { useAbility } from "@/permissions/access";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 
 export interface SaleProductOption {
 	id: string;
@@ -190,7 +191,7 @@ export function useSaleFormOptions() {
 		() =>
 			(partnersQuery.data?.partners ?? []).map((partner) => ({
 				id: partner.id,
-				name: partner.name,
+				name: getPartnerDisplayName(partner),
 				status: partner.status as "ACTIVE" | "INACTIVE",
 			})),
 		[partnersQuery.data?.partners],

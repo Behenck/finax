@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { FieldError } from '@/components/field-error'
+import { getPartnerDisplayName } from '@/utils/partner-display'
 
 interface FormCustomerProps {
   customer?: GetOrganizationsSlugCustomersCustomerid200["customer"] & {
@@ -73,7 +74,7 @@ export function FormCustomer({
       : responsibleType === "PARTNER"
         ? (partnersData?.partners ?? []).map((partner) => ({
             id: partner.id,
-            name: partner.name,
+            name: getPartnerDisplayName(partner),
           }))
         : []
 

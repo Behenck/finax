@@ -1,16 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/app-context";
 import { textFilterParser } from "@/hooks/filters/parsers";
 import { useGetOrganizationsSlugProducts } from "@/http/generated";
 import type { Product } from "@/schemas/types/product";
 import { isNotNull } from "@/utils/is-not-null";
-import { createFileRoute } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Plus, Search } from "lucide-react";
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
-import { CreateProduct } from "./-components/create-product";
 import { ProductCard } from "./-components/product-card";
 
 export const Route = createFileRoute("/_app/registers/products/")({
@@ -74,7 +74,17 @@ function Products() {
 
 	return (
 		<main className="w-full space-y-6">
-			<PageHeader title="Gerenciar Produtos" actions={<CreateProduct />} />
+			<PageHeader
+				title="Gerenciar Produtos"
+				actions={
+					<Button asChild>
+						<Link to="/registers/products/create">
+							<Plus />
+							Adicionar Produto
+						</Link>
+					</Button>
+				}
+			/>
 
 			<div className="relative">
 				<Search className="absolute left-5 top-1/2 size-4 -translate-1/2 text-muted-foreground" />
@@ -91,16 +101,12 @@ function Products() {
 					<span className="text-sm text-muted-foreground">
 						Nenhum produto cadastrado
 					</span>
-					<CreateProduct
-						trigger={
-							<button
-								type="button"
-								className="cursor-pointer text-sm font-medium text-primary hover:underline"
-							>
-								Criar primeiro produto
-							</button>
-						}
-					/>
+					<Link
+						to="/registers/products/create"
+						className="cursor-pointer text-sm font-medium text-primary hover:underline"
+					>
+						Criar primeiro produto
+					</Link>
 				</Card>
 			) : (
 				<section className="space-y-3">

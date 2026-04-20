@@ -11,6 +11,7 @@ import {
 	SellerStatus,
 } from "generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { BadRequestError } from "../_errors/bad-request-error";
 import {
 	COMMISSION_PERCENTAGE_SCALE,
@@ -341,6 +342,7 @@ export async function resolveSaleCommissionsData(
 					select: {
 						id: true,
 						name: true,
+						companyName: true,
 					},
 				})
 			: Promise.resolve([]),
@@ -416,7 +418,7 @@ export async function resolveSaleCommissionsData(
 		sellers.map((seller) => [seller.id, seller.name]),
 	);
 	const partnerNameById = new Map(
-		partners.map((partner) => [partner.id, partner.name]),
+		partners.map((partner) => [partner.id, getPartnerDisplayName(partner)]),
 	);
 	const supervisorNameById = new Map(
 		supervisors.map((supervisor) => [

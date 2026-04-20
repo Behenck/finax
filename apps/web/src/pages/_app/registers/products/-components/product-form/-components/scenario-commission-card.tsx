@@ -152,7 +152,7 @@ export function ScenarioCommissionCard({
 
 	return (
 		<Card className="space-y-4 p-4">
-			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_220px_1fr_120px_120px_auto] xl:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_220px_1fr_120px_120px_120px_auto] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
@@ -355,6 +355,43 @@ export function ScenarioCommissionCard({
 										onChange={(event) => {
 											const value = Number(event.target.value);
 											field.onChange(Number.isFinite(value) ? value : 0);
+										}}
+									/>
+									<FormFieldError error={fieldState.error} />
+								</>
+							)}
+						/>
+					</Field>
+				</FieldGroup>
+
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel className="font-normal">Dia de pagamento</FieldLabel>
+						<Controller
+							name={`${commissionPath}.dueDay`}
+							control={control}
+							render={({ field, fieldState }) => (
+								<>
+									<Input
+										type="number"
+										min={1}
+										max={31}
+										step={1}
+										value={field.value ?? ""}
+										placeholder="Opcional"
+										onChange={(event) => {
+											const value = event.target.value;
+											if (!value) {
+												field.onChange(undefined);
+												return;
+											}
+
+											const parsedValue = Number(value);
+											field.onChange(
+												Number.isFinite(parsedValue)
+													? Math.trunc(parsedValue)
+													: undefined,
+											);
 										}}
 									/>
 									<FormFieldError error={fieldState.error} />

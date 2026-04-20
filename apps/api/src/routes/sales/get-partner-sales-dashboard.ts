@@ -17,6 +17,7 @@ import {
 	buildSalesVisibilityWhere,
 	loadMemberDataVisibilityContext,
 } from "@/permissions/data-visibility";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { loadSaleDelinquencySummaryBySaleIds } from "./sale-delinquencies";
 import {
 	GetPartnerSalesDashboardQuerySchema,
@@ -70,6 +71,7 @@ const RECENCY_BUCKETS = [
 type VisiblePartner = {
 	id: string;
 	name: string;
+	displayName: string;
 	status: "ACTIVE" | "INACTIVE";
 	supervisors: Array<{
 		id: string;
@@ -669,6 +671,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						select: {
 							id: true,
 							name: true,
+							companyName: true,
 							status: true,
 							supervisors: {
 								select: {
@@ -685,6 +688,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				).map((partner) => ({
 					id: partner.id,
 					name: partner.name,
+					displayName: getPartnerDisplayName(partner),
 					status: partner.status,
 					supervisors: partner.supervisors.map((link) => link.supervisor),
 				})) satisfies VisiblePartner[];
@@ -696,9 +700,14 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 							.map((supervisor) => [supervisor.id, supervisor]),
 					).values(),
 				).sort(buildPartnerNameSorter());
-				const filterPartners = [...visiblePartners].sort((left, right) =>
-					left.name.localeCompare(right.name, "pt-BR"),
-				);
+				const filterPartners = visiblePartners
+					.map((partner) => ({
+						id: partner.id,
+						name: partner.displayName,
+						status: partner.status,
+						supervisors: partner.supervisors,
+					}))
+					.sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
 				const filteredPartners = visiblePartners.filter((partner) => {
 					if (
 						supervisorId &&

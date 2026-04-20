@@ -42,6 +42,7 @@ export function createDefaultCommission(): ProductCommissionFormData {
 		calculationBase: "SALE_TOTAL",
 		baseCommissionIndex: undefined,
 		totalPercentage: 1,
+		dueDay: undefined,
 		installments: distributeInstallments(1, 1),
 	};
 }
@@ -115,6 +116,7 @@ export function mapApiScenarioToForm(
 									? commission.baseCommissionIndex
 									: undefined,
 							totalPercentage: roundPercentage(commission.totalPercentage),
+							dueDay: commission.dueDay,
 							installments,
 						};
 					})
@@ -150,6 +152,7 @@ export function mapScenariosToPayload(scenarios: ProductFormData["scenarios"]) {
 						? commission.baseCommissionIndex
 						: undefined,
 				totalPercentage: roundPercentage(commission.totalPercentage),
+				dueDay: commission.dueDay,
 				installments: commission.installments.map(
 					(installment, installmentIndex) => ({
 						installmentNumber: installmentIndex + 1,

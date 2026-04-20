@@ -188,6 +188,9 @@ export function SaleDetailsPage() {
 		canUpdateCommissionInstallment ||
 		canDeleteCommissionInstallment;
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [expandedHistoryEventIds, setExpandedHistoryEventIds] = useState<
+		Set<string>
+	>(() => new Set());
 	const [installmentsDrawerState, setInstallmentsDrawerState] =
 		useState<SaleInstallmentsDrawerState | null>(null);
 	const { saleId } = Route.useParams();
@@ -248,6 +251,20 @@ export function SaleDetailsPage() {
 		} catch {
 			// erro tratado no hook
 		}
+	}
+
+	function toggleHistoryEventDetails(eventId: string) {
+		setExpandedHistoryEventIds((currentIds) => {
+			const nextIds = new Set(currentIds);
+
+			if (nextIds.has(eventId)) {
+				nextIds.delete(eventId);
+			} else {
+				nextIds.add(eventId);
+			}
+
+			return nextIds;
+		});
 	}
 
 	function handleGoToPreviousSale() {
@@ -602,6 +619,7 @@ export function SaleDetailsPage() {
 						<div className="absolute left-5 top-3 bottom-3 w-px bg-border" />
 						{timelineEvents.map((event) => {
 							const ActionIcon = SALE_HISTORY_ACTION_ICON[event.action];
+							const isDetailsExpanded = expandedHistoryEventIds.has(event.id);
 
 							return (
 								<article key={event.id} className="relative flex gap-3">
@@ -646,6 +664,35 @@ export function SaleDetailsPage() {
 												</li>
 											))}
 										</ul>
+
+										{event.isCompact ? (
+											<div className="mt-3 space-y-3">
+												<Button
+													type="button"
+													variant="link"
+													size="sm"
+													className="h-auto p-0 text-xs"
+													onClick={() => toggleHistoryEventDetails(event.id)}
+												>
+													{isDetailsExpanded
+														? "Ocultar detalhes"
+														: `Ver detalhes (${event.detailsCount})`}
+												</Button>
+
+												{isDetailsExpanded ? (
+													<ul className="space-y-1.5 border-l pl-3 text-muted-foreground text-sm">
+														{event.detailMessages.map((message, index) => (
+															<li
+																key={`${event.id}-detail-${index}`}
+																className="leading-relaxed"
+															>
+																{message}
+															</li>
+														))}
+													</ul>
+												) : null}
+											</div>
+										) : null}
 									</div>
 								</article>
 							);

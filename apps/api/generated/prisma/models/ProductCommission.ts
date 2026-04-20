@@ -28,11 +28,13 @@ export type AggregateProductCommission = {
 
 export type ProductCommissionAvgAggregateOutputType = {
   totalPercentage: number | null
+  dueDay: number | null
   sortOrder: number | null
 }
 
 export type ProductCommissionSumAggregateOutputType = {
   totalPercentage: number | null
+  dueDay: number | null
   sortOrder: number | null
 }
 
@@ -49,6 +51,7 @@ export type ProductCommissionMinAggregateOutputType = {
   recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number | null
+  dueDay: number | null
   sortOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +70,7 @@ export type ProductCommissionMaxAggregateOutputType = {
   recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number | null
+  dueDay: number | null
   sortOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -85,6 +89,7 @@ export type ProductCommissionCountAggregateOutputType = {
   recipientSupervisorId: number
   recipientOtherDescription: number
   totalPercentage: number
+  dueDay: number
   sortOrder: number
   createdAt: number
   updatedAt: number
@@ -94,11 +99,13 @@ export type ProductCommissionCountAggregateOutputType = {
 
 export type ProductCommissionAvgAggregateInputType = {
   totalPercentage?: true
+  dueDay?: true
   sortOrder?: true
 }
 
 export type ProductCommissionSumAggregateInputType = {
   totalPercentage?: true
+  dueDay?: true
   sortOrder?: true
 }
 
@@ -115,6 +122,7 @@ export type ProductCommissionMinAggregateInputType = {
   recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
+  dueDay?: true
   sortOrder?: true
   createdAt?: true
   updatedAt?: true
@@ -133,6 +141,7 @@ export type ProductCommissionMaxAggregateInputType = {
   recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
+  dueDay?: true
   sortOrder?: true
   createdAt?: true
   updatedAt?: true
@@ -151,6 +160,7 @@ export type ProductCommissionCountAggregateInputType = {
   recipientSupervisorId?: true
   recipientOtherDescription?: true
   totalPercentage?: true
+  dueDay?: true
   sortOrder?: true
   createdAt?: true
   updatedAt?: true
@@ -256,6 +266,7 @@ export type ProductCommissionGroupByOutputType = {
   recipientSupervisorId: string | null
   recipientOtherDescription: string | null
   totalPercentage: number
+  dueDay: number | null
   sortOrder: number
   createdAt: Date
   updatedAt: Date
@@ -297,6 +308,7 @@ export type ProductCommissionWhereInput = {
   recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
+  dueDay?: Prisma.IntNullableFilter<"ProductCommission"> | number | null
   sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
@@ -323,6 +335,7 @@ export type ProductCommissionOrderByWithRelationInput = {
   recipientSupervisorId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -352,6 +365,7 @@ export type ProductCommissionWhereUniqueInput = Prisma.AtLeast<{
   recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
+  dueDay?: Prisma.IntNullableFilter<"ProductCommission"> | number | null
   sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
@@ -378,6 +392,7 @@ export type ProductCommissionOrderByWithAggregationInput = {
   recipientSupervisorId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,6 +419,7 @@ export type ProductCommissionScalarWhereWithAggregatesInput = {
   recipientSupervisorId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntWithAggregatesFilter<"ProductCommission"> | number
+  dueDay?: Prisma.IntNullableWithAggregatesFilter<"ProductCommission"> | number | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProductCommission"> | Date | string
@@ -416,6 +432,7 @@ export type ProductCommissionCreateInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -442,6 +459,7 @@ export type ProductCommissionUncheckedCreateInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -456,6 +474,7 @@ export type ProductCommissionUpdateInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -482,6 +501,7 @@ export type ProductCommissionUncheckedUpdateInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -502,6 +522,7 @@ export type ProductCommissionCreateManyInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -514,6 +535,7 @@ export type ProductCommissionUpdateManyMutationInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -532,6 +554,7 @@ export type ProductCommissionUncheckedUpdateManyInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -565,6 +588,7 @@ export type ProductCommissionCountOrderByAggregateInput = {
   recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -572,6 +596,7 @@ export type ProductCommissionCountOrderByAggregateInput = {
 
 export type ProductCommissionAvgOrderByAggregateInput = {
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -588,6 +613,7 @@ export type ProductCommissionMaxOrderByAggregateInput = {
   recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -606,6 +632,7 @@ export type ProductCommissionMinOrderByAggregateInput = {
   recipientSupervisorId?: Prisma.SortOrder
   recipientOtherDescription?: Prisma.SortOrder
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -613,6 +640,7 @@ export type ProductCommissionMinOrderByAggregateInput = {
 
 export type ProductCommissionSumOrderByAggregateInput = {
   totalPercentage?: Prisma.SortOrder
+  dueDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -918,6 +946,7 @@ export type ProductCommissionCreateWithoutRecipientSupervisorInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -942,6 +971,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput = {
   recipientSellerId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -991,6 +1021,7 @@ export type ProductCommissionScalarWhereInput = {
   recipientSupervisorId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientOtherDescription?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   totalPercentage?: Prisma.IntFilter<"ProductCommission"> | number
+  dueDay?: Prisma.IntNullableFilter<"ProductCommission"> | number | null
   sortOrder?: Prisma.IntFilter<"ProductCommission"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductCommission"> | Date | string
@@ -1003,6 +1034,7 @@ export type ProductCommissionCreateWithoutRecipientCompanyInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1027,6 +1059,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientCompanyInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1067,6 +1100,7 @@ export type ProductCommissionCreateWithoutRecipientUnitInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1091,6 +1125,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientUnitInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1131,6 +1166,7 @@ export type ProductCommissionCreateWithoutRecipientSellerInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1155,6 +1191,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientSellerInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1195,6 +1232,7 @@ export type ProductCommissionCreateWithoutScenarioInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1219,6 +1257,7 @@ export type ProductCommissionUncheckedCreateWithoutScenarioInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1259,6 +1298,7 @@ export type ProductCommissionCreateWithoutChildCommissionsInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1284,6 +1324,7 @@ export type ProductCommissionUncheckedCreateWithoutChildCommissionsInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1302,6 +1343,7 @@ export type ProductCommissionCreateWithoutBaseCommissionInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1326,6 +1368,7 @@ export type ProductCommissionUncheckedCreateWithoutBaseCommissionInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1361,6 +1404,7 @@ export type ProductCommissionUpdateWithoutChildCommissionsInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1386,6 +1430,7 @@ export type ProductCommissionUncheckedUpdateWithoutChildCommissionsInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1415,6 +1460,7 @@ export type ProductCommissionCreateWithoutInstallmentsInput = {
   calculationBase?: $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1440,6 +1486,7 @@ export type ProductCommissionUncheckedCreateWithoutInstallmentsInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1469,6 +1516,7 @@ export type ProductCommissionUpdateWithoutInstallmentsInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1494,6 +1542,7 @@ export type ProductCommissionUncheckedUpdateWithoutInstallmentsInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1512,6 +1561,7 @@ export type ProductCommissionCreateManyRecipientSupervisorInput = {
   recipientSellerId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1524,6 +1574,7 @@ export type ProductCommissionUpdateWithoutRecipientSupervisorInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1548,6 +1599,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientSupervisorInput = {
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1567,6 +1619,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorInput 
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1584,6 +1637,7 @@ export type ProductCommissionCreateManyRecipientCompanyInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1596,6 +1650,7 @@ export type ProductCommissionUpdateWithoutRecipientCompanyInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1620,6 +1675,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientCompanyInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1639,6 +1695,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1656,6 +1713,7 @@ export type ProductCommissionCreateManyRecipientUnitInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1668,6 +1726,7 @@ export type ProductCommissionUpdateWithoutRecipientUnitInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1692,6 +1751,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientUnitInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1711,6 +1771,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientUnitInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1728,6 +1789,7 @@ export type ProductCommissionCreateManyRecipientSellerInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1740,6 +1802,7 @@ export type ProductCommissionUpdateWithoutRecipientSellerInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1764,6 +1827,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientSellerInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1783,6 +1847,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientSellerInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1800,6 +1865,7 @@ export type ProductCommissionCreateManyScenarioInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1812,6 +1878,7 @@ export type ProductCommissionUpdateWithoutScenarioInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1836,6 +1903,7 @@ export type ProductCommissionUncheckedUpdateWithoutScenarioInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1855,6 +1923,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutScenarioInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1872,6 +1941,7 @@ export type ProductCommissionCreateManyBaseCommissionInput = {
   recipientSupervisorId?: string | null
   recipientOtherDescription?: string | null
   totalPercentage: number
+  dueDay?: number | null
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1884,6 +1954,7 @@ export type ProductCommissionUpdateWithoutBaseCommissionInput = {
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1908,6 +1979,7 @@ export type ProductCommissionUncheckedUpdateWithoutBaseCommissionInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1927,6 +1999,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutBaseCommissionInput = {
   recipientSupervisorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1985,6 +2058,7 @@ export type ProductCommissionSelect<ExtArgs extends runtime.Types.Extensions.Int
   recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
+  dueDay?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2012,6 +2086,7 @@ export type ProductCommissionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
+  dueDay?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2036,6 +2111,7 @@ export type ProductCommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
+  dueDay?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2060,12 +2136,13 @@ export type ProductCommissionSelectScalar = {
   recipientSupervisorId?: boolean
   recipientOtherDescription?: boolean
   totalPercentage?: boolean
+  dueDay?: boolean
   sortOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "calculationBase" | "baseCommissionId" | "recipientCompanyId" | "recipientUnitId" | "recipientSellerId" | "recipientSupervisorId" | "recipientOtherDescription" | "totalPercentage" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
+export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "calculationBase" | "baseCommissionId" | "recipientCompanyId" | "recipientUnitId" | "recipientSellerId" | "recipientSupervisorId" | "recipientOtherDescription" | "totalPercentage" | "dueDay" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
 export type ProductCommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
   baseCommission?: boolean | Prisma.ProductCommission$baseCommissionArgs<ExtArgs>
@@ -2119,6 +2196,7 @@ export type $ProductCommissionPayload<ExtArgs extends runtime.Types.Extensions.I
     recipientSupervisorId: string | null
     recipientOtherDescription: string | null
     totalPercentage: number
+    dueDay: number | null
     sortOrder: number
     createdAt: Date
     updatedAt: Date
@@ -2565,6 +2643,7 @@ export interface ProductCommissionFieldRefs {
   readonly recipientSupervisorId: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientOtherDescription: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly totalPercentage: Prisma.FieldRef<"ProductCommission", 'Int'>
+  readonly dueDay: Prisma.FieldRef<"ProductCommission", 'Int'>
   readonly sortOrder: Prisma.FieldRef<"ProductCommission", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProductCommission", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProductCommission", 'DateTime'>

@@ -3,6 +3,7 @@ import type { SaleCommissionFormData } from "@/schemas/sale-schema";
 import {
 	mapScenarioCommissionsToPulledSaleCommissions,
 	replacePulledSaleCommissions,
+	resolveSaleCommissionStartDateFromDueDay,
 	type ProductCommission,
 } from "../src/pages/_app/sales/-components/sale-commission-helpers";
 
@@ -20,7 +21,60 @@ function buildLinkedCompanyScenarioCommission(): ProductCommission {
 	};
 }
 
+function toLocalDateOnly(date: Date) {
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	return `${year}-${month}-${day}`;
+}
+
 describe("sale commission helpers", () => {
+	it("should resolve commission start date from due day in the next month when due day already passed", () => {
+		const startDate = resolveSaleCommissionStartDateFromDueDay(
+			new Date("2026-04-20T00:00:00"),
+			10,
+		);
+
+		expect(toLocalDateOnly(startDate)).toBe("2026-05-10");
+	});
+
+	it("should resolve commission start date from due day in the same day when due day matches sale date", () => {
+		const startDate = resolveSaleCommissionStartDateFromDueDay(
+			new Date("2026-04-10T00:00:00"),
+			10,
+		);
+
+		expect(toLocalDateOnly(startDate)).toBe("2026-04-10");
+	});
+
+	it("should clamp commission due day to month end when month has fewer days", () => {
+		const startDate = resolveSaleCommissionStartDateFromDueDay(
+			new Date("2026-02-20T00:00:00"),
+			31,
+		);
+
+		expect(toLocalDateOnly(startDate)).toBe("2026-02-28");
+	});
+
+	it("should use due day when mapping pulled scenario commissions", () => {
+		const pulled = mapScenarioCommissionsToPulledSaleCommissions(
+			[
+				{
+					...buildLinkedCompanyScenarioCommission(),
+					dueDay: 10,
+				},
+			],
+			new Date("2026-04-20T00:00:00"),
+			{
+				companyId: SALE_COMPANY_ID,
+			},
+		);
+
+		expect(pulled[0]?.startDate ? toLocalDateOnly(pulled[0].startDate) : null).toBe(
+			"2026-05-10",
+		);
+	});
+
 	it("should resolve linked COMPANY beneficiary with selected sale company", () => {
 		const pulled = mapScenarioCommissionsToPulledSaleCommissions(
 			[buildLinkedCompanyScenarioCommission()],

@@ -51,6 +51,9 @@ import { Route as AppTransactionsUpdateTransactionIdRouteImport } from './pages/
 import { Route as AppSalesUpdateSaleIdRouteImport } from './pages/_app/sales/update/$saleId'
 import { Route as AppRegistersSellersUpdateRouteImport } from './pages/_app/registers/sellers/update'
 import { Route as AppRegistersSellersCreateRouteImport } from './pages/_app/registers/sellers/create'
+import { Route as AppRegistersProductsUpdateRouteImport } from './pages/_app/registers/products/update'
+import { Route as AppRegistersProductsDuplicateRouteImport } from './pages/_app/registers/products/duplicate'
+import { Route as AppRegistersProductsCreateRouteImport } from './pages/_app/registers/products/create'
 import { Route as AppRegistersPartnersUpdateRouteImport } from './pages/_app/registers/partners/update'
 import { Route as AppRegistersPartnersCreateRouteImport } from './pages/_app/registers/partners/create'
 import { Route as AppRegistersCustomersUpdateRouteImport } from './pages/_app/registers/customers/update'
@@ -281,6 +284,24 @@ const AppRegistersSellersCreateRoute =
     path: '/registers/sellers/create',
     getParentRoute: () => AppLayoutRoute,
   } as any)
+const AppRegistersProductsUpdateRoute =
+  AppRegistersProductsUpdateRouteImport.update({
+    id: '/registers/products/update',
+    path: '/registers/products/update',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
+const AppRegistersProductsDuplicateRoute =
+  AppRegistersProductsDuplicateRouteImport.update({
+    id: '/registers/products/duplicate',
+    path: '/registers/products/duplicate',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
+const AppRegistersProductsCreateRoute =
+  AppRegistersProductsCreateRouteImport.update({
+    id: '/registers/products/create',
+    path: '/registers/products/create',
+    getParentRoute: () => AppLayoutRoute,
+  } as any)
 const AppRegistersPartnersUpdateRoute =
   AppRegistersPartnersUpdateRouteImport.update({
     id: '/registers/partners/update',
@@ -341,6 +362,9 @@ export interface FileRoutesByFullPath {
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/registers/products/create': typeof AppRegistersProductsCreateRoute
+  '/registers/products/duplicate': typeof AppRegistersProductsDuplicateRoute
+  '/registers/products/update': typeof AppRegistersProductsUpdateRoute
   '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
@@ -386,6 +410,9 @@ export interface FileRoutesByTo {
   '/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/registers/products/create': typeof AppRegistersProductsCreateRoute
+  '/registers/products/duplicate': typeof AppRegistersProductsDuplicateRoute
+  '/registers/products/update': typeof AppRegistersProductsUpdateRoute
   '/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
@@ -436,6 +463,9 @@ export interface FileRoutesById {
   '/_app/registers/customers/update': typeof AppRegistersCustomersUpdateRoute
   '/_app/registers/partners/create': typeof AppRegistersPartnersCreateRoute
   '/_app/registers/partners/update': typeof AppRegistersPartnersUpdateRoute
+  '/_app/registers/products/create': typeof AppRegistersProductsCreateRoute
+  '/_app/registers/products/duplicate': typeof AppRegistersProductsDuplicateRoute
+  '/_app/registers/products/update': typeof AppRegistersProductsUpdateRoute
   '/_app/registers/sellers/create': typeof AppRegistersSellersCreateRoute
   '/_app/registers/sellers/update': typeof AppRegistersSellersUpdateRoute
   '/_app/sales/update/$saleId': typeof AppSalesUpdateSaleIdRoute
@@ -485,6 +515,9 @@ export interface FileRouteTypes {
     | '/registers/customers/update'
     | '/registers/partners/create'
     | '/registers/partners/update'
+    | '/registers/products/create'
+    | '/registers/products/duplicate'
+    | '/registers/products/update'
     | '/registers/sellers/create'
     | '/registers/sellers/update'
     | '/sales/update/$saleId'
@@ -530,6 +563,9 @@ export interface FileRouteTypes {
     | '/registers/customers/update'
     | '/registers/partners/create'
     | '/registers/partners/update'
+    | '/registers/products/create'
+    | '/registers/products/duplicate'
+    | '/registers/products/update'
     | '/registers/sellers/create'
     | '/registers/sellers/update'
     | '/sales/update/$saleId'
@@ -579,6 +615,9 @@ export interface FileRouteTypes {
     | '/_app/registers/customers/update'
     | '/_app/registers/partners/create'
     | '/_app/registers/partners/update'
+    | '/_app/registers/products/create'
+    | '/_app/registers/products/duplicate'
+    | '/_app/registers/products/update'
     | '/_app/registers/sellers/create'
     | '/_app/registers/sellers/update'
     | '/_app/sales/update/$saleId'
@@ -899,6 +938,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistersSellersCreateRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/registers/products/update': {
+      id: '/_app/registers/products/update'
+      path: '/registers/products/update'
+      fullPath: '/registers/products/update'
+      preLoaderRoute: typeof AppRegistersProductsUpdateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/registers/products/duplicate': {
+      id: '/_app/registers/products/duplicate'
+      path: '/registers/products/duplicate'
+      fullPath: '/registers/products/duplicate'
+      preLoaderRoute: typeof AppRegistersProductsDuplicateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/registers/products/create': {
+      id: '/_app/registers/products/create'
+      path: '/registers/products/create'
+      fullPath: '/registers/products/create'
+      preLoaderRoute: typeof AppRegistersProductsCreateRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/registers/partners/update': {
       id: '/_app/registers/partners/update'
       path: '/registers/partners/update'
@@ -971,6 +1031,9 @@ interface AppLayoutRouteChildren {
   AppRegistersCustomersUpdateRoute: typeof AppRegistersCustomersUpdateRoute
   AppRegistersPartnersCreateRoute: typeof AppRegistersPartnersCreateRoute
   AppRegistersPartnersUpdateRoute: typeof AppRegistersPartnersUpdateRoute
+  AppRegistersProductsCreateRoute: typeof AppRegistersProductsCreateRoute
+  AppRegistersProductsDuplicateRoute: typeof AppRegistersProductsDuplicateRoute
+  AppRegistersProductsUpdateRoute: typeof AppRegistersProductsUpdateRoute
   AppRegistersSellersCreateRoute: typeof AppRegistersSellersCreateRoute
   AppRegistersSellersUpdateRoute: typeof AppRegistersSellersUpdateRoute
   AppSalesUpdateSaleIdRoute: typeof AppSalesUpdateSaleIdRoute
@@ -1005,6 +1068,9 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppRegistersCustomersUpdateRoute: AppRegistersCustomersUpdateRoute,
   AppRegistersPartnersCreateRoute: AppRegistersPartnersCreateRoute,
   AppRegistersPartnersUpdateRoute: AppRegistersPartnersUpdateRoute,
+  AppRegistersProductsCreateRoute: AppRegistersProductsCreateRoute,
+  AppRegistersProductsDuplicateRoute: AppRegistersProductsDuplicateRoute,
+  AppRegistersProductsUpdateRoute: AppRegistersProductsUpdateRoute,
   AppRegistersSellersCreateRoute: AppRegistersSellersCreateRoute,
   AppRegistersSellersUpdateRoute: AppRegistersSellersUpdateRoute,
   AppSalesUpdateSaleIdRoute: AppSalesUpdateSaleIdRoute,

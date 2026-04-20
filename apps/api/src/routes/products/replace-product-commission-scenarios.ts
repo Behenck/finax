@@ -552,6 +552,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 											totalPercentage: toScaledPercentage(
 												commission.totalPercentage,
 											),
+											dueDay: commission.dueDay ?? null,
 											sortOrder: commissionIndex,
 										},
 										select: {
