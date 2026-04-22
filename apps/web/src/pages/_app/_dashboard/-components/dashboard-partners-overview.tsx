@@ -943,17 +943,17 @@ function PartnerRankingSection({
 												</div>
 
 												<div className="mt-1 min-h-[40px] px-1 text-center leading-tight">
-													<div className="break-words text-[12px] font-semibold text-foreground">
+													<div className="break-words text-[11px] font-semibold text-foreground sm:text-[12px]">
 														{primaryName}
 													</div>
 													{secondaryName ? (
-														<div className="mt-0.5 break-words text-[10px] text-muted-foreground">
+														<div className="mt-0.5 hidden break-words text-[10px] text-muted-foreground sm:block">
 															{secondaryName}
 														</div>
 													) : null}
 												</div>
 
-												<div className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground">
+												<div className="mt-auto pt-2 font-mono text-[11px] font-medium tabular-nums leading-none tracking-tight text-foreground sm:text-base">
 													{formatAmountFromCents(totalSoldAmount)}
 												</div>
 											</div>
