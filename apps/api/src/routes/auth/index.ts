@@ -17,7 +17,7 @@ import { patchMe } from "./patch-me";
 import { patchMePassword } from "./patch-me-password";
 
 export async function authRoutes(app: FastifyInstance) {
-  await app.register(createAccount);
+  // await app.register(createAccount);
   await app.register(authenticateWithPassword);
   await app.register(getGoogleSession);
   await app.register(getGoogleSessionCallback);
