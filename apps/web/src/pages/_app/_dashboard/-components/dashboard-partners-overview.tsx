@@ -235,6 +235,8 @@ type DelinquencyPieDataItem =
 	PartnerDashboardData["delinquencyBreakdown"]["buckets"][number] & {
 		fill: string;
 	};
+type AvailableDynamicFieldOption =
+	PartnerDashboardData["dynamicFieldBreakdown"]["availableFields"][number];
 
 type PartnerKpiCardProps = {
 	title: string;
@@ -368,6 +370,36 @@ function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
 		...item,
 		fill: BREAKDOWN_PIE_COLORS[index % BREAKDOWN_PIE_COLORS.length]!,
 	})) satisfies BreakdownPieDataItem[];
+}
+
+export function dedupeAvailableDynamicFields(
+	availableFields: AvailableDynamicFieldOption[],
+	selectedFieldId: string | null,
+) {
+	const uniqueFieldsByKey = new Map<string, AvailableDynamicFieldOption>();
+	const seenFieldIds = new Set<string>();
+
+	for (const field of availableFields) {
+		if (seenFieldIds.has(field.fieldId)) {
+			continue;
+		}
+
+		seenFieldIds.add(field.fieldId);
+		const normalizedLabel = field.label.trim().toLocaleLowerCase("pt-BR");
+		const dedupeKey = `${field.type}:${normalizedLabel}`;
+		const existingField = uniqueFieldsByKey.get(dedupeKey);
+
+		if (!existingField) {
+			uniqueFieldsByKey.set(dedupeKey, field);
+			continue;
+		}
+
+		if (selectedFieldId && field.fieldId === selectedFieldId) {
+			uniqueFieldsByKey.set(dedupeKey, field);
+		}
+	}
+
+	return Array.from(uniqueFieldsByKey.values());
 }
 
 function buildDelinquencyPieData(
@@ -2050,7 +2082,21 @@ export function DashboardPartnersOverview() {
 		inactiveMonths,
 		supervisorId: effectiveSupervisorId || undefined,
 		partnerIds: effectivePartnerIdsCsv,
+	});
+	const dynamicFieldBreakdownQuery = usePartnerSalesDashboard({
+		startDate: effectiveStartDate,
+		endDate: effectiveEndDate,
+		inactiveMonths,
+		supervisorId: effectiveSupervisorId || undefined,
+		partnerIds: effectivePartnerIdsCsv,
 		dynamicFieldId: effectiveDynamicFieldId || undefined,
+	});
+	const productBreakdownQuery = usePartnerSalesDashboard({
+		startDate: effectiveStartDate,
+		endDate: effectiveEndDate,
+		inactiveMonths,
+		supervisorId: effectiveSupervisorId || undefined,
+		partnerIds: effectivePartnerIdsCsv,
 		productBreakdownDepth,
 	});
 	const previousMonthCanceledQuery = usePartnerSalesDashboard({
@@ -2059,10 +2105,14 @@ export function DashboardPartnersOverview() {
 		inactiveMonths,
 		supervisorId: effectiveSupervisorId || undefined,
 		partnerIds: effectivePartnerIdsCsv,
-		dynamicFieldId: effectiveDynamicFieldId || undefined,
-		productBreakdownDepth,
 	});
 	const data = query.data;
+	const dynamicFieldBreakdown =
+		effectiveDynamicFieldId && dynamicFieldBreakdownQuery.data
+			? dynamicFieldBreakdownQuery.data.dynamicFieldBreakdown
+			: data?.dynamicFieldBreakdown;
+	const productBreakdown =
+		productBreakdownQuery.data?.productBreakdown ?? data?.productBreakdown;
 	const previousMonthCanceledByPartnerId = useMemo(() => {
 		const map: Record<
 			string,
@@ -2094,6 +2144,15 @@ export function DashboardPartnersOverview() {
 			),
 		);
 	}, [data?.filters.partners, effectiveSupervisorId]);
+	const availableDynamicFieldOptions = useMemo(() => {
+		return dedupeAvailableDynamicFields(
+			data?.dynamicFieldBreakdown.availableFields ?? [],
+			dynamicFieldBreakdown?.selectedFieldId ?? null,
+		);
+	}, [
+		data?.dynamicFieldBreakdown.availableFields,
+		dynamicFieldBreakdown?.selectedFieldId,
+	]);
 
 	useEffect(() => {
 		const allowedIds = new Set(partnerOptions.map((partner) => partner.id));
@@ -2110,13 +2169,37 @@ export function DashboardPartnersOverview() {
 			return;
 		}
 
+		if (effectiveDynamicFieldId) {
+			return;
+		}
+
 		const nextDynamicFieldId = data.dynamicFieldBreakdown.selectedFieldId ?? "";
 		if (dynamicFieldId === nextDynamicFieldId) {
 			return;
 		}
 
 		void setDynamicFieldId(nextDynamicFieldId);
-	}, [data, dynamicFieldId, setDynamicFieldId]);
+	}, [data, dynamicFieldId, effectiveDynamicFieldId, setDynamicFieldId]);
+
+	useEffect(() => {
+		if (!effectiveDynamicFieldId || !dynamicFieldBreakdownQuery.data) {
+			return;
+		}
+
+		const nextDynamicFieldId =
+			dynamicFieldBreakdownQuery.data.dynamicFieldBreakdown.selectedFieldId ??
+			"";
+		if (dynamicFieldId === nextDynamicFieldId) {
+			return;
+		}
+
+		void setDynamicFieldId(nextDynamicFieldId);
+	}, [
+		dynamicFieldBreakdownQuery.data,
+		dynamicFieldId,
+		effectiveDynamicFieldId,
+		setDynamicFieldId,
+	]);
 
 	const summary = data?.summary;
 	const hasPartners = (summary?.totalPartners ?? 0) > 0;
@@ -2313,42 +2396,12 @@ export function DashboardPartnersOverview() {
 							disabled={!data}
 						/>
 					</div>
-					<div className="space-y-2">
-						<Label>Campo personalizado</Label>
-						<Select
-							value={data?.dynamicFieldBreakdown.selectedFieldId ?? "NONE"}
-							disabled={
-								!data || data.dynamicFieldBreakdown.availableFields.length === 0
-							}
-							onValueChange={(value) =>
-								void setDynamicFieldId(value === "NONE" ? "" : value)
-							}
-						>
-							<SelectTrigger className="w-full rounded-full">
-								<SelectValue placeholder="Sem campos elegíveis" />
-							</SelectTrigger>
-							<SelectContent>
-								{(data?.dynamicFieldBreakdown.availableFields ?? []).length ===
-								0 ? (
-									<SelectItem value="NONE">Sem campos elegíveis</SelectItem>
-								) : (
-									(data?.dynamicFieldBreakdown.availableFields ?? []).map(
-										(field) => (
-											<SelectItem key={field.fieldId} value={field.fieldId}>
-												{field.label}
-											</SelectItem>
-										),
-									)
-								)}
-							</SelectContent>
-						</Select>
-					</div>
 				</FilterPanel>
 			) : null}
 			<LoadingReveal
 				loading={query.isLoading && !data}
 				skeleton={<DashboardPartnersSkeleton />}
-				contentKey={`${effectiveStartDate}-${effectiveEndDate}-${effectiveSupervisorId}-${effectivePartnerIdsCsv}-${inactiveMonths}-${effectiveDynamicFieldId}-${productBreakdownDepth}`}
+				contentKey={`${effectiveStartDate}-${effectiveEndDate}-${effectiveSupervisorId}-${effectivePartnerIdsCsv}-${inactiveMonths}`}
 				className="space-y-6"
 				stagger
 			>
@@ -2578,42 +2631,133 @@ export function DashboardPartnersOverview() {
 				</div>
 
 				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
-					<PartnerBreakdownPieCard
-						title={`Vendas por ${data?.dynamicFieldBreakdown.selectedFieldLabel ?? "campo personalizado"}`}
-						description="Distribuição das vendas por valor do campo selecionado."
-						items={data?.dynamicFieldBreakdown.items ?? []}
-						emptyMessage="Nenhum valor preenchido para o campo selecionado neste período."
-					/>
+					<LoadingReveal
+						loading={
+							Boolean(effectiveDynamicFieldId) &&
+							dynamicFieldBreakdownQuery.isLoading &&
+							!dynamicFieldBreakdownQuery.data
+						}
+						skeleton={
+							<Card className="h-full border-border/70">
+								<CardHeader className="flex flex-row items-start justify-between gap-2 pb-3">
+									<div className="min-w-0 flex-1 space-y-2">
+										<Skeleton className="h-5 w-48" />
+										<Skeleton className="h-4 w-64 max-w-full" />
+									</div>
+									<Skeleton className="h-10 w-[220px] rounded-full" />
+								</CardHeader>
+								<CardContent className="space-y-4 pt-0">
+									<Skeleton className="mx-auto h-[230px] w-full max-w-[260px] rounded-xl" />
+									<div className="grid grid-cols-2 gap-2">
+										<Skeleton className="h-14 w-full rounded-xl" />
+										<Skeleton className="h-14 w-full rounded-xl" />
+									</div>
+									<div className="space-y-2">
+										<Skeleton className="h-12 w-full rounded-xl" />
+										<Skeleton className="h-12 w-full rounded-xl" />
+										<Skeleton className="h-12 w-full rounded-xl" />
+									</div>
+								</CardContent>
+							</Card>
+						}
+						contentKey={
+							dynamicFieldBreakdown?.selectedFieldId ??
+							"dynamic-field-breakdown"
+						}
+					>
+						<PartnerBreakdownPieCard
+							title={`Vendas por ${dynamicFieldBreakdown?.selectedFieldLabel ?? "campo personalizado"}`}
+							description="Distribuição das vendas por valor do campo selecionado."
+							items={dynamicFieldBreakdown?.items ?? []}
+							emptyMessage="Nenhum valor preenchido para o campo selecionado neste período."
+							headerAction={
+								<Select
+									value={dynamicFieldBreakdown?.selectedFieldId ?? "NONE"}
+									disabled={!data || availableDynamicFieldOptions.length === 0}
+									onValueChange={(value) =>
+										void setDynamicFieldId(value === "NONE" ? "" : value)
+									}
+								>
+									<SelectTrigger className="w-[220px] rounded-full">
+										<SelectValue placeholder="Sem campos elegíveis" />
+									</SelectTrigger>
+									<SelectContent>
+										{availableDynamicFieldOptions.length === 0 ? (
+											<SelectItem value="NONE">Sem campos elegíveis</SelectItem>
+										) : (
+											availableDynamicFieldOptions.map((field) => (
+												<SelectItem key={field.fieldId} value={field.fieldId}>
+													{field.label}
+												</SelectItem>
+											))
+										)}
+									</SelectContent>
+								</Select>
+							}
+						/>
+					</LoadingReveal>
 
-					<PartnerBreakdownPieCard
-						title="Vendas por subproduto do produto pai"
-						description={
-							productBreakdownDepth === "ALL_LEVELS"
-								? "Distribuição pelo caminho completo dos produtos usados nas vendas."
-								: "Distribuição apenas pelo primeiro nível abaixo do produto pai."
+					<LoadingReveal
+						loading={
+							Boolean(data) &&
+							productBreakdownQuery.isLoading &&
+							!productBreakdownQuery.data
 						}
-						items={data?.productBreakdown.items ?? []}
-						emptyMessage="Nenhum produto encontrado nas vendas do período selecionado."
-						variant="regular"
-						headerAction={
-							<Select
-								value={productBreakdownDepth}
-								onValueChange={(value) =>
-									void setProductBreakdownDepth(
-										value as "FIRST_LEVEL" | "ALL_LEVELS",
-									)
-								}
-							>
-								<SelectTrigger className="w-[160px] rounded-full">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="FIRST_LEVEL">1º nível</SelectItem>
-									<SelectItem value="ALL_LEVELS">Todos os níveis</SelectItem>
-								</SelectContent>
-							</Select>
+						skeleton={
+							<Card className="h-full border-border/70">
+								<CardHeader className="flex flex-row items-start justify-between gap-2 pb-3">
+									<div className="min-w-0 flex-1 space-y-2">
+										<Skeleton className="h-5 w-56" />
+										<Skeleton className="h-4 w-72 max-w-full" />
+									</div>
+									<Skeleton className="h-10 w-[160px] rounded-full" />
+								</CardHeader>
+								<CardContent className="space-y-4 pt-0">
+									<Skeleton className="mx-auto h-[230px] w-full max-w-[260px] rounded-xl" />
+									<div className="grid grid-cols-2 gap-2">
+										<Skeleton className="h-14 w-full rounded-xl" />
+										<Skeleton className="h-14 w-full rounded-xl" />
+									</div>
+									<div className="space-y-2">
+										<Skeleton className="h-12 w-full rounded-xl" />
+										<Skeleton className="h-12 w-full rounded-xl" />
+										<Skeleton className="h-12 w-full rounded-xl" />
+									</div>
+								</CardContent>
+							</Card>
 						}
-					/>
+						contentKey={`product-breakdown-${productBreakdownDepth}`}
+					>
+						<PartnerBreakdownPieCard
+							title="Vendas por subproduto do produto pai"
+							description={
+								productBreakdownDepth === "ALL_LEVELS"
+									? "Distribuição pelo caminho completo dos produtos usados nas vendas."
+									: "Distribuição apenas pelo primeiro nível abaixo do produto pai."
+							}
+							items={productBreakdown?.items ?? []}
+							emptyMessage="Nenhum produto encontrado nas vendas do período selecionado."
+							variant="regular"
+							headerAction={
+								<Select
+									value={productBreakdownDepth}
+									onValueChange={(value) =>
+										void setProductBreakdownDepth(
+											value as "FIRST_LEVEL" | "ALL_LEVELS",
+										)
+									}
+								>
+									<SelectTrigger className="w-[160px] rounded-full">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="FIRST_LEVEL">1º nível</SelectItem>
+										<SelectItem value="ALL_LEVELS">Todos os níveis</SelectItem>
+									</SelectContent>
+								</Select>
+							}
+						/>
+					</LoadingReveal>
 
 					<DelinquencyBreakdownCard
 						totalSales={data?.delinquencyBreakdown.totalSales ?? 0}

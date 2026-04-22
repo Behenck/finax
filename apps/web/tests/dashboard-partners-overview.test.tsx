@@ -2,7 +2,10 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Dispatch, SetStateAction } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DashboardPartnersOverview } from "../src/pages/_app/_dashboard/-components/dashboard-partners-overview";
+import {
+	DashboardPartnersOverview,
+	dedupeAvailableDynamicFields,
+} from "../src/pages/_app/_dashboard/-components/dashboard-partners-overview";
 
 const FILTER_START_DATE = "2025-12-01";
 const FILTER_END_DATE = "2026-01-10";
@@ -520,6 +523,171 @@ describe("DashboardPartnersOverview", () => {
 		).toBeInTheDocument();
 		expect(
 			within(supervisorTable as HTMLTableElement).queryByText(/123,45/),
+		).not.toBeInTheDocument();
+	});
+
+	it("deduplicates custom field options by label and preserves the selected field", () => {
+		const result = dedupeAvailableDynamicFields(
+			[
+				{
+					fieldId: "11111111-1111-4111-8111-111111111111",
+					label: "Canal",
+					type: "SELECT",
+				},
+				{
+					fieldId: "22222222-2222-4222-8222-222222222222",
+					label: "Canal",
+					type: "SELECT",
+				},
+				{
+					fieldId: "33333333-3333-4333-8333-333333333333",
+					label: "Origem",
+					type: "SELECT",
+				},
+			],
+			"22222222-2222-4222-8222-222222222222",
+		);
+
+		expect(result).toHaveLength(2);
+		expect(result[0]).toMatchObject({
+			fieldId: "22222222-2222-4222-8222-222222222222",
+			label: "Canal",
+		});
+		expect(result[1]).toMatchObject({
+			fieldId: "33333333-3333-4333-8333-333333333333",
+			label: "Origem",
+		});
+	});
+
+	it("keeps the dashboard visible while only the custom field card is reloading", () => {
+		const baseData = buildDashboardData([
+			buildRankingItem({
+				partnerId: "11111111-1111-1111-1111-111111111111",
+				partnerName: "Parceiro Base",
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Base",
+				concludedCount: 2,
+				concludedAmount: 120_000,
+				pendingCount: 1,
+				pendingAmount: 40_000,
+				canceledCount: 0,
+				canceledAmount: 0,
+				delinquentCount: 0,
+				delinquentAmount: 0,
+			}),
+		]);
+
+		mocks.reset({
+			dynamicFieldId: "11111111-1111-4111-8111-111111111111",
+		});
+
+		mocks.usePartnerSalesDashboard.mockImplementation(
+			(args: Record<string, unknown>) => {
+				if (
+					args.startDate === PREVIOUS_MONTH_START_DATE &&
+					args.endDate === PREVIOUS_MONTH_END_DATE
+				) {
+					return {
+						isLoading: false,
+						isError: false,
+						data: baseData,
+						refetch: vi.fn(),
+					};
+				}
+
+				if (args.dynamicFieldId) {
+					return {
+						isLoading: true,
+						isError: false,
+						data: undefined,
+						refetch: vi.fn(),
+					};
+				}
+
+				return {
+					isLoading: false,
+					isError: false,
+					data: baseData,
+					refetch: vi.fn(),
+				};
+			},
+		);
+
+		const { container } = render(<DashboardPartnersOverview />);
+
+		expect(screen.getByText("Dashboard de parceiros")).toBeInTheDocument();
+		expect(screen.getByText("Total de parceiros")).toBeInTheDocument();
+		expect(
+			container.querySelectorAll('[data-slot="skeleton"]').length,
+		).toBeGreaterThan(0);
+		expect(
+			screen.queryByText("Não foi possível carregar o dashboard de parceiros."),
+		).not.toBeInTheDocument();
+	});
+
+	it("keeps the dashboard visible while only the product breakdown card is reloading", () => {
+		const baseData = buildDashboardData([
+			buildRankingItem({
+				partnerId: "11111111-1111-1111-1111-111111111111",
+				partnerName: "Parceiro Base",
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Base",
+				concludedCount: 2,
+				concludedAmount: 120_000,
+				pendingCount: 1,
+				pendingAmount: 40_000,
+				canceledCount: 0,
+				canceledAmount: 0,
+				delinquentCount: 0,
+				delinquentAmount: 0,
+			}),
+		]);
+
+		mocks.reset({
+			productBreakdownDepth: "ALL_LEVELS",
+		});
+
+		mocks.usePartnerSalesDashboard.mockImplementation(
+			(args: Record<string, unknown>) => {
+				if (
+					args.startDate === PREVIOUS_MONTH_START_DATE &&
+					args.endDate === PREVIOUS_MONTH_END_DATE
+				) {
+					return {
+						isLoading: false,
+						isError: false,
+						data: baseData,
+						refetch: vi.fn(),
+					};
+				}
+
+				if (args.productBreakdownDepth === "ALL_LEVELS") {
+					return {
+						isLoading: true,
+						isError: false,
+						data: undefined,
+						refetch: vi.fn(),
+					};
+				}
+
+				return {
+					isLoading: false,
+					isError: false,
+					data: baseData,
+					refetch: vi.fn(),
+				};
+			},
+		);
+
+		const { container } = render(<DashboardPartnersOverview />);
+
+		expect(screen.getByText("Dashboard de parceiros")).toBeInTheDocument();
+		expect(screen.getByText("Total de parceiros")).toBeInTheDocument();
+		expect(
+			container.querySelectorAll('[data-slot="skeleton"]').length,
+		).toBeGreaterThan(0);
+		expect(
+			screen.queryByText("Não foi possível carregar o dashboard de parceiros."),
 		).not.toBeInTheDocument();
 	});
 });

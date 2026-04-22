@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import { ArrowRight, Loader2, Lock, Mail } from "lucide-react";
 import z from "zod";
 import {
 	Field,
@@ -18,7 +18,7 @@ import { normalizeApiError } from "@/errors/api-error";
 import { resolveErrorMessage } from "@/errors";
 import { router } from "@/router";
 import { usePostAuthSendEmailOtp } from "@/http/generated";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import GoogleLogo from "@/assets/google-logo.png";
 import { resolveApiBaseUrl } from "@/lib/axios";
 
@@ -48,11 +48,13 @@ export const Route = createFileRoute("/_auth/sign-in")({
 	}),
 });
 
-function SignIn() {
+export function SignIn() {
 	const { email: emailParam, oauthError } = Route.useSearch();
 	const signInMutation = auth.useSignIn();
 	const { data: session, isPending: isSessionPending } = auth.useSession();
 	const { mutateAsync: sendEmailOTP } = usePostAuthSendEmailOtp();
+	const [isRedirectingAfterSignIn, setIsRedirectingAfterSignIn] =
+		useState(false);
 
 	const { handleSubmit, resetField, control, watch } = useForm<SignInType>({
 		resolver: zodResolver(SignInSchema),
@@ -85,8 +87,14 @@ function SignIn() {
 	async function onSubmit(data: SignInType) {
 		try {
 			await signInMutation.mutateAsync(data);
+			setIsRedirectingAfterSignIn(true);
 			toast.success("Login realizado com sucesso!");
+			await new Promise<void>((resolve) => {
+				window.requestAnimationFrame(() => resolve());
+			});
+			await router.navigate({ to: "/", replace: true });
 		} catch (err) {
+			setIsRedirectingAfterSignIn(false);
 			const apiError = normalizeApiError(err);
 			const message = resolveErrorMessage(apiError);
 
@@ -132,96 +140,119 @@ function SignIn() {
 					Entre com sua conta para acessar o sistema
 				</p>
 			</div>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-				<FieldGroup>
-					<Controller
-						name="email"
-						control={control}
-						render={({ field, fieldState }) => (
-							<Field data-invalid={fieldState.invalid} className="gap-1">
-								<FieldLabel htmlFor="mail">E-mail</FieldLabel>
-								<div className="relative">
-									<Mail className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
-									<Input
-										{...field}
-										id="email"
-										type="email"
-										autoComplete="email"
-										autoCapitalize="none"
-										autoCorrect="off"
-										aria-invalid={fieldState.invalid}
-										aria-describedby={
-											fieldState.invalid ? "email-error" : undefined
-										}
-										className="px-3 pl-10 py-2 h-10"
-										placeholder="seu@email.com"
-									/>
-								</div>
-								{fieldState.invalid && (
-									<FieldError id="email-error" errors={[fieldState.error]} />
-								)}
-							</Field>
-						)}
-					/>
-				</FieldGroup>
-				<FieldGroup>
-					<Controller
-						name="password"
-						control={control}
-						render={({ field, fieldState }) => (
-							<Field data-invalid={fieldState.invalid} className="gap-1">
-								<FieldLabel htmlFor="password">Senha</FieldLabel>
-								<div className="relative">
-									<Lock className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
-									<Input
-										{...field}
-										id="password"
-										type="password"
-										autoComplete="current-password"
-										autoCapitalize="none"
-										autoCorrect="off"
-										aria-invalid={fieldState.invalid}
-										aria-describedby={
-											fieldState.invalid ? "password-error" : undefined
-										}
-										className="px-3 pl-10 py-2 h-10"
-										placeholder="************"
-									/>
-								</div>
-								{fieldState.invalid && (
-									<FieldError id="password-error" errors={[fieldState.error]} />
-								)}
-							</Field>
-						)}
-					/>
-				</FieldGroup>
-				<Button
-					type="submit"
-					className="w-full h-10 text-md flex items-center gap-3"
+			{isRedirectingAfterSignIn ? (
+				<div
+					role="status"
+					aria-live="polite"
+					className="flex min-h-60 flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-muted/20 px-6 text-center"
 				>
-					Entrar
-					<ArrowRight className="size-5" />
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					className="w-full h-10 text-md flex items-center gap-3"
-					onClick={handleGoogleSignIn}
-				>
-					<img src={GoogleLogo} alt="Google" className="size-5" />
-					Continuar com Google
-				</Button>
-				<p className="flex gap-2 items-center justify-center text-sm text-muted-foreground">
-					Esqueceu a senha?
-					<Link
-						className="text-primary font-medium hover:underline"
-						to="/password/recover"
-						search={{ email }}
+					<div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+						<Loader2 className="size-6 animate-spin" />
+					</div>
+					<div className="space-y-1">
+						<p className="text-base font-medium text-foreground">
+							Realizando login...
+						</p>
+						<p className="text-sm text-muted-foreground">
+							Redirecionando voce para o sistema.
+						</p>
+					</div>
+				</div>
+			) : (
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+					<FieldGroup>
+						<Controller
+							name="email"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1">
+									<FieldLabel htmlFor="mail">E-mail</FieldLabel>
+									<div className="relative">
+										<Mail className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
+										<Input
+											{...field}
+											id="email"
+											type="email"
+											autoComplete="email"
+											autoCapitalize="none"
+											autoCorrect="off"
+											aria-invalid={fieldState.invalid}
+											aria-describedby={
+												fieldState.invalid ? "email-error" : undefined
+											}
+											className="px-3 pl-10 py-2 h-10"
+											placeholder="seu@email.com"
+										/>
+									</div>
+									{fieldState.invalid && (
+										<FieldError id="email-error" errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+					</FieldGroup>
+					<FieldGroup>
+						<Controller
+							name="password"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1">
+									<FieldLabel htmlFor="password">Senha</FieldLabel>
+									<div className="relative">
+										<Lock className="absolute left-5 top-1/2 -translate-1/2 size-4 text-muted-foreground" />
+										<Input
+											{...field}
+											id="password"
+											type="password"
+											autoComplete="current-password"
+											autoCapitalize="none"
+											autoCorrect="off"
+											aria-invalid={fieldState.invalid}
+											aria-describedby={
+												fieldState.invalid ? "password-error" : undefined
+											}
+											className="px-3 pl-10 py-2 h-10"
+											placeholder="************"
+										/>
+									</div>
+									{fieldState.invalid && (
+										<FieldError
+											id="password-error"
+											errors={[fieldState.error]}
+										/>
+									)}
+								</Field>
+							)}
+						/>
+					</FieldGroup>
+					<Button
+						type="submit"
+						className="w-full h-10 text-md flex items-center gap-3"
 					>
-						Recuperar
-					</Link>
-				</p>
-			</form>
+						Entrar
+						<ArrowRight className="size-5" />
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						className="w-full h-10 text-md flex items-center gap-3"
+						onClick={handleGoogleSignIn}
+					>
+						<img src={GoogleLogo} alt="Google" className="size-5" />
+						Continuar com Google
+					</Button>
+					<p className="flex gap-2 items-center justify-center text-sm text-muted-foreground">
+						Esqueceu a senha?
+						<Link
+							className="text-primary font-medium hover:underline"
+							to="/password/recover"
+							search={{ email }}
+						>
+							Recuperar
+						</Link>
+					</p>
+				</form>
+			)}
 		</div>
 	);
 }
