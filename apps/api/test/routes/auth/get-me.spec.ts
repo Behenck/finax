@@ -41,6 +41,7 @@ describe("Get me", () => {
 		expect(meResponse.body).toHaveProperty("organization");
 		expect(meResponse.body).toHaveProperty("effectivePermissions");
 		expect(Array.isArray(meResponse.body.effectivePermissions)).toBe(true);
+		expect(meResponse.body.organization).toHaveProperty("memberId");
 		expect(meResponse.body.organization).toHaveProperty(
 			"enableSalesTransactionsSync",
 		);

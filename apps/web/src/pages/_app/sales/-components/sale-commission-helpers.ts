@@ -30,6 +30,8 @@ export type SaleCommissionResolutionContext = {
 	sellerId?: string;
 	partnerId?: string;
 	saleCreatorUserId?: string;
+	saleCreatorSupervisorMemberId?: string;
+	partnerSupervisorUserIdsByPartnerId?: ReadonlyMap<string, string[]>;
 	partnerSupervisorIdsByPartnerId?: ReadonlyMap<string, string[]>;
 	supervisorMemberIdByUserId?: ReadonlyMap<string, string>;
 };
@@ -497,27 +499,47 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 ) {
 	return commissions.map((commission) => {
 		const linkedPartnerId = saleContext?.partnerId;
+		const linkedSupervisorUserIds =
+			linkedPartnerId && saleContext?.partnerSupervisorUserIdsByPartnerId
+				? (saleContext.partnerSupervisorUserIdsByPartnerId.get(
+						linkedPartnerId,
+					) ?? [])
+				: [];
 		const linkedSupervisorIds =
 			linkedPartnerId && saleContext?.partnerSupervisorIdsByPartnerId
 				? (saleContext.partnerSupervisorIdsByPartnerId.get(linkedPartnerId) ??
 					[])
 				: [];
-		const creatorSupervisorMemberId = saleContext?.saleCreatorUserId
-			? saleContext.supervisorMemberIdByUserId?.get(
-					saleContext.saleCreatorUserId,
-				)
-			: undefined;
+		const creatorSupervisorMemberId =
+			saleContext?.saleCreatorSupervisorMemberId ??
+			(saleContext?.saleCreatorUserId
+				? saleContext.supervisorMemberIdByUserId?.get(
+						saleContext.saleCreatorUserId,
+					)
+				: undefined);
 		const resolvedSupervisorBeneficiaryId =
 			commission.recipientType === "SUPERVISOR" &&
 			!commission.beneficiaryId &&
 			linkedPartnerId
-				? linkedSupervisorIds.length === 1
-					? linkedSupervisorIds[0]
-					: linkedSupervisorIds.length > 1 &&
-							creatorSupervisorMemberId &&
-							linkedSupervisorIds.includes(creatorSupervisorMemberId)
-						? creatorSupervisorMemberId
-						: undefined
+				? linkedSupervisorUserIds.length > 0
+					? linkedSupervisorUserIds.length === 1
+						? creatorSupervisorMemberId &&
+							saleContext?.saleCreatorUserId &&
+							linkedSupervisorUserIds[0] === saleContext.saleCreatorUserId
+							? creatorSupervisorMemberId
+							: linkedSupervisorIds[0]
+						: creatorSupervisorMemberId &&
+								saleContext?.saleCreatorUserId &&
+								linkedSupervisorUserIds.includes(saleContext.saleCreatorUserId)
+							? creatorSupervisorMemberId
+							: undefined
+					: linkedSupervisorIds.length === 1
+						? linkedSupervisorIds[0]
+						: linkedSupervisorIds.length > 1 &&
+								creatorSupervisorMemberId &&
+								linkedSupervisorIds.includes(creatorSupervisorMemberId)
+							? creatorSupervisorMemberId
+							: undefined
 				: commission.beneficiaryId;
 		const resolvedBeneficiaryId =
 			commission.recipientType === "COMPANY"

@@ -111,7 +111,7 @@ export function SaleForm({
 		"access",
 		"sales.commissions.update",
 	);
-	const { auth, organization } = useApp();
+	const { auth, membership, organization } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { mutateAsync: createSale, isPending: isCreatingSale } =
@@ -255,12 +255,14 @@ export function SaleForm({
 	);
 	const saleCreatorUserId =
 		mode === "UPDATE" ? initialSale?.createdById : (auth?.id ?? undefined);
-	const partnerSupervisorIdsByPartnerId = useMemo(
+	const currentSupervisorMemberId =
+		membership === "SUPERVISOR" ? organization?.memberId : undefined;
+	const partnerSupervisorUserIdsByPartnerId = useMemo(
 		() =>
 			new Map(
 				partnersWithStatus.map((partner) => [
 					partner.id,
-					partner.supervisors.map((supervisor) => supervisor.id),
+					partner.supervisors.map((supervisor) => supervisor.userId),
 				]),
 			),
 		[partnersWithStatus],
@@ -272,7 +274,53 @@ export function SaleForm({
 			),
 		[supervisors],
 	);
+	const partnerSupervisorIdsByPartnerId = useMemo(
+		() =>
+			new Map(
+				partnersWithStatus.map((partner) => [
+					partner.id,
+					partner.supervisors
+						.map((supervisor) =>
+							supervisorMemberIdByUserId.get(supervisor.userId),
+						)
+						.filter((supervisorId): supervisorId is string =>
+							Boolean(supervisorId),
+						),
+				]),
+			),
+		[partnersWithStatus, supervisorMemberIdByUserId],
+	);
+	const currentPartnerSupervisorMemberId = useMemo(() => {
+		if (
+			!auth?.id ||
+			selectedResponsibleType !== "PARTNER" ||
+			!selectedResponsibleId
+		) {
+			return undefined;
+		}
 
+		const selectedPartner = partnersWithStatus.find(
+			(partner) => partner.id === selectedResponsibleId,
+		);
+
+		return selectedPartner?.supervisors.find(
+			(supervisor) => supervisor.userId === auth.id,
+		)
+			? currentSupervisorMemberId
+			: undefined;
+	}, [
+		auth?.id,
+		currentSupervisorMemberId,
+		partnersWithStatus,
+		selectedResponsibleId,
+		selectedResponsibleType,
+	]);
+	const saleCreatorSupervisorMemberId =
+		mode === "CREATE"
+			? (currentPartnerSupervisorMemberId ?? currentSupervisorMemberId)
+			: initialSale?.createdById && initialSale.createdById === auth?.id
+				? (currentPartnerSupervisorMemberId ?? currentSupervisorMemberId)
+				: undefined;
 	const {
 		commissionScenariosQuery,
 		hasSelectedProduct,
@@ -294,6 +342,8 @@ export function SaleForm({
 		selectedResponsibleType,
 		selectedResponsibleId,
 		saleCreatorUserId,
+		saleCreatorSupervisorMemberId,
+		partnerSupervisorUserIdsByPartnerId,
 		partnerSupervisorIdsByPartnerId,
 		supervisorMemberIdByUserId,
 		control,

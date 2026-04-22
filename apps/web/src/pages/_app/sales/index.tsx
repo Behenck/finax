@@ -102,26 +102,36 @@ export function SalesPage() {
 							type="button"
 							variant="outline"
 							className="w-full sm:w-auto"
-							onClick={() => setIsFiltersVisible((currentValue) => !currentValue)}
+							onClick={() =>
+								setIsFiltersVisible((currentValue) => !currentValue)
+							}
 						>
 							<Funnel className="size-4" />
 							Filtro
 						</Button>
 						{canManageSalesImports ? (
-							<>
-								<Button asChild variant="outline" className="w-full sm:w-auto">
-									<Link to="/sales/import">
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="outline" className="w-full sm:w-auto">
 										<FileSpreadsheet className="size-4" />
-										Importar Vendas
-									</Link>
-								</Button>
-								<Button asChild variant="outline" className="w-full sm:w-auto">
-									<Link to="/sales/delinquency-import">
-										<ShieldAlert className="size-4" />
-										Importar Inadimplência
-									</Link>
-								</Button>
-							</>
+										Importar
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-56">
+									<DropdownMenuItem asChild>
+										<Link to="/sales/import">
+											<FileSpreadsheet className="size-4" />
+											Importar vendas
+										</Link>
+									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link to="/sales/delinquency-import">
+											<ShieldAlert className="size-4" />
+											Importar inadimplência
+										</Link>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						) : null}
 						{canCreateSales ? (
 							<DropdownMenu>

@@ -10,6 +10,7 @@ type User = {
 
 type Organization = {
 	id: string;
+	memberId: string;
 	name: string;
 	slug: string;
 	ownerId: string;

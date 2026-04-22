@@ -28,6 +28,7 @@ export async function getMe(app: FastifyInstance) {
 							}),
 							organization: z.object({
 								id: z.uuid(),
+								memberId: z.uuid(),
 								name: z.string(),
 								slug: z.string(),
 								role: z.enum(Role),
@@ -92,6 +93,7 @@ export async function getMe(app: FastifyInstance) {
 					user,
 					organization: {
 						id: membership.organization.id,
+						memberId: membership.id,
 						name: membership.organization.name,
 						slug: membership.organization.slug,
 						ownerId: membership.organization.ownerId,

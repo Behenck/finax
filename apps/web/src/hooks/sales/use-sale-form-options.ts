@@ -39,6 +39,7 @@ export interface SalePartnerOption {
 	status: "ACTIVE" | "INACTIVE";
 	supervisors: Array<{
 		id: string;
+		userId: string;
 		name: string;
 	}>;
 }
@@ -115,6 +116,8 @@ export function useSaleFormOptions() {
 	const canViewSellers = ability.can("access", "registers.sellers.view");
 	const canViewPartners = ability.can("access", "registers.partners.view");
 	const canViewSupervisors = ability.can("access", "settings.members.view");
+	const canReadPartnersForSales =
+		canViewPartners || canViewSales || canCreateSales || canUpdateSales;
 
 	const companiesQuery = useGetOrganizationsSlugCompanies(
 		{ slug },
@@ -143,7 +146,7 @@ export function useSaleFormOptions() {
 	const partnersQuery = useGetOrganizationsSlugPartners(
 		{ slug },
 		{
-			query: { enabled: enabled && canViewPartners },
+			query: { enabled: enabled && canReadPartnersForSales },
 		},
 	);
 	const supervisorsQuery = useGetOrganizationsSlugMembersRole(
@@ -199,10 +202,19 @@ export function useSaleFormOptions() {
 				id: partner.id,
 				name: getPartnerDisplayName(partner),
 				status: partner.status as "ACTIVE" | "INACTIVE",
-				supervisors: (partner.supervisors ?? []).map((supervisor) => ({
-					id: supervisor.id,
-					name: supervisor.name ?? "Supervisor",
-				})),
+				supervisors:
+					(
+						partner.supervisors as
+							| Array<{
+									id: string;
+									name: string | null;
+							  }>
+							| undefined
+					)?.map((supervisor) => ({
+						id: supervisor.id,
+						userId: supervisor.id,
+						name: supervisor.name ?? "Supervisor",
+					})) ?? [],
 			})),
 		[partnersQuery.data?.partners],
 	);
@@ -239,7 +251,7 @@ export function useSaleFormOptions() {
 		},
 		{
 			query: partnersQuery,
-			enabled: enabled && canViewPartners,
+			enabled: enabled && canReadPartnersForSales,
 		},
 		{
 			query: supervisorsQuery,

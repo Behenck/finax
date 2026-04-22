@@ -294,7 +294,7 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_200px_minmax(280px,1fr)_120px_120px_120px] xl:items-end">
+			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_200px_minmax(252px,1fr)_132px_120px_120px] xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
@@ -503,8 +503,8 @@ export function SaleCommissionCard({
 								control={control}
 								render={({ field, fieldState }) => (
 									<>
-									<Select
-										value={field.value ?? OPTIONAL_NONE_VALUE}
+										<Select
+											value={field.value ?? OPTIONAL_NONE_VALUE}
 											onValueChange={(value) =>
 												field.onChange(
 													value === OPTIONAL_NONE_VALUE ? undefined : value,
@@ -533,11 +533,16 @@ export function SaleCommissionCard({
 																<SelectSeparator />
 																<SelectGroup>
 																	<SelectLabel>Inativos</SelectLabel>
-																	{inactivePartnerBeneficiaries.map((option) => (
-																		<SelectItem key={option.id} value={option.id}>
-																			{option.label}
-																		</SelectItem>
-																	))}
+																	{inactivePartnerBeneficiaries.map(
+																		(option) => (
+																			<SelectItem
+																				key={option.id}
+																				value={option.id}
+																			>
+																				{option.label}
+																			</SelectItem>
+																		),
+																	)}
 																</SelectGroup>
 															</>
 														) : null}
@@ -596,7 +601,9 @@ export function SaleCommissionCard({
 										value={field.value ?? ""}
 										onChange={(event) => {
 											const parsedValue = Number(event.target.value);
-											field.onChange(Number.isFinite(parsedValue) ? parsedValue : 0);
+											field.onChange(
+												Number.isFinite(parsedValue) ? parsedValue : 0,
+											);
 										}}
 									/>
 									<FormFieldError error={fieldState.error} />
@@ -671,7 +678,8 @@ export function SaleCommissionCard({
 												<p className="text-muted-foreground text-xs">
 													Valor estimado:{" "}
 													{formatCurrencyBRL(
-														(installmentEstimatedAmounts[installmentIndex] ?? 0) / 100,
+														(installmentEstimatedAmounts[installmentIndex] ??
+															0) / 100,
 													)}
 												</p>
 											</>

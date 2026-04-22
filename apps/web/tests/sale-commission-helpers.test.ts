@@ -16,6 +16,8 @@ const LINKED_SUPERVISOR_ID = "66666666-6666-4666-8666-666666666666";
 const SECOND_LINKED_SUPERVISOR_ID = "77777777-7777-4777-8777-777777777777";
 const SALE_CREATOR_USER_ID = "88888888-8888-4888-8888-888888888888";
 const NON_LINKED_SUPERVISOR_ID = "99999999-9999-4999-8999-999999999999";
+const SALE_CREATOR_SUPERVISOR_MEMBER_ID =
+	"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
 function buildLinkedCompanyScenarioCommission(): ProductCommission {
 	return {
@@ -200,6 +202,44 @@ describe("sale commission helpers", () => {
 		);
 
 		expect(pulled[0]?.beneficiaryId).toBe(SECOND_LINKED_SUPERVISOR_ID);
+	});
+
+	it("should resolve linked SUPERVISOR beneficiary with the logged supervisor member id when available", () => {
+		const pulled = mapScenarioCommissionsToPulledSaleCommissions(
+			[buildLinkedSupervisorScenarioCommission()],
+			new Date("2026-03-10"),
+			{
+				partnerId: PARTNER_ID,
+				partnerSupervisorIdsByPartnerId: new Map([
+					[
+						PARTNER_ID,
+						[LINKED_SUPERVISOR_ID, SALE_CREATOR_SUPERVISOR_MEMBER_ID],
+					],
+				]),
+				saleCreatorUserId: SALE_CREATOR_USER_ID,
+				saleCreatorSupervisorMemberId: SALE_CREATOR_SUPERVISOR_MEMBER_ID,
+			},
+		);
+
+		expect(pulled[0]?.beneficiaryId).toBe(SALE_CREATOR_SUPERVISOR_MEMBER_ID);
+	});
+
+	it("should resolve linked SUPERVISOR beneficiary from partner linked supervisor users when member ids are not preloaded", () => {
+		const pulled = mapScenarioCommissionsToPulledSaleCommissions(
+			[buildLinkedSupervisorScenarioCommission()],
+			new Date("2026-03-10"),
+			{
+				partnerId: PARTNER_ID,
+				partnerSupervisorUserIdsByPartnerId: new Map([
+					[PARTNER_ID, [NON_LINKED_SUPERVISOR_ID, SALE_CREATOR_USER_ID]],
+				]),
+				saleCreatorUserId: SALE_CREATOR_USER_ID,
+				saleCreatorSupervisorMemberId: SALE_CREATOR_SUPERVISOR_MEMBER_ID,
+				partnerSupervisorIdsByPartnerId: new Map([[PARTNER_ID, []]]),
+			},
+		);
+
+		expect(pulled[0]?.beneficiaryId).toBe(SALE_CREATOR_SUPERVISOR_MEMBER_ID);
 	});
 
 	it("should keep linked SUPERVISOR beneficiary unresolved when creator is not a linked supervisor", () => {

@@ -31,6 +31,8 @@ interface UseSaleCommissionsParams {
 	selectedResponsibleType: SaleResponsibleType;
 	selectedResponsibleId: string;
 	saleCreatorUserId?: string;
+	saleCreatorSupervisorMemberId?: string;
+	partnerSupervisorUserIdsByPartnerId?: ReadonlyMap<string, string[]>;
 	partnerSupervisorIdsByPartnerId?: ReadonlyMap<string, string[]>;
 	supervisorMemberIdByUserId?: ReadonlyMap<string, string>;
 	control: Control<SaleFormInput, unknown, SaleFormData>;
@@ -48,6 +50,8 @@ export function useSaleCommissions({
 	selectedResponsibleType,
 	selectedResponsibleId,
 	saleCreatorUserId,
+	saleCreatorSupervisorMemberId,
+	partnerSupervisorUserIdsByPartnerId,
 	partnerSupervisorIdsByPartnerId,
 	supervisorMemberIdByUserId,
 	control,
@@ -98,12 +102,16 @@ export function useSaleCommissions({
 						? selectedResponsibleId
 						: undefined,
 				saleCreatorUserId,
+				saleCreatorSupervisorMemberId,
+				partnerSupervisorUserIdsByPartnerId,
 				partnerSupervisorIdsByPartnerId,
 				supervisorMemberIdByUserId,
 			}),
 			[
+				partnerSupervisorUserIdsByPartnerId,
 				partnerSupervisorIdsByPartnerId,
 				saleCreatorUserId,
+				saleCreatorSupervisorMemberId,
 				selectedCompanyId,
 				selectedResponsibleId,
 				selectedResponsibleType,
