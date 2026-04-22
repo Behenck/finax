@@ -845,22 +845,22 @@ function PartnerRankingSection({
 				) : (
 					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
 						<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
-							<div className="grid grid-cols-3 items-end gap-2 sm:gap-1.5">
+							<div className="grid grid-cols-3 items-end gap-1.5">
 								{[
 									{
 										rank: 2,
 										partner: topThree[1] ?? null,
-										pedestalClassName: "h-16 sm:h-14",
+										pedestalClassName: "h-14",
 									},
 									{
 										rank: 1,
 										partner: topThree[0] ?? null,
-										pedestalClassName: "h-24 sm:h-20",
+										pedestalClassName: "h-20",
 									},
 									{
 										rank: 3,
 										partner: topThree[2] ?? null,
-										pedestalClassName: "h-12 sm:h-10",
+										pedestalClassName: "h-10",
 									},
 								].map((slot) => {
 									const partner = slot.partner;
@@ -892,36 +892,6 @@ function PartnerRankingSection({
 										avatarGradientByRank[slot.rank as 1 | 2 | 3];
 									const avatarLabelClass =
 										avatarLabelByRank[slot.rank as 1 | 2 | 3];
-									const infoCardClassByRank = {
-										1: "border-emerald-500/20 bg-emerald-500/[0.08] shadow-md shadow-emerald-500/10",
-										2: "border-cyan-500/20 bg-cyan-500/[0.08] shadow-md shadow-cyan-500/10",
-										3: "border-amber-500/20 bg-amber-500/[0.08] shadow-md shadow-amber-500/10",
-									} as const;
-									const badgeClassByRank = {
-										1: "border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
-										2: "border-cyan-500/25 bg-cyan-500/15 text-cyan-700 dark:text-cyan-200",
-										3: "border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-200",
-									} as const;
-									const avatarSizeClassByRank = {
-										1: "size-15 sm:size-16",
-										2: "size-12 sm:size-13",
-										3: "size-11 sm:size-12",
-									} as const;
-									const amountClassByRank = {
-										1: "text-lg sm:text-xl",
-										2: "text-[15px] sm:text-base",
-										3: "text-sm sm:text-[15px]",
-									} as const;
-									const nameClassByRank = {
-										1: "text-[13px] sm:text-sm",
-										2: "text-[12px] sm:text-[13px]",
-										3: "text-[11px] sm:text-[12px]",
-									} as const;
-									const secondaryClassByRank = {
-										1: "text-[10px] sm:text-[11px]",
-										2: "text-[9px] sm:text-[10px]",
-										3: "text-[9px] sm:text-[10px]",
-									} as const;
 
 									if (!partner) {
 										return (
@@ -957,30 +927,9 @@ function PartnerRankingSection({
 
 									return (
 										<div key={partner.partnerId} className="flex flex-col">
-											<div
-												className={cn(
-													"relative flex min-h-[178px] flex-col rounded-t-[1.35rem] border p-2.5 text-center sm:min-h-[170px] sm:p-2",
-													infoCardClassByRank[slot.rank as 1 | 2 | 3],
-													slot.rank === 1 && "sm:-translate-y-1",
-												)}
-											>
-												<div className="absolute left-1/2 top-2 -translate-x-1/2">
-													<span
-														className={cn(
-															"inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums shadow-sm",
-															badgeClassByRank[slot.rank as 1 | 2 | 3],
-														)}
-													>
-														#{slot.rank}
-													</span>
-												</div>
-												<div className="relative mx-auto mt-7 sm:mt-6">
-													<Avatar
-														className={cn(
-															"border-2 border-background shadow-sm",
-															avatarSizeClassByRank[slot.rank as 1 | 2 | 3],
-														)}
-													>
+											<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
+												<div className="relative mx-auto mt-1">
+													<Avatar className="size-13 border-2 border-background shadow-sm">
 														<AvatarFallback
 															className={cn(
 																"text-sm font-semibold",
@@ -993,33 +942,18 @@ function PartnerRankingSection({
 													</Avatar>
 												</div>
 
-												<div className="mt-2 min-h-[44px] px-1 text-center leading-tight sm:min-h-[40px]">
-													<div
-														className={cn(
-															"break-words font-semibold text-foreground",
-															nameClassByRank[slot.rank as 1 | 2 | 3],
-														)}
-													>
+												<div className="mt-1 min-h-[40px] px-1 text-center leading-tight">
+													<div className="break-words text-[12px] font-semibold text-foreground">
 														{primaryName}
 													</div>
 													{secondaryName ? (
-														<div
-															className={cn(
-																"mt-0.5 break-words text-muted-foreground",
-																secondaryClassByRank[slot.rank as 1 | 2 | 3],
-															)}
-														>
+														<div className="mt-0.5 break-words text-[10px] text-muted-foreground">
 															{secondaryName}
 														</div>
 													) : null}
 												</div>
 
-												<div
-													className={cn(
-														"mt-auto pt-2 font-mono font-semibold tabular-nums leading-none tracking-tight text-foreground",
-														amountClassByRank[slot.rank as 1 | 2 | 3],
-													)}
-												>
+												<div className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground">
 													{formatAmountFromCents(totalSoldAmount)}
 												</div>
 											</div>
