@@ -438,6 +438,222 @@ describe("DashboardPartnersOverview", () => {
 		expect(screen.getAllByText("Parceiro Alpha").length).toBeGreaterThan(0);
 	});
 
+	it("renders the full partner ranking inside a scroll area with fixed height", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000001",
+					partnerName: "Parceiro 1",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 5,
+					concludedAmount: 500_000,
+					pendingCount: 1,
+					pendingAmount: 50_000,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000002",
+					partnerName: "Parceiro 2",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 4,
+					concludedAmount: 400_000,
+					pendingCount: 1,
+					pendingAmount: 40_000,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000003",
+					partnerName: "Parceiro 3",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 3,
+					concludedAmount: 300_000,
+					pendingCount: 1,
+					pendingAmount: 30_000,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000004",
+					partnerName: "Parceiro 4",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 2,
+					concludedAmount: 200_000,
+					pendingCount: 1,
+					pendingAmount: 20_000,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000005",
+					partnerName: "Parceiro 5",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 2,
+					concludedAmount: 190_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000006",
+					partnerName: "Parceiro 6",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 1,
+					concludedAmount: 180_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+			]),
+			refetch: vi.fn(),
+		});
+
+		const { container } = render(<DashboardPartnersOverview />);
+
+		expect(screen.getAllByText("Parceiro 1").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Parceiro 6").length).toBeGreaterThan(0);
+
+		const scrollArea = container.querySelector(
+			'[data-slot="scroll-area"].h-\\[15\\.5rem\\]',
+		);
+		expect(scrollArea).toBeInTheDocument();
+	});
+
+	it("keeps the supervisor dropdown partner list inside a scroll area with fixed height", async () => {
+		const user = userEvent.setup();
+
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000001",
+					partnerName: "Parceiro Supervisor 1",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 5,
+					concludedAmount: 500_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000002",
+					partnerName: "Parceiro Supervisor 2",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 4,
+					concludedAmount: 400_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000003",
+					partnerName: "Parceiro Supervisor 3",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 3,
+					concludedAmount: 300_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000004",
+					partnerName: "Parceiro Supervisor 4",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 2,
+					concludedAmount: 200_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000005",
+					partnerName: "Parceiro Supervisor 5",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 2,
+					concludedAmount: 190_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "20000000-0000-0000-0000-000000000006",
+					partnerName: "Parceiro Supervisor 6",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 1,
+					concludedAmount: 180_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+			]),
+			refetch: vi.fn(),
+		});
+
+		const { container } = render(<DashboardPartnersOverview />);
+
+		await user.click(screen.getByRole("button", { name: /Supervisor Base/i }));
+
+		expect(screen.getAllByText("Parceiro Supervisor 1").length).toBeGreaterThan(
+			0,
+		);
+		expect(screen.getAllByText("Parceiro Supervisor 6").length).toBeGreaterThan(
+			0,
+		);
+
+		const nestedScrollArea = container.querySelector(
+			'[data-slot="scroll-area"].max-h-\\[17\\.5rem\\]',
+		);
+		expect(nestedScrollArea).toBeInTheDocument();
+	});
+
 	it("renders canceled amount from previous month while keeping other metrics from filtered period", async () => {
 		const user = userEvent.setup();
 		const filteredData = buildDashboardData([

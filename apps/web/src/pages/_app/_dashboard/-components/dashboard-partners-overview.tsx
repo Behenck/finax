@@ -84,6 +84,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Table,
 	TableBody,
@@ -844,22 +845,22 @@ function PartnerRankingSection({
 				) : (
 					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
 						<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
-							<div className="grid grid-cols-3 items-end gap-1.5">
+							<div className="grid grid-cols-3 items-end gap-2 sm:gap-1.5">
 								{[
 									{
 										rank: 2,
 										partner: topThree[1] ?? null,
-										pedestalClassName: "h-14",
+										pedestalClassName: "h-16 sm:h-14",
 									},
 									{
 										rank: 1,
 										partner: topThree[0] ?? null,
-										pedestalClassName: "h-20",
+										pedestalClassName: "h-24 sm:h-20",
 									},
 									{
 										rank: 3,
 										partner: topThree[2] ?? null,
-										pedestalClassName: "h-10",
+										pedestalClassName: "h-12 sm:h-10",
 									},
 								].map((slot) => {
 									const partner = slot.partner;
@@ -891,6 +892,36 @@ function PartnerRankingSection({
 										avatarGradientByRank[slot.rank as 1 | 2 | 3];
 									const avatarLabelClass =
 										avatarLabelByRank[slot.rank as 1 | 2 | 3];
+									const infoCardClassByRank = {
+										1: "border-emerald-500/20 bg-emerald-500/[0.08] shadow-md shadow-emerald-500/10",
+										2: "border-cyan-500/20 bg-cyan-500/[0.08] shadow-md shadow-cyan-500/10",
+										3: "border-amber-500/20 bg-amber-500/[0.08] shadow-md shadow-amber-500/10",
+									} as const;
+									const badgeClassByRank = {
+										1: "border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
+										2: "border-cyan-500/25 bg-cyan-500/15 text-cyan-700 dark:text-cyan-200",
+										3: "border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-200",
+									} as const;
+									const avatarSizeClassByRank = {
+										1: "size-15 sm:size-16",
+										2: "size-12 sm:size-13",
+										3: "size-11 sm:size-12",
+									} as const;
+									const amountClassByRank = {
+										1: "text-lg sm:text-xl",
+										2: "text-[15px] sm:text-base",
+										3: "text-sm sm:text-[15px]",
+									} as const;
+									const nameClassByRank = {
+										1: "text-[13px] sm:text-sm",
+										2: "text-[12px] sm:text-[13px]",
+										3: "text-[11px] sm:text-[12px]",
+									} as const;
+									const secondaryClassByRank = {
+										1: "text-[10px] sm:text-[11px]",
+										2: "text-[9px] sm:text-[10px]",
+										3: "text-[9px] sm:text-[10px]",
+									} as const;
 
 									if (!partner) {
 										return (
@@ -926,9 +957,30 @@ function PartnerRankingSection({
 
 									return (
 										<div key={partner.partnerId} className="flex flex-col">
-											<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
-												<div className="relative mx-auto mt-1">
-													<Avatar className="size-13 border-2 border-background shadow-sm">
+											<div
+												className={cn(
+													"relative flex min-h-[178px] flex-col rounded-t-[1.35rem] border p-2.5 text-center sm:min-h-[170px] sm:p-2",
+													infoCardClassByRank[slot.rank as 1 | 2 | 3],
+													slot.rank === 1 && "sm:-translate-y-1",
+												)}
+											>
+												<div className="absolute left-1/2 top-2 -translate-x-1/2">
+													<span
+														className={cn(
+															"inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums shadow-sm",
+															badgeClassByRank[slot.rank as 1 | 2 | 3],
+														)}
+													>
+														#{slot.rank}
+													</span>
+												</div>
+												<div className="relative mx-auto mt-7 sm:mt-6">
+													<Avatar
+														className={cn(
+															"border-2 border-background shadow-sm",
+															avatarSizeClassByRank[slot.rank as 1 | 2 | 3],
+														)}
+													>
 														<AvatarFallback
 															className={cn(
 																"text-sm font-semibold",
@@ -941,18 +993,33 @@ function PartnerRankingSection({
 													</Avatar>
 												</div>
 
-												<div className="mt-1 min-h-[40px] px-1 text-center leading-tight">
-													<div className="break-words text-[12px] font-semibold text-foreground">
+												<div className="mt-2 min-h-[44px] px-1 text-center leading-tight sm:min-h-[40px]">
+													<div
+														className={cn(
+															"break-words font-semibold text-foreground",
+															nameClassByRank[slot.rank as 1 | 2 | 3],
+														)}
+													>
 														{primaryName}
 													</div>
 													{secondaryName ? (
-														<div className="mt-0.5 break-words text-[10px] text-muted-foreground">
+														<div
+															className={cn(
+																"mt-0.5 break-words text-muted-foreground",
+																secondaryClassByRank[slot.rank as 1 | 2 | 3],
+															)}
+														>
 															{secondaryName}
 														</div>
 													) : null}
 												</div>
 
-												<div className="mt-auto pt-2 font-mono text-base font-medium tabular-nums leading-none tracking-tight text-foreground">
+												<div
+													className={cn(
+														"mt-auto pt-2 font-mono font-semibold tabular-nums leading-none tracking-tight text-foreground",
+														amountClassByRank[slot.rank as 1 | 2 | 3],
+													)}
+												>
 													{formatAmountFromCents(totalSoldAmount)}
 												</div>
 											</div>
@@ -984,9 +1051,10 @@ function PartnerRankingSection({
 						/>
 
 						<div className="rounded-md p-2 sm:p-3">
-							<Table className="table-fixed">
-								<TableBody className="[&_tr]:border-0">
-									{soldPartners.map((partner, index) => {
+							<ScrollArea className="h-[15.5rem] pr-2 sm:h-[17rem]">
+								<Table className="table-fixed">
+									<TableBody className="[&_tr]:border-0">
+										{soldPartners.map((partner, index) => {
 										const rank = index + 1;
 										const rowToneClass = "bg-transparent";
 										const productionAmount =
@@ -1008,138 +1076,139 @@ function PartnerRankingSection({
 										const primaryName = getPartnerPrimaryName(partner);
 										const secondaryName = getPartnerSecondaryName(partner);
 										return (
-											<Fragment key={partner.partnerId}>
-												<TableRow className={cn("border-0", rowToneClass)}>
-													<TableCell className="w-10 whitespace-nowrap pb-1 pl-2 pr-2 pt-2 text-left align-middle">
-														<span className="inline-flex h-8 items-center font-mono font-medium leading-none tabular-nums text-foreground">
-															{String(rank).padStart(2, "0")}
-														</span>
-													</TableCell>
-													<TableCell className="pb-1 pl-2 pr-3 pt-2">
-														<div className="flex min-w-0 items-center gap-2">
-															<Avatar className="size-8 border border-border/70">
-																<AvatarFallback className="text-[11px] font-medium">
-																	{getInitials(primaryName)}
-																</AvatarFallback>
-															</Avatar>
-															<div className="min-w-0">
-																<div className="truncate font-medium text-foreground">
-																	{primaryName}
-																</div>
-																{secondaryName ? (
-																	<div className="truncate text-xs text-muted-foreground">
-																		{secondaryName}
-																	</div>
-																) : null}
-															</div>
-														</div>
-													</TableCell>
-													<TableCell
-														className={cn(
-															"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
-															productionHasValue
-																? "font-semibold text-foreground"
-																: "font-normal text-muted-foreground",
-														)}
-													>
-														<div className="text-right leading-none">
-															{formatAmountFromCents(productionAmount)}
-														</div>
-													</TableCell>
-												</TableRow>
-												<TableRow className={cn("border-0", rowToneClass)}>
-													<TableCell className="py-0 pl-2 pr-1" />
-													<TableCell colSpan={2} className="px-3 pb-2 pt-0">
-														<div className="flex items-center gap-2">
-															<Tooltip>
-																<TooltipTrigger asChild>
-																	<button
-																		type="button"
-																		className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-																		aria-label={`Detalhes de produção de ${primaryName}`}
-																	>
-																		<div className="h-1.5 overflow-hidden rounded-full bg-muted">
-																			<div
-																				className={cn(
-																					"h-full rounded-full transition-[width]",
-																					productionHasValue
-																						? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
-																						: "bg-muted-foreground/30",
-																				)}
-																				style={{
-																					width: `${productionShareWidth}%`,
-																				}}
-																			/>
-																		</div>
-																	</button>
-																</TooltipTrigger>
-																<TooltipContent
-																	side="top"
-																	sideOffset={8}
-																	className="min-w-[220px] space-y-1.5"
-																>
-																	<div className="text-xs font-semibold">
+												<Fragment key={partner.partnerId}>
+													<TableRow className={cn("border-0", rowToneClass)}>
+														<TableCell className="w-10 whitespace-nowrap pb-1 pl-2 pr-2 pt-2 text-left align-middle">
+															<span className="inline-flex h-8 items-center font-mono font-medium leading-none tabular-nums text-foreground">
+																{String(rank).padStart(2, "0")}
+															</span>
+														</TableCell>
+														<TableCell className="pb-1 pl-2 pr-3 pt-2">
+															<div className="flex min-w-0 items-center gap-2">
+																<Avatar className="size-8 border border-border/70">
+																	<AvatarFallback className="text-[11px] font-medium">
+																		{getInitials(primaryName)}
+																	</AvatarFallback>
+																</Avatar>
+																<div className="min-w-0">
+																	<div className="truncate font-medium text-foreground">
 																		{primaryName}
 																	</div>
 																	{secondaryName ? (
-																		<div className="text-[11px] text-background/80">
+																		<div className="truncate text-xs text-muted-foreground">
 																			{secondaryName}
 																		</div>
 																	) : null}
-																	<div className="flex items-center justify-between gap-3">
-																		<span className="text-background/80">
-																			Concluídas
-																		</span>
-																		<span className="font-mono font-medium tabular-nums">
-																			{formatAmountFromCents(
-																				partner.salesBreakdown.concluded
-																					.grossAmount,
-																			)}
-																		</span>
-																	</div>
-																	<div className="flex items-center justify-between gap-3">
-																		<span className="text-background/80">
-																			Processando
-																		</span>
-																		<span className="font-mono font-medium tabular-nums">
-																			{formatAmountFromCents(
-																				partner.salesBreakdown.pending
-																					.grossAmount,
-																			)}
-																		</span>
-																	</div>
-																	<div className="flex items-center justify-between gap-3">
-																		<span className="text-background/80">
-																			Canceladas
-																		</span>
-																		<span className="font-mono font-medium tabular-nums">
-																			{formatAmountFromCents(
-																				partner.salesBreakdown.canceled
-																					.grossAmount,
-																			)}
-																		</span>
-																	</div>
-																</TooltipContent>
-															</Tooltip>
-															{productionShare >= 100 ? (
-																<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-																	<TrendingUp className="size-3" />
-																	{formatSharePercentage(productionShare)}
-																</span>
-															) : (
-																<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
-																	<Minus className="size-3" />
-																	{formatSharePercentage(productionShare)}
-																</span>
+																</div>
+															</div>
+														</TableCell>
+														<TableCell
+															className={cn(
+																"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
+																productionHasValue
+																	? "font-semibold text-foreground"
+																	: "font-normal text-muted-foreground",
 															)}
-														</div>
-													</TableCell>
-												</TableRow>
-											</Fragment>
-										);
-									})}
-								</TableBody>
-							</Table>
+														>
+															<div className="text-right leading-none">
+																{formatAmountFromCents(productionAmount)}
+															</div>
+														</TableCell>
+													</TableRow>
+													<TableRow className={cn("border-0", rowToneClass)}>
+														<TableCell className="py-0 pl-2 pr-1" />
+														<TableCell colSpan={2} className="px-3 pb-2 pt-0">
+															<div className="flex items-center gap-2">
+																<Tooltip>
+																	<TooltipTrigger asChild>
+																		<button
+																			type="button"
+																			className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+																			aria-label={`Detalhes de produção de ${primaryName}`}
+																		>
+																			<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+																				<div
+																					className={cn(
+																						"h-full rounded-full transition-[width]",
+																						productionHasValue
+																							? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
+																							: "bg-muted-foreground/30",
+																					)}
+																					style={{
+																						width: `${productionShareWidth}%`,
+																					}}
+																				/>
+																			</div>
+																		</button>
+																	</TooltipTrigger>
+																	<TooltipContent
+																		side="top"
+																		sideOffset={8}
+																		className="min-w-[220px] space-y-1.5"
+																	>
+																		<div className="text-xs font-semibold">
+																			{primaryName}
+																		</div>
+																		{secondaryName ? (
+																			<div className="text-[11px] text-background/80">
+																				{secondaryName}
+																			</div>
+																		) : null}
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">
+																				Concluídas
+																			</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.concluded
+																						.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">
+																				Processando
+																			</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.pending
+																						.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																		<div className="flex items-center justify-between gap-3">
+																			<span className="text-background/80">
+																				Canceladas
+																			</span>
+																			<span className="font-mono font-medium tabular-nums">
+																				{formatAmountFromCents(
+																					partner.salesBreakdown.canceled
+																						.grossAmount,
+																				)}
+																			</span>
+																		</div>
+																	</TooltipContent>
+																</Tooltip>
+																{productionShare >= 100 ? (
+																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+																		<TrendingUp className="size-3" />
+																		{formatSharePercentage(productionShare)}
+																	</span>
+																) : (
+																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
+																		<Minus className="size-3" />
+																		{formatSharePercentage(productionShare)}
+																	</span>
+																)}
+															</div>
+														</TableCell>
+													</TableRow>
+												</Fragment>
+											);
+										})}
+									</TableBody>
+								</Table>
+							</ScrollArea>
 						</div>
 					</div>
 				)}
@@ -1352,29 +1421,30 @@ function SupervisorRankingSection({
 											</div>
 										</CollapsibleTrigger>
 										<CollapsibleContent className="border-t border-border/70 bg-muted/10">
-											<div className="overflow-x-auto p-2">
-												<Table className="min-w-[860px]">
-													<TableHeader className="[&_tr]:border-0">
-														<TableRow className="border-0 bg-muted/30 hover:bg-muted/30">
-															<TableHead className="px-3 text-xs font-medium text-muted-foreground">
-																Parceiro
-															</TableHead>
-															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-																Concluídas (R$ + qtd)
-															</TableHead>
-															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-																Em processamento (R$ + qtd)
-															</TableHead>
-															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-																Inadimplentes (R$ + qtd)
-															</TableHead>
-															<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
-																Canceladas do mês passado (R$ + qtd)
-															</TableHead>
-														</TableRow>
-													</TableHeader>
-													<TableBody className="[&_tr]:border-0">
-														{partners.map((partner) => {
+											<ScrollArea className="max-h-[17.5rem] w-full">
+												<div className="min-w-[860px] p-2">
+													<Table>
+														<TableHeader className="[&_tr]:border-0">
+															<TableRow className="border-0 bg-muted/30 hover:bg-muted/30">
+																<TableHead className="px-3 text-xs font-medium text-muted-foreground">
+																	Parceiro
+																</TableHead>
+																<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																	Concluídas (R$ + qtd)
+																</TableHead>
+																<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																	Em processamento (R$ + qtd)
+																</TableHead>
+																<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																	Inadimplentes (R$ + qtd)
+																</TableHead>
+																<TableHead className="px-3 text-right text-xs font-medium text-muted-foreground">
+																	Canceladas do mês passado (R$ + qtd)
+																</TableHead>
+															</TableRow>
+														</TableHeader>
+														<TableBody className="[&_tr]:border-0">
+															{partners.map((partner) => {
 															const canceledMetrics =
 																canceledByPartnerId[partner.partnerId] ??
 																(hasPreviousMonthCanceledData
@@ -1403,10 +1473,10 @@ function SupervisorRankingSection({
 																getPartnerSecondaryName(partner);
 
 															return (
-																<TableRow
-																	key={partner.partnerId}
-																	className="bg-transparent hover:bg-muted/20"
-																>
+																	<TableRow
+																		key={partner.partnerId}
+																		className="bg-transparent hover:bg-muted/20"
+																	>
 																	<TableCell className="px-3 py-3">
 																		<div className="flex min-w-0 items-center gap-3">
 																			<Avatar className="size-7 border border-border/70">
@@ -1566,22 +1636,23 @@ function SupervisorRankingSection({
 																			</span>
 																		</div>
 																	</TableCell>
+																	</TableRow>
+																);
+															})}
+															{partners.length === 0 ? (
+																<TableRow className="bg-transparent hover:bg-transparent">
+																	<TableCell
+																		colSpan={5}
+																		className="px-3 py-4 text-center text-sm text-muted-foreground"
+																	>
+																		Nenhum parceiro com venda no período filtrado.
+																	</TableCell>
 																</TableRow>
-															);
-														})}
-														{partners.length === 0 ? (
-															<TableRow className="bg-transparent hover:bg-transparent">
-																<TableCell
-																	colSpan={5}
-																	className="px-3 py-4 text-center text-sm text-muted-foreground"
-																>
-																	Nenhum parceiro com venda no período filtrado.
-																</TableCell>
-															</TableRow>
-														) : null}
-													</TableBody>
-												</Table>
-											</div>
+															) : null}
+														</TableBody>
+													</Table>
+												</div>
+											</ScrollArea>
 										</CollapsibleContent>
 									</div>
 								</Collapsible>
