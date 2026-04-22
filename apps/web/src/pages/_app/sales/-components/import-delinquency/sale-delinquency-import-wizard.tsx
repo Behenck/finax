@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,10 @@ import {
 type WizardStep = "UPLOAD" | "MAPPING" | "IMPORT_DATE" | "PREVIEW" | "RESULT";
 type PreviewStatusFilter = "ALL" | SaleDelinquencyImportPreviewRowStatus;
 
-const STATUS_BADGE_CLASSNAME: Record<SaleDelinquencyImportPreviewRowStatus, string> = {
+const STATUS_BADGE_CLASSNAME: Record<
+	SaleDelinquencyImportPreviewRowStatus,
+	string
+> = {
 	READY: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
 	NO_ACTION: "bg-slate-500/15 text-slate-700 border-slate-500/30",
 	ATTENTION: "bg-amber-500/15 text-amber-700 border-amber-500/30",
@@ -139,7 +143,10 @@ function formatDateLabel(value: string | null) {
 	}
 
 	try {
-		return format(parse(value.slice(0, 10), "yyyy-MM-dd", new Date()), "dd/MM/yyyy");
+		return format(
+			parse(value.slice(0, 10), "yyyy-MM-dd", new Date()),
+			"dd/MM/yyyy",
+		);
 	} catch {
 		return value;
 	}
@@ -208,7 +215,9 @@ function validateMapping(mapping: SaleDelinquencyImportTemplateFields) {
 			return `Selecione a coluna da planilha na linha ${index + 1}.`;
 		}
 
-		const normalizedFieldLabel = normalizeImportHeader(customField.customFieldLabel);
+		const normalizedFieldLabel = normalizeImportHeader(
+			customField.customFieldLabel,
+		);
 		if (usedFieldLabels.has(normalizedFieldLabel)) {
 			return "Cada campo personalizado deve ser usado apenas uma vez.";
 		}
@@ -235,7 +244,8 @@ function normalizeMappingForRequest(
 			}))
 			.filter(
 				(customField) =>
-					customField.customFieldLabel.length > 0 && customField.columnKey.length > 0,
+					customField.customFieldLabel.length > 0 &&
+					customField.columnKey.length > 0,
 			),
 	};
 }
@@ -259,10 +269,11 @@ export function SaleDelinquencyImportWizard() {
 	const slug = organization?.slug ?? "";
 	const [step, setStep] = useState<WizardStep>("UPLOAD");
 	const [parsedFile, setParsedFile] = useState<ParsedImportFile | null>(null);
-	const [importRows, setImportRows] = useState<Array<Record<string, unknown>>>([]);
-	const [mapping, setMapping] = useState<SaleDelinquencyImportTemplateFields>(
-		EMPTY_MAPPING,
+	const [importRows, setImportRows] = useState<Array<Record<string, unknown>>>(
+		[],
 	);
+	const [mapping, setMapping] =
+		useState<SaleDelinquencyImportTemplateFields>(EMPTY_MAPPING);
 	const [importDate, setImportDate] = useState(getDefaultImportDate());
 	const [selectedProductId, setSelectedProductId] = useState("");
 	const [selectedTemplateId, setSelectedTemplateId] = useState("");
@@ -343,7 +354,8 @@ export function SaleDelinquencyImportWizard() {
 				row.saleId ?? "",
 				row.reason,
 				...row.customFieldValues.map(
-					(fieldValue) => `${fieldValue.customFieldLabel} ${fieldValue.value ?? ""}`,
+					(fieldValue) =>
+						`${fieldValue.customFieldLabel} ${fieldValue.value ?? ""}`,
 				),
 			]
 				.join(" ")
@@ -356,7 +368,10 @@ export function SaleDelinquencyImportWizard() {
 	}, [previewResult, searchTerm, statusFilter]);
 
 	const filteredReadyRows = useMemo(
-		() => filteredPreviewRows.filter((row) => isSaleDelinquencyPreviewRowReady(row)),
+		() =>
+			filteredPreviewRows.filter((row) =>
+				isSaleDelinquencyPreviewRowReady(row),
+			),
 		[filteredPreviewRows],
 	);
 	const filteredReadyRowNumbers = useMemo(
@@ -388,7 +403,9 @@ export function SaleDelinquencyImportWizard() {
 			return;
 		}
 
-		const suggestedTemplate = templates.find((template) => template.isSuggested);
+		const suggestedTemplate = templates.find(
+			(template) => template.isSuggested,
+		);
 		if (!suggestedTemplate) {
 			return;
 		}
@@ -408,7 +425,8 @@ export function SaleDelinquencyImportWizard() {
 
 		setMapping((currentMapping) => {
 			const shouldUpdateSaleDate =
-				!currentMapping.saleDateColumn && Boolean(suggestedMapping.saleDateColumn);
+				!currentMapping.saleDateColumn &&
+				Boolean(suggestedMapping.saleDateColumn);
 			const shouldUpdateCustomFields =
 				currentMapping.customFieldMappings.length === 0 &&
 				suggestedMapping.customFieldMappings.length > 0;
@@ -427,12 +445,7 @@ export function SaleDelinquencyImportWizard() {
 					: currentMapping.customFieldMappings,
 			};
 		});
-	}, [
-		availableCustomFieldLabels,
-		parsedFile,
-		selectedTemplateId,
-		step,
-	]);
+	}, [availableCustomFieldLabels, parsedFile, selectedTemplateId, step]);
 
 	function applyTemplate(template: SaleDelinquencyImportTemplate) {
 		setSelectedTemplateId(template.id);
@@ -479,7 +492,9 @@ export function SaleDelinquencyImportWizard() {
 			setStep("MAPPING");
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : "Não foi possível ler a planilha.";
+				error instanceof Error
+					? error.message
+					: "Não foi possível ler a planilha.";
 			toast.error(message);
 		} finally {
 			setIsParsingFile(false);
@@ -500,7 +515,9 @@ export function SaleDelinquencyImportWizard() {
 
 	function handleAddCustomFieldMapping() {
 		const selectedLabels = new Set(
-			mapping.customFieldMappings.map((customField) => customField.customFieldLabel),
+			mapping.customFieldMappings.map(
+				(customField) => customField.customFieldLabel,
+			),
 		);
 		const selectedColumns = new Set(
 			mapping.customFieldMappings.map((customField) => customField.columnKey),
@@ -508,7 +525,8 @@ export function SaleDelinquencyImportWizard() {
 		selectedColumns.add(mapping.saleDateColumn);
 
 		const nextLabel =
-			availableCustomFieldLabels.find((label) => !selectedLabels.has(label)) ?? "";
+			availableCustomFieldLabels.find((label) => !selectedLabels.has(label)) ??
+			"";
 		const nextColumn =
 			spreadsheetHeaders.find((header) => !selectedColumns.has(header)) ?? "";
 
@@ -526,7 +544,9 @@ export function SaleDelinquencyImportWizard() {
 
 	function updateCustomFieldMapping(
 		index: number,
-		patch: Partial<SaleDelinquencyImportTemplateFields["customFieldMappings"][number]>,
+		patch: Partial<
+			SaleDelinquencyImportTemplateFields["customFieldMappings"][number]
+		>,
 	) {
 		setMapping((currentMapping) => ({
 			...currentMapping,
@@ -669,7 +689,9 @@ export function SaleDelinquencyImportWizard() {
 		setApplyResult(null);
 		setStatusFilter("ALL");
 		setSearchTerm("");
-		setSelectedRows(new Set(buildAutoSelectedSaleDelinquencyRowNumbers(previewRows)));
+		setSelectedRows(
+			new Set(buildAutoSelectedSaleDelinquencyRowNumbers(previewRows)),
+		);
 		setStep("PREVIEW");
 	}
 
@@ -747,16 +769,22 @@ export function SaleDelinquencyImportWizard() {
 
 			<Card className="p-4">
 				<div className="flex flex-wrap gap-2">
-					{(["UPLOAD", "MAPPING", "IMPORT_DATE", "PREVIEW", "RESULT"] as WizardStep[]).map(
-						(currentStep) => (
-							<Badge
-								key={currentStep}
-								variant={currentStep === step ? "default" : "outline"}
-							>
-								{getStepLabel(currentStep)}
-							</Badge>
-						),
-					)}
+					{(
+						[
+							"UPLOAD",
+							"MAPPING",
+							"IMPORT_DATE",
+							"PREVIEW",
+							"RESULT",
+						] as WizardStep[]
+					).map((currentStep) => (
+						<Badge
+							key={currentStep}
+							variant={currentStep === step ? "default" : "outline"}
+						>
+							{getStepLabel(currentStep)}
+						</Badge>
+					))}
 				</div>
 			</Card>
 
@@ -793,7 +821,11 @@ export function SaleDelinquencyImportWizard() {
 						/>
 					</div>
 
-					<Button disabled={isParsingFile} variant="outline" className="w-full sm:w-auto">
+					<Button
+						disabled={isParsingFile}
+						variant="outline"
+						className="w-full sm:w-auto"
+					>
 						{isParsingFile ? (
 							<>
 								<Loader2 className="size-4 animate-spin" />
@@ -813,7 +845,8 @@ export function SaleDelinquencyImportWizard() {
 								Arquivo: <span className="font-medium">{parsedFile.name}</span>
 							</p>
 							<p className="text-muted-foreground">
-								{parsedFile.rows.length} linhas e {parsedFile.headers.length} colunas
+								{parsedFile.rows.length} linhas e {parsedFile.headers.length}{" "}
+								colunas
 							</p>
 						</div>
 					) : null}
@@ -911,7 +944,8 @@ export function SaleDelinquencyImportWizard() {
 						<div className="space-y-1">
 							<p className="font-medium">Mapeamento da planilha</p>
 							<p className="text-sm text-muted-foreground">
-								Selecione a coluna da data da venda e os campos personalizados de busca.
+								Selecione a coluna da data da venda e os campos personalizados
+								de busca.
 							</p>
 						</div>
 
@@ -969,7 +1003,9 @@ export function SaleDelinquencyImportWizard() {
 
 						<div className="space-y-3">
 							<div className="flex items-center justify-between">
-								<p className="text-sm font-medium">Campos personalizados de busca</p>
+								<p className="text-sm font-medium">
+									Campos personalizados de busca
+								</p>
 								<Button
 									type="button"
 									variant="outline"
@@ -984,12 +1020,16 @@ export function SaleDelinquencyImportWizard() {
 
 							{mapping.customFieldMappings.length === 0 ? (
 								<div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-									Nenhum campo mapeado. Adicione pelo menos um campo para localizar a venda.
+									Nenhum campo mapeado. Adicione pelo menos um campo para
+									localizar a venda.
 								</div>
 							) : (
 								<div className="space-y-2">
 									{mapping.customFieldMappings.map((customField, index) => (
-										<div key={`${customField.customFieldLabel}-${index}`} className="grid gap-2 md:grid-cols-[1fr_1fr_auto]">
+										<div
+											key={`${customField.customFieldLabel}-${index}`}
+											className="grid gap-2 md:grid-cols-[1fr_1fr_auto]"
+										>
 											<Select
 												value={customField.customFieldLabel || "NONE"}
 												onValueChange={(value) =>
@@ -1047,15 +1087,23 @@ export function SaleDelinquencyImportWizard() {
 						</div>
 
 						{searchFieldsQuery.isPending ? (
-							<p className="text-xs text-muted-foreground">Carregando campos de busca...</p>
+							<CardSectionSkeleton
+								rows={2}
+								cardClassName="border-dashed p-3 shadow-none"
+							/>
 						) : null}
 						{productsQuery.isPending ? (
-							<p className="text-xs text-muted-foreground">Carregando produtos...</p>
+							<CardSectionSkeleton
+								rows={2}
+								cardClassName="border-dashed p-3 shadow-none"
+							/>
 						) : null}
 					</Card>
 
 					<div className="flex flex-wrap gap-2">
-						<Button variant="outline" onClick={() => setStep("UPLOAD")}>Voltar</Button>
+						<Button variant="outline" onClick={() => setStep("UPLOAD")}>
+							Voltar
+						</Button>
 						<Button onClick={handleOpenImportDateStep}>Continuar</Button>
 					</div>
 				</div>
@@ -1083,7 +1131,10 @@ export function SaleDelinquencyImportWizard() {
 						<Button variant="outline" onClick={() => setStep("MAPPING")}>
 							Voltar
 						</Button>
-						<Button onClick={() => void handleRunPreview()} disabled={previewImport.isPending}>
+						<Button
+							onClick={() => void handleRunPreview()}
+							disabled={previewImport.isPending}
+						>
 							{previewImport.isPending ? (
 								<>
 									<Loader2 className="size-4 animate-spin" />
@@ -1102,7 +1153,9 @@ export function SaleDelinquencyImportWizard() {
 					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Total</p>
-							<p className="text-lg font-semibold">{previewResult.summary.totalRows}</p>
+							<p className="text-lg font-semibold">
+								{previewResult.summary.totalRows}
+							</p>
 						</Card>
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Prontas</p>
@@ -1112,7 +1165,9 @@ export function SaleDelinquencyImportWizard() {
 						</Card>
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Sem ação</p>
-							<p className="text-lg font-semibold">{previewResult.summary.noActionRows}</p>
+							<p className="text-lg font-semibold">
+								{previewResult.summary.noActionRows}
+							</p>
 						</Card>
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Atenção</p>
@@ -1169,7 +1224,9 @@ export function SaleDelinquencyImportWizard() {
 									}
 									disabled={filteredReadyRowNumbers.length === 0}
 								/>
-								<span className="text-sm">Selecionar todas as prontas filtradas</span>
+								<span className="text-sm">
+									Selecionar todas as prontas filtradas
+								</span>
 							</div>
 							<p className="text-sm text-muted-foreground">
 								{selectedRows.size} linha(s) selecionada(s)
@@ -1202,14 +1259,19 @@ export function SaleDelinquencyImportWizard() {
 														checked={isSelected}
 														disabled={!rowSelectable}
 														onCheckedChange={(checked) =>
-															togglePreviewRowSelection(row.rowNumber, Boolean(checked))
+															togglePreviewRowSelection(
+																row.rowNumber,
+																Boolean(checked),
+															)
 														}
 													/>
 												</TableCell>
 												<TableCell>{row.rowNumber}</TableCell>
 												<TableCell>
 													<div className="flex flex-wrap items-center gap-2">
-														<Badge className={STATUS_BADGE_CLASSNAME[row.status]}>
+														<Badge
+															className={STATUS_BADGE_CLASSNAME[row.status]}
+														>
 															{getStatusLabel(row.status)}
 														</Badge>
 														{row.isVisualDuplicate ? (
@@ -1225,7 +1287,9 @@ export function SaleDelinquencyImportWizard() {
 												<TableCell className="max-w-[260px]">
 													<div className="space-y-1 text-xs text-muted-foreground">
 														{row.customFieldValues.map((fieldValue) => (
-															<p key={`${row.rowNumber}-${fieldValue.customFieldLabel}`}>
+															<p
+																key={`${row.rowNumber}-${fieldValue.customFieldLabel}`}
+															>
 																<span className="font-medium text-foreground">
 																	{fieldValue.customFieldLabel}:
 																</span>{" "}
@@ -1246,7 +1310,9 @@ export function SaleDelinquencyImportWizard() {
 					</Card>
 
 					<div className="flex flex-wrap gap-2">
-						<Button variant="outline" onClick={() => setStep("IMPORT_DATE")}>Voltar</Button>
+						<Button variant="outline" onClick={() => setStep("IMPORT_DATE")}>
+							Voltar
+						</Button>
 						<Button
 							onClick={() => void handleApplyImport()}
 							disabled={applyImport.isPending || selectedRows.size === 0}
@@ -1276,7 +1342,9 @@ export function SaleDelinquencyImportWizard() {
 						</Card>
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Aplicadas</p>
-							<p className="text-lg font-semibold text-emerald-700">{applyResult.applied}</p>
+							<p className="text-lg font-semibold text-emerald-700">
+								{applyResult.applied}
+							</p>
 						</Card>
 						<Card className="p-4">
 							<p className="text-xs text-muted-foreground">Ignoradas</p>
@@ -1286,8 +1354,8 @@ export function SaleDelinquencyImportWizard() {
 
 					<Card className="p-4 space-y-3">
 						<div className="flex items-center gap-2 text-sm text-muted-foreground">
-							<AlertCircle className="size-4" />
-							A aplicação revalida cada linha no momento da confirmação para evitar conflitos.
+							<AlertCircle className="size-4" />A aplicação revalida cada linha
+							no momento da confirmação para evitar conflitos.
 						</div>
 
 						<div className="overflow-hidden rounded-md border">
@@ -1305,14 +1373,16 @@ export function SaleDelinquencyImportWizard() {
 								</TableHeader>
 								<TableBody>
 									{resultRows.map((row) => (
-										<TableRow key={`${row.rowNumber}-${row.result}`}> 
+										<TableRow key={`${row.rowNumber}-${row.result}`}>
 											<TableCell>{row.rowNumber}</TableCell>
 											<TableCell>
 												<Badge className={getResultBadgeClass(row.result)}>
 													{getResultLabel(row.result)}
 												</Badge>
 											</TableCell>
-											<TableCell className="font-mono text-xs">{row.saleId ?? "-"}</TableCell>
+											<TableCell className="font-mono text-xs">
+												{row.saleId ?? "-"}
+											</TableCell>
 											<TableCell>{formatDateLabel(row.saleDate)}</TableCell>
 											<TableCell>{formatDateLabel(row.dueDate)}</TableCell>
 											<TableCell className="max-w-[260px] text-xs text-muted-foreground">

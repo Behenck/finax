@@ -32,6 +32,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { LoadingReveal } from "@/components/loading-reveal";
 import {
 	ChartContainer,
 	ChartTooltip,
@@ -73,22 +74,26 @@ const SALES_STATUS_META: Record<
 	PENDING: {
 		label: "Pendentes",
 		color: "#f59e0b",
-		className: "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
+		className:
+			"border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
 	},
 	APPROVED: {
 		label: "Aprovadas",
 		color: "#3b82f6",
-		className: "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
+		className:
+			"border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
 	},
 	COMPLETED: {
 		label: "Concluídas",
 		color: "#10b981",
-		className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+		className:
+			"border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
 	},
 	CANCELED: {
 		label: "Canceladas",
 		color: "#ef4444",
-		className: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
+		className:
+			"border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
 	},
 };
 
@@ -155,12 +160,15 @@ export function DashboardCommercialOverview() {
 	const query = useSalesDashboard(effectiveMonth);
 	const productsQuery = useGetOrganizationsSlugProducts({ slug });
 	const data = query.data;
-	const previousMonthLabel = formatMonthShortLabel(getPreviousMonthValue(effectiveMonth));
+	const previousMonthLabel = formatMonthShortLabel(
+		getPreviousMonthValue(effectiveMonth),
+	);
 	const currentMonthLabel = formatMonthShortLabel(effectiveMonth);
 	const productPathMap = useMemo(() => {
 		const products =
-			(productsQuery.data?.products as GetOrganizationsSlugProducts200["products"] | undefined) ??
-			[];
+			(productsQuery.data?.products as
+				| GetOrganizationsSlugProducts200["products"]
+				| undefined) ?? [];
 
 		return buildProductPathMap(products as ProductTreeNode[]);
 	}, [productsQuery.data?.products]);
@@ -180,8 +188,8 @@ export function DashboardCommercialOverview() {
 							Vendas e comissões do mês
 						</h1>
 						<p className="max-w-3xl text-sm text-muted-foreground">
-							Acompanhe o desempenho comercial por competência, compare com o mês
-							anterior e acesse rapidamente os fluxos de vendas e comissões.
+							Acompanhe o desempenho comercial por competência, compare com o
+							mês anterior e acesse rapidamente os fluxos de vendas e comissões.
 						</p>
 					</div>
 				</div>
@@ -209,9 +217,7 @@ export function DashboardCommercialOverview() {
 				</div>
 			</header>
 
-			{query.isLoading ? (
-				<CommercialDashboardSkeleton />
-			) : query.isError ? (
+			{query.isError ? (
 				<Card className="border-rose-500/30 bg-rose-500/10">
 					<CardContent className="flex flex-col gap-4 py-8 sm:flex-row sm:items-center sm:justify-between">
 						<div>
@@ -228,50 +234,60 @@ export function DashboardCommercialOverview() {
 						</Button>
 					</CardContent>
 				</Card>
-			) : data ? (
-				<div className="space-y-6">
-					{isEmpty ? (
-						<Card className="border-dashed border-border bg-muted/20">
-							<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
-								<div className="space-y-1">
-									<div className="font-medium text-foreground">
-										Sem movimento comercial em {currentMonthLabel}.
-									</div>
-									<p className="text-sm text-muted-foreground">
-										Este período ainda não possui vendas nem parcelas de comissão
-										com competência prevista.
-									</p>
-								</div>
-								<div className="flex gap-2">
-									<Button asChild variant="outline">
-										<Link to="/commissions">Ver comissões</Link>
-									</Button>
-									<Button asChild>
-										<Link to="/sales">Lançar vendas</Link>
-									</Button>
-								</div>
-							</CardContent>
-						</Card>
+			) : (
+				<LoadingReveal
+					loading={query.isLoading}
+					skeleton={<CommercialDashboardSkeleton />}
+					contentKey={effectiveMonth}
+					className="space-y-6"
+					stagger
+				>
+					{data ? (
+						<>
+							{isEmpty ? (
+								<Card className="border-dashed border-border bg-muted/20">
+									<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
+										<div className="space-y-1">
+											<div className="font-medium text-foreground">
+												Sem movimento comercial em {currentMonthLabel}.
+											</div>
+											<p className="text-sm text-muted-foreground">
+												Este período ainda não possui vendas nem parcelas de
+												comissão com competência prevista.
+											</p>
+										</div>
+										<div className="flex gap-2">
+											<Button asChild variant="outline">
+												<Link to="/commissions">Ver comissões</Link>
+											</Button>
+											<Button asChild>
+												<Link to="/sales">Lançar vendas</Link>
+											</Button>
+										</div>
+									</CardContent>
+								</Card>
+							) : null}
+
+							<CommercialKpiGrid
+								data={data}
+								currentMonthLabel={currentMonthLabel}
+								previousMonthLabel={previousMonthLabel}
+							/>
+
+							<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
+								<TimelineCard data={data} />
+								<SalesStatusCard data={data} />
+								<CommissionsSummaryCard data={data} />
+							</div>
+
+							<div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+								<TopProductsCard data={data} productPathMap={productPathMap} />
+								<TopResponsiblesCard data={data} />
+							</div>
+						</>
 					) : null}
-
-					<CommercialKpiGrid
-						data={data}
-						currentMonthLabel={currentMonthLabel}
-						previousMonthLabel={previousMonthLabel}
-					/>
-
-					<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
-						<TimelineCard data={data} />
-						<SalesStatusCard data={data} />
-						<CommissionsSummaryCard data={data} />
-					</div>
-
-					<div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-						<TopProductsCard data={data} productPathMap={productPathMap} />
-						<TopResponsiblesCard data={data} />
-					</div>
-				</div>
-			) : null}
+				</LoadingReveal>
+			)}
 		</section>
 	);
 }
@@ -370,7 +386,10 @@ function TimelineCard({ data }: { data: SalesDashboardData }) {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4 pt-6">
-				<ChartContainer config={timelineChartConfig} className="h-[290px] w-full">
+				<ChartContainer
+					config={timelineChartConfig}
+					className="h-[290px] w-full"
+				>
 					<BarChart data={chartData} barGap={6}>
 						<CartesianGrid vertical={false} />
 						<XAxis
@@ -388,7 +407,9 @@ function TimelineCard({ data }: { data: SalesDashboardData }) {
 							content={
 								<ChartTooltipContent
 									labelFormatter={(_, payload) => {
-										const item = payload?.[0]?.payload as { date?: string } | undefined;
+										const item = payload?.[0]?.payload as
+											| { date?: string }
+											| undefined;
 										return item?.date?.slice(0, 10) ?? "";
 									}}
 									formatter={(value) => (
@@ -399,7 +420,11 @@ function TimelineCard({ data }: { data: SalesDashboardData }) {
 								/>
 							}
 						/>
-						<Bar dataKey="amount" radius={[8, 8, 0, 0]} fill="var(--color-amount)" />
+						<Bar
+							dataKey="amount"
+							radius={[8, 8, 0, 0]}
+							fill="var(--color-amount)"
+						/>
 					</BarChart>
 				</ChartContainer>
 
@@ -414,7 +439,9 @@ function TimelineCard({ data }: { data: SalesDashboardData }) {
 					/>
 					<CompactMetric
 						label="Dias com venda"
-						value={String(data.sales.timeline.filter((item) => item.count > 0).length)}
+						value={String(
+							data.sales.timeline.filter((item) => item.count > 0).length,
+						)}
 					/>
 				</div>
 			</CardContent>
@@ -447,7 +474,10 @@ function SalesStatusCard({ data }: { data: SalesDashboardData }) {
 			</CardHeader>
 			<CardContent className="space-y-5">
 				<div className="mx-auto flex justify-center">
-					<ChartContainer config={statusChartConfig} className="h-[220px] w-[220px]">
+					<ChartContainer
+						config={statusChartConfig}
+						className="h-[220px] w-[220px]"
+					>
 						<PieChart>
 							<ChartTooltip
 								content={
@@ -477,14 +507,14 @@ function SalesStatusCard({ data }: { data: SalesDashboardData }) {
 									pieData.length
 										? pieData
 										: [
-											{
-												status: "PENDING",
-												label: "Sem vendas",
-												value: 1,
-												amount: 0,
-												fill: "#cbd5e1",
-											},
-										]
+												{
+													status: "PENDING",
+													label: "Sem vendas",
+													value: 1,
+													amount: 0,
+													fill: "#cbd5e1",
+												},
+											]
 								}
 								dataKey="value"
 								nameKey="status"
@@ -492,11 +522,15 @@ function SalesStatusCard({ data }: { data: SalesDashboardData }) {
 								outerRadius={82}
 								paddingAngle={2}
 							>
-								{(pieData.length ? pieData : [{ fill: "#cbd5e1", status: "PENDING" }]).map(
-									(entry) => (
-										<Cell key={`${entry.status}-${entry.fill}`} fill={entry.fill} />
-									),
-								)}
+								{(pieData.length
+									? pieData
+									: [{ fill: "#cbd5e1", status: "PENDING" }]
+								).map((entry) => (
+									<Cell
+										key={`${entry.status}-${entry.fill}`}
+										fill={entry.fill}
+									/>
+								))}
 							</Pie>
 						</PieChart>
 					</ChartContainer>
@@ -505,7 +539,10 @@ function SalesStatusCard({ data }: { data: SalesDashboardData }) {
 				<div className="space-y-2">
 					{(
 						Object.entries(data.sales.byStatus) as Array<
-							[SalesStatusKey, SalesDashboardData["sales"]["byStatus"][SalesStatusKey]]
+							[
+								SalesStatusKey,
+								SalesDashboardData["sales"]["byStatus"][SalesStatusKey],
+							]
 						>
 					).map(([status, summary]) => (
 						<div
@@ -517,7 +554,9 @@ function SalesStatusCard({ data }: { data: SalesDashboardData }) {
 									className="size-2.5 rounded-full"
 									style={{ backgroundColor: SALES_STATUS_META[status].color }}
 								/>
-								<span className="text-sm">{SALES_STATUS_META[status].label}</span>
+								<span className="text-sm">
+									{SALES_STATUS_META[status].label}
+								</span>
 							</div>
 							<div className="text-right text-sm">
 								<div className="font-medium tabular-nums">{summary.count}</div>
@@ -662,9 +701,9 @@ function KpiCard({
 			<CardContent className="space-y-4 p-5">
 				<div className="flex items-center justify-between">
 					<div className="text-sm text-muted-foreground">{title}</div>
-						<div className="rounded-xl bg-foreground p-2 text-background">
-							<Icon className="size-4" />
-						</div>
+					<div className="rounded-xl bg-foreground p-2 text-background">
+						<Icon className="size-4" />
+					</div>
 				</div>
 
 				<div className="space-y-1">
@@ -681,8 +720,8 @@ function KpiCard({
 						{delta.difference === 0
 							? `sem variação • ${helpText}`
 							: `${formatDeltaPercentage(delta.percentage)} • ${differenceFormatter(
-								delta.difference,
-							)}`}
+									delta.difference,
+								)}`}
 					</div>
 					<div className="text-xs text-muted-foreground">{helpText}</div>
 				</div>
@@ -752,7 +791,10 @@ function CommissionDirectionPanel({
 							</div>
 							<div className="h-2 rounded-full bg-background/80">
 								<div
-									className={cn("h-2 rounded-full bg-gradient-to-r", meta.color)}
+									className={cn(
+										"h-2 rounded-full bg-gradient-to-r",
+										meta.color,
+									)}
 									style={{ width: `${width}%` }}
 								/>
 							</div>

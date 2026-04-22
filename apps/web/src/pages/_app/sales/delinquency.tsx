@@ -3,6 +3,7 @@ import { format, parse } from "date-fns";
 import { Eye, RefreshCcw, ShieldAlert, TriangleAlert } from "lucide-react";
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { FilterPanel } from "@/components/filter-panel";
 import { PageHeader } from "@/components/page-header";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
@@ -39,7 +40,10 @@ export const Route = createFileRoute("/_app/sales/delinquency")({
 });
 
 function formatDate(value: string) {
-	return format(parse(value.slice(0, 10), "yyyy-MM-dd", new Date()), "dd/MM/yyyy");
+	return format(
+		parse(value.slice(0, 10), "yyyy-MM-dd", new Date()),
+		"dd/MM/yyyy",
+	);
 }
 
 export function SalesDelinquencyPage() {
@@ -133,9 +137,13 @@ export function SalesDelinquencyPage() {
 
 	if (isLoading) {
 		return (
-			<Card className="p-6">
-				<span className="text-muted-foreground">Carregando inadimplência...</span>
-			</Card>
+			<ListPageSkeleton
+				actionCount={2}
+				showStats
+				statsCount={3}
+				filterCount={4}
+				itemCount={5}
+			/>
 		);
 	}
 
@@ -275,9 +283,14 @@ export function SalesDelinquencyPage() {
 					mobile={
 						<div className="space-y-3">
 							{filteredSales.map((sale) => (
-								<Card key={sale.id} className="space-y-3 border-rose-500/30 bg-rose-500/5 p-4">
+								<Card
+									key={sale.id}
+									className="space-y-3 border-rose-500/30 bg-rose-500/5 p-4"
+								>
 									<div className="space-y-1">
-										<p className="text-sm font-semibold">{sale.customer.name}</p>
+										<p className="text-sm font-semibold">
+											{sale.customer.name}
+										</p>
 										<p className="text-xs text-muted-foreground">
 											{sale.product.name}
 										</p>
@@ -298,7 +311,9 @@ export function SalesDelinquencyPage() {
 										</div>
 										<div className="space-y-0.5">
 											<p className="text-muted-foreground">Valor</p>
-											<p className="font-semibold">{formatCurrencyBRL(sale.totalAmount / 100)}</p>
+											<p className="font-semibold">
+												{formatCurrencyBRL(sale.totalAmount / 100)}
+											</p>
 										</div>
 									</div>
 
@@ -379,7 +394,9 @@ export function SalesDelinquencyPage() {
 													/>
 													<div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
 														{sale.openDelinquencies.map((occurrence) => (
-															<span key={occurrence.id}>{formatDate(occurrence.dueDate)}</span>
+															<span key={occurrence.id}>
+																{formatDate(occurrence.dueDate)}
+															</span>
 														))}
 													</div>
 												</div>
@@ -390,7 +407,10 @@ export function SalesDelinquencyPage() {
 											<TableCell>
 												<div className="flex justify-end">
 													<Button variant="outline" size="sm" asChild>
-														<Link to="/sales/$saleId" params={{ saleId: sale.id }}>
+														<Link
+															to="/sales/$saleId"
+															params={{ saleId: sale.id }}
+														>
 															<Eye className="size-4" />
 															Ver venda
 														</Link>

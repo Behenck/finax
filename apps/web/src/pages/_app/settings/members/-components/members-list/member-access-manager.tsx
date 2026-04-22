@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -542,9 +543,10 @@ export function MemberAccessManager({
 
 						<TabsPanel value="access" className="space-y-4">
 							{isLoadingCompanies ? (
-								<div className="text-sm text-muted-foreground">
-									Carregando empresas...
-								</div>
+								<CardSectionSkeleton
+									rows={3}
+									cardClassName="border-dashed p-4 shadow-none"
+								/>
 							) : (
 								<MemberAccessScopePicker
 									companies={companies}
@@ -557,9 +559,10 @@ export function MemberAccessManager({
 						{canManagePermissions ? (
 							<TabsPanel value="permissions" className="space-y-4">
 								{isLoadingPermissionsTab ? (
-									<div className="text-sm text-muted-foreground">
-										Carregando permissões...
-									</div>
+									<CardSectionSkeleton
+										rows={4}
+										cardClassName="border-dashed p-4 shadow-none"
+									/>
 								) : permissionSections.length === 0 ? (
 									<div className="rounded-lg border border-dashed px-4 py-6 text-sm text-muted-foreground">
 										Nenhuma permissão ativa encontrada para esta organização.

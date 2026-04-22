@@ -1,3 +1,4 @@
+import { FormPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/app-context";
@@ -27,7 +28,7 @@ function UpdateProductPage() {
 	});
 
 	if (isLoading) {
-		return <p>Carregando...</p>;
+		return <FormPageSkeleton actionCount={1} sectionCount={4} />;
 	}
 
 	if (isError || !data?.product) {

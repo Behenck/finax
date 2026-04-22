@@ -8,6 +8,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -135,9 +136,10 @@ export function AssignSupervisor({
 						)}
 					</Card>
 					{isLoading ? (
-						<p className="rounded-md border border-dashed p-3 text-center text-muted-foreground text-sm">
-							Carregando supervisores...
-						</p>
+						<CardSectionSkeleton
+							rows={3}
+							cardClassName="border-dashed p-4 shadow-none"
+						/>
 					) : null}
 					{supervisors.map((supervisor) => {
 						const partnersCount =

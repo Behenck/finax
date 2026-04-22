@@ -27,6 +27,7 @@ import {
 	type ReactNode,
 } from "react";
 import { useQueryState } from "nuqs";
+import { LoadingReveal } from "@/components/loading-reveal";
 import {
 	Activity,
 	ArrowRight,
@@ -209,12 +210,13 @@ const delinquencyChartConfig = {
 
 type PartnerDashboardData = GetOrganizationsSlugSalesDashboardPartners200;
 type PartnerFilterOption = PartnerDashboardData["filters"]["partners"][number];
-type PartnerCommissionBreakdown = PartnerDashboardData["commissionBreakdown"] & {
-	canceledAmount?: number;
-	payablePaidAmount?: number;
-	payablePendingAmount?: number;
-	payableCanceledAmount?: number;
-};
+type PartnerCommissionBreakdown =
+	PartnerDashboardData["commissionBreakdown"] & {
+		canceledAmount?: number;
+		payablePaidAmount?: number;
+		payablePendingAmount?: number;
+		payableCanceledAmount?: number;
+	};
 type DashboardBreakdownItem =
 	PartnerDashboardData["dynamicFieldBreakdown"]["items"][number];
 type StatusFunnelItem = PartnerDashboardData["statusFunnel"]["items"][number];
@@ -1740,7 +1742,10 @@ function PartnerCommissionsByCompetencyCard({
 		incomePaidAmount + incomePendingAmount + incomeCanceledAmount;
 	const outcomePaidAmount =
 		commissionBreakdown?.payablePaidAmount ??
-		Math.max(incomePaidAmount - (commissionBreakdown?.netRevenueAmount ?? 0), 0);
+		Math.max(
+			incomePaidAmount - (commissionBreakdown?.netRevenueAmount ?? 0),
+			0,
+		);
 	const outcomePendingAmount = commissionBreakdown?.payablePendingAmount ?? 0;
 	const outcomeCanceledAmount = commissionBreakdown?.payableCanceledAmount ?? 0;
 	const outcomeTotalAmount =
@@ -2161,10 +2166,6 @@ export function DashboardPartnersOverview() {
 		[timelineAreaGradientIdPrefix],
 	);
 
-	if (query.isLoading && !data) {
-		return <DashboardPartnersSkeleton />;
-	}
-
 	if (query.isError) {
 		return (
 			<Card className="border-rose-500/30 bg-rose-500/10">
@@ -2344,273 +2345,282 @@ export function DashboardPartnersOverview() {
 					</div>
 				</FilterPanel>
 			) : null}
-
-			{!hasPartners ? (
-				<Card className="border-dashed border-border bg-muted/20">
-					<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
-						<div className="space-y-1">
-							<div className="font-medium text-foreground">
-								Nenhum parceiro encontrado para os filtros selecionados.
-							</div>
-							<p className="text-sm text-muted-foreground">
-								Ajuste supervisor, parceiros ou o período para visualizar os
-								indicadores.
-							</p>
-						</div>
-						<Button asChild variant="outline">
-							<Link to="/registers/partners">Gerenciar parceiros</Link>
-						</Button>
-					</CardContent>
-				</Card>
-			) : null}
-
-			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-				<PartnerKpiCard
-					title="Total de parceiros"
-					value={formatCount(summary?.totalPartners ?? 0)}
-					subtitle={`${formatCount(summary?.producingPartners ?? 0)} produzindo • ${formatCount(summary?.inactivePartners ?? 0)} inativos`}
-					icon={Users}
-					toneClassName="bg-slate-500/10 text-slate-700 dark:text-slate-300"
-				/>
-				<PartnerKpiCard
-					title="Sem produção (3 meses)"
-					value={formatCount(partnersWithoutProductionInThreeMonths)}
-					subtitle="Parceiros sem venda nos últimos 90 dias"
-					icon={Clock3}
-					toneClassName="bg-amber-500/10 text-amber-700 dark:text-amber-300"
-				/>
-				<PartnerKpiCard
-					title="Produção"
-					value={formatAmountFromCents(summary?.grossAmount ?? 0)}
-					subtitle="Volume total no período"
-					icon={CircleDollarSign}
-					toneClassName="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-				/>
-				<PartnerKpiCard
-					title="Total de vendas"
-					value={formatCount(summary?.totalSales ?? 0)}
-					subtitle="Vendas com responsável parceiro"
-					icon={ShoppingCart}
-					toneClassName="bg-sky-500/10 text-sky-700 dark:text-sky-300"
-				/>
-				<PartnerKpiCard
-					title="Ticket médio"
-					value={formatAmountFromCents(summary?.averageTicket ?? 0)}
-					subtitle="Produção média por venda"
-					icon={BadgeDollarSign}
-					toneClassName="bg-violet-500/10 text-violet-700 dark:text-violet-300"
-				/>
-				<PartnerKpiCard
-					title="Vendas inadimplentes"
-					value={formatCount(summary?.delinquentSalesCount ?? 0)}
-					subtitle="Quantidade com inadimplência aberta"
-					icon={ShieldAlert}
-					toneClassName="bg-orange-500/10 text-orange-700 dark:text-orange-300"
-				/>
-			</div>
-
-			{hasPartners && !hasSales ? (
-				<Card className="border-dashed border-border bg-muted/20">
-					<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
-						<div className="space-y-1">
-							<div className="font-medium text-foreground">
-								Nenhuma venda de parceiro encontrada neste período.
-							</div>
-							<p className="text-sm text-muted-foreground">
-								Os parceiros seguem visíveis, mas sem produção no intervalo
-								atual.
-							</p>
-						</div>
-						<Button asChild variant="outline">
-							<Link to="/sales">Ver vendas</Link>
-						</Button>
-					</CardContent>
-				</Card>
-			) : null}
-
-			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
-				<Card className="overflow-hidden border-border/70">
-					<CardHeader className="border-b">
-						<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+			<LoadingReveal
+				loading={query.isLoading && !data}
+				skeleton={<DashboardPartnersSkeleton />}
+				contentKey={`${effectiveStartDate}-${effectiveEndDate}-${effectiveSupervisorId}-${effectivePartnerIdsCsv}-${inactiveMonths}-${effectiveDynamicFieldId}-${productBreakdownDepth}`}
+				className="space-y-6"
+				stagger
+			>
+				{!hasPartners ? (
+					<Card className="border-dashed border-border bg-muted/20">
+						<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
 							<div className="space-y-1">
-								<CardTitle>
-									{timelineGranularity === "DAY"
-										? "Vendas por dia"
-										: "Faturamento por mês"}
-								</CardTitle>
-								<CardDescription>
-									Visualize concluídas e processadas no período, com opção de
-									comparar as canceladas.
-								</CardDescription>
+								<div className="font-medium text-foreground">
+									Nenhum parceiro encontrado para os filtros selecionados.
+								</div>
+								<p className="text-sm text-muted-foreground">
+									Ajuste supervisor, parceiros ou o período para visualizar os
+									indicadores.
+								</p>
 							</div>
-							<TimelineSeriesSelectFilter
-								selectedKey={selectedTimelineSeries}
-								onChange={setSelectedTimelineSeries}
-							/>
-						</div>
-					</CardHeader>
-					<CardContent className="space-y-4 pt-6">
-						<ChartContainer
-							config={timelineChartConfig}
-							className="h-[290px] w-full"
-						>
-							<AreaChart data={timelineChartData}>
-								<defs>
-									{TIMELINE_SERIES_OPTIONS.map((option) => (
-										<linearGradient
-											key={option.key}
-											id={timelineAreaGradientIds[option.key]}
-											x1="0"
-											y1="0"
-											x2="0"
-											y2="1"
-										>
-											<stop
-												offset="5%"
-												stopColor={`var(--color-${option.key})`}
-												stopOpacity={0.7}
-											/>
-											<stop
-												offset="95%"
-												stopColor={`var(--color-${option.key})`}
-												stopOpacity={0.1}
-											/>
-										</linearGradient>
-									))}
-								</defs>
-								<CartesianGrid vertical={false} />
-								<XAxis
-									dataKey="label"
-									tickLine={false}
-									axisLine={false}
-									tickMargin={8}
-									minTickGap={24}
+							<Button asChild variant="outline">
+								<Link to="/registers/partners">Gerenciar parceiros</Link>
+							</Button>
+						</CardContent>
+					</Card>
+				) : null}
+
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+					<PartnerKpiCard
+						title="Total de parceiros"
+						value={formatCount(summary?.totalPartners ?? 0)}
+						subtitle={`${formatCount(summary?.producingPartners ?? 0)} produzindo • ${formatCount(summary?.inactivePartners ?? 0)} inativos`}
+						icon={Users}
+						toneClassName="bg-slate-500/10 text-slate-700 dark:text-slate-300"
+					/>
+					<PartnerKpiCard
+						title="Sem produção (3 meses)"
+						value={formatCount(partnersWithoutProductionInThreeMonths)}
+						subtitle="Parceiros sem venda nos últimos 90 dias"
+						icon={Clock3}
+						toneClassName="bg-amber-500/10 text-amber-700 dark:text-amber-300"
+					/>
+					<PartnerKpiCard
+						title="Produção"
+						value={formatAmountFromCents(summary?.grossAmount ?? 0)}
+						subtitle="Volume total no período"
+						icon={CircleDollarSign}
+						toneClassName="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+					/>
+					<PartnerKpiCard
+						title="Total de vendas"
+						value={formatCount(summary?.totalSales ?? 0)}
+						subtitle="Vendas com responsável parceiro"
+						icon={ShoppingCart}
+						toneClassName="bg-sky-500/10 text-sky-700 dark:text-sky-300"
+					/>
+					<PartnerKpiCard
+						title="Ticket médio"
+						value={formatAmountFromCents(summary?.averageTicket ?? 0)}
+						subtitle="Produção média por venda"
+						icon={BadgeDollarSign}
+						toneClassName="bg-violet-500/10 text-violet-700 dark:text-violet-300"
+					/>
+					<PartnerKpiCard
+						title="Vendas inadimplentes"
+						value={formatCount(summary?.delinquentSalesCount ?? 0)}
+						subtitle="Quantidade com inadimplência aberta"
+						icon={ShieldAlert}
+						toneClassName="bg-orange-500/10 text-orange-700 dark:text-orange-300"
+					/>
+				</div>
+
+				{hasPartners && !hasSales ? (
+					<Card className="border-dashed border-border bg-muted/20">
+						<CardContent className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
+							<div className="space-y-1">
+								<div className="font-medium text-foreground">
+									Nenhuma venda de parceiro encontrada neste período.
+								</div>
+								<p className="text-sm text-muted-foreground">
+									Os parceiros seguem visíveis, mas sem produção no intervalo
+									atual.
+								</p>
+							</div>
+							<Button asChild variant="outline">
+								<Link to="/sales">Ver vendas</Link>
+							</Button>
+						</CardContent>
+					</Card>
+				) : null}
+
+				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
+					<Card className="overflow-hidden border-border/70">
+						<CardHeader className="border-b">
+							<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+								<div className="space-y-1">
+									<CardTitle>
+										{timelineGranularity === "DAY"
+											? "Vendas por dia"
+											: "Faturamento por mês"}
+									</CardTitle>
+									<CardDescription>
+										Visualize concluídas e processadas no período, com opção de
+										comparar as canceladas.
+									</CardDescription>
+								</div>
+								<TimelineSeriesSelectFilter
+									selectedKey={selectedTimelineSeries}
+									onChange={setSelectedTimelineSeries}
 								/>
-								<YAxis
-									tickLine={false}
-									axisLine={false}
-									tickFormatter={(value) => formatCurrencyBRL(Number(value))}
-								/>
-								<ChartTooltip
-									cursor={false}
-									content={
-										<ChartTooltipContent
-											labelFormatter={(_, payload) => {
-												const item = payload?.[0]?.payload as
-													| { label?: string }
-													| undefined;
-												return item?.label ?? "";
-											}}
-											formatter={(value, name) => {
-												const seriesKey = String(name) as TimelineSeriesKey;
-												const seriesLabel =
-													timelineChartConfig[seriesKey]?.label ?? name;
-												return (
-													<div className="flex w-full items-center justify-between gap-2">
-														<span className="text-muted-foreground">
-															{seriesLabel}
-														</span>
-														<div className="font-medium">
-															{formatCurrencyBRL(Number(value))}
-														</div>
-													</div>
-												);
-											}}
-											indicator="dot"
-										/>
-									}
-								/>
-								{timelineSeriesKeysToRender.map((seriesKey) => (
-									<Area
-										key={seriesKey}
-										dataKey={seriesKey}
-										type="natural"
-										stroke={`var(--color-${seriesKey})`}
-										strokeWidth={2}
-										fill={`url(#${timelineAreaGradientIds[seriesKey]})`}
-										activeDot={{ r: 5 }}
+							</div>
+						</CardHeader>
+						<CardContent className="space-y-4 pt-6">
+							<ChartContainer
+								config={timelineChartConfig}
+								className="h-[290px] w-full"
+							>
+								<AreaChart data={timelineChartData}>
+									<defs>
+										{TIMELINE_SERIES_OPTIONS.map((option) => (
+											<linearGradient
+												key={option.key}
+												id={timelineAreaGradientIds[option.key]}
+												x1="0"
+												y1="0"
+												x2="0"
+												y2="1"
+											>
+												<stop
+													offset="5%"
+													stopColor={`var(--color-${option.key})`}
+													stopOpacity={0.7}
+												/>
+												<stop
+													offset="95%"
+													stopColor={`var(--color-${option.key})`}
+													stopOpacity={0.1}
+												/>
+											</linearGradient>
+										))}
+									</defs>
+									<CartesianGrid vertical={false} />
+									<XAxis
+										dataKey="label"
+										tickLine={false}
+										axisLine={false}
+										tickMargin={8}
+										minTickGap={24}
 									/>
-								))}
-							</AreaChart>
-						</ChartContainer>
+									<YAxis
+										tickLine={false}
+										axisLine={false}
+										tickFormatter={(value) => formatCurrencyBRL(Number(value))}
+									/>
+									<ChartTooltip
+										cursor={false}
+										content={
+											<ChartTooltipContent
+												labelFormatter={(_, payload) => {
+													const item = payload?.[0]?.payload as
+														| { label?: string }
+														| undefined;
+													return item?.label ?? "";
+												}}
+												formatter={(value, name) => {
+													const seriesKey = String(name) as TimelineSeriesKey;
+													const seriesLabel =
+														timelineChartConfig[seriesKey]?.label ?? name;
+													return (
+														<div className="flex w-full items-center justify-between gap-2">
+															<span className="text-muted-foreground">
+																{seriesLabel}
+															</span>
+															<div className="font-medium">
+																{formatCurrencyBRL(Number(value))}
+															</div>
+														</div>
+													);
+												}}
+												indicator="dot"
+											/>
+										}
+									/>
+									{timelineSeriesKeysToRender.map((seriesKey) => (
+										<Area
+											key={seriesKey}
+											dataKey={seriesKey}
+											type="natural"
+											stroke={`var(--color-${seriesKey})`}
+											strokeWidth={2}
+											fill={`url(#${timelineAreaGradientIds[seriesKey]})`}
+											activeDot={{ r: 5 }}
+										/>
+									))}
+								</AreaChart>
+							</ChartContainer>
 
-						<div className="grid grid-cols-2 gap-3 text-sm">
-							<PartnerCompactMetric
-								label={
-									timelineGranularity === "DAY" ? "Pico diário" : "Pico mensal"
+							<div className="grid grid-cols-2 gap-3 text-sm">
+								<PartnerCompactMetric
+									label={
+										timelineGranularity === "DAY"
+											? "Pico diário"
+											: "Pico mensal"
+									}
+									value={formatAmountFromCents(timelineDailyPeakAmount)}
+								/>
+								<PartnerCompactMetric
+									label={
+										timelineGranularity === "DAY"
+											? "Dias com venda"
+											: "Meses com venda"
+									}
+									value={String(timelineDaysWithSales)}
+								/>
+							</div>
+						</CardContent>
+					</Card>
+
+					<PartnerSalesStatusCard items={data?.statusFunnel.items ?? []} />
+					<PartnerCommissionsByCompetencyCard
+						commissionBreakdown={data?.commissionBreakdown}
+					/>
+				</div>
+
+				<div className="space-y-6">
+					<PartnerRankingSection items={data?.ranking ?? []} />
+					<SupervisorRankingSection
+						items={data?.ranking ?? []}
+						canceledByPartnerId={previousMonthCanceledByPartnerId}
+						hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
+					/>
+				</div>
+
+				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
+					<PartnerBreakdownPieCard
+						title={`Vendas por ${data?.dynamicFieldBreakdown.selectedFieldLabel ?? "campo personalizado"}`}
+						description="Distribuição das vendas por valor do campo selecionado."
+						items={data?.dynamicFieldBreakdown.items ?? []}
+						emptyMessage="Nenhum valor preenchido para o campo selecionado neste período."
+					/>
+
+					<PartnerBreakdownPieCard
+						title="Vendas por subproduto do produto pai"
+						description={
+							productBreakdownDepth === "ALL_LEVELS"
+								? "Distribuição pelo caminho completo dos produtos usados nas vendas."
+								: "Distribuição apenas pelo primeiro nível abaixo do produto pai."
+						}
+						items={data?.productBreakdown.items ?? []}
+						emptyMessage="Nenhum produto encontrado nas vendas do período selecionado."
+						variant="regular"
+						headerAction={
+							<Select
+								value={productBreakdownDepth}
+								onValueChange={(value) =>
+									void setProductBreakdownDepth(
+										value as "FIRST_LEVEL" | "ALL_LEVELS",
+									)
 								}
-								value={formatAmountFromCents(timelineDailyPeakAmount)}
-							/>
-							<PartnerCompactMetric
-								label={
-									timelineGranularity === "DAY"
-										? "Dias com venda"
-										: "Meses com venda"
-								}
-								value={String(timelineDaysWithSales)}
-							/>
-						</div>
-					</CardContent>
-				</Card>
+							>
+								<SelectTrigger className="w-[160px] rounded-full">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="FIRST_LEVEL">1º nível</SelectItem>
+									<SelectItem value="ALL_LEVELS">Todos os níveis</SelectItem>
+								</SelectContent>
+							</Select>
+						}
+					/>
 
-				<PartnerSalesStatusCard items={data?.statusFunnel.items ?? []} />
-				<PartnerCommissionsByCompetencyCard
-					commissionBreakdown={data?.commissionBreakdown}
-				/>
-			</div>
-
-			<div className="space-y-6">
-				<PartnerRankingSection items={data?.ranking ?? []} />
-				<SupervisorRankingSection
-					items={data?.ranking ?? []}
-					canceledByPartnerId={previousMonthCanceledByPartnerId}
-					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
-				/>
-			</div>
-
-			<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
-				<PartnerBreakdownPieCard
-					title={`Vendas por ${data?.dynamicFieldBreakdown.selectedFieldLabel ?? "campo personalizado"}`}
-					description="Distribuição das vendas por valor do campo selecionado."
-					items={data?.dynamicFieldBreakdown.items ?? []}
-					emptyMessage="Nenhum valor preenchido para o campo selecionado neste período."
-				/>
-
-				<PartnerBreakdownPieCard
-					title="Vendas por subproduto do produto pai"
-					description={
-						productBreakdownDepth === "ALL_LEVELS"
-							? "Distribuição pelo caminho completo dos produtos usados nas vendas."
-							: "Distribuição apenas pelo primeiro nível abaixo do produto pai."
-					}
-					items={data?.productBreakdown.items ?? []}
-					emptyMessage="Nenhum produto encontrado nas vendas do período selecionado."
-					variant="regular"
-					headerAction={
-						<Select
-							value={productBreakdownDepth}
-							onValueChange={(value) =>
-								void setProductBreakdownDepth(
-									value as "FIRST_LEVEL" | "ALL_LEVELS",
-								)
-							}
-						>
-							<SelectTrigger className="w-[160px] rounded-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="FIRST_LEVEL">1º nível</SelectItem>
-								<SelectItem value="ALL_LEVELS">Todos os níveis</SelectItem>
-							</SelectContent>
-						</Select>
-					}
-				/>
-
-				<DelinquencyBreakdownCard
-					totalSales={data?.delinquencyBreakdown.totalSales ?? 0}
-					buckets={data?.delinquencyBreakdown.buckets ?? []}
-				/>
-			</div>
+					<DelinquencyBreakdownCard
+						totalSales={data?.delinquencyBreakdown.totalSales ?? 0}
+						buckets={data?.delinquencyBreakdown.buckets ?? []}
+					/>
+				</div>
+			</LoadingReveal>
 		</section>
 	);
 }

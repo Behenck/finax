@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -1177,9 +1178,10 @@ function SingleProductDynamicMappingCard({
 			</div>
 
 			{productFieldsQuery.isLoading || productFieldsQuery.isFetching ? (
-				<p className="text-sm text-muted-foreground">
-					Carregando campos do produto...
-				</p>
+				<CardSectionSkeleton
+					rows={4}
+					cardClassName="border-dashed p-4 shadow-none"
+				/>
 			) : fields.length === 0 ? (
 				<p className="text-sm text-muted-foreground">
 					Este produto não possui campos personalizados.
@@ -2881,8 +2883,8 @@ export function ImportSalesWizard() {
 										})}
 									</div>
 
-										<div className="hidden overflow-x-auto lg:block">
-											<Table className="min-w-[1200px] table-fixed">
+									<div className="hidden overflow-x-auto lg:block">
+										<Table className="min-w-[1200px] table-fixed">
 											<TableHeader>
 												<TableRow>
 													<TableHead className="w-[90px]">Selecionar</TableHead>
@@ -2979,9 +2981,9 @@ export function ImportSalesWizard() {
 																					executeImportMutation.isPending
 																				}
 																			>
-																					<SelectTrigger className="h-8 w-full text-xs">
-																						<SelectValue placeholder="Selecione produto/subproduto" />
-																					</SelectTrigger>
+																				<SelectTrigger className="h-8 w-full text-xs">
+																					<SelectValue placeholder="Selecione produto/subproduto" />
+																				</SelectTrigger>
 																				<SelectContent>
 																					{scopedImportProductOptions.length ===
 																					0 ? (
@@ -3452,9 +3454,10 @@ export function ImportSalesWizard() {
 				</p>
 			) : null}
 			{isLoadingOptions && step === "MAPPING" ? (
-				<p className="text-muted-foreground text-sm">
-					Carregando opções de cadastro...
-				</p>
+				<CardSectionSkeleton
+					rows={3}
+					cardClassName="border-dashed p-4 shadow-none"
+				/>
 			) : null}
 		</main>
 	);

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CreateCategory } from "./-components/create-category";
 import { useMemo } from "react";
 import { CategoryColumn } from "./-components/category-column";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/page-header";
 import { isNotNull } from "@/utils/is-not-null";
@@ -16,9 +17,11 @@ export const Route = createFileRoute("/_app/registers/categories/")({
 });
 
 function Categories() {
-	const { organization } = useApp()
+	const { organization } = useApp();
 
-	const { data, isError, isLoading } = useGetOrganizationsSlugCategories({ slug: organization!.slug });
+	const { data, isError, isLoading } = useGetOrganizationsSlugCategories({
+		slug: organization!.slug,
+	});
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 
 	const safeCategories = data?.categories ?? [];
@@ -68,7 +71,9 @@ function Categories() {
 		};
 	}, [filteredCategories]);
 
-	if (isLoading) return <h1>Carregando...</h1>;
+	if (isLoading) {
+		return <ListPageSkeleton actionCount={1} filterCount={1} itemCount={4} />;
+	}
 
 	if (isError) {
 		return <p className="text-destructive">Erro ao carregar categorias.</p>;

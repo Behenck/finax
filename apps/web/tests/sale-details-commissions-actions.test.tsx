@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
 	canMock: vi.fn(),
 	navigateMock: vi.fn(),
 	deleteSaleMock: vi.fn().mockResolvedValue(undefined),
+	saleStatus: "COMPLETED" as "COMPLETED" | "PENDING",
 }));
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -50,7 +51,7 @@ vi.mock("@/hooks/sales", () => ({
 				id: "sale-1",
 				saleDate: "2026-03-10",
 				totalAmount: 100_000,
-				status: "COMPLETED",
+				status: mocks.saleStatus,
 				customer: {
 					id: "customer-1",
 					name: "Cliente Teste",
@@ -73,6 +74,12 @@ vi.mock("@/hooks/sales", () => ({
 				},
 				dynamicFieldSchema: [],
 				dynamicFieldValues: {},
+				delinquencySummary: {
+					hasOpen: false,
+					openCount: 0,
+					oldestDueDate: null,
+				},
+				openDelinquencies: [],
 				commissions: [
 					{
 						id: "commission-1",
@@ -162,10 +169,17 @@ vi.mock("../src/pages/_app/sales/-components/sale-installments-drawer", () => ({
 		) : null,
 }));
 
+vi.mock("../src/pages/_app/sales/-components/sale-delinquency-section", () => ({
+	SaleDelinquencySection: () => (
+		<div data-testid="sale-delinquency-section">Inadimplência</div>
+	),
+}));
+
 describe("sale details commission actions", () => {
 	beforeEach(() => {
 		mocks.navigateMock.mockReset();
 		mocks.deleteSaleMock.mockReset();
+		mocks.saleStatus = "COMPLETED";
 		mocks.canMock.mockImplementation(
 			(_action: string, permission: string) =>
 				permission === "sales.view" ||
@@ -238,5 +252,15 @@ describe("sale details commission actions", () => {
 			"data-sale-commission-id",
 			"",
 		);
+	});
+
+	it("should hide delinquency section when sale is not completed", () => {
+		mocks.saleStatus = "PENDING";
+
+		render(<SaleDetailsPage />);
+
+		expect(
+			screen.queryByTestId("sale-delinquency-section"),
+		).not.toBeInTheDocument();
 	});
 });

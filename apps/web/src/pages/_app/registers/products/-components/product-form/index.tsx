@@ -11,6 +11,7 @@ import {
 } from "react-hook-form";
 import { toast } from "sonner";
 import { FieldError as FormFieldError } from "@/components/field-error";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -1043,11 +1044,10 @@ export function ProductForm({
 
 					<div className="max-h-[58vh] space-y-3 overflow-y-auto pr-1">
 						{shouldLoadSourceProductData && isLoadingSaleFields ? (
-							<Card className="p-4">
-								<span className="text-muted-foreground text-sm">
-									Carregando campos da venda...
-								</span>
-							</Card>
+							<CardSectionSkeleton
+								rows={4}
+								cardClassName="border-dashed p-4 shadow-none"
+							/>
 						) : shouldLoadSourceProductData && isSaleFieldsError ? (
 							<Card className="space-y-2 p-4">
 								<span className="text-destructive text-sm">
@@ -1332,9 +1332,10 @@ export function ProductForm({
 						</Field>
 
 						{shouldLoadSourceProductData && isLoadingCommissionReversalRules ? (
-							<p className="text-muted-foreground text-sm">
-								Carregando regras de estorno...
-							</p>
+							<CardSectionSkeleton
+								rows={3}
+								cardClassName="border-dashed p-4 shadow-none"
+							/>
 						) : shouldLoadSourceProductData &&
 							isCommissionReversalRulesError ? (
 							<div className="space-y-2">
@@ -1510,11 +1511,10 @@ export function ProductForm({
 
 					<div className="max-h-[72vh] overflow-y-auto pr-1">
 						{shouldLoadSourceProductData && isLoadingScenarios ? (
-							<Card className="p-4">
-								<span className="text-muted-foreground text-sm">
-									Carregando cenários de comissão...
-								</span>
-							</Card>
+							<CardSectionSkeleton
+								rows={4}
+								cardClassName="border-dashed p-4 shadow-none"
+							/>
 						) : shouldLoadSourceProductData && isScenariosError ? (
 							<Card className="space-y-2 p-4">
 								<span className="text-destructive text-sm">

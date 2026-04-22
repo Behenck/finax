@@ -1,5 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
@@ -144,7 +145,11 @@ const SALE_STATUS_FILTER_VALUES = [
 	"COMPLETED",
 	"CANCELED",
 ] as const;
-const SALE_RESPONSIBLE_TYPE_FILTER_VALUES = ["ALL", "SELLER", "PARTNER"] as const;
+const SALE_RESPONSIBLE_TYPE_FILTER_VALUES = [
+	"ALL",
+	"SELLER",
+	"PARTNER",
+] as const;
 
 type SaleStatusFilter = (typeof SALE_STATUS_FILTER_VALUES)[number];
 type SaleResponsibleTypeFilter =
@@ -791,46 +796,40 @@ export function SalesDataTable({
 		unitIdFilter,
 		unitsBySelectedCompany,
 	]);
-	const sellerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(
-		() => {
-			const optionsMap = new Map<string, string>();
+	const sellerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(() => {
+		const optionsMap = new Map<string, string>();
 
-			for (const sale of sales) {
-				if (sale.responsible?.type !== "SELLER") {
-					continue;
-				}
-
-				optionsMap.set(sale.responsible.id, sale.responsible.name);
+		for (const sale of sales) {
+			if (sale.responsible?.type !== "SELLER") {
+				continue;
 			}
 
-			return Array.from(optionsMap.entries())
-				.map(([id, name]) => ({ id, name }))
-				.sort((optionA, optionB) =>
-					optionA.name.localeCompare(optionB.name, "pt-BR"),
-				);
-		},
-		[sales],
-	);
-	const partnerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(
-		() => {
-			const optionsMap = new Map<string, string>();
+			optionsMap.set(sale.responsible.id, sale.responsible.name);
+		}
 
-			for (const sale of sales) {
-				if (sale.responsible?.type !== "PARTNER") {
-					continue;
-				}
+		return Array.from(optionsMap.entries())
+			.map(([id, name]) => ({ id, name }))
+			.sort((optionA, optionB) =>
+				optionA.name.localeCompare(optionB.name, "pt-BR"),
+			);
+	}, [sales]);
+	const partnerResponsibleOptions = useMemo<ResponsibleFilterOption[]>(() => {
+		const optionsMap = new Map<string, string>();
 
-				optionsMap.set(sale.responsible.id, sale.responsible.name);
+		for (const sale of sales) {
+			if (sale.responsible?.type !== "PARTNER") {
+				continue;
 			}
 
-			return Array.from(optionsMap.entries())
-				.map(([id, name]) => ({ id, name }))
-				.sort((optionA, optionB) =>
-					optionA.name.localeCompare(optionB.name, "pt-BR"),
-				);
-		},
-		[sales],
-	);
+			optionsMap.set(sale.responsible.id, sale.responsible.name);
+		}
+
+		return Array.from(optionsMap.entries())
+			.map(([id, name]) => ({ id, name }))
+			.sort((optionA, optionB) =>
+				optionA.name.localeCompare(optionB.name, "pt-BR"),
+			);
+	}, [sales]);
 	const responsibleOptions = useMemo<ResponsibleFilterOption[]>(
 		() =>
 			responsibleTypeFilter === "SELLER"
@@ -838,7 +837,11 @@ export function SalesDataTable({
 				: responsibleTypeFilter === "PARTNER"
 					? partnerResponsibleOptions
 					: [],
-		[partnerResponsibleOptions, responsibleTypeFilter, sellerResponsibleOptions],
+		[
+			partnerResponsibleOptions,
+			responsibleTypeFilter,
+			sellerResponsibleOptions,
+		],
 	);
 
 	useEffect(() => {
@@ -1146,10 +1149,7 @@ export function SalesDataTable({
 				header: "Cliente",
 				cell: ({ row }) => (
 					<div className="max-w-[220px]">
-						<span
-							className="block truncate"
-							title={row.original.customer.name}
-						>
+						<span className="block truncate" title={row.original.customer.name}>
 							{row.original.customer.name}
 						</span>
 						<SaleDelinquencyBadge
@@ -1537,13 +1537,20 @@ export function SalesDataTable({
 
 	useEffect(() => {
 		const pageCount = table.getPageCount();
-		const nextPage =
-			pageCount <= 0 ? 1 : Math.min(currentPage, pageCount);
+		const nextPage = pageCount <= 0 ? 1 : Math.min(currentPage, pageCount);
 
 		if (nextPage !== currentPage) {
 			void setPage(nextPage);
 		}
-	}, [currentPage, setPage, table, tableData, globalFilter, columnFilters, sorting]);
+	}, [
+		currentPage,
+		setPage,
+		table,
+		tableData,
+		globalFilter,
+		columnFilters,
+		sorting,
+	]);
 	saleNavigationOrderedIdsRef.current = table
 		.getSortedRowModel()
 		.rows.map((row) => row.original.id);
@@ -1698,11 +1705,7 @@ export function SalesDataTable({
 	}
 
 	if (isLoading) {
-		return (
-			<Card className="p-6">
-				<span className="text-muted-foreground">Carregando vendas...</span>
-			</Card>
-		);
+		return <CardSectionSkeleton rows={6} cardClassName="p-6" />;
 	}
 
 	if (isError) {
@@ -1885,12 +1888,17 @@ export function SalesDataTable({
 						<Select
 							value={responsibleTypeFilter}
 							onValueChange={(value) => {
-								void setResponsibleTypeFilter(value as SaleResponsibleTypeFilter);
+								void setResponsibleTypeFilter(
+									value as SaleResponsibleTypeFilter,
+								);
 								void setResponsibleIdFilter("");
 								void setPage(1);
 							}}
 						>
-							<SelectTrigger className="w-full" aria-label="Tipo de responsável">
+							<SelectTrigger
+								className="w-full"
+								aria-label="Tipo de responsável"
+							>
 								<SelectValue placeholder="Todos" />
 							</SelectTrigger>
 							<SelectContent>

@@ -25,6 +25,15 @@ export type SaleCommissionMatchContext = {
 	partnerId?: string;
 };
 
+export type SaleCommissionResolutionContext = {
+	companyId?: string;
+	sellerId?: string;
+	partnerId?: string;
+	saleCreatorUserId?: string;
+	partnerSupervisorIdsByPartnerId?: ReadonlyMap<string, string[]>;
+	supervisorMemberIdByUserId?: ReadonlyMap<string, string>;
+};
+
 export function deriveSaleCommissionDirectionFromRecipientType(
 	recipientType: SaleCommissionRecipientType,
 ): SaleCommissionDirection {
@@ -131,7 +140,8 @@ function fromScaledPercentage(value: number) {
 
 function composeScaledPercentages(baseScaled: number, dependentScaled: number) {
 	return Math.round(
-		(baseScaled * dependentScaled) / COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR,
+		(baseScaled * dependentScaled) /
+			COMMISSION_PERCENTAGE_COMPOSITION_DENOMINATOR,
 	);
 }
 
@@ -269,9 +279,8 @@ export function resolveEffectiveSaleCommissionsPercentages(
 
 	return effectiveScaledPercentages.map((commission) => ({
 		totalPercentage: fromScaledPercentage(commission.totalScaled),
-		installmentPercentages: commission.installmentsScaled.map(
-			fromScaledPercentage,
-		),
+		installmentPercentages:
+			commission.installmentsScaled.map(fromScaledPercentage),
 	}));
 }
 
@@ -368,7 +377,11 @@ function normalizeDateOnly(value: Date | string | null | undefined) {
 	return new Date();
 }
 
-function resolveMonthFixedDayDate(year: number, monthIndex: number, day: number) {
+function resolveMonthFixedDayDate(
+	year: number,
+	monthIndex: number,
+	day: number,
+) {
 	const lastDayOfMonth = new Date(year, monthIndex + 1, 0).getDate();
 	return new Date(year, monthIndex, Math.min(day, lastDayOfMonth));
 }
@@ -380,11 +393,7 @@ export function resolveSaleCommissionStartDateFromDueDay(
 	const normalizedSaleDate = normalizeDateOnly(saleDate);
 	const safeDueDay = Number(dueDay);
 
-	if (
-		!Number.isInteger(safeDueDay) ||
-		safeDueDay < 1 ||
-		safeDueDay > 31
-	) {
+	if (!Number.isInteger(safeDueDay) || safeDueDay < 1 || safeDueDay > 31) {
 		return normalizedSaleDate;
 	}
 
@@ -484,13 +493,32 @@ export function mapSaleCommissionToForm(
 export function mapScenarioCommissionsToPulledSaleCommissions(
 	commissions: ProductCommission[],
 	startDate?: Date,
-	saleContext?: {
-		companyId?: string;
-		sellerId?: string;
-		partnerId?: string;
-	},
+	saleContext?: SaleCommissionResolutionContext,
 ) {
 	return commissions.map((commission) => {
+		const linkedPartnerId = saleContext?.partnerId;
+		const linkedSupervisorIds =
+			linkedPartnerId && saleContext?.partnerSupervisorIdsByPartnerId
+				? (saleContext.partnerSupervisorIdsByPartnerId.get(linkedPartnerId) ??
+					[])
+				: [];
+		const creatorSupervisorMemberId = saleContext?.saleCreatorUserId
+			? saleContext.supervisorMemberIdByUserId?.get(
+					saleContext.saleCreatorUserId,
+				)
+			: undefined;
+		const resolvedSupervisorBeneficiaryId =
+			commission.recipientType === "SUPERVISOR" &&
+			!commission.beneficiaryId &&
+			linkedPartnerId
+				? linkedSupervisorIds.length === 1
+					? linkedSupervisorIds[0]
+					: linkedSupervisorIds.length > 1 &&
+							creatorSupervisorMemberId &&
+							linkedSupervisorIds.includes(creatorSupervisorMemberId)
+						? creatorSupervisorMemberId
+						: undefined
+				: commission.beneficiaryId;
 		const resolvedBeneficiaryId =
 			commission.recipientType === "COMPANY"
 				? (commission.beneficiaryId ?? saleContext?.companyId)
@@ -498,7 +526,9 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 					? (commission.beneficiaryId ?? saleContext?.sellerId)
 					: commission.recipientType === "PARTNER"
 						? (commission.beneficiaryId ?? saleContext?.partnerId)
-						: commission.beneficiaryId;
+						: commission.recipientType === "SUPERVISOR"
+							? resolvedSupervisorBeneficiaryId
+							: commission.beneficiaryId;
 
 		return mapSaleCommissionToForm({
 			sourceType: "PULLED",
@@ -541,8 +571,9 @@ export function buildSaleCommissionBaseOptionsByIndex(
 			}
 
 			const recipientLabel =
-				SALE_COMMISSION_RECIPIENT_TYPE_LABEL[candidateCommission.recipientType] ??
-				"Beneficiário";
+				SALE_COMMISSION_RECIPIENT_TYPE_LABEL[
+					candidateCommission.recipientType
+				] ?? "Beneficiário";
 
 			return [
 				{
@@ -554,7 +585,9 @@ export function buildSaleCommissionBaseOptionsByIndex(
 	);
 }
 
-export function groupSaleCommissionsByBase(commissions: SaleCommissionFormData[]) {
+export function groupSaleCommissionsByBase(
+	commissions: SaleCommissionFormData[],
+) {
 	const childrenByParent = new Map<number, number[]>();
 	const childIndexes = new Set<number>();
 

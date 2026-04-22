@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { type Control, useWatch, type UseFormGetValues, type UseFormSetValue } from "react-hook-form";
+import {
+	type Control,
+	useWatch,
+	type UseFormGetValues,
+	type UseFormSetValue,
+} from "react-hook-form";
 import { useGetOrganizationsSlugProductsIdCommissionScenarios } from "@/http/generated";
 import {
 	type SaleCommissionFormData,
@@ -15,6 +20,7 @@ import {
 	replacePulledSaleCommissions,
 	resolveMatchedCommissionScenario,
 	type SaleCommissionMatchContext,
+	type SaleCommissionResolutionContext,
 } from "../../sale-commission-helpers";
 
 interface UseSaleCommissionsParams {
@@ -24,6 +30,9 @@ interface UseSaleCommissionsParams {
 	selectedUnitId: string;
 	selectedResponsibleType: SaleResponsibleType;
 	selectedResponsibleId: string;
+	saleCreatorUserId?: string;
+	partnerSupervisorIdsByPartnerId?: ReadonlyMap<string, string[]>;
+	supervisorMemberIdByUserId?: ReadonlyMap<string, string>;
 	control: Control<SaleFormInput, unknown, SaleFormData>;
 	getValues: UseFormGetValues<SaleFormInput>;
 	setValue: UseFormSetValue<SaleFormInput>;
@@ -38,6 +47,9 @@ export function useSaleCommissions({
 	selectedUnitId,
 	selectedResponsibleType,
 	selectedResponsibleId,
+	saleCreatorUserId,
+	partnerSupervisorIdsByPartnerId,
+	supervisorMemberIdByUserId,
 	control,
 	getValues,
 	setValue,
@@ -72,6 +84,32 @@ export function useSaleCommissions({
 			selectedResponsibleType,
 		],
 	);
+
+	const saleCommissionResolutionContext =
+		useMemo<SaleCommissionResolutionContext>(
+			() => ({
+				companyId: selectedCompanyId || undefined,
+				sellerId:
+					selectedResponsibleType === "SELLER" && selectedResponsibleId
+						? selectedResponsibleId
+						: undefined,
+				partnerId:
+					selectedResponsibleType === "PARTNER" && selectedResponsibleId
+						? selectedResponsibleId
+						: undefined,
+				saleCreatorUserId,
+				partnerSupervisorIdsByPartnerId,
+				supervisorMemberIdByUserId,
+			}),
+			[
+				partnerSupervisorIdsByPartnerId,
+				saleCreatorUserId,
+				selectedCompanyId,
+				selectedResponsibleId,
+				selectedResponsibleType,
+				supervisorMemberIdByUserId,
+			],
+		);
 
 	const commissionScenariosQuery =
 		useGetOrganizationsSlugProductsIdCommissionScenarios(
@@ -118,7 +156,8 @@ export function useSaleCommissions({
 	const applyPulledCommissions = useCallback(
 		(nextPulledCommissions: SaleCommissionFormData[]) => {
 			const currentCommissions =
-				(getValues("commissions") as SaleCommissionFormData[] | undefined) ?? [];
+				(getValues("commissions") as SaleCommissionFormData[] | undefined) ??
+				[];
 
 			replaceCommissions(
 				replacePulledSaleCommissions(currentCommissions, nextPulledCommissions),
@@ -148,7 +187,8 @@ export function useSaleCommissions({
 	const handleRemoveCommission = useCallback(
 		(index: number) => {
 			const currentCommissions =
-				(getValues("commissions") as SaleCommissionFormData[] | undefined) ?? [];
+				(getValues("commissions") as SaleCommissionFormData[] | undefined) ??
+				[];
 			replaceCommissions(
 				removeSaleCommissionWithDependents(currentCommissions, index),
 			);
@@ -200,17 +240,7 @@ export function useSaleCommissions({
 			? mapScenarioCommissionsToPulledSaleCommissions(
 					matchedCommissionScenario.commissions,
 					getValues("saleDate") as Date | undefined,
-					{
-						companyId: selectedCompanyId || undefined,
-						sellerId:
-							selectedResponsibleType === "SELLER" && selectedResponsibleId
-								? selectedResponsibleId
-								: undefined,
-						partnerId:
-							selectedResponsibleType === "PARTNER" && selectedResponsibleId
-								? selectedResponsibleId
-								: undefined,
-					},
+					saleCommissionResolutionContext,
 				)
 			: [];
 
@@ -223,9 +253,7 @@ export function useSaleCommissions({
 		getValues,
 		hasRequestedCommissionForCurrentProduct,
 		matchedCommissionScenario,
-		selectedCompanyId,
-		selectedResponsibleId,
-		selectedResponsibleType,
+		saleCommissionResolutionContext,
 	]);
 
 	return {

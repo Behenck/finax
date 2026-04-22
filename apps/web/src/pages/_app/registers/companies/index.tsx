@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Search } from "lucide-react";
 import { useMemo } from "react";
@@ -16,8 +17,10 @@ export const Route = createFileRoute("/_app/registers/companies/")({
 
 function Companies() {
 	const [search, setSearch] = useQueryState("q", textFilterParser);
-	const { organization } = useApp()
-	const { data, isLoading, isError } = useGetOrganizationsSlugCompanies({ slug: organization!.slug });
+	const { organization } = useApp();
+	const { data, isLoading, isError } = useGetOrganizationsSlugCompanies({
+		slug: organization!.slug,
+	});
 
 	const filteredCompanies = useMemo(() => {
 		const safeCompanies = data?.companies ?? [];
@@ -34,19 +37,22 @@ function Companies() {
 				companyCnpj.includes(normalizedSearch) ||
 				(digitsSearch ? companyCnpjDigits.includes(digitsSearch) : false);
 
-			const unitMatch = company.units?.some((unit) =>
-				unit.name.toLowerCase().includes(normalizedSearch) ||
-				(unit.cnpj ?? "").includes(normalizedSearch) ||
-				(digitsSearch
-					? (unit.cnpj ?? "").replace(/\D/g, "").includes(digitsSearch)
-					: false),
+			const unitMatch = company.units?.some(
+				(unit) =>
+					unit.name.toLowerCase().includes(normalizedSearch) ||
+					(unit.cnpj ?? "").includes(normalizedSearch) ||
+					(digitsSearch
+						? (unit.cnpj ?? "").replace(/\D/g, "").includes(digitsSearch)
+						: false),
 			);
 
 			return companyMatch || unitMatch;
 		});
 	}, [data?.companies, search]);
 
-	if (isLoading) return <h1>Carregando...</h1>;
+	if (isLoading) {
+		return <ListPageSkeleton actionCount={1} filterCount={1} itemCount={4} />;
+	}
 
 	if (isError) {
 		return <p className="text-destructive">Erro ao carregar empresas.</p>;

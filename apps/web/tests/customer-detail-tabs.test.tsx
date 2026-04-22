@@ -95,7 +95,8 @@ function buildCustomerResponse(params?: {
 }
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+	const actual =
+		await importOriginal<typeof import("@tanstack/react-router")>();
 
 	return {
 		...actual,
@@ -136,6 +137,12 @@ vi.mock("@/hooks/sales", () => ({
 		isMarkingCustomerSalesAsDelinquent: false,
 		resolveCustomerSalesDelinquencies: vi.fn(),
 		isResolvingCustomerSalesDelinquencies: false,
+	}),
+	useLinkedSalesDelinquencyBulkActions: () => ({
+		markLinkedSalesAsDelinquent: vi.fn(),
+		isMarkingLinkedSalesAsDelinquent: false,
+		resolveLinkedSalesDelinquencies: vi.fn(),
+		isResolvingLinkedSalesDelinquencies: false,
 	}),
 }));
 
@@ -183,6 +190,21 @@ describe("customer detail tabs", () => {
 		expect(screen.getByRole("tab", { name: "Vendas" })).toBeInTheDocument();
 		expect(dadosTab).toHaveAttribute("aria-selected", "true");
 		expect(screen.getByText("Dados do cliente")).toBeInTheDocument();
+	});
+
+	it("should render skeleton while customer data is loading", () => {
+		mocks.customerQueryMock.mockReturnValue({
+			data: undefined,
+			isLoading: true,
+			isError: false,
+		});
+
+		render(<CustomerDetailPage />);
+
+		expect(
+			document.querySelectorAll('[data-slot="skeleton"]').length,
+		).toBeGreaterThan(0);
+		expect(screen.queryByText("Carregando cliente...")).not.toBeInTheDocument();
 	});
 
 	it("should display sales and delinquency info when switching to Vendas tab", async () => {

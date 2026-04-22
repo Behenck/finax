@@ -10,6 +10,8 @@ import {
 	Undo2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { LoadingReveal } from "@/components/loading-reveal";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -553,11 +555,7 @@ export function CommissionsDataTable() {
 					</div>
 				) : null}
 
-				{isLoading ? (
-					<p className="text-sm text-muted-foreground">
-						Carregando comissões...
-					</p>
-				) : isError ? (
+				{isError ? (
 					<div className="space-y-3">
 						<p className="text-sm text-destructive">
 							Não foi possível carregar as comissões.
@@ -567,7 +565,16 @@ export function CommissionsDataTable() {
 						</Button>
 					</div>
 				) : (
-					<>
+					<LoadingReveal
+						loading={isLoading}
+						skeleton={
+							<CardSectionSkeleton
+								rows={5}
+								cardClassName="border-dashed p-4 shadow-none"
+							/>
+						}
+						contentKey={`${currentPage}-${currentPageSize}-${statusFilter}-${companyIdFilter}-${unitIdFilter}-${productIdFilter}`}
+					>
 						<ResponsiveDataView
 							mobile={
 								<div className="space-y-3">
@@ -1234,7 +1241,7 @@ export function CommissionsDataTable() {
 								</Button>
 							</div>
 						</div>
-					</>
+					</LoadingReveal>
 				)}
 			</div>
 

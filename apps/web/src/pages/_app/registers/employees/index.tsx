@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import {
 	Dialog,
 	DialogContent,
@@ -131,7 +132,9 @@ function Employees() {
 		window.open(whatsappLink, "_blank", "noopener,noreferrer");
 	}
 
-	if (isLoading) return <h1>Carregando...</h1>;
+	if (isLoading) {
+		return <ListPageSkeleton actionCount={1} filterCount={1} itemCount={6} />;
+	}
 
 	if (isError) {
 		return <p className="text-destructive">Erro ao carregar funcionários.</p>;
@@ -167,10 +170,14 @@ function Employees() {
 												src={employee.linkedUser?.avatarUrl ?? undefined}
 												alt={employee.name}
 											/>
-											<AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
+											<AvatarFallback>
+												{getInitials(employee.name)}
+											</AvatarFallback>
 										</Avatar>
 										<div className="min-w-0">
-											<p className="truncate text-sm font-medium">{employee.name}</p>
+											<p className="truncate text-sm font-medium">
+												{employee.name}
+											</p>
 											<p className="text-xs text-muted-foreground">
 												{employee.role || "Sem cargo"}
 												{employee.department ? ` · ${employee.department}` : ""}
@@ -185,7 +192,11 @@ function Employees() {
 										</div>
 										<div className="space-y-0.5">
 											<p className="text-muted-foreground">Telefone</p>
-											<p>{employee.phone ? formatPhone(employee.phone) : "Sem telefone"}</p>
+											<p>
+												{employee.phone
+													? formatPhone(employee.phone)
+													: "Sem telefone"}
+											</p>
 										</div>
 										<div className="space-y-0.5">
 											<p className="text-muted-foreground">Empresa</p>
@@ -199,9 +210,13 @@ function Employees() {
 
 									<div className="space-y-1.5">
 										{employee.linkedUser ? (
-											<EmployeeLinkedUserBadge linkedUser={employee.linkedUser} />
+											<EmployeeLinkedUserBadge
+												linkedUser={employee.linkedUser}
+											/>
 										) : (
-											<p className="text-xs text-muted-foreground">Sem acesso</p>
+											<p className="text-xs text-muted-foreground">
+												Sem acesso
+											</p>
 										)}
 									</div>
 
@@ -243,114 +258,116 @@ function Employees() {
 					<section className="overflow-hidden rounded-md border bg-card">
 						<div className="overflow-x-auto">
 							<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Funcionário</TableHead>
-								<TableHead>Contato</TableHead>
-								<TableHead>Vínculo</TableHead>
-								<TableHead>Empresa/Unidade</TableHead>
-								<TableHead className="text-center">Ações</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{filteredEmployees.length === 0 ? (
-								<TableRow>
-									<TableCell
-										colSpan={5}
-										className="py-10 text-center text-muted-foreground"
-									>
-										Nenhum funcionário encontrado.
-									</TableCell>
-								</TableRow>
-							) : (
-								filteredEmployees.map((employee) => (
-									<TableRow key={employee.id}>
-										<TableCell>
-											<div className="flex items-center gap-3">
-												<Avatar className="size-10">
-													<AvatarImage
-														src={employee.linkedUser?.avatarUrl ?? undefined}
-														alt={employee.name}
-													/>
-													<AvatarFallback>
-														{getInitials(employee.name)}
-													</AvatarFallback>
-												</Avatar>
-												<div className="space-y-0.5">
-													<p className="font-medium">{employee.name}</p>
-													<p className="text-xs text-muted-foreground">
-														{employee.role || "Sem cargo"}
-														{employee.department
-															? ` · ${employee.department}`
-															: ""}
-													</p>
-												</div>
-											</div>
-										</TableCell>
-										<TableCell>
-											<div className="space-y-0.5">
-												<p className="text-sm">{employee.email}</p>
-												<p className="text-xs text-muted-foreground">
-													{employee.phone
-														? formatPhone(employee.phone)
-														: "Sem telefone"}
-												</p>
-											</div>
-										</TableCell>
-										<TableCell>
-											<div className="space-y-1.5">
-												{employee.linkedUser ? (
-													<EmployeeLinkedUserBadge
-														linkedUser={employee.linkedUser}
-													/>
-												) : (
-													<p className="text-xs text-muted-foreground">
-														Sem acesso
-													</p>
-												)}
-											</div>
-										</TableCell>
-										<TableCell>
-											<div className="space-y-0.5">
-												<p className="text-sm">{employee.company.name}</p>
-												<p className="text-xs text-muted-foreground">
-													{employee.unit?.name ?? "Sem unidade"}
-												</p>
-											</div>
-										</TableCell>
-										<TableCell>
-											<div className="flex items-center justify-end gap-1">
-												<Button
-													type="button"
-													variant="ghost"
-													size="icon"
-													disabled={!employee.phone}
-													onClick={() => handleOpenWhatsapp(employee.phone)}
-													title={
-														employee.phone
-															? "Abrir WhatsApp"
-															: "Sem telefone cadastrado"
-													}
-												>
-													<MessageCircle className="size-4 text-emerald-600 dark:text-emerald-300" />
-												</Button>
-												<UpdateEmployee employee={employee} />
-												<Button
-													type="button"
-													variant="ghost"
-													size="icon"
-													disabled={isDeletingEmployee}
-													onClick={() => handleDeleteEmployee(employee)}
-													title="Excluir funcionário"
-												>
-													<Trash2 className="size-4 text-red-600" />
-												</Button>
-											</div>
-										</TableCell>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Funcionário</TableHead>
+										<TableHead>Contato</TableHead>
+										<TableHead>Vínculo</TableHead>
+										<TableHead>Empresa/Unidade</TableHead>
+										<TableHead className="text-center">Ações</TableHead>
 									</TableRow>
-								))
-							)}
-						</TableBody>
+								</TableHeader>
+								<TableBody>
+									{filteredEmployees.length === 0 ? (
+										<TableRow>
+											<TableCell
+												colSpan={5}
+												className="py-10 text-center text-muted-foreground"
+											>
+												Nenhum funcionário encontrado.
+											</TableCell>
+										</TableRow>
+									) : (
+										filteredEmployees.map((employee) => (
+											<TableRow key={employee.id}>
+												<TableCell>
+													<div className="flex items-center gap-3">
+														<Avatar className="size-10">
+															<AvatarImage
+																src={
+																	employee.linkedUser?.avatarUrl ?? undefined
+																}
+																alt={employee.name}
+															/>
+															<AvatarFallback>
+																{getInitials(employee.name)}
+															</AvatarFallback>
+														</Avatar>
+														<div className="space-y-0.5">
+															<p className="font-medium">{employee.name}</p>
+															<p className="text-xs text-muted-foreground">
+																{employee.role || "Sem cargo"}
+																{employee.department
+																	? ` · ${employee.department}`
+																	: ""}
+															</p>
+														</div>
+													</div>
+												</TableCell>
+												<TableCell>
+													<div className="space-y-0.5">
+														<p className="text-sm">{employee.email}</p>
+														<p className="text-xs text-muted-foreground">
+															{employee.phone
+																? formatPhone(employee.phone)
+																: "Sem telefone"}
+														</p>
+													</div>
+												</TableCell>
+												<TableCell>
+													<div className="space-y-1.5">
+														{employee.linkedUser ? (
+															<EmployeeLinkedUserBadge
+																linkedUser={employee.linkedUser}
+															/>
+														) : (
+															<p className="text-xs text-muted-foreground">
+																Sem acesso
+															</p>
+														)}
+													</div>
+												</TableCell>
+												<TableCell>
+													<div className="space-y-0.5">
+														<p className="text-sm">{employee.company.name}</p>
+														<p className="text-xs text-muted-foreground">
+															{employee.unit?.name ?? "Sem unidade"}
+														</p>
+													</div>
+												</TableCell>
+												<TableCell>
+													<div className="flex items-center justify-end gap-1">
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															disabled={!employee.phone}
+															onClick={() => handleOpenWhatsapp(employee.phone)}
+															title={
+																employee.phone
+																	? "Abrir WhatsApp"
+																	: "Sem telefone cadastrado"
+															}
+														>
+															<MessageCircle className="size-4 text-emerald-600 dark:text-emerald-300" />
+														</Button>
+														<UpdateEmployee employee={employee} />
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															disabled={isDeletingEmployee}
+															onClick={() => handleDeleteEmployee(employee)}
+															title="Excluir funcionário"
+														>
+															<Trash2 className="size-4 text-red-600" />
+														</Button>
+													</div>
+												</TableCell>
+											</TableRow>
+										))
+									)}
+								</TableBody>
 							</Table>
 						</div>
 					</section>

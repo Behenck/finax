@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Search } from "lucide-react";
 import { useMemo } from "react";
@@ -15,10 +16,12 @@ export const Route = createFileRoute("/_app/registers/cost-centers/")({
 });
 
 function CostCenters() {
-	const { organization } = useApp()
+	const { organization } = useApp();
 
 	const [search, setSearch] = useQueryState("q", textFilterParser);
-	const { data, isLoading, isError } = useGetOrganizationsSlugCostcenters({ slug: organization!.slug });
+	const { data, isLoading, isError } = useGetOrganizationsSlugCostcenters({
+		slug: organization!.slug,
+	});
 
 	const safeCostCenters = data?.costCenters ?? [];
 
@@ -34,7 +37,9 @@ function CostCenters() {
 		});
 	}, [safeCostCenters, search]);
 
-	if (isLoading) return <h1>Carregando...</h1>;
+	if (isLoading) {
+		return <ListPageSkeleton actionCount={1} filterCount={1} itemCount={5} />;
+	}
 
 	if (isError) {
 		return (

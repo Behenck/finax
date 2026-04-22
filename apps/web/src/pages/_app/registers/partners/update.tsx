@@ -1,12 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import z from "zod";
 import { Card } from "@/components/ui/card";
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "@/components/ui/tabs";
+import { FormPageSkeleton } from "@/components/loading-skeletons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugPartnersPartnerid } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
@@ -40,7 +36,7 @@ function UpdatePartner() {
 	});
 
 	if (!data?.partner) {
-		return <span>Carregando...</span>;
+		return <FormPageSkeleton showTabs sectionCount={3} />;
 	}
 
 	const { partner } = data;

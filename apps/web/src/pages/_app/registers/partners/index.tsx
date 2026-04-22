@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import {
 	Select,
 	SelectContent,
@@ -77,7 +78,17 @@ function PartnersPage() {
 		return { total, active, salesAmount, salesCount, commissions };
 	}, [partners]);
 
-	if (isLoading) return <span>Carregando...</span>;
+	if (isLoading) {
+		return (
+			<ListPageSkeleton
+				actionCount={1}
+				showStats
+				statsCount={3}
+				filterCount={2}
+				itemCount={5}
+			/>
+		);
+	}
 	if (!organization) return null;
 	if (isError)
 		return <span className="text-destructive">Erro ao carregar parceiros</span>;

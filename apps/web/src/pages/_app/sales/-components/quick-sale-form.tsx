@@ -10,6 +10,7 @@ import {
 	useWatch,
 } from "react-hook-form";
 import { FieldError } from "@/components/field-error";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
@@ -211,9 +212,10 @@ function QuickSaleItemDynamicFieldsSection({
 
 	if (isLoading) {
 		return (
-			<p className="text-sm text-muted-foreground">
-				Carregando campos personalizados do item...
-			</p>
+			<CardSectionSkeleton
+				rows={4}
+				cardClassName="border-dashed p-4 shadow-none"
+			/>
 		);
 	}
 

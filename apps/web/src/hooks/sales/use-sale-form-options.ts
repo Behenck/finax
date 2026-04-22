@@ -37,6 +37,16 @@ export interface SalePartnerOption {
 	id: string;
 	name: string;
 	status: "ACTIVE" | "INACTIVE";
+	supervisors: Array<{
+		id: string;
+		name: string;
+	}>;
+}
+
+export interface SaleSupervisorOption {
+	id: string;
+	userId: string;
+	name: string;
 }
 
 type ProductTreeNode = {
@@ -82,11 +92,7 @@ function flattenActiveProductOptions(
 
 		return [
 			...currentNodeOptions,
-			...flattenActiveProductOptions(
-				children,
-				currentPath,
-				resolvedRootNode,
-			),
+			...flattenActiveProductOptions(children, currentPath, resolvedRootNode),
 		];
 	});
 }
@@ -193,18 +199,22 @@ export function useSaleFormOptions() {
 				id: partner.id,
 				name: getPartnerDisplayName(partner),
 				status: partner.status as "ACTIVE" | "INACTIVE",
+				supervisors: (partner.supervisors ?? []).map((supervisor) => ({
+					id: supervisor.id,
+					name: supervisor.name ?? "Supervisor",
+				})),
 			})),
 		[partnersQuery.data?.partners],
 	);
 	const partners = useMemo(
-		() =>
-			partnersWithStatus.filter((partner) => partner.status === "ACTIVE"),
+		() => partnersWithStatus.filter((partner) => partner.status === "ACTIVE"),
 		[partnersWithStatus],
 	);
-	const supervisors = useMemo(
+	const supervisors = useMemo<SaleSupervisorOption[]>(
 		() =>
 			(supervisorsQuery.data?.members ?? []).map((member) => ({
 				id: member.id,
+				userId: member.userId,
 				name: member.name ?? member.email,
 			})),
 		[supervisorsQuery.data?.members],

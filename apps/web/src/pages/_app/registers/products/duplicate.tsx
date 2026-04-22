@@ -1,3 +1,4 @@
+import { FormPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/app-context";
@@ -26,12 +27,14 @@ function DuplicateProductPage() {
 	});
 
 	if (isLoading) {
-		return <p>Carregando...</p>;
+		return <FormPageSkeleton actionCount={1} sectionCount={4} />;
 	}
 
 	if (isError || !data?.product) {
 		return (
-			<p className="text-destructive">Erro ao carregar produto para duplicação.</p>
+			<p className="text-destructive">
+				Erro ao carregar produto para duplicação.
+			</p>
 		);
 	}
 
@@ -56,9 +59,7 @@ function DuplicateProductPage() {
 				duplicateFromProductId={product.id}
 				duplicateFromProductName={product.name}
 				duplicateParentId={product.parentId}
-				duplicateSalesTransactionCategoryId={
-					product.salesTransactionCategoryId
-				}
+				duplicateSalesTransactionCategoryId={product.salesTransactionCategoryId}
 				duplicateSalesTransactionCostCenterId={
 					product.salesTransactionCostCenterId
 				}

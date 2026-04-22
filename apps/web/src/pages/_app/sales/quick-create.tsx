@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { useApp } from "@/context/app-context";
 import { useCreateSalesBatch, useSaleFormOptions } from "@/hooks/sales";
@@ -73,11 +74,7 @@ function QuickCreateSalesPage() {
 	}
 
 	if (isLoadingOptions) {
-		return (
-			<main className="w-full space-y-6">
-				<span className="text-muted-foreground">Carregando opções do formulário...</span>
-			</main>
-		);
+		return <FormPageSkeleton actionCount={2} sectionCount={4} />;
 	}
 
 	if (isOptionsError) {
@@ -102,39 +99,7 @@ function QuickCreateSalesPage() {
 			<main className="w-full space-y-6">
 				<PageHeader
 					title="Cadastro em Massa de Vendas"
-						description="Crie várias vendas de forma transacional no mesmo formulário."
-						actions={
-							<>
-								<Button asChild variant="outline" className="w-full sm:w-auto">
-									<Link to="/sales">
-										<ArrowLeft className="size-4" />
-										Voltar
-									</Link>
-								</Button>
-								<Button asChild variant="outline" className="w-full sm:w-auto">
-									<Link to="/sales/create">
-										<Plus className="size-4" />
-										Mudar para nova venda
-									</Link>
-								</Button>
-							</>
-						}
-					/>
-
-				<Card className="p-6">
-					<p className="text-muted-foreground">
-						Cadastre pelo menos um produto pai ativo para usar o cadastro em massa.
-					</p>
-				</Card>
-			</main>
-		);
-	}
-
-	return (
-		<main className="w-full space-y-6">
-			<PageHeader
-				title="Cadastro em Massa de Vendas"
-					description={`Defina os dados base e adicione até ${QUICK_SALE_BATCH_MAX_ITEMS} itens. O salvamento é transacional: tudo ou nada.`}
+					description="Crie várias vendas de forma transacional no mesmo formulário."
 					actions={
 						<>
 							<Button asChild variant="outline" className="w-full sm:w-auto">
@@ -152,6 +117,39 @@ function QuickCreateSalesPage() {
 						</>
 					}
 				/>
+
+				<Card className="p-6">
+					<p className="text-muted-foreground">
+						Cadastre pelo menos um produto pai ativo para usar o cadastro em
+						massa.
+					</p>
+				</Card>
+			</main>
+		);
+	}
+
+	return (
+		<main className="w-full space-y-6">
+			<PageHeader
+				title="Cadastro em Massa de Vendas"
+				description={`Defina os dados base e adicione até ${QUICK_SALE_BATCH_MAX_ITEMS} itens. O salvamento é transacional: tudo ou nada.`}
+				actions={
+					<>
+						<Button asChild variant="outline" className="w-full sm:w-auto">
+							<Link to="/sales">
+								<ArrowLeft className="size-4" />
+								Voltar
+							</Link>
+						</Button>
+						<Button asChild variant="outline" className="w-full sm:w-auto">
+							<Link to="/sales/create">
+								<Plus className="size-4" />
+								Mudar para nova venda
+							</Link>
+						</Button>
+					</>
+				}
+			/>
 
 			<QuickSaleForm
 				rootProducts={rootProducts}

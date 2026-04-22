@@ -309,6 +309,21 @@ describe("DashboardPartnersOverview", () => {
 		).toBeGreaterThan(0);
 	});
 
+	it("renders dashboard content inside the reveal wrapper after loading", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([]),
+			refetch: vi.fn(),
+		});
+
+		const { container } = render(<DashboardPartnersOverview />);
+
+		expect(
+			container.querySelector('[data-slot="loading-reveal"]'),
+		).toBeInTheDocument();
+	});
+
 	it("renders global error state and retries", async () => {
 		const refetch = vi.fn();
 		const user = userEvent.setup();

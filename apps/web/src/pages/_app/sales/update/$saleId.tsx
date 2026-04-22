@@ -1,5 +1,6 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { FormPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -60,11 +61,7 @@ export function UpdateSalePage() {
 	}
 
 	if (isLoading) {
-		return (
-			<Card className="p-6">
-				<span className="text-muted-foreground">Carregando venda...</span>
-			</Card>
-		);
+		return <FormPageSkeleton actionCount={5} sectionCount={4} />;
 	}
 
 	if (isError || !data?.sale) {

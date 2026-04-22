@@ -7,16 +7,12 @@ import {
 	TriangleAlert,
 	UserRound,
 } from "lucide-react";
+import { DetailPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugCustomersCustomerid } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
@@ -64,14 +60,15 @@ export function CustomerDetailPage() {
 	const canUpdateSale = ability.can("access", "sales.update");
 	const canCreateSale = ability.can("access", "sales.create");
 	const slug = organization?.slug ?? "";
-	const { data, isLoading, isError } = useGetOrganizationsSlugCustomersCustomerid(
-		{ slug, customerId },
-		{
-			query: {
-				enabled: Boolean(slug && customerId),
+	const { data, isLoading, isError } =
+		useGetOrganizationsSlugCustomersCustomerid(
+			{ slug, customerId },
+			{
+				query: {
+					enabled: Boolean(slug && customerId),
+				},
 			},
-		},
-	);
+		);
 
 	if (!canViewCustomer) {
 		return (
@@ -85,9 +82,7 @@ export function CustomerDetailPage() {
 
 	if (isLoading) {
 		return (
-			<Card className="p-6">
-				<span className="text-muted-foreground">Carregando cliente...</span>
-			</Card>
+			<DetailPageSkeleton actionCount={2} summaryCount={4} detailCount={2} />
 		);
 	}
 
@@ -102,7 +97,9 @@ export function CustomerDetailPage() {
 	}
 
 	const { customer } = data;
-	const delinquentSalesCount = customer.sales.filter((sale) => sale.delinquencySummary.hasOpen).length;
+	const delinquentSalesCount = customer.sales.filter(
+		(sale) => sale.delinquencySummary.hasOpen,
+	).length;
 	const openDelinquenciesCount = customer.sales.reduce(
 		(total, sale) => total + sale.delinquencySummary.openCount,
 		0,
@@ -235,9 +232,7 @@ export function CustomerDetailPage() {
 					<p className="text-2xl font-semibold">{delinquentSalesCount}</p>
 				</Card>
 				<Card className="p-5 space-y-1">
-					<p className="text-sm text-muted-foreground">
-						Ocorrências em aberto
-					</p>
+					<p className="text-sm text-muted-foreground">Ocorrências em aberto</p>
 					<p className="text-2xl font-semibold">{openDelinquenciesCount}</p>
 				</Card>
 			</div>
@@ -290,22 +285,22 @@ export function CustomerDetailPage() {
 							</Button>
 						) : null}
 					</>
-					}
-				/>
+				}
+			/>
 
-				<Tabs defaultValue="dados" className="space-y-4">
-					<TabsList>
-						<TabsTrigger value="dados">Dados</TabsTrigger>
-						<TabsTrigger value="vendas">Vendas</TabsTrigger>
-					</TabsList>
+			<Tabs defaultValue="dados" className="space-y-4">
+				<TabsList>
+					<TabsTrigger value="dados">Dados</TabsTrigger>
+					<TabsTrigger value="vendas">Vendas</TabsTrigger>
+				</TabsList>
 
-					<TabsContent value="dados" className="space-y-6">
-						{customerDataTabContent}
-					</TabsContent>
-					<TabsContent value="vendas" className="space-y-4">
-						{customerSalesTabContent}
-					</TabsContent>
-				</Tabs>
-			</main>
-		);
-	}
+				<TabsContent value="dados" className="space-y-6">
+					{customerDataTabContent}
+				</TabsContent>
+				<TabsContent value="vendas" className="space-y-4">
+					{customerSalesTabContent}
+				</TabsContent>
+			</Tabs>
+		</main>
+	);
+}

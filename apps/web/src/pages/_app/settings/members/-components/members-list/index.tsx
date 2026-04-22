@@ -1,6 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import {
 	Select,
 	SelectContent,
@@ -114,9 +115,10 @@ export function MembersList() {
 
 			<div className="space-y-3">
 				{isLoadingMembers ? (
-					<div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-						Carregando membros...
-					</div>
+					<CardSectionSkeleton
+						rows={4}
+						cardClassName="border-dashed p-5 shadow-none"
+					/>
 				) : hasMembersError ? (
 					<div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
 						{membersErrorMessage}
@@ -185,13 +187,15 @@ export function MembersList() {
 				)}
 			</div>
 
-			{!isLoadingMembers && !hasMembersError && filteredMembers.length === 0 && (
-				<div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-					{hasActiveFilter
-						? "Nenhum membro encontrado com os filtros atuais."
-						: "Nenhum membro disponível na organização."}
-				</div>
-			)}
+			{!isLoadingMembers &&
+				!hasMembersError &&
+				filteredMembers.length === 0 && (
+					<div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+						{hasActiveFilter
+							? "Nenhum membro encontrado com os filtros atuais."
+							: "Nenhum membro disponível na organização."}
+					</div>
+				)}
 		</div>
 	);
 }

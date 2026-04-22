@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FilterPanel } from "@/components/filter-panel";
 import { Input } from "@/components/ui/input";
+import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
 import {
@@ -41,7 +42,13 @@ import { useGetOrganizationsSlugCompanies } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format, parseISO } from "date-fns";
-import { CheckCheck, Copy, EllipsisVertical, Plus, RefreshCcw } from "lucide-react";
+import {
+	CheckCheck,
+	Copy,
+	EllipsisVertical,
+	Plus,
+	RefreshCcw,
+} from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -83,12 +90,21 @@ function TransactionsPage() {
 	const canViewTransactions = ability.can("access", "transactions.view");
 	const canCreateTransactions = ability.can("access", "transactions.create");
 	const canUpdateTransactions = ability.can("access", "transactions.update");
-	const canManagePayments = ability.can("access", "transactions.payment.manage");
+	const canManagePayments = ability.can(
+		"access",
+		"transactions.payment.manage",
+	);
 	const slug = organization?.slug ?? "";
 	const [q, setQ] = useQueryState("q", textFilterParser);
-	const [status, setStatus] = useQueryState("status", transactionStatusFilterParser);
+	const [status, setStatus] = useQueryState(
+		"status",
+		transactionStatusFilterParser,
+	);
 	const [type, setType] = useQueryState("type", transactionTypeFilterParser);
-	const [companyId, setCompanyId] = useQueryState("companyId", entityFilterParser);
+	const [companyId, setCompanyId] = useQueryState(
+		"companyId",
+		entityFilterParser,
+	);
 	const [unitId, setUnitId] = useQueryState("unitId", entityFilterParser);
 	const [dueFrom, setDueFrom] = useQueryState("dueFrom", dateFilterParser);
 	const [dueTo, setDueTo] = useQueryState("dueTo", dateFilterParser);
@@ -100,10 +116,8 @@ function TransactionsPage() {
 	const [selectedTransactionsById, setSelectedTransactionsById] = useState(
 		() => new Map<string, SelectedTransaction>(),
 	);
-	const {
-		mutateAsync: patchTransactionsPaymentBulk,
-		isPending: isBulkPaying,
-	} = usePatchTransactionsPaymentBulk();
+	const { mutateAsync: patchTransactionsPaymentBulk, isPending: isBulkPaying } =
+		usePatchTransactionsPaymentBulk();
 	const {
 		mutateAsync: restoreTransactionsPending,
 		isPending: isRestoringPayment,
@@ -139,7 +153,11 @@ function TransactionsPage() {
 		if (!q && storedFilters.q) {
 			void setQ(storedFilters.q);
 		}
-		if (status === "ALL" && storedFilters.status && storedFilters.status !== "ALL") {
+		if (
+			status === "ALL" &&
+			storedFilters.status &&
+			storedFilters.status !== "ALL"
+		) {
 			void setStatus(storedFilters.status);
 		}
 		if (type === "ALL" && storedFilters.type && storedFilters.type !== "ALL") {
@@ -160,7 +178,11 @@ function TransactionsPage() {
 		if (page === 1 && storedFilters.page && storedFilters.page > 1) {
 			void setPage(storedFilters.page);
 		}
-		if (pageSize === 20 && storedFilters.pageSize && storedFilters.pageSize !== 20) {
+		if (
+			pageSize === 20 &&
+			storedFilters.pageSize &&
+			storedFilters.pageSize !== 20
+		) {
 			void setPageSize(storedFilters.pageSize);
 		}
 		if (sortBy === "dueDate" && storedFilters.sortBy) {
@@ -283,7 +305,8 @@ function TransactionsPage() {
 	const transactions = transactionsQuery.data?.transactions ?? [];
 	const pagination = transactionsQuery.data?.pagination;
 	const eligibleTransactions = useMemo(
-		() => transactions.filter((transaction) => transaction.status === "PENDING"),
+		() =>
+			transactions.filter((transaction) => transaction.status === "PENDING"),
 		[transactions],
 	);
 
@@ -373,7 +396,10 @@ function TransactionsPage() {
 		});
 	}
 
-	function handleTransactionCheckedChange(transactionId: string, checked: boolean) {
+	function handleTransactionCheckedChange(
+		transactionId: string,
+		checked: boolean,
+	) {
 		const transaction = visibleTransactionsById.get(transactionId);
 		if (!transaction) {
 			return;
@@ -382,7 +408,10 @@ function TransactionsPage() {
 		toggleTransactionSelection(transaction, checked);
 	}
 
-	function toggleVisibleTransactions(transactionIds: string[], checked: boolean) {
+	function toggleVisibleTransactions(
+		transactionIds: string[],
+		checked: boolean,
+	) {
 		setSelectedTransactionsById((current) => {
 			const next = new Map(current);
 
@@ -405,7 +434,8 @@ function TransactionsPage() {
 
 	const transactionMultiSelect = useCheckboxMultiSelect<string>({
 		visibleIds: transactions.map((transaction) => transaction.id),
-		isSelectable: (transactionId) => selectableTransactionIds.has(transactionId),
+		isSelectable: (transactionId) =>
+			selectableTransactionIds.has(transactionId),
 		toggleOne: handleTransactionCheckedChange,
 		toggleMany: toggleVisibleTransactions,
 		onClearSelection: clearSelectedTransactions,
@@ -527,17 +557,25 @@ function TransactionsPage() {
 
 	if (transactionsQuery.isLoading) {
 		return (
-			<Card className="p-6">
-				<span className="text-muted-foreground">Carregando transações...</span>
-			</Card>
+			<ListPageSkeleton
+				actionCount={canCreateTransactions ? 1 : 0}
+				filterCount={6}
+				itemCount={6}
+			/>
 		);
 	}
 
 	if (transactionsQuery.isError) {
 		return (
 			<Card className="p-6 flex flex-col gap-4">
-				<p className="text-destructive">Não foi possível carregar as transações.</p>
-				<Button variant="outline" className="w-fit" onClick={() => transactionsQuery.refetch()}>
+				<p className="text-destructive">
+					Não foi possível carregar as transações.
+				</p>
+				<Button
+					variant="outline"
+					className="w-fit"
+					onClick={() => transactionsQuery.refetch()}
+				>
 					<RefreshCcw className="size-4" />
 					Tentar novamente
 				</Button>
@@ -729,7 +767,9 @@ function TransactionsPage() {
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="dueDate">Vencimento</SelectItem>
-							<SelectItem value="expectedPaymentDate">Prev. pagamento</SelectItem>
+							<SelectItem value="expectedPaymentDate">
+								Prev. pagamento
+							</SelectItem>
 							<SelectItem value="description">Descrição</SelectItem>
 							<SelectItem value="totalAmount">Valor</SelectItem>
 							<SelectItem value="status">Status</SelectItem>
@@ -790,219 +830,77 @@ function TransactionsPage() {
 						disabled={isPaymentActionPending}
 					>
 						<CheckCheck className="size-4" />
-						{isPaymentActionPending ? "Processando..." : "Baixar selecionadas (hoje)"}
+						{isPaymentActionPending
+							? "Processando..."
+							: "Baixar selecionadas (hoje)"}
 					</Button>
 				</div>
 			) : null}
 
 			<ResponsiveDataView
-				mobile={<div className="space-y-3">
-				{transactions.length === 0 ? (
-					<Card className="p-6 text-center">
-						<p className="text-sm text-muted-foreground">
-							Nenhuma transação encontrada para os filtros atuais.
-						</p>
-					</Card>
-				) : (
-					<>
-						{canManagePayments ? (
-							<Card className="p-3">
-								<div className="flex items-center justify-between gap-3">
-									<label className="flex items-center gap-2 text-sm">
-										<Checkbox
-											checked={
-												allPageSelected
-													? true
-													: somePageSelected
-														? "indeterminate"
-														: false
-											}
-											onCheckedChange={(checked) =>
-												togglePageSelection(Boolean(checked))
-											}
-											disabled={eligibleTransactions.length === 0}
-											aria-label="Selecionar pendentes da página"
-										/>
-										<span>Selecionar pendentes da página</span>
-									</label>
-									<span className="text-xs text-muted-foreground">
-										{eligibleTransactions.length} elegível(is)
-									</span>
-								</div>
+				mobile={
+					<div className="space-y-3">
+						{transactions.length === 0 ? (
+							<Card className="p-6 text-center">
+								<p className="text-sm text-muted-foreground">
+									Nenhuma transação encontrada para os filtros atuais.
+								</p>
 							</Card>
-						) : null}
-
-						{transactions.map((transaction) => {
-							const isSelectable =
-								canManagePayments && transaction.status === "PENDING";
-							const isSelected = selectedTransactionsById.has(transaction.id);
-							const dueDate = format(parseISO(transaction.dueDate), "dd/MM/yyyy");
-							const expectedPaymentDate = format(
-								parseISO(transaction.expectedPaymentDate),
-								"dd/MM/yyyy",
-							);
-
-							return (
-								<Card key={transaction.id} className="p-4 space-y-3">
-									<div className="flex items-start justify-between gap-3">
-										<div className="min-w-0">
-											<p className="font-medium text-sm truncate">
-												{transaction.description}
-											</p>
-											<p className="text-xs text-muted-foreground">
-												{transaction.code} · {transaction.company.name}
-											</p>
+						) : (
+							<>
+								{canManagePayments ? (
+									<Card className="p-3">
+										<div className="flex items-center justify-between gap-3">
+											<label className="flex items-center gap-2 text-sm">
+												<Checkbox
+													checked={
+														allPageSelected
+															? true
+															: somePageSelected
+																? "indeterminate"
+																: false
+													}
+													onCheckedChange={(checked) =>
+														togglePageSelection(Boolean(checked))
+													}
+													disabled={eligibleTransactions.length === 0}
+													aria-label="Selecionar pendentes da página"
+												/>
+												<span>Selecionar pendentes da página</span>
+											</label>
+											<span className="text-xs text-muted-foreground">
+												{eligibleTransactions.length} elegível(is)
+											</span>
 										</div>
-										<Checkbox
-											checked={isSelected}
-											onClick={(event) =>
-												transactionMultiSelect.onCheckboxClick(
-													transaction.id,
-													event,
-												)
-											}
-											onCheckedChange={(checked) =>
-												transactionMultiSelect.onCheckboxCheckedChange(
-													transaction.id,
-													Boolean(checked),
-												)
-											}
-											disabled={!isSelectable}
-											aria-label={`Selecionar transação ${transaction.code}`}
-										/>
-									</div>
+									</Card>
+								) : null}
 
-									<div className="grid grid-cols-2 gap-2 text-xs">
-										<div className="space-y-0.5">
-											<p className="text-muted-foreground">Vencimento</p>
-											<p>{dueDate}</p>
-										</div>
-										<div className="space-y-0.5">
-											<p className="text-muted-foreground">Prev. pagamento</p>
-											<p>{expectedPaymentDate}</p>
-										</div>
-										<div className="space-y-0.5">
-											<p className="text-muted-foreground">Categoria</p>
-											<p>
-												{transaction.category.children?.name ??
-													transaction.category.name}
-											</p>
-										</div>
-										<div className="space-y-0.5">
-											<p className="text-muted-foreground">Centro de custo</p>
-											<p>{transaction.costCenter.name}</p>
-										</div>
-									</div>
-
-									<div className="flex items-center justify-between gap-3">
-										<BadgeStatus
-											status={transaction.status}
-											dueDate={transaction.dueDate}
-										/>
-										<TransactionAmount type={transaction.type}>
-											{transaction.totalAmount}
-										</TransactionAmount>
-									</div>
-
-									<div className="flex flex-wrap gap-2">
-										{canManagePayments && transaction.status === "PENDING" ? (
-											<Button
-												type="button"
-												size="sm"
-												variant="outline"
-												onClick={() => void handlePayToday(transaction.id)}
-												disabled={isPaymentActionPending}
-												className="flex-1"
-											>
-												Pagar hoje
-											</Button>
-										) : null}
-										{canCreateTransactions ? (
-											<Button size="sm" variant="outline" asChild className="flex-1">
-												<Link
-													to="/transactions/create"
-													search={{
-														duplicateTransactionId: transaction.id,
-													}}
-												>
-													<Copy className="size-4" />
-													Duplicar
-												</Link>
-											</Button>
-										) : null}
-										{canUpdateTransactions ? (
-											<Button size="sm" variant="ghost" asChild className="flex-1">
-												<Link
-													to="/transactions/update/$transactionId"
-													params={{ transactionId: transaction.id }}
-												>
-													<EllipsisVertical className="size-4" />
-													Editar
-												</Link>
-											</Button>
-										) : null}
-									</div>
-								</Card>
-							);
-						})}
-					</>
-				)}
-				</div>}
-				desktop={<div className="overflow-hidden rounded-md border bg-card">
-				<div className="overflow-x-auto">
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[42px]">
-									<Checkbox
-										checked={
-											canManagePayments
-												? allPageSelected
-													? true
-													: somePageSelected
-														? "indeterminate"
-														: false
-												: false
-										}
-										onCheckedChange={(checked) =>
-											togglePageSelection(Boolean(checked))
-										}
-										disabled={!canManagePayments || eligibleTransactions.length === 0}
-										aria-label="Selecionar página atual"
-									/>
-								</TableHead>
-								<TableHead>Vencimento</TableHead>
-								<TableHead>Descrição</TableHead>
-								<TableHead>Código</TableHead>
-								<TableHead>Empresa</TableHead>
-								<TableHead>Tipo</TableHead>
-								<TableHead>Categoria</TableHead>
-								<TableHead>Valor</TableHead>
-								<TableHead>Status</TableHead>
-								<TableHead className="w-[130px] text-right">Ações</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{transactions.length === 0 ? (
-								<TableRow>
-									<TableCell colSpan={10} className="h-24 text-center">
-										Nenhuma transação encontrada para os filtros atuais.
-									</TableCell>
-								</TableRow>
-							) : (
-								transactions.map((transaction) => {
+								{transactions.map((transaction) => {
 									const isSelectable =
 										canManagePayments && transaction.status === "PENDING";
-									const isSelected = selectedTransactionsById.has(transaction.id);
-									const dueDate = format(parseISO(transaction.dueDate), "dd/MM/yyyy");
+									const isSelected = selectedTransactionsById.has(
+										transaction.id,
+									);
+									const dueDate = format(
+										parseISO(transaction.dueDate),
+										"dd/MM/yyyy",
+									);
 									const expectedPaymentDate = format(
 										parseISO(transaction.expectedPaymentDate),
 										"dd/MM/yyyy",
 									);
 
 									return (
-										<TableRow key={transaction.id}>
-											<TableCell>
+										<Card key={transaction.id} className="p-4 space-y-3">
+											<div className="flex items-start justify-between gap-3">
+												<div className="min-w-0">
+													<p className="font-medium text-sm truncate">
+														{transaction.description}
+													</p>
+													<p className="text-xs text-muted-foreground">
+														{transaction.code} · {transaction.company.name}
+													</p>
+												</div>
 												<Checkbox
 													checked={isSelected}
 													onClick={(event) =>
@@ -1020,107 +918,288 @@ function TransactionsPage() {
 													disabled={!isSelectable}
 													aria-label={`Selecionar transação ${transaction.code}`}
 												/>
-											</TableCell>
-											<TableCell>
-												<div className="flex flex-col gap-0">
-													<span className="text-sm font-medium">{dueDate}</span>
-													<span className="text-xs text-muted-foreground">
-														Prev: {expectedPaymentDate}
-													</span>
+											</div>
+
+											<div className="grid grid-cols-2 gap-2 text-xs">
+												<div className="space-y-0.5">
+													<p className="text-muted-foreground">Vencimento</p>
+													<p>{dueDate}</p>
 												</div>
-											</TableCell>
-											<TableCell>
-												<div className="flex flex-col gap-0">
-													<span className="text-sm font-medium">
-														{transaction.description}
-													</span>
-													<span className="text-xs text-muted-foreground">
-														{transaction.costCenter.name}
-													</span>
+												<div className="space-y-0.5">
+													<p className="text-muted-foreground">
+														Prev. pagamento
+													</p>
+													<p>{expectedPaymentDate}</p>
 												</div>
-											</TableCell>
-											<TableCell>{transaction.code}</TableCell>
-											<TableCell>{transaction.company.name}</TableCell>
-											<TableCell>
-												<TransactionType
-													type={transaction.type}
-													refundedBy={transaction.refundedByEmployee}
-												/>
-											</TableCell>
-											<TableCell>
-												<div className="flex flex-col gap-0">
-													<span>{transaction.category.name}</span>
-													{transaction.category.children ? (
-														<span className="text-xs text-muted-foreground">
-															{transaction.category.children.name}
-														</span>
-													) : null}
+												<div className="space-y-0.5">
+													<p className="text-muted-foreground">Categoria</p>
+													<p>
+														{transaction.category.children?.name ??
+															transaction.category.name}
+													</p>
 												</div>
-											</TableCell>
-											<TableCell>
-												<TransactionAmount type={transaction.type}>
-													{transaction.totalAmount}
-												</TransactionAmount>
-											</TableCell>
-											<TableCell>
+												<div className="space-y-0.5">
+													<p className="text-muted-foreground">
+														Centro de custo
+													</p>
+													<p>{transaction.costCenter.name}</p>
+												</div>
+											</div>
+
+											<div className="flex items-center justify-between gap-3">
 												<BadgeStatus
 													status={transaction.status}
 													dueDate={transaction.dueDate}
 												/>
-											</TableCell>
-											<TableCell>
-												<div className="flex items-center justify-end gap-1">
-													{canManagePayments && transaction.status === "PENDING" ? (
-														<Button
-															type="button"
-															size="sm"
-															variant="outline"
-															onClick={() =>
-																void handlePayToday(transaction.id)
-															}
-															disabled={isPaymentActionPending}
+												<TransactionAmount type={transaction.type}>
+													{transaction.totalAmount}
+												</TransactionAmount>
+											</div>
+
+											<div className="flex flex-wrap gap-2">
+												{canManagePayments &&
+												transaction.status === "PENDING" ? (
+													<Button
+														type="button"
+														size="sm"
+														variant="outline"
+														onClick={() => void handlePayToday(transaction.id)}
+														disabled={isPaymentActionPending}
+														className="flex-1"
+													>
+														Pagar hoje
+													</Button>
+												) : null}
+												{canCreateTransactions ? (
+													<Button
+														size="sm"
+														variant="outline"
+														asChild
+														className="flex-1"
+													>
+														<Link
+															to="/transactions/create"
+															search={{
+																duplicateTransactionId: transaction.id,
+															}}
 														>
-															Pagar hoje
-														</Button>
-													) : null}
-													{canCreateTransactions ? (
-														<Button variant="ghost" size="icon" asChild>
-															<Link
-																to="/transactions/create"
-																search={{
-																	duplicateTransactionId: transaction.id,
-																}}
-															>
-																<Copy className="size-4" />
-															</Link>
-														</Button>
-													) : null}
-													{canUpdateTransactions ? (
-														<Button variant="ghost" size="icon" asChild>
-															<Link
-																to="/transactions/update/$transactionId"
-																params={{ transactionId: transaction.id }}
-															>
-																<EllipsisVertical className="size-4" />
-															</Link>
-														</Button>
-													) : null}
-												</div>
+															<Copy className="size-4" />
+															Duplicar
+														</Link>
+													</Button>
+												) : null}
+												{canUpdateTransactions ? (
+													<Button
+														size="sm"
+														variant="ghost"
+														asChild
+														className="flex-1"
+													>
+														<Link
+															to="/transactions/update/$transactionId"
+															params={{ transactionId: transaction.id }}
+														>
+															<EllipsisVertical className="size-4" />
+															Editar
+														</Link>
+													</Button>
+												) : null}
+											</div>
+										</Card>
+									);
+								})}
+							</>
+						)}
+					</div>
+				}
+				desktop={
+					<div className="overflow-hidden rounded-md border bg-card">
+						<div className="overflow-x-auto">
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead className="w-[42px]">
+											<Checkbox
+												checked={
+													canManagePayments
+														? allPageSelected
+															? true
+															: somePageSelected
+																? "indeterminate"
+																: false
+														: false
+												}
+												onCheckedChange={(checked) =>
+													togglePageSelection(Boolean(checked))
+												}
+												disabled={
+													!canManagePayments ||
+													eligibleTransactions.length === 0
+												}
+												aria-label="Selecionar página atual"
+											/>
+										</TableHead>
+										<TableHead>Vencimento</TableHead>
+										<TableHead>Descrição</TableHead>
+										<TableHead>Código</TableHead>
+										<TableHead>Empresa</TableHead>
+										<TableHead>Tipo</TableHead>
+										<TableHead>Categoria</TableHead>
+										<TableHead>Valor</TableHead>
+										<TableHead>Status</TableHead>
+										<TableHead className="w-[130px] text-right">
+											Ações
+										</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{transactions.length === 0 ? (
+										<TableRow>
+											<TableCell colSpan={10} className="h-24 text-center">
+												Nenhuma transação encontrada para os filtros atuais.
 											</TableCell>
 										</TableRow>
-									);
-								})
-							)}
-						</TableBody>
-					</Table>
-				</div>
-			</div>}
+									) : (
+										transactions.map((transaction) => {
+											const isSelectable =
+												canManagePayments && transaction.status === "PENDING";
+											const isSelected = selectedTransactionsById.has(
+												transaction.id,
+											);
+											const dueDate = format(
+												parseISO(transaction.dueDate),
+												"dd/MM/yyyy",
+											);
+											const expectedPaymentDate = format(
+												parseISO(transaction.expectedPaymentDate),
+												"dd/MM/yyyy",
+											);
+
+											return (
+												<TableRow key={transaction.id}>
+													<TableCell>
+														<Checkbox
+															checked={isSelected}
+															onClick={(event) =>
+																transactionMultiSelect.onCheckboxClick(
+																	transaction.id,
+																	event,
+																)
+															}
+															onCheckedChange={(checked) =>
+																transactionMultiSelect.onCheckboxCheckedChange(
+																	transaction.id,
+																	Boolean(checked),
+																)
+															}
+															disabled={!isSelectable}
+															aria-label={`Selecionar transação ${transaction.code}`}
+														/>
+													</TableCell>
+													<TableCell>
+														<div className="flex flex-col gap-0">
+															<span className="text-sm font-medium">
+																{dueDate}
+															</span>
+															<span className="text-xs text-muted-foreground">
+																Prev: {expectedPaymentDate}
+															</span>
+														</div>
+													</TableCell>
+													<TableCell>
+														<div className="flex flex-col gap-0">
+															<span className="text-sm font-medium">
+																{transaction.description}
+															</span>
+															<span className="text-xs text-muted-foreground">
+																{transaction.costCenter.name}
+															</span>
+														</div>
+													</TableCell>
+													<TableCell>{transaction.code}</TableCell>
+													<TableCell>{transaction.company.name}</TableCell>
+													<TableCell>
+														<TransactionType
+															type={transaction.type}
+															refundedBy={transaction.refundedByEmployee}
+														/>
+													</TableCell>
+													<TableCell>
+														<div className="flex flex-col gap-0">
+															<span>{transaction.category.name}</span>
+															{transaction.category.children ? (
+																<span className="text-xs text-muted-foreground">
+																	{transaction.category.children.name}
+																</span>
+															) : null}
+														</div>
+													</TableCell>
+													<TableCell>
+														<TransactionAmount type={transaction.type}>
+															{transaction.totalAmount}
+														</TransactionAmount>
+													</TableCell>
+													<TableCell>
+														<BadgeStatus
+															status={transaction.status}
+															dueDate={transaction.dueDate}
+														/>
+													</TableCell>
+													<TableCell>
+														<div className="flex items-center justify-end gap-1">
+															{canManagePayments &&
+															transaction.status === "PENDING" ? (
+																<Button
+																	type="button"
+																	size="sm"
+																	variant="outline"
+																	onClick={() =>
+																		void handlePayToday(transaction.id)
+																	}
+																	disabled={isPaymentActionPending}
+																>
+																	Pagar hoje
+																</Button>
+															) : null}
+															{canCreateTransactions ? (
+																<Button variant="ghost" size="icon" asChild>
+																	<Link
+																		to="/transactions/create"
+																		search={{
+																			duplicateTransactionId: transaction.id,
+																		}}
+																	>
+																		<Copy className="size-4" />
+																	</Link>
+																</Button>
+															) : null}
+															{canUpdateTransactions ? (
+																<Button variant="ghost" size="icon" asChild>
+																	<Link
+																		to="/transactions/update/$transactionId"
+																		params={{ transactionId: transaction.id }}
+																	>
+																		<EllipsisVertical className="size-4" />
+																	</Link>
+																</Button>
+															) : null}
+														</div>
+													</TableCell>
+												</TableRow>
+											);
+										})
+									)}
+								</TableBody>
+							</Table>
+						</div>
+					</div>
+				}
 			/>
 
 			<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 				<span className="text-sm text-muted-foreground">
-					Página {pagination?.page ?? currentPage} de {pagination?.totalPages ?? 1} ·{" "}
-					{pagination?.total ?? 0} transações
+					Página {pagination?.page ?? currentPage} de{" "}
+					{pagination?.totalPages ?? 1} · {pagination?.total ?? 0} transações
 				</span>
 				<div className="flex w-full items-center gap-2 md:w-auto">
 					<Button

@@ -13,6 +13,8 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { resolveErrorMessage } from "@/errors";
 import { normalizeApiError } from "@/errors/api-error";
+import { LoadingReveal } from "@/components/loading-reveal";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -1064,11 +1066,7 @@ export function SaleInstallmentsPanel({
 					</div>
 				) : null}
 
-				{isLoading ? (
-					<p className="text-sm text-muted-foreground">
-						Carregando parcelas...
-					</p>
-				) : isError ? (
+				{isError ? (
 					<div className="space-y-3">
 						<p className="text-sm text-destructive">
 							Não foi possível carregar as parcelas da comissão.
@@ -1082,329 +1080,357 @@ export function SaleInstallmentsPanel({
 							Tentar novamente
 						</Button>
 					</div>
-				) : filteredInstallments.length === 0 ? (
-					<p className="text-sm text-muted-foreground">
-						{saleCommissionId
-							? "Sem parcelas para esta comissão."
-							: "Sem parcelas de comissão vinculadas nesta venda."}
-					</p>
-				) : installmentsByBeneficiary.length === 0 ? (
-					<p className="text-sm text-muted-foreground">
-						Nenhuma parcela encontrada para o filtro atual.
-					</p>
 				) : (
-					<Tabs
-						value={activeBeneficiaryTabValue}
-						onValueChange={setActiveBeneficiaryTab}
+					<LoadingReveal
+						loading={isLoading}
+						skeleton={
+							<CardSectionSkeleton
+								rows={5}
+								cardClassName="border-dashed p-4 shadow-none"
+							/>
+						}
+						contentKey={saleCommissionId ?? saleId}
 					>
-						<TabsList className="w-full justify-start overflow-x-auto rounded-sm">
-							{installmentsByBeneficiary.map((group) => (
-								<TabsTrigger key={group.key} value={group.key}>
-									{group.label}
-								</TabsTrigger>
-							))}
-						</TabsList>
+						{filteredInstallments.length === 0 ? (
+							<p className="text-sm text-muted-foreground">
+								{saleCommissionId
+									? "Sem parcelas para esta comissão."
+									: "Sem parcelas de comissão vinculadas nesta venda."}
+							</p>
+						) : installmentsByBeneficiary.length === 0 ? (
+							<p className="text-sm text-muted-foreground">
+								Nenhuma parcela encontrada para o filtro atual.
+							</p>
+						) : (
+							<Tabs
+								value={activeBeneficiaryTabValue}
+								onValueChange={setActiveBeneficiaryTab}
+							>
+								<TabsList className="w-full justify-start overflow-x-auto rounded-sm">
+									{installmentsByBeneficiary.map((group) => (
+										<TabsTrigger key={group.key} value={group.key}>
+											{group.label}
+										</TabsTrigger>
+									))}
+								</TabsList>
 
-						{installmentsByBeneficiary.map((group) => {
-							const selectableInstallmentsInGroup = group.installments.filter(
-								(installment) => selectableInstallmentIds.has(installment.id),
-							);
-							const allGroupSelected =
-								selectableInstallmentsInGroup.length > 0 &&
-								selectableInstallmentsInGroup.every((installment) =>
-									selectedInstallmentsById.has(installment.id),
-								);
-							const someGroupSelected =
-								!allGroupSelected &&
-								selectableInstallmentsInGroup.some((installment) =>
-									selectedInstallmentsById.has(installment.id),
-								);
+								{installmentsByBeneficiary.map((group) => {
+									const selectableInstallmentsInGroup =
+										group.installments.filter((installment) =>
+											selectableInstallmentIds.has(installment.id),
+										);
+									const allGroupSelected =
+										selectableInstallmentsInGroup.length > 0 &&
+										selectableInstallmentsInGroup.every((installment) =>
+											selectedInstallmentsById.has(installment.id),
+										);
+									const someGroupSelected =
+										!allGroupSelected &&
+										selectableInstallmentsInGroup.some((installment) =>
+											selectedInstallmentsById.has(installment.id),
+										);
 
-							return (
-								<TabsContent key={group.key} value={group.key} className="pt-2">
-									<div className="rounded-md border overflow-hidden">
-										<Table>
-											<TableHeader>
-												<TableRow>
-													<TableHead className="w-[42px]">
-														<Checkbox
-															checked={
-																allGroupSelected
-																	? true
-																	: someGroupSelected
-																		? "indeterminate"
-																		: false
-															}
-															onCheckedChange={(checked) =>
-																toggleGroupSelection(
-																	group.installments,
-																	Boolean(checked),
-																)
-															}
-															disabled={
-																selectableInstallmentsInGroup.length === 0 ||
-																isAnyInstallmentActionPending
-															}
-															aria-label={`Selecionar parcelas do beneficiário ${group.label}`}
-														/>
-													</TableHead>
-													<TableHead>Parcela</TableHead>
-													<TableHead>%</TableHead>
-													<TableHead>Valor</TableHead>
-													<TableHead>Status</TableHead>
-													<TableHead>Previsão</TableHead>
-													<TableHead>Pagamento</TableHead>
-													<TableHead>Direção</TableHead>
-													<TableHead>Origem</TableHead>
-													<TableHead className="w-[90px] text-right">
-														Ações
-													</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{group.installments.map((installment) => {
-													const isReversalMovement = Boolean(
-														installment.originInstallmentId,
-													);
-													const isSelected = selectedInstallmentsById.has(
-														installment.id,
-													);
-													const canBulkStatusInstallment =
-														selectableInstallmentIds.has(installment.id);
-													const displayAmount =
-														resolveDisplayInstallmentAmount(installment);
-													const hasLinkedReversal =
-														!isReversalMovement &&
-														displayAmount !== installment.amount;
-													const canPayRowAction =
-														canUpdateInstallmentsBySaleStatus &&
-														canChangeInstallmentStatus &&
-														installment.status === "PENDING";
-													const canEditRowAction =
-														canUpdateInstallmentsBySaleStatus &&
-														canEditInstallment;
-													const canDeleteRowAction =
-														canUpdateInstallmentsBySaleStatus &&
-														canDeleteInstallment;
-													const canReverseRowAction =
-														canUpdateInstallmentsBySaleStatus &&
-														canChangeInstallmentStatus &&
-														!isReversalMovement &&
-														(installment.status === "PENDING" ||
-															installment.status === "PAID");
-													const canUndoReversalRowAction =
-														canUpdateInstallmentsBySaleStatus &&
-														canChangeInstallmentStatus &&
-														installment.status === "REVERSED";
-													const canOpenRowActions =
-														canPayRowAction ||
-														canEditRowAction ||
-														canDeleteRowAction ||
-														canReverseRowAction ||
-														canUndoReversalRowAction;
-
-													return (
-														<TableRow key={installment.id}>
-															<TableCell>
+									return (
+										<TabsContent
+											key={group.key}
+											value={group.key}
+											className="pt-2"
+										>
+											<div className="rounded-md border overflow-hidden">
+												<Table>
+													<TableHeader>
+														<TableRow>
+															<TableHead className="w-[42px]">
 																<Checkbox
-																	checked={isSelected}
-																	onClick={(event) =>
-																		installmentsMultiSelect.onCheckboxClick(
-																			installment.id,
-																			event,
-																		)
+																	checked={
+																		allGroupSelected
+																			? true
+																			: someGroupSelected
+																				? "indeterminate"
+																				: false
 																	}
 																	onCheckedChange={(checked) =>
-																		installmentsMultiSelect.onCheckboxCheckedChange(
-																			installment.id,
+																		toggleGroupSelection(
+																			group.installments,
 																			Boolean(checked),
 																		)
 																	}
 																	disabled={
-																		!canBulkStatusInstallment ||
-																		isAnyInstallmentActionPending
+																		selectableInstallmentsInGroup.length ===
+																			0 || isAnyInstallmentActionPending
 																	}
-																	aria-label={`Selecionar parcela ${installment.installmentNumber}`}
+																	aria-label={`Selecionar parcelas do beneficiário ${group.label}`}
 																/>
-															</TableCell>
-															<TableCell>
-																P{installment.installmentNumber}
-															</TableCell>
-															<TableCell>{installment.percentage}%</TableCell>
-															<TableCell>
-																<p>{formatCurrencyBRL(displayAmount / 100)}</p>
-																{hasLinkedReversal ? (
-																	<p className="text-xs text-muted-foreground">
-																		Valor base:{" "}
-																		{formatCurrencyBRL(
-																			installment.amount / 100,
-																		)}
-																	</p>
-																) : null}
-															</TableCell>
-															<TableCell>
-																<Badge
-																	variant="outline"
-																	className={
-																		INSTALLMENT_STATUS_BADGE_CLASSNAME[
-																			installment.status
-																		]
-																	}
-																>
-																	{
-																		SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
-																			installment.status
-																		]
-																	}
-																</Badge>
-															</TableCell>
-															<TableCell>
-																{formatDate(installment.expectedPaymentDate)}
-															</TableCell>
-															<TableCell>
-																{(installment.status === "PAID" ||
-																	installment.status === "REVERSED") &&
-																installment.paymentDate
-																	? formatDate(installment.paymentDate)
-																	: "—"}
-															</TableCell>
-															<TableCell>
-																{
-																	SALE_COMMISSION_DIRECTION_LABEL[
-																		installment.direction
-																	]
-																}
-															</TableCell>
-															<TableCell>
-																{
-																	SALE_COMMISSION_SOURCE_TYPE_LABEL[
-																		installment.sourceType
-																	]
-																}
-																{isReversalMovement ? (
-																	<p className="text-xs text-muted-foreground">
-																		Estorno da parcela P
-																		{installment.originInstallmentNumber ??
-																			installment.installmentNumber}
-																	</p>
-																) : null}
-															</TableCell>
-															<TableCell className="text-right">
-																{canOpenRowActions ? (
-																	<DropdownMenu>
-																		<DropdownMenuTrigger asChild>
-																			<Button
-																				type="button"
-																				variant="ghost"
-																				size="icon"
-																				disabled={isAnyInstallmentActionPending}
-																			>
-																				<MoreHorizontal className="size-4" />
-																			</Button>
-																		</DropdownMenuTrigger>
-																		<DropdownMenuContent align="end">
-																			{canPayRowAction ? (
-																				<DropdownMenuItem
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						requestInstallmentPayment(
-																							installment,
-																						);
-																					}}
-																				>
-																					<CheckCircle2 className="size-4" />
-																					Pagar parcela
-																				</DropdownMenuItem>
-																			) : null}
-																			{canPayRowAction ? (
-																				<DropdownMenuItem
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						void handlePayInstallmentToday(
-																							installment,
-																						);
-																					}}
-																				>
-																					<CheckCheck className="size-4" />
-																					Pagar hoje
-																				</DropdownMenuItem>
-																			) : null}
-																			{canPayRowAction &&
-																			(canEditRowAction ||
-																				canDeleteRowAction ||
-																				canReverseRowAction ||
-																				canUndoReversalRowAction) ? (
-																				<DropdownMenuSeparator />
-																			) : null}
-																			{canEditRowAction ? (
-																				<DropdownMenuItem
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						requestInstallmentEdition(
-																							installment,
-																						);
-																					}}
-																				>
-																					<Pencil className="size-4" />
-																					Editar parcela
-																				</DropdownMenuItem>
-																			) : null}
-																			{canReverseRowAction ? (
-																				<DropdownMenuItem
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						requestInstallmentReversal(
-																							installment,
-																						);
-																					}}
-																				>
-																					<Undo2 className="size-4" />
-																					Estornar parcela
-																				</DropdownMenuItem>
-																			) : null}
-																			{canUndoReversalRowAction ? (
-																				<DropdownMenuItem
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						requestInstallmentReversalUndo(
-																							installment,
-																						);
-																					}}
-																				>
-																					<RotateCcw className="size-4" />
-																					Reverter estorno
-																				</DropdownMenuItem>
-																			) : null}
-																			{canDeleteRowAction ? (
-																				<DropdownMenuItem
-																					variant="destructive"
-																					onSelect={(event) => {
-																						event.preventDefault();
-																						setInstallmentToDelete(installment);
-																					}}
-																				>
-																					<Trash2 className="size-4" />
-																					Excluir parcela
-																				</DropdownMenuItem>
-																			) : null}
-																		</DropdownMenuContent>
-																	</DropdownMenu>
-																) : (
-																	<span className="text-xs text-muted-foreground">
-																		—
-																	</span>
-																)}
-															</TableCell>
+															</TableHead>
+															<TableHead>Parcela</TableHead>
+															<TableHead>%</TableHead>
+															<TableHead>Valor</TableHead>
+															<TableHead>Status</TableHead>
+															<TableHead>Previsão</TableHead>
+															<TableHead>Pagamento</TableHead>
+															<TableHead>Direção</TableHead>
+															<TableHead>Origem</TableHead>
+															<TableHead className="w-[90px] text-right">
+																Ações
+															</TableHead>
 														</TableRow>
-													);
-												})}
-											</TableBody>
-										</Table>
-									</div>
-								</TabsContent>
-							);
-						})}
-					</Tabs>
+													</TableHeader>
+													<TableBody>
+														{group.installments.map((installment) => {
+															const isReversalMovement = Boolean(
+																installment.originInstallmentId,
+															);
+															const isSelected = selectedInstallmentsById.has(
+																installment.id,
+															);
+															const canBulkStatusInstallment =
+																selectableInstallmentIds.has(installment.id);
+															const displayAmount =
+																resolveDisplayInstallmentAmount(installment);
+															const hasLinkedReversal =
+																!isReversalMovement &&
+																displayAmount !== installment.amount;
+															const canPayRowAction =
+																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatus &&
+																installment.status === "PENDING";
+															const canEditRowAction =
+																canUpdateInstallmentsBySaleStatus &&
+																canEditInstallment;
+															const canDeleteRowAction =
+																canUpdateInstallmentsBySaleStatus &&
+																canDeleteInstallment;
+															const canReverseRowAction =
+																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatus &&
+																!isReversalMovement &&
+																(installment.status === "PENDING" ||
+																	installment.status === "PAID");
+															const canUndoReversalRowAction =
+																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatus &&
+																installment.status === "REVERSED";
+															const canOpenRowActions =
+																canPayRowAction ||
+																canEditRowAction ||
+																canDeleteRowAction ||
+																canReverseRowAction ||
+																canUndoReversalRowAction;
+
+															return (
+																<TableRow key={installment.id}>
+																	<TableCell>
+																		<Checkbox
+																			checked={isSelected}
+																			onClick={(event) =>
+																				installmentsMultiSelect.onCheckboxClick(
+																					installment.id,
+																					event,
+																				)
+																			}
+																			onCheckedChange={(checked) =>
+																				installmentsMultiSelect.onCheckboxCheckedChange(
+																					installment.id,
+																					Boolean(checked),
+																				)
+																			}
+																			disabled={
+																				!canBulkStatusInstallment ||
+																				isAnyInstallmentActionPending
+																			}
+																			aria-label={`Selecionar parcela ${installment.installmentNumber}`}
+																		/>
+																	</TableCell>
+																	<TableCell>
+																		P{installment.installmentNumber}
+																	</TableCell>
+																	<TableCell>
+																		{installment.percentage}%
+																	</TableCell>
+																	<TableCell>
+																		<p>
+																			{formatCurrencyBRL(displayAmount / 100)}
+																		</p>
+																		{hasLinkedReversal ? (
+																			<p className="text-xs text-muted-foreground">
+																				Valor base:{" "}
+																				{formatCurrencyBRL(
+																					installment.amount / 100,
+																				)}
+																			</p>
+																		) : null}
+																	</TableCell>
+																	<TableCell>
+																		<Badge
+																			variant="outline"
+																			className={
+																				INSTALLMENT_STATUS_BADGE_CLASSNAME[
+																					installment.status
+																				]
+																			}
+																		>
+																			{
+																				SALE_COMMISSION_INSTALLMENT_STATUS_LABEL[
+																					installment.status
+																				]
+																			}
+																		</Badge>
+																	</TableCell>
+																	<TableCell>
+																		{formatDate(
+																			installment.expectedPaymentDate,
+																		)}
+																	</TableCell>
+																	<TableCell>
+																		{(installment.status === "PAID" ||
+																			installment.status === "REVERSED") &&
+																		installment.paymentDate
+																			? formatDate(installment.paymentDate)
+																			: "—"}
+																	</TableCell>
+																	<TableCell>
+																		{
+																			SALE_COMMISSION_DIRECTION_LABEL[
+																				installment.direction
+																			]
+																		}
+																	</TableCell>
+																	<TableCell>
+																		{
+																			SALE_COMMISSION_SOURCE_TYPE_LABEL[
+																				installment.sourceType
+																			]
+																		}
+																		{isReversalMovement ? (
+																			<p className="text-xs text-muted-foreground">
+																				Estorno da parcela P
+																				{installment.originInstallmentNumber ??
+																					installment.installmentNumber}
+																			</p>
+																		) : null}
+																	</TableCell>
+																	<TableCell className="text-right">
+																		{canOpenRowActions ? (
+																			<DropdownMenu>
+																				<DropdownMenuTrigger asChild>
+																					<Button
+																						type="button"
+																						variant="ghost"
+																						size="icon"
+																						disabled={
+																							isAnyInstallmentActionPending
+																						}
+																					>
+																						<MoreHorizontal className="size-4" />
+																					</Button>
+																				</DropdownMenuTrigger>
+																				<DropdownMenuContent align="end">
+																					{canPayRowAction ? (
+																						<DropdownMenuItem
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								requestInstallmentPayment(
+																									installment,
+																								);
+																							}}
+																						>
+																							<CheckCircle2 className="size-4" />
+																							Pagar parcela
+																						</DropdownMenuItem>
+																					) : null}
+																					{canPayRowAction ? (
+																						<DropdownMenuItem
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								void handlePayInstallmentToday(
+																									installment,
+																								);
+																							}}
+																						>
+																							<CheckCheck className="size-4" />
+																							Pagar hoje
+																						</DropdownMenuItem>
+																					) : null}
+																					{canPayRowAction &&
+																					(canEditRowAction ||
+																						canDeleteRowAction ||
+																						canReverseRowAction ||
+																						canUndoReversalRowAction) ? (
+																						<DropdownMenuSeparator />
+																					) : null}
+																					{canEditRowAction ? (
+																						<DropdownMenuItem
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								requestInstallmentEdition(
+																									installment,
+																								);
+																							}}
+																						>
+																							<Pencil className="size-4" />
+																							Editar parcela
+																						</DropdownMenuItem>
+																					) : null}
+																					{canReverseRowAction ? (
+																						<DropdownMenuItem
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								requestInstallmentReversal(
+																									installment,
+																								);
+																							}}
+																						>
+																							<Undo2 className="size-4" />
+																							Estornar parcela
+																						</DropdownMenuItem>
+																					) : null}
+																					{canUndoReversalRowAction ? (
+																						<DropdownMenuItem
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								requestInstallmentReversalUndo(
+																									installment,
+																								);
+																							}}
+																						>
+																							<RotateCcw className="size-4" />
+																							Reverter estorno
+																						</DropdownMenuItem>
+																					) : null}
+																					{canDeleteRowAction ? (
+																						<DropdownMenuItem
+																							variant="destructive"
+																							onSelect={(event) => {
+																								event.preventDefault();
+																								setInstallmentToDelete(
+																									installment,
+																								);
+																							}}
+																						>
+																							<Trash2 className="size-4" />
+																							Excluir parcela
+																						</DropdownMenuItem>
+																					) : null}
+																				</DropdownMenuContent>
+																			</DropdownMenu>
+																		) : (
+																			<span className="text-xs text-muted-foreground">
+																				—
+																			</span>
+																		)}
+																	</TableCell>
+																</TableRow>
+															);
+														})}
+													</TableBody>
+												</Table>
+											</div>
+										</TabsContent>
+									);
+								})}
+							</Tabs>
+						)}
+					</LoadingReveal>
 				)}
 			</div>
 

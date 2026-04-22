@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { useAbility } from "@/permissions/access";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -22,7 +23,9 @@ function CreateTransaction() {
 	const ability = useAbility();
 	const canCreateTransactions = ability.can("access", "transactions.create");
 	const { duplicateTransactionId } = Route.useSearch();
-	const duplicateTransactionQuery = useTransaction(duplicateTransactionId ?? "");
+	const duplicateTransactionQuery = useTransaction(
+		duplicateTransactionId ?? "",
+	);
 
 	if (!canCreateTransactions) {
 		return (
@@ -35,13 +38,7 @@ function CreateTransaction() {
 	}
 
 	if (duplicateTransactionId && duplicateTransactionQuery.isLoading) {
-		return (
-			<main className="space-y-6">
-				<span className="text-muted-foreground">
-					Carregando transação para duplicação...
-				</span>
-			</main>
-		);
+		return <FormPageSkeleton actionCount={1} sectionCount={3} />;
 	}
 
 	if (

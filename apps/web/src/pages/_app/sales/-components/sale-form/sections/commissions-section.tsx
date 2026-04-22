@@ -7,6 +7,7 @@ import type {
 } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import { FieldError } from "@/components/field-error";
+import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { SaleFormData, SaleFormInput } from "@/schemas/sale-schema";
@@ -189,9 +190,10 @@ export function CommissionsSection({
 					Clique em buscar comissão para carregar as regras do produto.
 				</p>
 			) : isCommissionScenariosFetching ? (
-				<p className="text-sm text-muted-foreground">
-					Carregando cenários de comissão...
-				</p>
+				<CardSectionSkeleton
+					rows={3}
+					cardClassName="border-dashed p-4 shadow-none"
+				/>
 			) : isCommissionScenariosError ? (
 				<div className="space-y-3">
 					<p className="text-sm text-destructive">
