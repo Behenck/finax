@@ -179,7 +179,9 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 							const nextExpectedPaymentDate =
 								data.expectedPaymentDate === undefined
 									? installment.expectedPaymentDate
-									: parseSaleDateInput(data.expectedPaymentDate);
+									: data.expectedPaymentDate === null
+										? null
+										: parseSaleDateInput(data.expectedPaymentDate);
 
 							await applyInstallmentCancellationWithAutomaticReversal({
 								tx,
@@ -253,9 +255,10 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 								...(data.expectedPaymentDate === undefined
 									? {}
 									: {
-											expectedPaymentDate: parseSaleDateInput(
-												data.expectedPaymentDate,
-											),
+											expectedPaymentDate:
+												data.expectedPaymentDate === null
+													? null
+													: parseSaleDateInput(data.expectedPaymentDate),
 										}),
 								paymentDate: nextPaymentDate,
 								...(finalStatus === "REVERSED"

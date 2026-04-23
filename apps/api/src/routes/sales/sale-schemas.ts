@@ -965,7 +965,7 @@ export const PatchSaleCommissionInstallmentBodySchema = z
 		percentage: CommissionPercentageSchema.optional(),
 		amount: z.number().int().optional(),
 		status: SaleCommissionInstallmentStatusSchema.optional(),
-		expectedPaymentDate: SaleDateInputSchema.optional(),
+		expectedPaymentDate: SaleDateInputSchema.nullable().optional(),
 		paymentDate: SaleDateInputSchema.nullable().optional(),
 		reversalDate: SaleDateInputSchema.optional(),
 	})

@@ -23,7 +23,10 @@ export const patchOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmenti
     percentage: z.optional(z.number().min(0).max(100)),
     amount: z.optional(z.int().min(-9007199254740991).max(9007199254740991)),
     status: z.optional(z.enum(["PENDING", "PAID", "CANCELED", "REVERSED"])),
-    expectedPaymentDate: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+    expectedPaymentDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullish(),
     paymentDate: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/)

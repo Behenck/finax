@@ -5313,6 +5313,55 @@ describe("sales crud", () => {
 		expect(updatedCommission?.totalPercentage).toBe(11_500);
 	});
 
+	it("should patch commission installment clearing expected payment date to become no forecast", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		const installment = installmentsResponse.body.installments[0] as {
+			id: string;
+		};
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				expectedPaymentDate: null,
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const updatedInstallment =
+			await prisma.saleCommissionInstallment.findUniqueOrThrow({
+				where: {
+					id: installment.id,
+				},
+				select: {
+					expectedPaymentDate: true,
+				},
+			});
+
+		expect(updatedInstallment.expectedPaymentDate).toBeNull();
+	});
+
 	it("should clear payment date when installment status is updated to non-paid", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(

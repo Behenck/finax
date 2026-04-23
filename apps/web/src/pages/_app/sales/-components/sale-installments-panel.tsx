@@ -897,9 +897,8 @@ export function SaleInstallmentsPanel({
 					percentage: parsedPercentage,
 					amount: parsedAmount,
 					status: editingInstallment.status,
-					...(editingInstallment.expectedPaymentDate
-						? { expectedPaymentDate: editingInstallment.expectedPaymentDate }
-						: {}),
+					expectedPaymentDate:
+						editingInstallment.expectedPaymentDate || null,
 					paymentDate:
 						editingInstallment.status === "PAID" ||
 						editingInstallment.status === "REVERSED"

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SaleInstallmentsPanel } from "@/pages/_app/sales/-components/sale-installments-panel";
@@ -976,6 +976,51 @@ describe("sale-installments-panel", () => {
 					status: "PAID",
 					amount: 10000,
 					paymentDate: expect.any(String),
+				}),
+			);
+		});
+	});
+
+	it("should clear expected payment date when editing an installment", async () => {
+		const user = userEvent.setup();
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.commissions.installments.update",
+		);
+
+		const { container } = render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		const actionButtons = container.querySelectorAll(
+			'button[aria-haspopup="menu"]',
+		);
+		expect(actionButtons[0]).toBeTruthy();
+
+		await user.click(actionButtons[0] as HTMLButtonElement);
+		await user.click(screen.getByRole("menuitem", { name: "Editar parcela" }));
+
+		const dialog = screen.getByRole("dialog");
+		const expectedPaymentDateInput = within(dialog).getAllByDisplayValue(
+			"10/03/2026",
+		)[0];
+		await user.clear(expectedPaymentDateInput);
+		await user.click(
+			within(dialog).getByRole("button", { name: "Salvar alterações" }),
+		);
+
+		await waitFor(() => {
+			expect(mocks.updateInstallment).toHaveBeenCalledWith(
+				expect.objectContaining({
+					saleId: "sale-1",
+					installmentId: "inst-1",
+					data: expect.objectContaining({
+						expectedPaymentDate: null,
+					}),
 				}),
 			);
 		});
