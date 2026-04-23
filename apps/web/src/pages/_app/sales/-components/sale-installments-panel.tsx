@@ -111,7 +111,7 @@ type InstallmentEditState = {
 	percentage: string;
 	amount: string;
 	status: SaleCommissionInstallmentStatus;
-	expectedPaymentDate: string;
+	expectedPaymentDate: string | null;
 	paymentDate: string;
 	reversalDate: string;
 };
@@ -142,7 +142,11 @@ const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	REVERSED: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
-function formatDate(value: string) {
+function formatDate(value?: string | null) {
+	if (!value) {
+		return "Sem previsão";
+	}
+
 	const dateOnly = value.slice(0, 10);
 	const parsedDate = parse(dateOnly, "yyyy-MM-dd", new Date());
 	return format(parsedDate, "dd/MM/yyyy");
@@ -867,11 +871,6 @@ export function SaleInstallmentsPanel({
 			return;
 		}
 
-		if (!editingInstallment.expectedPaymentDate) {
-			toast.error("Informe a previsão de pagamento.");
-			return;
-		}
-
 		if (
 			editingInstallment.status === "CANCELED" &&
 			!editingInstallment.reversalDate
@@ -898,7 +897,9 @@ export function SaleInstallmentsPanel({
 					percentage: parsedPercentage,
 					amount: parsedAmount,
 					status: editingInstallment.status,
-					expectedPaymentDate: editingInstallment.expectedPaymentDate,
+					...(editingInstallment.expectedPaymentDate
+						? { expectedPaymentDate: editingInstallment.expectedPaymentDate }
+						: {}),
 					paymentDate:
 						editingInstallment.status === "PAID" ||
 						editingInstallment.status === "REVERSED"

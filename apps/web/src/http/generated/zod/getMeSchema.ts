@@ -17,6 +17,7 @@ export const getMe200Schema = z.object({
   }),
   organization: z.object({
     id: z.uuid(),
+    memberId: z.uuid(),
     name: z.string(),
     slug: z.string(),
     role: z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),

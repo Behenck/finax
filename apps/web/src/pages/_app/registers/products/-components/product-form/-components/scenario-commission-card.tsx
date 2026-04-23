@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
 	Select,
 	SelectContent,
@@ -21,7 +22,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { ProductCommissionFormData, ProductFormData } from "@/schemas/product-schema";
-import { Percent, Trash2 } from "lucide-react";
+import { CalendarDays, Percent, Trash2 } from "lucide-react";
 import { RECIPIENT_OPTIONS } from "../-utils/constants";
 import { roundPercentage } from "../-utils/helpers";
 import type { SelectOption } from "../-utils/types";
@@ -88,6 +89,10 @@ export function ScenarioCommissionCard({
 		control,
 		name: `${commissionPath}.baseCommissionIndex`,
 	}) as ProductCommissionFormData["baseCommissionIndex"];
+	const useAdvancedDateSchedule = useWatch({
+		control,
+		name: `${commissionPath}.useAdvancedDateSchedule`,
+	}) as ProductCommissionFormData["useAdvancedDateSchedule"];
 
 	const commissionErrors =
 		errors.scenarios?.[scenarioIndex]?.commissions?.[commissionIndex];
@@ -431,42 +436,137 @@ export function ScenarioCommissionCard({
 				</Button>
 			</div>
 
+			<div className="flex flex-col gap-2 rounded-lg border border-dashed border-border/70 bg-muted/20 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+				<div className="space-y-1">
+					<p className="font-medium text-sm">Data avançada</p>
+					<p className="text-muted-foreground text-xs">
+						Quando ativada, cada parcela pode avançar meses a partir da última
+						parcela com data. Use <span className="font-medium">0</span> para
+						criar a parcela sem previsão.
+					</p>
+				</div>
+				<Controller
+					name={`${commissionPath}.useAdvancedDateSchedule`}
+					control={control}
+					render={({ field }) => (
+						<Switch
+							checked={field.value}
+							onCheckedChange={(checked) => {
+								field.onChange(checked);
+								const currentInstallments =
+									getValues(`${commissionPath}.installments`) ?? [];
+								const nextInstallments = currentInstallments.map(
+									(installment, installmentIndex) => ({
+										...installment,
+										monthsToAdvance: checked
+											? installmentIndex === 0
+												? 0
+												: installment.monthsToAdvance
+											: installmentIndex === 0
+												? 0
+												: 1,
+									}),
+								);
+								setValue(`${commissionPath}.installments`, nextInstallments, {
+									shouldDirty: true,
+									shouldValidate: true,
+								});
+							}}
+						/>
+					)}
+				/>
+			</div>
+
 			{installmentFields.length > 1 && (
 				<div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
 					{installmentFields.map((installmentField, installmentIndex) => (
 						<div key={installmentField.id} className="space-y-1">
-							<FieldGroup>
-								<Field className="gap-1">
-									<Controller
-										name={`${commissionPath}.installments.${installmentIndex}.percentage`}
-										control={control}
-										render={({ field, fieldState }) => (
-											<>
-												<div className="relative">
-													<span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">
-														P{installmentIndex + 1}
-													</span>
-													<Input
-														value={field.value ?? ""}
-														type="number"
-														step="0.0001"
-														min={0}
-														max={100}
-														aria-label={`Parcela ${installmentIndex + 1} (%)`}
-														className="pl-10 pr-10 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-														onChange={(event) => {
-															const value = Number(event.target.value);
-															field.onChange(Number.isFinite(value) ? value : 0);
-														}}
-													/>
-													<Percent className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-												</div>
-												<FormFieldError error={fieldState.error} />
-											</>
-										)}
-									/>
-								</Field>
-							</FieldGroup>
+							<div
+								className={`grid gap-2 ${
+									useAdvancedDateSchedule && installmentIndex > 0
+										? "grid-cols-[minmax(0,1fr)_88px] items-start"
+										: "grid-cols-1"
+								}`}
+							>
+								<FieldGroup>
+									<Field className="gap-1">
+										<Controller
+											name={`${commissionPath}.installments.${installmentIndex}.percentage`}
+											control={control}
+											render={({ field, fieldState }) => (
+												<>
+													<div className="relative">
+														<span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">
+															P{installmentIndex + 1}
+														</span>
+														<Input
+															value={field.value ?? ""}
+															type="number"
+															step="0.0001"
+															min={0}
+															max={100}
+															aria-label={`Parcela ${installmentIndex + 1} (%)`}
+															className={`text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+																useAdvancedDateSchedule
+																	? "pl-9 pr-8"
+																	: "pl-10 pr-10"
+															}`}
+															onChange={(event) => {
+																const value = Number(event.target.value);
+																field.onChange(Number.isFinite(value) ? value : 0);
+															}}
+														/>
+														<Percent className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+													</div>
+													<FormFieldError error={fieldState.error} />
+												</>
+											)}
+										/>
+									</Field>
+								</FieldGroup>
+
+								{useAdvancedDateSchedule && installmentIndex > 0 ? (
+									<FieldGroup>
+										<Field className="gap-1">
+											<Controller
+												name={`${commissionPath}.installments.${installmentIndex}.monthsToAdvance`}
+												control={control}
+												render={({ field, fieldState }) => (
+													<>
+														<div className="relative">
+															<CalendarDays className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+															<Input
+																value={field.value ?? ""}
+																type="number"
+																step={1}
+																min={0}
+																aria-label={`Parcela ${installmentIndex + 1} (meses)`}
+																placeholder="1"
+																className="pl-8 pr-2 text-center text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+																onChange={(event) => {
+																	const value = event.target.value;
+																	if (!value) {
+																		field.onChange(1);
+																		return;
+																	}
+
+																	const parsedValue = Number(value);
+																	field.onChange(
+																		Number.isFinite(parsedValue)
+																			? Math.max(0, Math.trunc(parsedValue))
+																			: 1,
+																	);
+																}}
+															/>
+														</div>
+														<FormFieldError error={fieldState.error} />
+													</>
+												)}
+											/>
+										</Field>
+									</FieldGroup>
+								) : null}
+							</div>
 						</div>
 					))}
 				</div>

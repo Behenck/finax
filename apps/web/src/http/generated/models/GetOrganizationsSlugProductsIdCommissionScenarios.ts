@@ -147,6 +147,10 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
        */
       baseCommissionIndex?: number;
       /**
+       * @type boolean
+       */
+      useAdvancedDateSchedule: boolean;
+      /**
        * @maxLength 100
        * @type number
        */
@@ -173,6 +177,12 @@ export type GetOrganizationsSlugProductsIdCommissionScenarios200 = {
          * @type number
          */
         percentage: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        monthsToAdvance: number;
       }[];
     }[];
   }[];

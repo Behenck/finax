@@ -46,6 +46,7 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
         baseCommissionIndex: z.optional(z.int().min(0).max(9007199254740991)),
         beneficiaryId: z.optional(z.uuid()),
         beneficiaryLabel: z.optional(z.string()),
+        useAdvancedDateSchedule: z.optional(z.boolean()),
         startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         totalPercentage: z.number().max(100).gt(0),
         installments: z
@@ -53,6 +54,7 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
             z.object({
               installmentNumber: z.int().min(1).max(9007199254740991),
               percentage: z.number().min(0).max(100),
+              monthsToAdvance: z.optional(z.int().min(0).max(9007199254740991)),
             }),
           )
           .min(1),

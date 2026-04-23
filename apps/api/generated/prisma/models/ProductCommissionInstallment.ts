@@ -29,11 +29,13 @@ export type AggregateProductCommissionInstallment = {
 export type ProductCommissionInstallmentAvgAggregateOutputType = {
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
 }
 
 export type ProductCommissionInstallmentSumAggregateOutputType = {
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
 }
 
 export type ProductCommissionInstallmentMinAggregateOutputType = {
@@ -41,6 +43,7 @@ export type ProductCommissionInstallmentMinAggregateOutputType = {
   commissionId: string | null
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   createdAt: Date | null
 }
 
@@ -49,6 +52,7 @@ export type ProductCommissionInstallmentMaxAggregateOutputType = {
   commissionId: string | null
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   createdAt: Date | null
 }
 
@@ -57,6 +61,7 @@ export type ProductCommissionInstallmentCountAggregateOutputType = {
   commissionId: number
   installmentNumber: number
   percentage: number
+  monthsToAdvance: number
   createdAt: number
   _all: number
 }
@@ -65,11 +70,13 @@ export type ProductCommissionInstallmentCountAggregateOutputType = {
 export type ProductCommissionInstallmentAvgAggregateInputType = {
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
 }
 
 export type ProductCommissionInstallmentSumAggregateInputType = {
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
 }
 
 export type ProductCommissionInstallmentMinAggregateInputType = {
@@ -77,6 +84,7 @@ export type ProductCommissionInstallmentMinAggregateInputType = {
   commissionId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   createdAt?: true
 }
 
@@ -85,6 +93,7 @@ export type ProductCommissionInstallmentMaxAggregateInputType = {
   commissionId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   createdAt?: true
 }
 
@@ -93,6 +102,7 @@ export type ProductCommissionInstallmentCountAggregateInputType = {
   commissionId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   createdAt?: true
   _all?: true
 }
@@ -188,6 +198,7 @@ export type ProductCommissionInstallmentGroupByOutputType = {
   commissionId: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance: number
   createdAt: Date
   _count: ProductCommissionInstallmentCountAggregateOutputType | null
   _avg: ProductCommissionInstallmentAvgAggregateOutputType | null
@@ -219,6 +230,7 @@ export type ProductCommissionInstallmentWhereInput = {
   commissionId?: Prisma.StringFilter<"ProductCommissionInstallment"> | string
   installmentNumber?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommissionInstallment"> | Date | string
   commission?: Prisma.XOR<Prisma.ProductCommissionScalarRelationFilter, Prisma.ProductCommissionWhereInput>
 }
@@ -228,6 +240,7 @@ export type ProductCommissionInstallmentOrderByWithRelationInput = {
   commissionId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   commission?: Prisma.ProductCommissionOrderByWithRelationInput
 }
@@ -241,6 +254,7 @@ export type ProductCommissionInstallmentWhereUniqueInput = Prisma.AtLeast<{
   commissionId?: Prisma.StringFilter<"ProductCommissionInstallment"> | string
   installmentNumber?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommissionInstallment"> | Date | string
   commission?: Prisma.XOR<Prisma.ProductCommissionScalarRelationFilter, Prisma.ProductCommissionWhereInput>
 }, "id" | "commissionId_installmentNumber">
@@ -250,6 +264,7 @@ export type ProductCommissionInstallmentOrderByWithAggregationInput = {
   commissionId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProductCommissionInstallmentCountOrderByAggregateInput
   _avg?: Prisma.ProductCommissionInstallmentAvgOrderByAggregateInput
@@ -266,6 +281,7 @@ export type ProductCommissionInstallmentScalarWhereWithAggregatesInput = {
   commissionId?: Prisma.StringWithAggregatesFilter<"ProductCommissionInstallment"> | string
   installmentNumber?: Prisma.IntWithAggregatesFilter<"ProductCommissionInstallment"> | number
   percentage?: Prisma.IntWithAggregatesFilter<"ProductCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntWithAggregatesFilter<"ProductCommissionInstallment"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductCommissionInstallment"> | Date | string
 }
 
@@ -273,6 +289,7 @@ export type ProductCommissionInstallmentCreateInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
   commission: Prisma.ProductCommissionCreateNestedOneWithoutInstallmentsInput
 }
@@ -282,6 +299,7 @@ export type ProductCommissionInstallmentUncheckedCreateInput = {
   commissionId: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
 }
 
@@ -289,6 +307,7 @@ export type ProductCommissionInstallmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commission?: Prisma.ProductCommissionUpdateOneRequiredWithoutInstallmentsNestedInput
 }
@@ -298,6 +317,7 @@ export type ProductCommissionInstallmentUncheckedUpdateInput = {
   commissionId?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -306,6 +326,7 @@ export type ProductCommissionInstallmentCreateManyInput = {
   commissionId: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
 }
 
@@ -313,6 +334,7 @@ export type ProductCommissionInstallmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -321,6 +343,7 @@ export type ProductCommissionInstallmentUncheckedUpdateManyInput = {
   commissionId?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -344,12 +367,14 @@ export type ProductCommissionInstallmentCountOrderByAggregateInput = {
   commissionId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ProductCommissionInstallmentAvgOrderByAggregateInput = {
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
 }
 
 export type ProductCommissionInstallmentMaxOrderByAggregateInput = {
@@ -357,6 +382,7 @@ export type ProductCommissionInstallmentMaxOrderByAggregateInput = {
   commissionId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -365,12 +391,14 @@ export type ProductCommissionInstallmentMinOrderByAggregateInput = {
   commissionId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ProductCommissionInstallmentSumOrderByAggregateInput = {
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
 }
 
 export type ProductCommissionInstallmentCreateNestedManyWithoutCommissionInput = {
@@ -419,6 +447,7 @@ export type ProductCommissionInstallmentCreateWithoutCommissionInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
 }
 
@@ -426,6 +455,7 @@ export type ProductCommissionInstallmentUncheckedCreateWithoutCommissionInput = 
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
 }
 
@@ -463,6 +493,7 @@ export type ProductCommissionInstallmentScalarWhereInput = {
   commissionId?: Prisma.StringFilter<"ProductCommissionInstallment"> | string
   installmentNumber?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"ProductCommissionInstallment"> | number
   createdAt?: Prisma.DateTimeFilter<"ProductCommissionInstallment"> | Date | string
 }
 
@@ -470,6 +501,7 @@ export type ProductCommissionInstallmentCreateManyCommissionInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   createdAt?: Date | string
 }
 
@@ -477,6 +509,7 @@ export type ProductCommissionInstallmentUpdateWithoutCommissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -484,6 +517,7 @@ export type ProductCommissionInstallmentUncheckedUpdateWithoutCommissionInput = 
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -491,6 +525,7 @@ export type ProductCommissionInstallmentUncheckedUpdateManyWithoutCommissionInpu
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -501,6 +536,7 @@ export type ProductCommissionInstallmentSelect<ExtArgs extends runtime.Types.Ext
   commissionId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   createdAt?: boolean
   commission?: boolean | Prisma.ProductCommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionInstallment"]>
@@ -510,6 +546,7 @@ export type ProductCommissionInstallmentSelectCreateManyAndReturn<ExtArgs extend
   commissionId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   createdAt?: boolean
   commission?: boolean | Prisma.ProductCommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionInstallment"]>
@@ -519,6 +556,7 @@ export type ProductCommissionInstallmentSelectUpdateManyAndReturn<ExtArgs extend
   commissionId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   createdAt?: boolean
   commission?: boolean | Prisma.ProductCommissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productCommissionInstallment"]>
@@ -528,10 +566,11 @@ export type ProductCommissionInstallmentSelectScalar = {
   commissionId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   createdAt?: boolean
 }
 
-export type ProductCommissionInstallmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "commissionId" | "installmentNumber" | "percentage" | "createdAt", ExtArgs["result"]["productCommissionInstallment"]>
+export type ProductCommissionInstallmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "commissionId" | "installmentNumber" | "percentage" | "monthsToAdvance" | "createdAt", ExtArgs["result"]["productCommissionInstallment"]>
 export type ProductCommissionInstallmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   commission?: boolean | Prisma.ProductCommissionDefaultArgs<ExtArgs>
 }
@@ -552,6 +591,7 @@ export type $ProductCommissionInstallmentPayload<ExtArgs extends runtime.Types.E
     commissionId: string
     installmentNumber: number
     percentage: number
+    monthsToAdvance: number
     createdAt: Date
   }, ExtArgs["result"]["productCommissionInstallment"]>
   composites: {}
@@ -981,6 +1021,7 @@ export interface ProductCommissionInstallmentFieldRefs {
   readonly commissionId: Prisma.FieldRef<"ProductCommissionInstallment", 'String'>
   readonly installmentNumber: Prisma.FieldRef<"ProductCommissionInstallment", 'Int'>
   readonly percentage: Prisma.FieldRef<"ProductCommissionInstallment", 'Int'>
+  readonly monthsToAdvance: Prisma.FieldRef<"ProductCommissionInstallment", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProductCommissionInstallment", 'DateTime'>
 }
     

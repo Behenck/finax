@@ -4534,6 +4534,7 @@ export const ProductCommissionScalarFieldEnum = {
   description: 'description',
   recipientType: 'recipientType',
   calculationBase: 'calculationBase',
+  useAdvancedDateSchedule: 'useAdvancedDateSchedule',
   baseCommissionId: 'baseCommissionId',
   recipientCompanyId: 'recipientCompanyId',
   recipientUnitId: 'recipientUnitId',
@@ -4555,6 +4556,7 @@ export const ProductCommissionInstallmentScalarFieldEnum = {
   commissionId: 'commissionId',
   installmentNumber: 'installmentNumber',
   percentage: 'percentage',
+  monthsToAdvance: 'monthsToAdvance',
   createdAt: 'createdAt'
 } as const
 
@@ -4650,6 +4652,7 @@ export const SaleCommissionScalarFieldEnum = {
   recipientType: 'recipientType',
   direction: 'direction',
   calculationBase: 'calculationBase',
+  useAdvancedDateSchedule: 'useAdvancedDateSchedule',
   baseCommissionId: 'baseCommissionId',
   beneficiaryCompanyId: 'beneficiaryCompanyId',
   beneficiaryUnitId: 'beneficiaryUnitId',
@@ -4673,6 +4676,7 @@ export const SaleCommissionInstallmentScalarFieldEnum = {
   originInstallmentId: 'originInstallmentId',
   installmentNumber: 'installmentNumber',
   percentage: 'percentage',
+  monthsToAdvance: 'monthsToAdvance',
   amount: 'amount',
   status: 'status',
   expectedPaymentDate: 'expectedPaymentDate',

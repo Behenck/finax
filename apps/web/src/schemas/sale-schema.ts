@@ -39,6 +39,10 @@ const commissionTotalPercentageSchema = z
 const saleCommissionInstallmentSchema = z.object({
 	installmentNumber: z.number().int().min(1),
 	percentage: commissionPercentageSchema,
+	monthsToAdvance: z
+		.number({ error: "Informe os meses de avanço" })
+		.int("Informe os meses de avanço")
+		.min(0, "Informe 0 ou mais meses"),
 });
 
 const saleCommissionCalculationBaseSchema = z.enum([
@@ -55,6 +59,7 @@ export const saleCommissionSchema = z
 		baseCommissionIndex: z.number().int().min(0).optional(),
 		beneficiaryId: z.string().uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		useAdvancedDateSchedule: z.boolean().default(false),
 		startDate: z.coerce.date({
 			error: "Selecione a data de início da comissão",
 		}),
@@ -108,6 +113,26 @@ export const saleCommissionSchema = z
 				});
 			}
 			installmentNumbers.add(installment.installmentNumber);
+
+			const expectedMonthsToAdvance = commission.useAdvancedDateSchedule
+				? index === 0
+					? 0
+					: installment.monthsToAdvance
+				: index === 0
+					? 0
+					: 1;
+
+			if (installment.monthsToAdvance !== expectedMonthsToAdvance) {
+				ctx.addIssue({
+					code: "custom",
+					message: commission.useAdvancedDateSchedule
+						? index === 0
+							? "A primeira parcela usa a data inicial."
+							: "Informe um avanço válido em meses."
+						: "Ative data avançada para personalizar o avanço em meses.",
+					path: ["installments", index, "monthsToAdvance"],
+				});
+			}
 		}
 
 		const totalScaled = toScaledPercentage(commission.totalPercentage);

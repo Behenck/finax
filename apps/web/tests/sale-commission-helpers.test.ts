@@ -23,8 +23,11 @@ function buildLinkedCompanyScenarioCommission(): ProductCommission {
 	return {
 		recipientType: "COMPANY",
 		beneficiaryLabel: "Empresa vinculada",
+		useAdvancedDateSchedule: false,
 		totalPercentage: 1,
-		installments: [{ installmentNumber: 1, percentage: 1 }],
+		installments: [
+			{ installmentNumber: 1, percentage: 1, monthsToAdvance: 0 },
+		],
 	};
 }
 
@@ -32,8 +35,11 @@ function buildLinkedSupervisorScenarioCommission(): ProductCommission {
 	return {
 		recipientType: "SUPERVISOR",
 		beneficiaryLabel: "Supervisor vinculado",
+		useAdvancedDateSchedule: false,
 		totalPercentage: 1,
-		installments: [{ installmentNumber: 1, percentage: 1 }],
+		installments: [
+			{ installmentNumber: 1, percentage: 1, monthsToAdvance: 0 },
+		],
 	};
 }
 
@@ -112,8 +118,11 @@ describe("sale commission helpers", () => {
 				{
 					recipientType: "SELLER",
 					beneficiaryLabel: "Vendedor vinculado",
+					useAdvancedDateSchedule: false,
 					totalPercentage: 1,
-					installments: [{ installmentNumber: 1, percentage: 1 }],
+					installments: [
+						{ installmentNumber: 1, percentage: 1, monthsToAdvance: 0 },
+					],
 				},
 			],
 			new Date("2026-03-10"),
@@ -293,6 +302,33 @@ describe("sale commission helpers", () => {
 		expect(pulled[0]?.beneficiaryLabel).toBe("Supervisor vinculado");
 	});
 
+	it("should preserve advanced schedule metadata from product scenarios", () => {
+		const pulled = mapScenarioCommissionsToPulledSaleCommissions(
+			[
+				{
+					recipientType: "COMPANY",
+					beneficiaryLabel: "Empresa vinculada",
+					useAdvancedDateSchedule: true,
+					totalPercentage: 3,
+					installments: [
+						{ installmentNumber: 1, percentage: 1, monthsToAdvance: 0 },
+						{ installmentNumber: 2, percentage: 1, monthsToAdvance: 0 },
+						{ installmentNumber: 3, percentage: 1, monthsToAdvance: 2 },
+					],
+				},
+			],
+			new Date("2026-04-10"),
+			{
+				companyId: SALE_COMPANY_ID,
+			},
+		);
+
+		expect(pulled[0]?.useAdvancedDateSchedule).toBe(true);
+		expect(
+			pulled[0]?.installments.map((installment) => installment.monthsToAdvance),
+		).toEqual([0, 0, 2]);
+	});
+
 	it("should preserve manual commissions when replacing pulled commissions", () => {
 		const manualCommission = {
 			sourceType: "MANUAL",
@@ -300,9 +336,12 @@ describe("sale commission helpers", () => {
 			direction: "OUTCOME",
 			calculationBase: "SALE_TOTAL",
 			beneficiaryLabel: "Bônus operacional",
+			useAdvancedDateSchedule: false,
 			startDate: new Date("2026-03-10"),
 			totalPercentage: 1,
-			installments: [{ installmentNumber: 1, percentage: 1 }],
+			installments: [
+				{ installmentNumber: 1, percentage: 1, monthsToAdvance: 0 },
+			],
 		} satisfies SaleCommissionFormData;
 
 		const initialPulled = mapScenarioCommissionsToPulledSaleCommissions(

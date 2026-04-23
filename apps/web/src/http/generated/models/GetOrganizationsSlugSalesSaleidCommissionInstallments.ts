@@ -129,7 +129,7 @@ export type GetOrganizationsSlugSalesSaleidCommissionInstallments200 = {
     /**
      * @type string, date-time
      */
-    expectedPaymentDate: string;
+    expectedPaymentDate: string | null;
     /**
      * @type string, date-time
      */

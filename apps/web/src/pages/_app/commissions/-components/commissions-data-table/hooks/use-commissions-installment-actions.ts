@@ -656,11 +656,6 @@ export function useCommissionsInstallmentActions({
 			return;
 		}
 
-		if (!editingInstallment.expectedPaymentDate) {
-			toast.error("Informe a previsão de pagamento.");
-			return;
-		}
-
 		if (
 			editingInstallment.status === "CANCELED" &&
 			!editingInstallment.reversalDate
@@ -692,7 +687,9 @@ export function useCommissionsInstallmentActions({
 					percentage: parsedPercentage,
 					amount: parsedAmount,
 					status: editingInstallment.status,
-					expectedPaymentDate: editingInstallment.expectedPaymentDate,
+					...(editingInstallment.expectedPaymentDate
+						? { expectedPaymentDate: editingInstallment.expectedPaymentDate }
+						: {}),
 					paymentDate:
 						editingInstallment.status === "PAID" ||
 						editingInstallment.status === "REVERSED"

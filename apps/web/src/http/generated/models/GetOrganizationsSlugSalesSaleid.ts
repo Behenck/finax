@@ -337,6 +337,10 @@ export type GetOrganizationsSlugSalesSaleid200 = {
        */
       beneficiaryLabel: string | null;
       /**
+       * @type boolean
+       */
+      useAdvancedDateSchedule: boolean;
+      /**
        * @type string, date-time
        */
       startDate: string;
@@ -386,11 +390,17 @@ export type GetOrganizationsSlugSalesSaleid200 = {
         /**
          * @type string, date-time
          */
-        expectedPaymentDate: string;
+        expectedPaymentDate: string | null;
         /**
          * @type string, date-time
          */
         paymentDate: string | null;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        monthsToAdvance: number;
       }[];
     }[];
     /**

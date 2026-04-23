@@ -15,7 +15,7 @@ export default defineConfig({
    * Fonte do contrato
    */
   input: {
-    path: "http://localhost:3333/docs/json",
+    path: process.env.KUBB_INPUT_PATH ?? "http://localhost:3333/docs/json",
   },
 
   /**

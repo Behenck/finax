@@ -128,6 +128,7 @@ export const SaleCommissionInstallmentInputSchema = z
 	.object({
 		installmentNumber: z.number().int().min(1),
 		percentage: CommissionPercentageSchema,
+		monthsToAdvance: z.number().int().min(0).optional(),
 	})
 	.strict();
 
@@ -140,6 +141,7 @@ export const SaleCommissionInputSchema = z
 		baseCommissionIndex: z.number().int().min(0).optional(),
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
+		useAdvancedDateSchedule: z.boolean().optional(),
 		startDate: SaleDateInputSchema,
 		totalPercentage: CommissionTotalPercentageSchema,
 		installments: z.array(SaleCommissionInstallmentInputSchema).min(1),
@@ -199,6 +201,19 @@ export const SaleCommissionInputSchema = z
 				});
 			}
 			installmentNumbers.add(installment.installmentNumber);
+
+			const useAdvancedDateSchedule =
+				commission.useAdvancedDateSchedule ?? false;
+			const resolvedMonthsToAdvance =
+				index === 0 ? (installment.monthsToAdvance ?? 0) : installment.monthsToAdvance;
+
+			if (useAdvancedDateSchedule && index === 0 && resolvedMonthsToAdvance !== 0) {
+				ctx.addIssue({
+					code: "custom",
+					message: "First installment must use monthsToAdvance = 0",
+					path: ["installments", index, "monthsToAdvance"],
+				});
+			}
 		}
 
 		const expectedTotal = toScaledPercentage(commission.totalPercentage);
@@ -224,8 +239,9 @@ const SaleCommissionInstallmentDetailSchema = z.object({
 	percentage: CommissionPercentageSchema,
 	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
-	expectedPaymentDate: z.date(),
+	expectedPaymentDate: z.date().nullable(),
 	paymentDate: z.date().nullable(),
+	monthsToAdvance: z.number().int().min(0),
 });
 
 export const SaleCommissionDetailSchema = z.object({
@@ -237,6 +253,7 @@ export const SaleCommissionDetailSchema = z.object({
 	baseCommissionIndex: z.number().int().min(0).optional(),
 	beneficiaryId: z.uuid().nullable(),
 	beneficiaryLabel: z.string().nullable(),
+	useAdvancedDateSchedule: z.boolean(),
 	startDate: z.date(),
 	totalPercentage: CommissionTotalPercentageSchema,
 	totalAmount: z.number().int(),
@@ -267,7 +284,7 @@ export const SaleCommissionInstallmentRowSchema = z.object({
 	percentage: CommissionPercentageSchema,
 	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
-	expectedPaymentDate: z.date(),
+	expectedPaymentDate: z.date().nullable(),
 	paymentDate: z.date().nullable(),
 });
 
@@ -325,7 +342,7 @@ export const OrganizationCommissionInstallmentRowSchema = z.object({
 	percentage: CommissionPercentageSchema,
 	amount: z.number().int(),
 	status: SaleCommissionInstallmentStatusSchema,
-	expectedPaymentDate: z.date(),
+	expectedPaymentDate: z.date().nullable(),
 	paymentDate: z.date().nullable(),
 	bonusContext: z
 		.object({

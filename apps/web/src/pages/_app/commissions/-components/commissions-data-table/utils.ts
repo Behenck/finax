@@ -47,7 +47,11 @@ export const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
 	REVERSED: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
-export function formatDate(value: string) {
+export function formatDate(value?: string | null) {
+	if (!value) {
+		return "Sem previsão";
+	}
+
 	const dateOnly = value.slice(0, 10);
 	const parsedDate = parse(dateOnly, "yyyy-MM-dd", new Date());
 	return format(parsedDate, "dd/MM/yyyy");

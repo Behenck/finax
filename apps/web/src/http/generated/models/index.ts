@@ -979,13 +979,6 @@ export type {
   PostSessionsRefreshMutation,
 } from "./PostSessionsRefresh.ts";
 export type {
-  PostUsers201,
-  PostUsers400,
-  PostUsersMutationRequest,
-  PostUsersMutationResponse,
-  PostUsersMutation,
-} from "./PostUsers.ts";
-export type {
   PutOrganizationSlugPathParams,
   PutOrganizationSlug204EnumKey,
   PutOrganizationSlug204,

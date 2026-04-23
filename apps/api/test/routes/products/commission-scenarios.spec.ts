@@ -208,7 +208,80 @@ describe("product commission scenarios", () => {
 			5,
 		);
 		expect(getResponse.body.scenarios[0].commissions[0].dueDay).toBe(10);
+		expect(
+			getResponse.body.scenarios[0].commissions[0].useAdvancedDateSchedule,
+		).toBe(false);
+		expect(
+			getResponse.body.scenarios[0].commissions[0].installments[0]
+				.monthsToAdvance,
+		).toBe(0);
+		expect(
+			getResponse.body.scenarios[0].commissions[0].installments[1]
+				.monthsToAdvance,
+		).toBe(1);
 		expect(getResponse.body.scenarios[0].commissions[1].dueDay).toBeUndefined();
+	});
+
+	it("should save and fetch advanced date schedule installments", async () => {
+		const fixture = await createFixture();
+
+		const saveResponse = await request(app.server)
+			.put(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				scenarios: [
+					{
+						name: "Consórcio",
+						conditions: [],
+						commissions: [
+							{
+								recipientType: "SELLER",
+								beneficiaryId: fixture.seller.id,
+								useAdvancedDateSchedule: true,
+								totalPercentage: 3,
+								installments: [
+									{
+										installmentNumber: 1,
+										percentage: 1,
+										monthsToAdvance: 0,
+									},
+									{
+										installmentNumber: 2,
+										percentage: 1,
+										monthsToAdvance: 0,
+									},
+									{
+										installmentNumber: 3,
+										percentage: 1,
+										monthsToAdvance: 2,
+									},
+								],
+							},
+						],
+					},
+				],
+			});
+
+		expect(saveResponse.statusCode).toBe(204);
+
+		const getResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/products/${fixture.product.id}/commission-scenarios`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(getResponse.statusCode).toBe(200);
+		expect(
+			getResponse.body.scenarios[0].commissions[0].useAdvancedDateSchedule,
+		).toBe(true);
+		expect(
+			getResponse.body.scenarios[0].commissions[0].installments.map(
+				(installment: { monthsToAdvance: number }) =>
+					installment.monthsToAdvance,
+			),
+		).toEqual([0, 0, 2]);
 	});
 
 	it("should save and fetch a commission linked to another commission", async () => {

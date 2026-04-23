@@ -44,6 +44,7 @@ export type ProductCommissionMinAggregateOutputType = {
   description: string | null
   recipientType: $Enums.ProductCommissionRecipientType | null
   calculationBase: $Enums.ProductCommissionCalculationBase | null
+  useAdvancedDateSchedule: boolean | null
   baseCommissionId: string | null
   recipientCompanyId: string | null
   recipientUnitId: string | null
@@ -63,6 +64,7 @@ export type ProductCommissionMaxAggregateOutputType = {
   description: string | null
   recipientType: $Enums.ProductCommissionRecipientType | null
   calculationBase: $Enums.ProductCommissionCalculationBase | null
+  useAdvancedDateSchedule: boolean | null
   baseCommissionId: string | null
   recipientCompanyId: string | null
   recipientUnitId: string | null
@@ -82,6 +84,7 @@ export type ProductCommissionCountAggregateOutputType = {
   description: number
   recipientType: number
   calculationBase: number
+  useAdvancedDateSchedule: number
   baseCommissionId: number
   recipientCompanyId: number
   recipientUnitId: number
@@ -115,6 +118,7 @@ export type ProductCommissionMinAggregateInputType = {
   description?: true
   recipientType?: true
   calculationBase?: true
+  useAdvancedDateSchedule?: true
   baseCommissionId?: true
   recipientCompanyId?: true
   recipientUnitId?: true
@@ -134,6 +138,7 @@ export type ProductCommissionMaxAggregateInputType = {
   description?: true
   recipientType?: true
   calculationBase?: true
+  useAdvancedDateSchedule?: true
   baseCommissionId?: true
   recipientCompanyId?: true
   recipientUnitId?: true
@@ -153,6 +158,7 @@ export type ProductCommissionCountAggregateInputType = {
   description?: true
   recipientType?: true
   calculationBase?: true
+  useAdvancedDateSchedule?: true
   baseCommissionId?: true
   recipientCompanyId?: true
   recipientUnitId?: true
@@ -259,6 +265,7 @@ export type ProductCommissionGroupByOutputType = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule: boolean
   baseCommissionId: string | null
   recipientCompanyId: string | null
   recipientUnitId: string | null
@@ -301,6 +308,7 @@ export type ProductCommissionWhereInput = {
   description?: Prisma.StringFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFilter<"ProductCommission"> | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFilter<"ProductCommission"> | boolean
   baseCommissionId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
@@ -328,6 +336,7 @@ export type ProductCommissionOrderByWithRelationInput = {
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
   calculationBase?: Prisma.SortOrder
+  useAdvancedDateSchedule?: Prisma.SortOrder
   baseCommissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -358,6 +367,7 @@ export type ProductCommissionWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFilter<"ProductCommission"> | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFilter<"ProductCommission"> | boolean
   baseCommissionId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
@@ -385,6 +395,7 @@ export type ProductCommissionOrderByWithAggregationInput = {
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
   calculationBase?: Prisma.SortOrder
+  useAdvancedDateSchedule?: Prisma.SortOrder
   baseCommissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -412,6 +423,7 @@ export type ProductCommissionScalarWhereWithAggregatesInput = {
   description?: Prisma.StringWithAggregatesFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeWithAggregatesFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseWithAggregatesFilter<"ProductCommission"> | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolWithAggregatesFilter<"ProductCommission"> | boolean
   baseCommissionId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   recipientCompanyId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
   recipientUnitId?: Prisma.StringNullableWithAggregatesFilter<"ProductCommission"> | string | null
@@ -430,6 +442,7 @@ export type ProductCommissionCreateInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -452,6 +465,7 @@ export type ProductCommissionUncheckedCreateInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -472,6 +486,7 @@ export type ProductCommissionUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -494,6 +509,7 @@ export type ProductCommissionUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -515,6 +531,7 @@ export type ProductCommissionCreateManyInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -533,6 +550,7 @@ export type ProductCommissionUpdateManyMutationInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -547,6 +565,7 @@ export type ProductCommissionUncheckedUpdateManyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -581,6 +600,7 @@ export type ProductCommissionCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
   calculationBase?: Prisma.SortOrder
+  useAdvancedDateSchedule?: Prisma.SortOrder
   baseCommissionId?: Prisma.SortOrder
   recipientCompanyId?: Prisma.SortOrder
   recipientUnitId?: Prisma.SortOrder
@@ -606,6 +626,7 @@ export type ProductCommissionMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
   calculationBase?: Prisma.SortOrder
+  useAdvancedDateSchedule?: Prisma.SortOrder
   baseCommissionId?: Prisma.SortOrder
   recipientCompanyId?: Prisma.SortOrder
   recipientUnitId?: Prisma.SortOrder
@@ -625,6 +646,7 @@ export type ProductCommissionMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   recipientType?: Prisma.SortOrder
   calculationBase?: Prisma.SortOrder
+  useAdvancedDateSchedule?: Prisma.SortOrder
   baseCommissionId?: Prisma.SortOrder
   recipientCompanyId?: Prisma.SortOrder
   recipientUnitId?: Prisma.SortOrder
@@ -944,6 +966,7 @@ export type ProductCommissionCreateWithoutRecipientSupervisorInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -965,6 +988,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientSupervisorInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1014,6 +1038,7 @@ export type ProductCommissionScalarWhereInput = {
   description?: Prisma.StringFilter<"ProductCommission"> | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFilter<"ProductCommission"> | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFilter<"ProductCommission"> | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFilter<"ProductCommission"> | boolean
   baseCommissionId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientCompanyId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
   recipientUnitId?: Prisma.StringNullableFilter<"ProductCommission"> | string | null
@@ -1032,6 +1057,7 @@ export type ProductCommissionCreateWithoutRecipientCompanyInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1053,6 +1079,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientCompanyInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientUnitId?: string | null
   recipientSellerId?: string | null
@@ -1098,6 +1125,7 @@ export type ProductCommissionCreateWithoutRecipientUnitInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1119,6 +1147,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientUnitInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientSellerId?: string | null
@@ -1164,6 +1193,7 @@ export type ProductCommissionCreateWithoutRecipientSellerInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1185,6 +1215,7 @@ export type ProductCommissionUncheckedCreateWithoutRecipientSellerInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1230,6 +1261,7 @@ export type ProductCommissionCreateWithoutScenarioInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1250,6 +1282,7 @@ export type ProductCommissionUncheckedCreateWithoutScenarioInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1296,6 +1329,7 @@ export type ProductCommissionCreateWithoutChildCommissionsInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1317,6 +1351,7 @@ export type ProductCommissionUncheckedCreateWithoutChildCommissionsInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1341,6 +1376,7 @@ export type ProductCommissionCreateWithoutBaseCommissionInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1362,6 +1398,7 @@ export type ProductCommissionUncheckedCreateWithoutBaseCommissionInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
   recipientSellerId?: string | null
@@ -1402,6 +1439,7 @@ export type ProductCommissionUpdateWithoutChildCommissionsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1423,6 +1461,7 @@ export type ProductCommissionUncheckedUpdateWithoutChildCommissionsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1458,6 +1497,7 @@ export type ProductCommissionCreateWithoutInstallmentsInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientOtherDescription?: string | null
   totalPercentage: number
   dueDay?: number | null
@@ -1479,6 +1519,7 @@ export type ProductCommissionUncheckedCreateWithoutInstallmentsInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1514,6 +1555,7 @@ export type ProductCommissionUpdateWithoutInstallmentsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1535,6 +1577,7 @@ export type ProductCommissionUncheckedUpdateWithoutInstallmentsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1555,6 +1598,7 @@ export type ProductCommissionCreateManyRecipientSupervisorInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1572,6 +1616,7 @@ export type ProductCommissionUpdateWithoutRecipientSupervisorInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1593,6 +1638,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientSupervisorInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1613,6 +1659,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientSupervisorInput 
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1631,6 +1678,7 @@ export type ProductCommissionCreateManyRecipientCompanyInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientUnitId?: string | null
   recipientSellerId?: string | null
@@ -1648,6 +1696,7 @@ export type ProductCommissionUpdateWithoutRecipientCompanyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1669,6 +1718,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientCompanyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1689,6 +1739,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientCompanyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1707,6 +1758,7 @@ export type ProductCommissionCreateManyRecipientUnitInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientSellerId?: string | null
@@ -1724,6 +1776,7 @@ export type ProductCommissionUpdateWithoutRecipientUnitInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1745,6 +1798,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientUnitInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1765,6 +1819,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientUnitInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1783,6 +1838,7 @@ export type ProductCommissionCreateManyRecipientSellerInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1800,6 +1856,7 @@ export type ProductCommissionUpdateWithoutRecipientSellerInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1821,6 +1878,7 @@ export type ProductCommissionUncheckedUpdateWithoutRecipientSellerInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1841,6 +1899,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutRecipientSellerInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1858,6 +1917,7 @@ export type ProductCommissionCreateManyScenarioInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: string | null
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
@@ -1876,6 +1936,7 @@ export type ProductCommissionUpdateWithoutScenarioInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1896,6 +1957,7 @@ export type ProductCommissionUncheckedUpdateWithoutScenarioInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1916,6 +1978,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutScenarioInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   baseCommissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1935,6 +1998,7 @@ export type ProductCommissionCreateManyBaseCommissionInput = {
   description: string
   recipientType: $Enums.ProductCommissionRecipientType
   calculationBase?: $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: boolean
   recipientCompanyId?: string | null
   recipientUnitId?: string | null
   recipientSellerId?: string | null
@@ -1952,6 +2016,7 @@ export type ProductCommissionUpdateWithoutBaseCommissionInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientOtherDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPercentage?: Prisma.IntFieldUpdateOperationsInput | number
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1973,6 +2038,7 @@ export type ProductCommissionUncheckedUpdateWithoutBaseCommissionInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1993,6 +2059,7 @@ export type ProductCommissionUncheckedUpdateManyWithoutBaseCommissionInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   recipientType?: Prisma.EnumProductCommissionRecipientTypeFieldUpdateOperationsInput | $Enums.ProductCommissionRecipientType
   calculationBase?: Prisma.EnumProductCommissionCalculationBaseFieldUpdateOperationsInput | $Enums.ProductCommissionCalculationBase
+  useAdvancedDateSchedule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recipientCompanyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientSellerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2051,6 +2118,7 @@ export type ProductCommissionSelect<ExtArgs extends runtime.Types.Extensions.Int
   description?: boolean
   recipientType?: boolean
   calculationBase?: boolean
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: boolean
   recipientCompanyId?: boolean
   recipientUnitId?: boolean
@@ -2079,6 +2147,7 @@ export type ProductCommissionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   description?: boolean
   recipientType?: boolean
   calculationBase?: boolean
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: boolean
   recipientCompanyId?: boolean
   recipientUnitId?: boolean
@@ -2104,6 +2173,7 @@ export type ProductCommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   description?: boolean
   recipientType?: boolean
   calculationBase?: boolean
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: boolean
   recipientCompanyId?: boolean
   recipientUnitId?: boolean
@@ -2129,6 +2199,7 @@ export type ProductCommissionSelectScalar = {
   description?: boolean
   recipientType?: boolean
   calculationBase?: boolean
+  useAdvancedDateSchedule?: boolean
   baseCommissionId?: boolean
   recipientCompanyId?: boolean
   recipientUnitId?: boolean
@@ -2142,7 +2213,7 @@ export type ProductCommissionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "calculationBase" | "baseCommissionId" | "recipientCompanyId" | "recipientUnitId" | "recipientSellerId" | "recipientSupervisorId" | "recipientOtherDescription" | "totalPercentage" | "dueDay" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
+export type ProductCommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "scenarioId" | "description" | "recipientType" | "calculationBase" | "useAdvancedDateSchedule" | "baseCommissionId" | "recipientCompanyId" | "recipientUnitId" | "recipientSellerId" | "recipientSupervisorId" | "recipientOtherDescription" | "totalPercentage" | "dueDay" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["productCommission"]>
 export type ProductCommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scenario?: boolean | Prisma.ProductCommissionScenarioDefaultArgs<ExtArgs>
   baseCommission?: boolean | Prisma.ProductCommission$baseCommissionArgs<ExtArgs>
@@ -2189,6 +2260,7 @@ export type $ProductCommissionPayload<ExtArgs extends runtime.Types.Extensions.I
     description: string
     recipientType: $Enums.ProductCommissionRecipientType
     calculationBase: $Enums.ProductCommissionCalculationBase
+    useAdvancedDateSchedule: boolean
     baseCommissionId: string | null
     recipientCompanyId: string | null
     recipientUnitId: string | null
@@ -2636,6 +2708,7 @@ export interface ProductCommissionFieldRefs {
   readonly description: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientType: Prisma.FieldRef<"ProductCommission", 'ProductCommissionRecipientType'>
   readonly calculationBase: Prisma.FieldRef<"ProductCommission", 'ProductCommissionCalculationBase'>
+  readonly useAdvancedDateSchedule: Prisma.FieldRef<"ProductCommission", 'Boolean'>
   readonly baseCommissionId: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientCompanyId: Prisma.FieldRef<"ProductCommission", 'String'>
   readonly recipientUnitId: Prisma.FieldRef<"ProductCommission", 'String'>

@@ -35,6 +35,7 @@ type ResolvedSaleCommission = {
 	startDate: Date;
 	calculationBase: SaleCommissionCalculationBase;
 	baseCommissionIndex: number | undefined;
+	useAdvancedDateSchedule: boolean;
 	totalPercentage: number;
 	sortOrder: number;
 	installments: Array<{
@@ -42,8 +43,9 @@ type ResolvedSaleCommission = {
 		percentage: number;
 		amount: number;
 		status: SaleCommissionInstallmentStatus;
-		expectedPaymentDate: Date;
+		expectedPaymentDate: Date | null;
 		paymentDate: Date | null;
+		monthsToAdvance: number;
 	}>;
 };
 
@@ -240,11 +242,41 @@ function resolveEffectiveCommissionsScaledPercentages(
 	);
 }
 
-function resolveCommissionInstallmentExpectedPaymentDate(
-	startDate: Date,
-	installmentNumber: number,
-) {
-	return addMonths(startDate, Math.max(0, installmentNumber - 1));
+function resolveCommissionInstallmentExpectedPaymentDates(params: {
+	startDate: Date;
+	useAdvancedDateSchedule: boolean;
+	installments: Array<{
+		installmentNumber: number;
+		monthsToAdvance: number;
+	}>;
+}) {
+	const { startDate, useAdvancedDateSchedule, installments } = params;
+	let lastInstallmentDateWithValue: Date | null = null;
+
+	return installments.map((installment, index) => {
+		if (!useAdvancedDateSchedule) {
+			const resolvedDate =
+				index === 0
+					? startDate
+					: addMonths(startDate, Math.max(0, installment.installmentNumber - 1));
+			lastInstallmentDateWithValue = resolvedDate;
+			return resolvedDate;
+		}
+
+		if (index === 0) {
+			lastInstallmentDateWithValue = startDate;
+			return startDate;
+		}
+
+		if (installment.monthsToAdvance === 0) {
+			return null;
+		}
+
+		const baseDate = lastInstallmentDateWithValue ?? startDate;
+		const resolvedDate = addMonths(baseDate, installment.monthsToAdvance);
+		lastInstallmentDateWithValue = resolvedDate;
+		return resolvedDate;
+	});
 }
 
 export function deriveSaleCommissionDirectionFromRecipientType(
@@ -437,6 +469,8 @@ export async function resolveSaleCommissionsData(
 			commission.totalPercentage,
 		);
 		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
+		const useAdvancedDateSchedule =
+			commission.useAdvancedDateSchedule ?? false;
 		const baseCommissionIndex =
 			calculationBase === "COMMISSION"
 				? commission.baseCommissionIndex
@@ -482,16 +516,21 @@ export async function resolveSaleCommissionsData(
 			beneficiaryLabel,
 			startDate,
 			totalPercentage: totalPercentageScaled,
+			useAdvancedDateSchedule,
 			sortOrder: index,
-			installments: commission.installments.map((installment) => ({
+			installments: commission.installments.map((installment, installmentIndex) => ({
 				installmentNumber: installment.installmentNumber,
 				percentage: toScaledPercentage(installment.percentage),
 				status: SaleCommissionInstallmentStatus.PENDING,
-				expectedPaymentDate: resolveCommissionInstallmentExpectedPaymentDate(
-					startDate,
-					installment.installmentNumber,
-				),
 				paymentDate: null,
+				expectedPaymentDate: null,
+				monthsToAdvance: useAdvancedDateSchedule
+					? installmentIndex === 0
+						? 0
+						: installment.monthsToAdvance ?? 1
+					: installmentIndex === 0
+						? 0
+						: 1,
 			})),
 		};
 	});
@@ -520,6 +559,14 @@ export async function resolveSaleCommissionsData(
 					effectivePercentages?.installmentsScaled ??
 					commission.installments.map((installment) => installment.percentage),
 			});
+			const expectedPaymentDates = resolveCommissionInstallmentExpectedPaymentDates({
+				startDate: commission.startDate,
+				useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
+				installments: commission.installments.map((installment) => ({
+					installmentNumber: installment.installmentNumber,
+					monthsToAdvance: installment.monthsToAdvance,
+				})),
+			});
 
 			return {
 				sourceType: commission.sourceType,
@@ -527,6 +574,7 @@ export async function resolveSaleCommissionsData(
 				direction: commission.direction,
 				calculationBase: commission.calculationBase,
 				baseCommissionIndex: commission.baseCommissionIndex,
+				useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 				beneficiaryCompanyId: commission.beneficiaryCompanyId,
 				beneficiaryUnitId: commission.beneficiaryUnitId,
 				beneficiarySellerId: commission.beneficiarySellerId,
@@ -542,8 +590,10 @@ export async function resolveSaleCommissionsData(
 						percentage: installment.percentage,
 						amount: installmentAmounts[installmentIndex] ?? 0,
 						status: installment.status,
-						expectedPaymentDate: installment.expectedPaymentDate,
+						expectedPaymentDate:
+							expectedPaymentDates[installmentIndex] ?? null,
 						paymentDate: installment.paymentDate,
+						monthsToAdvance: installment.monthsToAdvance,
 					}),
 				),
 			};
@@ -581,11 +631,13 @@ export async function replaceSaleCommissions(
 				startDate: commission.startDate,
 				totalPercentage: commission.totalPercentage,
 				sortOrder: commission.sortOrder,
+				useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 				installments: {
 					create: commission.installments.map((installment) => ({
 						installmentNumber: installment.installmentNumber,
 						percentage: installment.percentage,
 						amount: installment.amount,
+						monthsToAdvance: installment.monthsToAdvance,
 						status: installment.status,
 						expectedPaymentDate: installment.expectedPaymentDate,
 						paymentDate: installment.paymentDate,
@@ -893,7 +945,7 @@ export async function createReversalMovementsForPaidInstallmentsOnSaleReduction(
 		saleCommissionId: string;
 		installmentNumber: number;
 		percentage: number;
-		expectedPaymentDate: Date;
+		expectedPaymentDate: Date | null;
 		desiredReversalAmountAbsolute: number;
 	}> = [];
 
@@ -1220,6 +1272,7 @@ export async function loadSaleCommissions(
 			startDate: true,
 			totalPercentage: true,
 			sortOrder: true,
+			useAdvancedDateSchedule: true,
 			baseCommission: {
 				select: {
 					sortOrder: true,
@@ -1268,6 +1321,7 @@ export async function loadSaleCommissions(
 					status: true,
 					expectedPaymentDate: true,
 					paymentDate: true,
+					monthsToAdvance: true,
 				},
 				orderBy: {
 					installmentNumber: "asc",
@@ -1284,6 +1338,7 @@ export async function loadSaleCommissions(
 			status: installment.status,
 			expectedPaymentDate: installment.expectedPaymentDate,
 			paymentDate: installment.paymentDate,
+			monthsToAdvance: installment.monthsToAdvance,
 		}));
 
 		return {
@@ -1298,6 +1353,7 @@ export async function loadSaleCommissions(
 					: undefined,
 			beneficiaryId: resolveSaleCommissionBeneficiaryId(commission),
 			beneficiaryLabel: resolveSaleCommissionBeneficiaryLabel(commission),
+			useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 			startDate: commission.startDate,
 			totalPercentage: fromScaledPercentage(commission.totalPercentage),
 			totalAmount: installments.reduce(
@@ -2149,7 +2205,7 @@ export async function loadOrganizationCommissionInstallments({
 			where,
 			orderBy: [
 				{ status: "asc" },
-				{ expectedPaymentDate: "asc" },
+				{ expectedPaymentDate: { sort: "asc", nulls: "last" } },
 				{ createdAt: "desc" },
 			],
 			take,
@@ -2416,8 +2472,8 @@ export async function loadOrganizationCommissionInstallments({
 			}
 
 			const expectedDateDiff =
-				left.expectedPaymentDate.getTime() -
-				right.expectedPaymentDate.getTime();
+				(left.expectedPaymentDate?.getTime() ?? Number.POSITIVE_INFINITY) -
+				(right.expectedPaymentDate?.getTime() ?? Number.POSITIVE_INFINITY);
 			if (expectedDateDiff !== 0) {
 				return expectedDateDiff;
 			}

@@ -21,7 +21,7 @@ export type InstallmentEditState = {
 	percentage: string;
 	amount: string;
 	status: SaleCommissionInstallmentStatus;
-	expectedPaymentDate: string;
+	expectedPaymentDate: string | null;
 	paymentDate: string;
 	reversalDate: string;
 };

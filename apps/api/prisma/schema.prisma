@@ -1080,6 +1080,7 @@ model ProductCommission {
   description               String
   recipientType             ProductCommissionRecipientType   @map("recipient_type")
   calculationBase           ProductCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
+  useAdvancedDateSchedule   Boolean                          @default(false) @map("use_advanced_date_schedule")
   baseCommissionId          String?                          @map("base_commission_id")
   recipientCompanyId        String?                          @map("recipient_company_id")
   recipientUnitId           String?                          @map("recipient_unit_id")
@@ -1117,6 +1118,7 @@ model ProductCommissionInstallment {
   commissionId      String @map("commission_id")
   installmentNumber Int    @map("installment_number")
   percentage        Int
+  monthsToAdvance   Int    @default(1) @map("months_to_advance")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -1324,6 +1326,7 @@ model SaleCommission {
   recipientType           SaleCommissionRecipientType   @map("recipient_type")
   direction               SaleCommissionDirection       @map("direction")
   calculationBase         SaleCommissionCalculationBase @default(SALE_TOTAL) @map("calculation_base")
+  useAdvancedDateSchedule Boolean                       @default(false) @map("use_advanced_date_schedule")
   baseCommissionId        String?                       @map("base_commission_id")
   beneficiaryCompanyId    String?                       @map("beneficiary_company_id")
   beneficiaryUnitId       String?                       @map("beneficiary_unit_id")
@@ -1365,9 +1368,10 @@ model SaleCommissionInstallment {
   originInstallmentId     String?                          @map("origin_installment_id")
   installmentNumber       Int                              @map("installment_number")
   percentage              Int
+  monthsToAdvance         Int                              @default(1) @map("months_to_advance")
   amount                  Int
   status                  SaleCommissionInstallmentStatus  @default(PENDING)
-  expectedPaymentDate     DateTime                         @map("expected_payment_date") @db.Date
+  expectedPaymentDate     DateTime?                        @map("expected_payment_date") @db.Date
   paymentDate             DateTime?                        @map("payment_date") @db.Date
   reversedFromStatus      SaleCommissionInstallmentStatus? @map("reversed_from_status")
   reversedFromAmount      Int?                             @map("reversed_from_amount")

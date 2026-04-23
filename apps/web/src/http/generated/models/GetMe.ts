@@ -48,6 +48,10 @@ export type GetMe200 = {
      */
     id: string;
     /**
+     * @type string, uuid
+     */
+    memberId: string;
+    /**
      * @type string
      */
     name: string;

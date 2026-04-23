@@ -53,11 +53,13 @@ type SaleCommissionInput = {
 	baseCommissionIndex?: number;
 	beneficiaryId?: string;
 	beneficiaryLabel?: string;
+	useAdvancedDateSchedule?: boolean;
 	startDate: string;
 	totalPercentage: number;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
+		monthsToAdvance?: number;
 	}>;
 };
 
@@ -379,6 +381,38 @@ function buildThreeInstallmentsSellerCommissionsPayload(
 				{
 					installmentNumber: 3,
 					percentage: 0.33,
+				},
+			],
+		},
+	];
+}
+
+function buildAdvancedScheduleCommissionsPayload(
+	fixture: Awaited<ReturnType<typeof createFixture>>,
+): SaleCommissionInput[] {
+	return [
+		{
+			sourceType: "PULLED",
+			recipientType: "SELLER",
+			beneficiaryId: fixture.seller.id,
+			useAdvancedDateSchedule: true,
+			startDate: "2026-03-10",
+			totalPercentage: 1,
+			installments: [
+				{
+					installmentNumber: 1,
+					percentage: 0.34,
+					monthsToAdvance: 0,
+				},
+				{
+					installmentNumber: 2,
+					percentage: 0.33,
+					monthsToAdvance: 0,
+				},
+				{
+					installmentNumber: 3,
+					percentage: 0.33,
+					monthsToAdvance: 2,
 				},
 			],
 		},
@@ -3785,6 +3819,109 @@ describe("sales crud", () => {
 		expect(response.body.installments[1].expectedPaymentDate).toContain(
 			"2026-04-10",
 		);
+	});
+
+	it("should support commission installments without expected payment date and keep nulls last in organization list", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildAdvancedScheduleCommissionsPayload(fixture),
+			}),
+		);
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "APPROVED",
+			});
+
+		expect(approveResponse.statusCode).toBe(204);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/${saleId}/status`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				status: "COMPLETED",
+			});
+
+		expect(completeResponse.statusCode).toBe(204);
+
+		const saleInstallmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(saleInstallmentsResponse.statusCode).toBe(200);
+		expect(
+			saleInstallmentsResponse.body.installments.map(
+				(installment: { expectedPaymentDate: string | null }) =>
+					installment.expectedPaymentDate
+						? new Date(installment.expectedPaymentDate)
+								.toISOString()
+								.slice(0, 10)
+						: null,
+			),
+		).toEqual(["2026-03-10", null, "2026-05-10"]);
+
+		const organizationInstallmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?direction=OUTCOME&page=1&pageSize=20`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(organizationInstallmentsResponse.statusCode).toBe(200);
+		expect(
+			organizationInstallmentsResponse.body.items.map(
+				(item: { expectedPaymentDate: string | null }) =>
+					item.expectedPaymentDate
+						? new Date(item.expectedPaymentDate).toISOString().slice(0, 10)
+						: null,
+			),
+		).toEqual(["2026-03-10", "2026-05-10", null]);
+
+		const filteredResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/commissions/installments?direction=OUTCOME&expectedFrom=2026-05-01&expectedTo=2026-05-31&page=1&pageSize=20`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(filteredResponse.statusCode).toBe(200);
+		expect(filteredResponse.body.items).toHaveLength(1);
+		expect(filteredResponse.body.items[0].expectedPaymentDate).toContain(
+			"2026-05-10",
+		);
+
+		const undatedInstallment = saleInstallmentsResponse.body.installments[1] as {
+			id: string;
+		};
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${undatedInstallment.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				expectedPaymentDate: "2026-04-10",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const patchedInstallment =
+			await prisma.saleCommissionInstallment.findUniqueOrThrow({
+				where: {
+					id: undatedInstallment.id,
+				},
+				select: {
+					expectedPaymentDate: true,
+				},
+			});
+
+		expect(
+			patchedInstallment.expectedPaymentDate?.toISOString().slice(0, 10),
+		).toBe("2026-04-10");
 	});
 
 	it("should list organization commission installments with pagination and summary by direction", async () => {

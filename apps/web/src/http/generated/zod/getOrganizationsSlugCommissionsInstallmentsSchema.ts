@@ -80,7 +80,7 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
       percentage: z.number().min(0).max(100),
       amount: z.int().min(-9007199254740991).max(9007199254740991),
       status: z.enum(["PENDING", "PAID", "CANCELED", "REVERSED"]),
-      expectedPaymentDate: z.iso.datetime(),
+      expectedPaymentDate: z.nullable(z.iso.datetime()),
       paymentDate: z.nullable(z.iso.datetime()),
       bonusContext: z.nullable(
         z.object({

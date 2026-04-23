@@ -165,7 +165,6 @@ export type { PostPasswordResetMutationKey } from "./hooks/usePostPasswordReset.
 export type { PostSessionsGoogleCompleteMutationKey } from "./hooks/usePostSessionsGoogleComplete.ts";
 export type { PostSessionsPasswordMutationKey } from "./hooks/usePostSessionsPassword.ts";
 export type { PostSessionsRefreshMutationKey } from "./hooks/usePostSessionsRefresh.ts";
-export type { PostUsersMutationKey } from "./hooks/usePostUsers.ts";
 export type { PutOrganizationSlugMutationKey } from "./hooks/usePutOrganizationSlug.ts";
 export type { PutOrganizationsSlugCategoriesIdMutationKey } from "./hooks/usePutOrganizationsSlugCategoriesId.ts";
 export type { PutOrganizationsSlugCommissionsReceiptsImportTemplatesTemplateidMutationKey } from "./hooks/usePutOrganizationsSlugCommissionsReceiptsImportTemplatesTemplateid.ts";
@@ -1169,13 +1168,6 @@ export type {
   PostSessionsRefreshMutation,
 } from "./models/PostSessionsRefresh.ts";
 export type {
-  PostUsers201,
-  PostUsers400,
-  PostUsersMutationRequest,
-  PostUsersMutationResponse,
-  PostUsersMutation,
-} from "./models/PostUsers.ts";
-export type {
   PutOrganizationSlugPathParams,
   PutOrganizationSlug204EnumKey,
   PutOrganizationSlug204,
@@ -1962,9 +1954,6 @@ export { usePostSessionsPassword } from "./hooks/usePostSessionsPassword.ts";
 export { postSessionsRefreshMutationKey } from "./hooks/usePostSessionsRefresh.ts";
 export { postSessionsRefreshMutationOptions } from "./hooks/usePostSessionsRefresh.ts";
 export { usePostSessionsRefresh } from "./hooks/usePostSessionsRefresh.ts";
-export { postUsersMutationKey } from "./hooks/usePostUsers.ts";
-export { postUsersMutationOptions } from "./hooks/usePostUsers.ts";
-export { usePostUsers } from "./hooks/usePostUsers.ts";
 export { putOrganizationSlugMutationKey } from "./hooks/usePutOrganizationSlug.ts";
 export { putOrganizationSlugMutationOptions } from "./hooks/usePutOrganizationSlug.ts";
 export { usePutOrganizationSlug } from "./hooks/usePutOrganizationSlug.ts";
@@ -2352,7 +2341,6 @@ export { postPasswordReset } from "./postPasswordReset.ts";
 export { postSessionsGoogleComplete } from "./postSessionsGoogleComplete.ts";
 export { postSessionsPassword } from "./postSessionsPassword.ts";
 export { postSessionsRefresh } from "./postSessionsRefresh.ts";
-export { postUsers } from "./postUsers.ts";
 export { putOrganizationSlug } from "./putOrganizationSlug.ts";
 export { putOrganizationsSlugCategoriesId } from "./putOrganizationsSlugCategoriesId.ts";
 export { putOrganizationsSlugCommissionsReceiptsImportTemplatesTemplateid } from "./putOrganizationsSlugCommissionsReceiptsImportTemplatesTemplateid.ts";
@@ -3029,12 +3017,6 @@ export {
   postSessionsRefreshMutationRequestSchema,
   postSessionsRefreshMutationResponseSchema,
 } from "./zod/postSessionsRefreshSchema.ts";
-export {
-  postUsers201Schema,
-  postUsers400Schema,
-  postUsersMutationRequestSchema,
-  postUsersMutationResponseSchema,
-} from "./zod/postUsersSchema.ts";
 export {
   putOrganizationSlugPathParamsSchema,
   putOrganizationSlug204Schema,

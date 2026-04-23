@@ -29,6 +29,7 @@ export type AggregateSaleCommissionInstallment = {
 export type SaleCommissionInstallmentAvgAggregateOutputType = {
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   amount: number | null
   reversedFromAmount: number | null
 }
@@ -36,6 +37,7 @@ export type SaleCommissionInstallmentAvgAggregateOutputType = {
 export type SaleCommissionInstallmentSumAggregateOutputType = {
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   amount: number | null
   reversedFromAmount: number | null
 }
@@ -46,6 +48,7 @@ export type SaleCommissionInstallmentMinAggregateOutputType = {
   originInstallmentId: string | null
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   amount: number | null
   status: $Enums.SaleCommissionInstallmentStatus | null
   expectedPaymentDate: Date | null
@@ -62,6 +65,7 @@ export type SaleCommissionInstallmentMaxAggregateOutputType = {
   originInstallmentId: string | null
   installmentNumber: number | null
   percentage: number | null
+  monthsToAdvance: number | null
   amount: number | null
   status: $Enums.SaleCommissionInstallmentStatus | null
   expectedPaymentDate: Date | null
@@ -78,6 +82,7 @@ export type SaleCommissionInstallmentCountAggregateOutputType = {
   originInstallmentId: number
   installmentNumber: number
   percentage: number
+  monthsToAdvance: number
   amount: number
   status: number
   expectedPaymentDate: number
@@ -93,6 +98,7 @@ export type SaleCommissionInstallmentCountAggregateOutputType = {
 export type SaleCommissionInstallmentAvgAggregateInputType = {
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   amount?: true
   reversedFromAmount?: true
 }
@@ -100,6 +106,7 @@ export type SaleCommissionInstallmentAvgAggregateInputType = {
 export type SaleCommissionInstallmentSumAggregateInputType = {
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   amount?: true
   reversedFromAmount?: true
 }
@@ -110,6 +117,7 @@ export type SaleCommissionInstallmentMinAggregateInputType = {
   originInstallmentId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   amount?: true
   status?: true
   expectedPaymentDate?: true
@@ -126,6 +134,7 @@ export type SaleCommissionInstallmentMaxAggregateInputType = {
   originInstallmentId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   amount?: true
   status?: true
   expectedPaymentDate?: true
@@ -142,6 +151,7 @@ export type SaleCommissionInstallmentCountAggregateInputType = {
   originInstallmentId?: true
   installmentNumber?: true
   percentage?: true
+  monthsToAdvance?: true
   amount?: true
   status?: true
   expectedPaymentDate?: true
@@ -245,9 +255,10 @@ export type SaleCommissionInstallmentGroupByOutputType = {
   originInstallmentId: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance: number
   amount: number
   status: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date
+  expectedPaymentDate: Date | null
   paymentDate: Date | null
   reversedFromStatus: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount: number | null
@@ -284,9 +295,10 @@ export type SaleCommissionInstallmentWhereInput = {
   originInstallmentId?: Prisma.StringNullableFilter<"SaleCommissionInstallment"> | string | null
   installmentNumber?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   amount?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFilter<"SaleCommissionInstallment"> | Date | string
+  expectedPaymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   paymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   reversedFromStatus?: Prisma.EnumSaleCommissionInstallmentStatusNullableFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.IntNullableFilter<"SaleCommissionInstallment"> | number | null
@@ -303,9 +315,10 @@ export type SaleCommissionInstallmentOrderByWithRelationInput = {
   originInstallmentId?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  expectedPaymentDate?: Prisma.SortOrder
+  expectedPaymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   reversedFromStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   reversedFromAmount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -325,9 +338,10 @@ export type SaleCommissionInstallmentWhereUniqueInput = Prisma.AtLeast<{
   originInstallmentId?: Prisma.StringNullableFilter<"SaleCommissionInstallment"> | string | null
   installmentNumber?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   amount?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFilter<"SaleCommissionInstallment"> | Date | string
+  expectedPaymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   paymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   reversedFromStatus?: Prisma.EnumSaleCommissionInstallmentStatusNullableFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.IntNullableFilter<"SaleCommissionInstallment"> | number | null
@@ -344,9 +358,10 @@ export type SaleCommissionInstallmentOrderByWithAggregationInput = {
   originInstallmentId?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  expectedPaymentDate?: Prisma.SortOrder
+  expectedPaymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   reversedFromStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   reversedFromAmount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -368,9 +383,10 @@ export type SaleCommissionInstallmentScalarWhereWithAggregatesInput = {
   originInstallmentId?: Prisma.StringNullableWithAggregatesFilter<"SaleCommissionInstallment"> | string | null
   installmentNumber?: Prisma.IntWithAggregatesFilter<"SaleCommissionInstallment"> | number
   percentage?: Prisma.IntWithAggregatesFilter<"SaleCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntWithAggregatesFilter<"SaleCommissionInstallment"> | number
   amount?: Prisma.IntWithAggregatesFilter<"SaleCommissionInstallment"> | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusWithAggregatesFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeWithAggregatesFilter<"SaleCommissionInstallment"> | Date | string
+  expectedPaymentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"SaleCommissionInstallment"> | Date | string | null
   paymentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"SaleCommissionInstallment"> | Date | string | null
   reversedFromStatus?: Prisma.EnumSaleCommissionInstallmentStatusNullableWithAggregatesFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.IntNullableWithAggregatesFilter<"SaleCommissionInstallment"> | number | null
@@ -382,9 +398,10 @@ export type SaleCommissionInstallmentCreateInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -401,9 +418,10 @@ export type SaleCommissionInstallmentUncheckedCreateInput = {
   originInstallmentId?: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -416,9 +434,10 @@ export type SaleCommissionInstallmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -435,9 +454,10 @@ export type SaleCommissionInstallmentUncheckedUpdateInput = {
   originInstallmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -452,9 +472,10 @@ export type SaleCommissionInstallmentCreateManyInput = {
   originInstallmentId?: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -466,9 +487,10 @@ export type SaleCommissionInstallmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -482,9 +504,10 @@ export type SaleCommissionInstallmentUncheckedUpdateManyInput = {
   originInstallmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -513,6 +536,7 @@ export type SaleCommissionInstallmentCountOrderByAggregateInput = {
   originInstallmentId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   expectedPaymentDate?: Prisma.SortOrder
@@ -526,6 +550,7 @@ export type SaleCommissionInstallmentCountOrderByAggregateInput = {
 export type SaleCommissionInstallmentAvgOrderByAggregateInput = {
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   reversedFromAmount?: Prisma.SortOrder
 }
@@ -536,6 +561,7 @@ export type SaleCommissionInstallmentMaxOrderByAggregateInput = {
   originInstallmentId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   expectedPaymentDate?: Prisma.SortOrder
@@ -552,6 +578,7 @@ export type SaleCommissionInstallmentMinOrderByAggregateInput = {
   originInstallmentId?: Prisma.SortOrder
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   expectedPaymentDate?: Prisma.SortOrder
@@ -565,6 +592,7 @@ export type SaleCommissionInstallmentMinOrderByAggregateInput = {
 export type SaleCommissionInstallmentSumOrderByAggregateInput = {
   installmentNumber?: Prisma.SortOrder
   percentage?: Prisma.SortOrder
+  monthsToAdvance?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   reversedFromAmount?: Prisma.SortOrder
 }
@@ -677,9 +705,10 @@ export type SaleCommissionInstallmentCreateWithoutSaleCommissionInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -694,9 +723,10 @@ export type SaleCommissionInstallmentUncheckedCreateWithoutSaleCommissionInput =
   originInstallmentId?: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -740,9 +770,10 @@ export type SaleCommissionInstallmentScalarWhereInput = {
   originInstallmentId?: Prisma.StringNullableFilter<"SaleCommissionInstallment"> | string | null
   installmentNumber?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   percentage?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
+  monthsToAdvance?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   amount?: Prisma.IntFilter<"SaleCommissionInstallment"> | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFilter<"SaleCommissionInstallment"> | Date | string
+  expectedPaymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   paymentDate?: Prisma.DateTimeNullableFilter<"SaleCommissionInstallment"> | Date | string | null
   reversedFromStatus?: Prisma.EnumSaleCommissionInstallmentStatusNullableFilter<"SaleCommissionInstallment"> | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.IntNullableFilter<"SaleCommissionInstallment"> | number | null
@@ -754,9 +785,10 @@ export type SaleCommissionInstallmentCreateWithoutReversalInstallmentsInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -772,9 +804,10 @@ export type SaleCommissionInstallmentUncheckedCreateWithoutReversalInstallmentsI
   originInstallmentId?: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -791,9 +824,10 @@ export type SaleCommissionInstallmentCreateWithoutOriginInstallmentInput = {
   id?: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -808,9 +842,10 @@ export type SaleCommissionInstallmentUncheckedCreateWithoutOriginInstallmentInpu
   saleCommissionId: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -844,9 +879,10 @@ export type SaleCommissionInstallmentUpdateWithoutReversalInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -862,9 +898,10 @@ export type SaleCommissionInstallmentUncheckedUpdateWithoutReversalInstallmentsI
   originInstallmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -893,9 +930,10 @@ export type SaleCommissionInstallmentCreateManySaleCommissionInput = {
   originInstallmentId?: string | null
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -907,9 +945,10 @@ export type SaleCommissionInstallmentUpdateWithoutSaleCommissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -924,9 +963,10 @@ export type SaleCommissionInstallmentUncheckedUpdateWithoutSaleCommissionInput =
   originInstallmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -940,9 +980,10 @@ export type SaleCommissionInstallmentUncheckedUpdateManyWithoutSaleCommissionInp
   originInstallmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -955,9 +996,10 @@ export type SaleCommissionInstallmentCreateManyOriginInstallmentInput = {
   saleCommissionId: string
   installmentNumber: number
   percentage: number
+  monthsToAdvance?: number
   amount: number
   status?: $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate: Date | string
+  expectedPaymentDate?: Date | string | null
   paymentDate?: Date | string | null
   reversedFromStatus?: $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: number | null
@@ -969,9 +1011,10 @@ export type SaleCommissionInstallmentUpdateWithoutOriginInstallmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -986,9 +1029,10 @@ export type SaleCommissionInstallmentUncheckedUpdateWithoutOriginInstallmentInpu
   saleCommissionId?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1002,9 +1046,10 @@ export type SaleCommissionInstallmentUncheckedUpdateManyWithoutOriginInstallment
   saleCommissionId?: Prisma.StringFieldUpdateOperationsInput | string
   installmentNumber?: Prisma.IntFieldUpdateOperationsInput | number
   percentage?: Prisma.IntFieldUpdateOperationsInput | number
+  monthsToAdvance?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus
-  expectedPaymentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedPaymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reversedFromStatus?: Prisma.NullableEnumSaleCommissionInstallmentStatusFieldUpdateOperationsInput | $Enums.SaleCommissionInstallmentStatus | null
   reversedFromAmount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1049,6 +1094,7 @@ export type SaleCommissionInstallmentSelect<ExtArgs extends runtime.Types.Extens
   originInstallmentId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   amount?: boolean
   status?: boolean
   expectedPaymentDate?: boolean
@@ -1069,6 +1115,7 @@ export type SaleCommissionInstallmentSelectCreateManyAndReturn<ExtArgs extends r
   originInstallmentId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   amount?: boolean
   status?: boolean
   expectedPaymentDate?: boolean
@@ -1087,6 +1134,7 @@ export type SaleCommissionInstallmentSelectUpdateManyAndReturn<ExtArgs extends r
   originInstallmentId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   amount?: boolean
   status?: boolean
   expectedPaymentDate?: boolean
@@ -1105,6 +1153,7 @@ export type SaleCommissionInstallmentSelectScalar = {
   originInstallmentId?: boolean
   installmentNumber?: boolean
   percentage?: boolean
+  monthsToAdvance?: boolean
   amount?: boolean
   status?: boolean
   expectedPaymentDate?: boolean
@@ -1115,7 +1164,7 @@ export type SaleCommissionInstallmentSelectScalar = {
   createdAt?: boolean
 }
 
-export type SaleCommissionInstallmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCommissionId" | "originInstallmentId" | "installmentNumber" | "percentage" | "amount" | "status" | "expectedPaymentDate" | "paymentDate" | "reversedFromStatus" | "reversedFromAmount" | "reversedFromPaymentDate" | "createdAt", ExtArgs["result"]["saleCommissionInstallment"]>
+export type SaleCommissionInstallmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCommissionId" | "originInstallmentId" | "installmentNumber" | "percentage" | "monthsToAdvance" | "amount" | "status" | "expectedPaymentDate" | "paymentDate" | "reversedFromStatus" | "reversedFromAmount" | "reversedFromPaymentDate" | "createdAt", ExtArgs["result"]["saleCommissionInstallment"]>
 export type SaleCommissionInstallmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   saleCommission?: boolean | Prisma.SaleCommissionDefaultArgs<ExtArgs>
   originInstallment?: boolean | Prisma.SaleCommissionInstallment$originInstallmentArgs<ExtArgs>
@@ -1144,9 +1193,10 @@ export type $SaleCommissionInstallmentPayload<ExtArgs extends runtime.Types.Exte
     originInstallmentId: string | null
     installmentNumber: number
     percentage: number
+    monthsToAdvance: number
     amount: number
     status: $Enums.SaleCommissionInstallmentStatus
-    expectedPaymentDate: Date
+    expectedPaymentDate: Date | null
     paymentDate: Date | null
     reversedFromStatus: $Enums.SaleCommissionInstallmentStatus | null
     reversedFromAmount: number | null
@@ -1583,6 +1633,7 @@ export interface SaleCommissionInstallmentFieldRefs {
   readonly originInstallmentId: Prisma.FieldRef<"SaleCommissionInstallment", 'String'>
   readonly installmentNumber: Prisma.FieldRef<"SaleCommissionInstallment", 'Int'>
   readonly percentage: Prisma.FieldRef<"SaleCommissionInstallment", 'Int'>
+  readonly monthsToAdvance: Prisma.FieldRef<"SaleCommissionInstallment", 'Int'>
   readonly amount: Prisma.FieldRef<"SaleCommissionInstallment", 'Int'>
   readonly status: Prisma.FieldRef<"SaleCommissionInstallment", 'SaleCommissionInstallmentStatus'>
   readonly expectedPaymentDate: Prisma.FieldRef<"SaleCommissionInstallment", 'DateTime'>

@@ -44,9 +44,16 @@ export const CommissionConditionSchema = z.discriminatedUnion("type", [
 	}),
 ]);
 
+export const CommissionInstallmentInputSchema = z.object({
+	installmentNumber: z.number().int().min(1),
+	percentage: PercentageSchema,
+	monthsToAdvance: z.number().int().min(0).optional(),
+});
+
 export const CommissionInstallmentSchema = z.object({
 	installmentNumber: z.number().int().min(1),
 	percentage: PercentageSchema,
+	monthsToAdvance: z.number().int().min(0),
 });
 
 export const CommissionRecipientTypeSchema = z.enum([
@@ -63,16 +70,17 @@ export const ProductCommissionCalculationBaseSchema = z.enum([
 	"COMMISSION",
 ]);
 
-export const ProductCommissionSchema = z
+export const ProductCommissionInputSchema = z
 	.object({
 		recipientType: CommissionRecipientTypeSchema,
 		beneficiaryId: z.uuid().optional(),
 		beneficiaryLabel: z.string().trim().optional(),
 		calculationBase: ProductCommissionCalculationBaseSchema.optional(),
 		baseCommissionIndex: z.number().int().min(0).optional(),
+		useAdvancedDateSchedule: z.boolean().optional(),
 		totalPercentage: TotalPercentageSchema,
 		dueDay: z.number().int().min(1).max(31).optional(),
-		installments: z.array(CommissionInstallmentSchema).min(1),
+		installments: z.array(CommissionInstallmentInputSchema).min(1),
 	})
 	.superRefine((commission, ctx) => {
 		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
@@ -125,6 +133,19 @@ export const ProductCommissionSchema = z
 				});
 			}
 			installmentNumbers.add(installment.installmentNumber);
+
+			const useAdvancedDateSchedule =
+				commission.useAdvancedDateSchedule ?? false;
+			const resolvedMonthsToAdvance =
+				index === 0 ? (installment.monthsToAdvance ?? 0) : installment.monthsToAdvance;
+
+			if (useAdvancedDateSchedule && index === 0 && resolvedMonthsToAdvance !== 0) {
+				ctx.addIssue({
+					code: "custom",
+					message: "First installment must use monthsToAdvance = 0",
+					path: ["installments", index, "monthsToAdvance"],
+				});
+			}
 		}
 
 		const expectedTotal = toScaledPercentage(commission.totalPercentage);
@@ -145,6 +166,24 @@ export const ProductCommissionSchema = z
 		}
 	});
 
+export const ProductCommissionSchema = z.object({
+	recipientType: CommissionRecipientTypeSchema,
+	beneficiaryId: z.uuid().optional(),
+	beneficiaryLabel: z.string().trim().optional(),
+	calculationBase: ProductCommissionCalculationBaseSchema.optional(),
+	baseCommissionIndex: z.number().int().min(0).optional(),
+	useAdvancedDateSchedule: z.boolean(),
+	totalPercentage: TotalPercentageSchema,
+	dueDay: z.number().int().min(1).max(31).optional(),
+	installments: z.array(CommissionInstallmentSchema).min(1),
+});
+
+export const ProductCommissionScenarioInputSchema = z.object({
+	name: z.string().trim().min(1),
+	conditions: z.array(CommissionConditionSchema),
+	commissions: z.array(ProductCommissionInputSchema).min(1),
+});
+
 export const ProductCommissionScenarioSchema = z.object({
 	name: z.string().trim().min(1),
 	conditions: z.array(CommissionConditionSchema),
@@ -153,7 +192,7 @@ export const ProductCommissionScenarioSchema = z.object({
 
 export const ReplaceProductCommissionScenariosBodySchema = z
 	.object({
-		scenarios: z.array(ProductCommissionScenarioSchema),
+		scenarios: z.array(ProductCommissionScenarioInputSchema),
 	})
 	.superRefine((data, ctx) => {
 		for (const [index, scenario] of data.scenarios.entries()) {

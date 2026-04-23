@@ -880,6 +880,7 @@ export function SaleForm({
 							commission.recipientType === "OTHER"
 								? commission.beneficiaryLabel?.trim() || undefined
 								: undefined,
+						useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 						startDate: format(commission.startDate, "yyyy-MM-dd"),
 						totalPercentage: roundSaleCommissionPercentage(
 							commission.totalPercentage,
@@ -890,6 +891,12 @@ export function SaleForm({
 								percentage: roundSaleCommissionPercentage(
 									installment.percentage,
 								),
+								monthsToAdvance:
+									commission.useAdvancedDateSchedule
+										? installment.monthsToAdvance
+										: installmentIndex === 0
+											? 0
+											: 1,
 							}),
 						),
 					};

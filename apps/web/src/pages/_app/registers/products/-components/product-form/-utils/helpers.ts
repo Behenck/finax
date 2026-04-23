@@ -30,6 +30,7 @@ export function distributeInstallments(totalPercentage: number, count: number) {
 		return {
 			installmentNumber: index + 1,
 			percentage: scaled / PERCENTAGE_SCALE,
+			monthsToAdvance: index === 0 ? 0 : 1,
 		};
 	});
 }
@@ -41,6 +42,7 @@ export function createDefaultCommission(): ProductCommissionFormData {
 		beneficiaryLabel: undefined,
 		calculationBase: "SALE_TOTAL",
 		baseCommissionIndex: undefined,
+		useAdvancedDateSchedule: false,
 		totalPercentage: 1,
 		dueDay: undefined,
 		installments: distributeInstallments(1, 1),
@@ -99,6 +101,12 @@ export function mapApiScenarioToForm(
 								? commission.installments.map((installment, installmentIndex) => ({
 										installmentNumber: installmentIndex + 1,
 										percentage: roundPercentage(installment.percentage),
+										monthsToAdvance:
+											commission.useAdvancedDateSchedule
+												? installment.monthsToAdvance
+												: installmentIndex === 0
+													? 0
+													: 1,
 									}))
 								: distributeInstallments(commission.totalPercentage, 1);
 						const calculationBase: "SALE_TOTAL" | "COMMISSION" =
@@ -115,6 +123,8 @@ export function mapApiScenarioToForm(
 								calculationBase === "COMMISSION"
 									? commission.baseCommissionIndex
 									: undefined,
+							useAdvancedDateSchedule:
+								commission.useAdvancedDateSchedule ?? false,
 							totalPercentage: roundPercentage(commission.totalPercentage),
 							dueDay: commission.dueDay,
 							installments,
@@ -151,12 +161,19 @@ export function mapScenariosToPayload(scenarios: ProductFormData["scenarios"]) {
 					calculationBase === "COMMISSION"
 						? commission.baseCommissionIndex
 						: undefined,
+				useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 				totalPercentage: roundPercentage(commission.totalPercentage),
 				dueDay: commission.dueDay,
 				installments: commission.installments.map(
 					(installment, installmentIndex) => ({
 						installmentNumber: installmentIndex + 1,
 						percentage: roundPercentage(installment.percentage),
+						monthsToAdvance:
+							commission.useAdvancedDateSchedule
+								? installment.monthsToAdvance
+								: installmentIndex === 0
+									? 0
+									: 1,
 					}),
 				),
 			};

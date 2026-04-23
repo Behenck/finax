@@ -91,9 +91,11 @@ function mapCommission(commission: {
 	description: string;
 	totalPercentage: number;
 	dueDay: number | null;
+	useAdvancedDateSchedule: boolean;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
+		monthsToAdvance: number;
 	}>;
 }) {
 	let recipientType:
@@ -172,9 +174,11 @@ function mapCommission(commission: {
 			: undefined,
 		totalPercentage: fromScaledPercentage(commission.totalPercentage),
 		dueDay: commission.dueDay ?? undefined,
+		useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
 		installments: commission.installments.map((installment) => ({
 			installmentNumber: installment.installmentNumber,
 			percentage: fromScaledPercentage(installment.percentage),
+			monthsToAdvance: installment.monthsToAdvance,
 		})),
 	};
 }
@@ -258,10 +262,12 @@ export async function getProductCommissionScenarios(app: FastifyInstance) {
 									description: true,
 									totalPercentage: true,
 									dueDay: true,
+									useAdvancedDateSchedule: true,
 									installments: {
 										select: {
 											installmentNumber: true,
 											percentage: true,
+											monthsToAdvance: true,
 										},
 										orderBy: {
 											installmentNumber: "asc",

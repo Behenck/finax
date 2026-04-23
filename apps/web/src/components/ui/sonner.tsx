@@ -23,7 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 				classNames: {
 					toast: cn(
 						"finax-toast",
-						"border border-border/70 bg-popover/95 text-popover-foreground shadow-xl backdrop-blur-md",
+						"border border-border/70 bg-background text-foreground shadow-sm",
 					),
 					title: "finax-toast-title",
 					description: "finax-toast-description",
@@ -49,21 +49,21 @@ const Toaster = ({ ...props }: ToasterProps) => {
 			}}
 			style={
 				{
-					"--normal-bg": "hsl(var(--popover) / 0.96)",
-					"--normal-text": "var(--popover-foreground)",
-					"--normal-border": "hsl(var(--border) / 0.8)",
+					"--normal-bg": "hsl(var(--background))",
+					"--normal-text": "hsl(var(--foreground))",
+					"--normal-border": "hsl(var(--border) / 0.72)",
 					"--border-radius": "var(--radius)",
-					"--success-bg": "hsl(var(--success) / 0.14)",
-					"--success-border": "hsl(var(--success) / 0.32)",
+					"--success-bg": "hsl(var(--background))",
+					"--success-border": "hsl(var(--success) / 0.24)",
 					"--success-text": "hsl(var(--foreground))",
-					"--info-bg": "hsl(204 100% 96%)",
-					"--info-border": "hsl(204 88% 82%)",
+					"--info-bg": "hsl(var(--background))",
+					"--info-border": "hsl(204 82% 72%)",
 					"--info-text": "hsl(var(--foreground))",
-					"--warning-bg": "hsl(var(--warning) / 0.16)",
-					"--warning-border": "hsl(var(--warning) / 0.34)",
+					"--warning-bg": "hsl(var(--background))",
+					"--warning-border": "hsl(var(--warning) / 0.26)",
 					"--warning-text": "hsl(var(--foreground))",
-					"--error-bg": "hsl(var(--destructive) / 0.12)",
-					"--error-border": "hsl(var(--destructive) / 0.3)",
+					"--error-bg": "hsl(var(--background))",
+					"--error-border": "hsl(var(--destructive) / 0.24)",
 					"--error-text": "hsl(var(--foreground))",
 				} as React.CSSProperties
 			}

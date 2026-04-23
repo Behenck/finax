@@ -359,6 +359,7 @@ export function distributeSaleCommissionInstallments(
 		return {
 			installmentNumber: index + 1,
 			percentage: scaled / COMMISSION_PERCENTAGE_SCALE,
+			monthsToAdvance: index === 0 ? 0 : 1,
 		};
 	});
 }
@@ -432,6 +433,7 @@ export function createDefaultManualSaleCommission(
 		baseCommissionIndex: undefined,
 		beneficiaryId: undefined,
 		beneficiaryLabel: undefined,
+		useAdvancedDateSchedule: false,
 		startDate: normalizeDateOnly(startDate),
 		totalPercentage: 1,
 		installments: distributeSaleCommissionInstallments(1, 1),
@@ -446,11 +448,13 @@ type CommissionFormLike = {
 	baseCommissionIndex?: number;
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
+	useAdvancedDateSchedule?: boolean;
 	startDate?: Date | string | null;
 	totalPercentage: number;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
+		monthsToAdvance?: number;
 	}>;
 };
 
@@ -466,6 +470,12 @@ export function mapSaleCommissionToForm(
 			? sortedInstallments.map((installment, installmentIndex) => ({
 					installmentNumber: installmentIndex + 1,
 					percentage: roundSaleCommissionPercentage(installment.percentage),
+					monthsToAdvance:
+						commission.useAdvancedDateSchedule
+							? installment.monthsToAdvance ?? (installmentIndex === 0 ? 0 : 1)
+							: installmentIndex === 0
+								? 0
+								: 1,
 				}))
 			: distributeSaleCommissionInstallments(commission.totalPercentage, 1);
 	const calculationBase =
@@ -486,6 +496,7 @@ export function mapSaleCommissionToForm(
 		baseCommissionIndex,
 		beneficiaryId: commission.beneficiaryId ?? undefined,
 		beneficiaryLabel: commission.beneficiaryLabel?.trim() || undefined,
+		useAdvancedDateSchedule: commission.useAdvancedDateSchedule ?? false,
 		startDate: normalizeDateOnly(commission.startDate ?? fallbackStartDate),
 		totalPercentage: roundSaleCommissionPercentage(commission.totalPercentage),
 		installments,
@@ -565,6 +576,7 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 					: undefined,
 			beneficiaryId: resolvedBeneficiaryId,
 			beneficiaryLabel: commission.beneficiaryLabel,
+			useAdvancedDateSchedule: commission.useAdvancedDateSchedule ?? false,
 			startDate: commission.dueDay
 				? resolveSaleCommissionStartDateFromDueDay(startDate, commission.dueDay)
 				: startDate,
@@ -572,6 +584,7 @@ export function mapScenarioCommissionsToPulledSaleCommissions(
 			installments: commission.installments.map((installment) => ({
 				installmentNumber: installment.installmentNumber,
 				percentage: installment.percentage,
+				monthsToAdvance: installment.monthsToAdvance,
 			})),
 		});
 	});

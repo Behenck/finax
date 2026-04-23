@@ -156,6 +156,10 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
        */
       baseCommissionIndex?: number;
       /**
+       * @type boolean | undefined
+       */
+      useAdvancedDateSchedule?: boolean;
+      /**
        * @maxLength 100
        * @type number
        */
@@ -182,6 +186,12 @@ export type PutOrganizationsSlugProductsIdCommissionScenariosMutationRequest = {
          * @type number
          */
         percentage: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer | undefined
+         */
+        monthsToAdvance?: number;
       }[];
     }[];
   }[];

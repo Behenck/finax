@@ -496,6 +496,8 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 								] of scenario.commissions.entries()) {
 									const beneficiaryId = commission.beneficiaryId;
 									const recipientType = commission.recipientType;
+									const useAdvancedDateSchedule =
+										commission.useAdvancedDateSchedule ?? false;
 
 									const recipientCompanyId =
 										recipientType === "COMPANY" ? beneficiaryId : null;
@@ -540,6 +542,7 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 											recipientType:
 												recipientType as ProductCommissionRecipientType,
 											calculationBase,
+											useAdvancedDateSchedule,
 											baseCommissionId: null,
 											recipientCompanyId,
 											recipientUnitId,
@@ -564,11 +567,22 @@ export async function replaceProductCommissionScenarios(app: FastifyInstance) {
 										createdCommission.id;
 
 									await tx.productCommissionInstallment.createMany({
-										data: commission.installments.map((installment) => ({
-											commissionId: createdCommission.id,
-											installmentNumber: installment.installmentNumber,
-											percentage: toScaledPercentage(installment.percentage),
-										})),
+										data: commission.installments.map(
+											(installment, installmentIndex) => ({
+												commissionId: createdCommission.id,
+												installmentNumber: installment.installmentNumber,
+												percentage: toScaledPercentage(
+													installment.percentage,
+												),
+												monthsToAdvance: useAdvancedDateSchedule
+													? installmentIndex === 0
+														? 0
+														: installment.monthsToAdvance ?? 1
+													: installmentIndex === 0
+														? 0
+														: 1,
+											}),
+										),
 									});
 								}
 

@@ -155,6 +155,10 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
      */
     beneficiaryLabel?: string;
     /**
+     * @type boolean | undefined
+     */
+    useAdvancedDateSchedule?: boolean;
+    /**
      * @pattern ^\d{4}-\d{2}-\d{2}$
      * @type string
      */
@@ -180,6 +184,12 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
        * @type number
        */
       percentage: number;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer | undefined
+       */
+      monthsToAdvance?: number;
     }[];
   }[];
   /**

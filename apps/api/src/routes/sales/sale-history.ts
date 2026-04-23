@@ -62,7 +62,7 @@ export type SaleHistorySnapshot = {
 			percentage: number;
 			amount: number;
 			status: SaleCommissionInstallmentStatus;
-			expectedPaymentDate: string;
+			expectedPaymentDate: string | null;
 			paymentDate: string | null;
 		}>;
 	}>;
@@ -285,7 +285,9 @@ export async function loadSaleHistorySnapshot(
 				percentage: fromScaledPercentage(installment.percentage),
 				amount: installment.amount,
 				status: installment.status,
-				expectedPaymentDate: toDateOnlyIso(installment.expectedPaymentDate),
+				expectedPaymentDate: toNullableDateOnlyIso(
+					installment.expectedPaymentDate,
+				),
 				paymentDate: toNullableDateOnlyIso(installment.paymentDate),
 			})),
 		})),

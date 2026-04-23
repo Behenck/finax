@@ -102,6 +102,7 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
         baseCommissionIndex: z.optional(z.int().min(0).max(9007199254740991)),
         beneficiaryId: z.nullable(z.uuid()),
         beneficiaryLabel: z.nullable(z.string()),
+        useAdvancedDateSchedule: z.boolean(),
         startDate: z.iso.datetime(),
         totalPercentage: z.number().max(100).gt(0),
         totalAmount: z.int().min(-9007199254740991).max(9007199254740991),
@@ -113,8 +114,9 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
               percentage: z.number().min(0).max(100),
               amount: z.int().min(-9007199254740991).max(9007199254740991),
               status: z.enum(["PENDING", "PAID", "CANCELED", "REVERSED"]),
-              expectedPaymentDate: z.iso.datetime(),
+              expectedPaymentDate: z.nullable(z.iso.datetime()),
               paymentDate: z.nullable(z.iso.datetime()),
+              monthsToAdvance: z.int().min(0).max(9007199254740991),
             }),
           )
           .min(1),

@@ -23,10 +23,12 @@ export type SaleCommissionDetailLike = {
 	baseCommissionIndex?: number;
 	beneficiaryId?: string | null;
 	beneficiaryLabel?: string | null;
+	useAdvancedDateSchedule?: boolean;
 	startDate?: string | null;
 	totalPercentage: number;
 	installments: Array<{
 		installmentNumber: number;
 		percentage: number;
+		monthsToAdvance?: number;
 	}>;
 };

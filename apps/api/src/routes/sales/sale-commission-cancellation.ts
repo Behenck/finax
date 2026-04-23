@@ -37,7 +37,7 @@ export type CancelInstallmentTarget = {
 	percentage: number;
 	amount: number;
 	status: SaleCommissionInstallmentStatus;
-	expectedPaymentDate: Date;
+	expectedPaymentDate: Date | null;
 	paymentDate: Date | null;
 	productId: string;
 };
@@ -164,7 +164,7 @@ export async function applyInstallmentCancellationWithAutomaticReversal(params: 
 	reversalDate: string;
 	targetAmount?: number;
 	targetPercentage?: number;
-	targetExpectedPaymentDate?: Date;
+	targetExpectedPaymentDate?: Date | null;
 }) {
 	const {
 		tx,
