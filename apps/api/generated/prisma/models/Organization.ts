@@ -20,8 +20,18 @@ export type OrganizationModel = runtime.Types.Result.DefaultSelection<Prisma.$Or
 
 export type AggregateOrganization = {
   _count: OrganizationCountAggregateOutputType | null
+  _avg: OrganizationAvgAggregateOutputType | null
+  _sum: OrganizationSumAggregateOutputType | null
   _min: OrganizationMinAggregateOutputType | null
   _max: OrganizationMaxAggregateOutputType | null
+}
+
+export type OrganizationAvgAggregateOutputType = {
+  preCancellationDelinquencyThreshold: number | null
+}
+
+export type OrganizationSumAggregateOutputType = {
+  preCancellationDelinquencyThreshold: number | null
 }
 
 export type OrganizationMinAggregateOutputType = {
@@ -31,6 +41,7 @@ export type OrganizationMinAggregateOutputType = {
   domain: string | null
   shouldAttachUserByDomain: boolean | null
   enableSalesTransactionsSync: boolean | null
+  preCancellationDelinquencyThreshold: number | null
   avatarUrl: string | null
   ownerId: string | null
   createdAt: Date | null
@@ -44,6 +55,7 @@ export type OrganizationMaxAggregateOutputType = {
   domain: string | null
   shouldAttachUserByDomain: boolean | null
   enableSalesTransactionsSync: boolean | null
+  preCancellationDelinquencyThreshold: number | null
   avatarUrl: string | null
   ownerId: string | null
   createdAt: Date | null
@@ -57,6 +69,7 @@ export type OrganizationCountAggregateOutputType = {
   domain: number
   shouldAttachUserByDomain: number
   enableSalesTransactionsSync: number
+  preCancellationDelinquencyThreshold: number
   avatarUrl: number
   ownerId: number
   createdAt: number
@@ -65,6 +78,14 @@ export type OrganizationCountAggregateOutputType = {
 }
 
 
+export type OrganizationAvgAggregateInputType = {
+  preCancellationDelinquencyThreshold?: true
+}
+
+export type OrganizationSumAggregateInputType = {
+  preCancellationDelinquencyThreshold?: true
+}
+
 export type OrganizationMinAggregateInputType = {
   id?: true
   name?: true
@@ -72,6 +93,7 @@ export type OrganizationMinAggregateInputType = {
   domain?: true
   shouldAttachUserByDomain?: true
   enableSalesTransactionsSync?: true
+  preCancellationDelinquencyThreshold?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -85,6 +107,7 @@ export type OrganizationMaxAggregateInputType = {
   domain?: true
   shouldAttachUserByDomain?: true
   enableSalesTransactionsSync?: true
+  preCancellationDelinquencyThreshold?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -98,6 +121,7 @@ export type OrganizationCountAggregateInputType = {
   domain?: true
   shouldAttachUserByDomain?: true
   enableSalesTransactionsSync?: true
+  preCancellationDelinquencyThreshold?: true
   avatarUrl?: true
   ownerId?: true
   createdAt?: true
@@ -143,6 +167,18 @@ export type OrganizationAggregateArgs<ExtArgs extends runtime.Types.Extensions.I
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: OrganizationAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: OrganizationSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: OrganizationMinAggregateInputType
@@ -173,6 +209,8 @@ export type OrganizationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   _count?: OrganizationCountAggregateInputType | true
+  _avg?: OrganizationAvgAggregateInputType
+  _sum?: OrganizationSumAggregateInputType
   _min?: OrganizationMinAggregateInputType
   _max?: OrganizationMaxAggregateInputType
 }
@@ -184,11 +222,14 @@ export type OrganizationGroupByOutputType = {
   domain: string | null
   shouldAttachUserByDomain: boolean
   enableSalesTransactionsSync: boolean
+  preCancellationDelinquencyThreshold: number | null
   avatarUrl: string | null
   ownerId: string
   createdAt: Date
   updatedAt: Date
   _count: OrganizationCountAggregateOutputType | null
+  _avg: OrganizationAvgAggregateOutputType | null
+  _sum: OrganizationSumAggregateOutputType | null
   _min: OrganizationMinAggregateOutputType | null
   _max: OrganizationMaxAggregateOutputType | null
 }
@@ -218,6 +259,7 @@ export type OrganizationWhereInput = {
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
   enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
+  preCancellationDelinquencyThreshold?: Prisma.IntNullableFilter<"Organization"> | number | null
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -256,6 +298,7 @@ export type OrganizationOrderByWithRelationInput = {
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
   enableSalesTransactionsSync?: Prisma.SortOrder
+  preCancellationDelinquencyThreshold?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -297,6 +340,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Organization"> | string
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
   enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
+  preCancellationDelinquencyThreshold?: Prisma.IntNullableFilter<"Organization"> | number | null
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -335,13 +379,16 @@ export type OrganizationOrderByWithAggregationInput = {
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
   enableSalesTransactionsSync?: Prisma.SortOrder
+  preCancellationDelinquencyThreshold?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
+  _avg?: Prisma.OrganizationAvgOrderByAggregateInput
   _max?: Prisma.OrganizationMaxOrderByAggregateInput
   _min?: Prisma.OrganizationMinOrderByAggregateInput
+  _sum?: Prisma.OrganizationSumOrderByAggregateInput
 }
 
 export type OrganizationScalarWhereWithAggregatesInput = {
@@ -354,6 +401,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   domain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
   enableSalesTransactionsSync?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
+  preCancellationDelinquencyThreshold?: Prisma.IntNullableWithAggregatesFilter<"Organization"> | number | null
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   ownerId?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
@@ -367,6 +415,7 @@ export type OrganizationCreateInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -404,6 +453,7 @@ export type OrganizationUncheckedCreateInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -441,6 +491,7 @@ export type OrganizationUpdateInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -478,6 +529,7 @@ export type OrganizationUncheckedUpdateInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -515,6 +567,7 @@ export type OrganizationCreateManyInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -528,6 +581,7 @@ export type OrganizationUpdateManyMutationInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -540,6 +594,7 @@ export type OrganizationUncheckedUpdateManyInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -568,10 +623,15 @@ export type OrganizationCountOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
   enableSalesTransactionsSync?: Prisma.SortOrder
+  preCancellationDelinquencyThreshold?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type OrganizationAvgOrderByAggregateInput = {
+  preCancellationDelinquencyThreshold?: Prisma.SortOrder
 }
 
 export type OrganizationMaxOrderByAggregateInput = {
@@ -581,6 +641,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
   enableSalesTransactionsSync?: Prisma.SortOrder
+  preCancellationDelinquencyThreshold?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -594,10 +655,15 @@ export type OrganizationMinOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   shouldAttachUserByDomain?: Prisma.SortOrder
   enableSalesTransactionsSync?: Prisma.SortOrder
+  preCancellationDelinquencyThreshold?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type OrganizationSumOrderByAggregateInput = {
+  preCancellationDelinquencyThreshold?: Prisma.SortOrder
 }
 
 export type OrganizationNullableScalarRelationFilter = {
@@ -687,6 +753,14 @@ export type OrganizationUpdateOneRequiredWithoutMemberCompanyAccessesNestedInput
   upsert?: Prisma.OrganizationUpsertWithoutMemberCompanyAccessesInput
   connect?: Prisma.OrganizationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMemberCompanyAccessesInput, Prisma.OrganizationUpdateWithoutMemberCompanyAccessesInput>, Prisma.OrganizationUncheckedUpdateWithoutMemberCompanyAccessesInput>
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type OrganizationCreateNestedOneWithoutRolePermissionsInput = {
@@ -992,6 +1066,7 @@ export type OrganizationCreateWithoutOwnerInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1028,6 +1103,7 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1093,6 +1169,7 @@ export type OrganizationScalarWhereInput = {
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   shouldAttachUserByDomain?: Prisma.BoolFilter<"Organization"> | boolean
   enableSalesTransactionsSync?: Prisma.BoolFilter<"Organization"> | boolean
+  preCancellationDelinquencyThreshold?: Prisma.IntNullableFilter<"Organization"> | number | null
   avatarUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   ownerId?: Prisma.StringFilter<"Organization"> | string
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -1106,6 +1183,7 @@ export type OrganizationCreateWithoutInvitesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1142,6 +1220,7 @@ export type OrganizationUncheckedCreateWithoutInvitesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1194,6 +1273,7 @@ export type OrganizationUpdateWithoutInvitesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1230,6 +1310,7 @@ export type OrganizationUncheckedUpdateWithoutInvitesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1266,6 +1347,7 @@ export type OrganizationCreateWithoutMembersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1302,6 +1384,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1354,6 +1437,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1390,6 +1474,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1426,6 +1511,7 @@ export type OrganizationCreateWithoutMemberCompanyAccessesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1462,6 +1548,7 @@ export type OrganizationUncheckedCreateWithoutMemberCompanyAccessesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1514,6 +1601,7 @@ export type OrganizationUpdateWithoutMemberCompanyAccessesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1550,6 +1638,7 @@ export type OrganizationUncheckedUpdateWithoutMemberCompanyAccessesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1586,6 +1675,7 @@ export type OrganizationCreateWithoutRolePermissionsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1622,6 +1712,7 @@ export type OrganizationUncheckedCreateWithoutRolePermissionsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1674,6 +1765,7 @@ export type OrganizationUpdateWithoutRolePermissionsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1710,6 +1802,7 @@ export type OrganizationUncheckedUpdateWithoutRolePermissionsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1746,6 +1839,7 @@ export type OrganizationCreateWithoutMemberPermissionOverridesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1782,6 +1876,7 @@ export type OrganizationUncheckedCreateWithoutMemberPermissionOverridesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1834,6 +1929,7 @@ export type OrganizationUpdateWithoutMemberPermissionOverridesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1870,6 +1966,7 @@ export type OrganizationUncheckedUpdateWithoutMemberPermissionOverridesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1906,6 +2003,7 @@ export type OrganizationCreateWithoutPermissionAuditLogsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1942,6 +2040,7 @@ export type OrganizationUncheckedCreateWithoutPermissionAuditLogsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -1994,6 +2093,7 @@ export type OrganizationUpdateWithoutPermissionAuditLogsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2030,6 +2130,7 @@ export type OrganizationUncheckedUpdateWithoutPermissionAuditLogsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2066,6 +2167,7 @@ export type OrganizationCreateWithoutCompaniesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2102,6 +2204,7 @@ export type OrganizationUncheckedCreateWithoutCompaniesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2154,6 +2257,7 @@ export type OrganizationUpdateWithoutCompaniesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2190,6 +2294,7 @@ export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2226,6 +2331,7 @@ export type OrganizationCreateWithoutCategoriesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2262,6 +2368,7 @@ export type OrganizationUncheckedCreateWithoutCategoriesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2314,6 +2421,7 @@ export type OrganizationUpdateWithoutCategoriesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2350,6 +2458,7 @@ export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2386,6 +2495,7 @@ export type OrganizationCreateWithoutCostCentersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2422,6 +2532,7 @@ export type OrganizationUncheckedCreateWithoutCostCentersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2474,6 +2585,7 @@ export type OrganizationUpdateWithoutCostCentersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2510,6 +2622,7 @@ export type OrganizationUncheckedUpdateWithoutCostCentersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2546,6 +2659,7 @@ export type OrganizationCreateWithoutEmployeesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2582,6 +2696,7 @@ export type OrganizationUncheckedCreateWithoutEmployeesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2634,6 +2749,7 @@ export type OrganizationUpdateWithoutEmployeesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2670,6 +2786,7 @@ export type OrganizationUncheckedUpdateWithoutEmployeesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2706,6 +2823,7 @@ export type OrganizationCreateWithoutCustomersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2742,6 +2860,7 @@ export type OrganizationUncheckedCreateWithoutCustomersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2794,6 +2913,7 @@ export type OrganizationUpdateWithoutCustomersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2830,6 +2950,7 @@ export type OrganizationUncheckedUpdateWithoutCustomersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2866,6 +2987,7 @@ export type OrganizationCreateWithoutPartnersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2902,6 +3024,7 @@ export type OrganizationUncheckedCreateWithoutPartnersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -2954,6 +3077,7 @@ export type OrganizationUpdateWithoutPartnersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2990,6 +3114,7 @@ export type OrganizationUncheckedUpdateWithoutPartnersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3026,6 +3151,7 @@ export type OrganizationCreateWithoutPartnerSupervisorsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3062,6 +3188,7 @@ export type OrganizationUncheckedCreateWithoutPartnerSupervisorsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3114,6 +3241,7 @@ export type OrganizationUpdateWithoutPartnerSupervisorsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3150,6 +3278,7 @@ export type OrganizationUncheckedUpdateWithoutPartnerSupervisorsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3186,6 +3315,7 @@ export type OrganizationCreateWithoutSellersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3222,6 +3352,7 @@ export type OrganizationUncheckedCreateWithoutSellersInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3274,6 +3405,7 @@ export type OrganizationUpdateWithoutSellersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3310,6 +3442,7 @@ export type OrganizationUncheckedUpdateWithoutSellersInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3346,6 +3479,7 @@ export type OrganizationCreateWithoutProductsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3382,6 +3516,7 @@ export type OrganizationUncheckedCreateWithoutProductsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3434,6 +3569,7 @@ export type OrganizationUpdateWithoutProductsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3470,6 +3606,7 @@ export type OrganizationUncheckedUpdateWithoutProductsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3506,6 +3643,7 @@ export type OrganizationCreateWithoutBonusSettlementsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3542,6 +3680,7 @@ export type OrganizationUncheckedCreateWithoutBonusSettlementsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3594,6 +3733,7 @@ export type OrganizationUpdateWithoutBonusSettlementsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3630,6 +3770,7 @@ export type OrganizationUncheckedUpdateWithoutBonusSettlementsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3666,6 +3807,7 @@ export type OrganizationCreateWithoutBonusInstallmentsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3702,6 +3844,7 @@ export type OrganizationUncheckedCreateWithoutBonusInstallmentsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3754,6 +3897,7 @@ export type OrganizationUpdateWithoutBonusInstallmentsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3790,6 +3934,7 @@ export type OrganizationUncheckedUpdateWithoutBonusInstallmentsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3826,6 +3971,7 @@ export type OrganizationCreateWithoutSalesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3862,6 +4008,7 @@ export type OrganizationUncheckedCreateWithoutSalesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -3914,6 +4061,7 @@ export type OrganizationUpdateWithoutSalesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3950,6 +4098,7 @@ export type OrganizationUncheckedUpdateWithoutSalesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3986,6 +4135,7 @@ export type OrganizationCreateWithoutSaleHistoryEventsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4022,6 +4172,7 @@ export type OrganizationUncheckedCreateWithoutSaleHistoryEventsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4074,6 +4225,7 @@ export type OrganizationUpdateWithoutSaleHistoryEventsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4110,6 +4262,7 @@ export type OrganizationUncheckedUpdateWithoutSaleHistoryEventsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4146,6 +4299,7 @@ export type OrganizationCreateWithoutSaleDelinquenciesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4182,6 +4336,7 @@ export type OrganizationUncheckedCreateWithoutSaleDelinquenciesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4234,6 +4389,7 @@ export type OrganizationUpdateWithoutSaleDelinquenciesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4270,6 +4426,7 @@ export type OrganizationUncheckedUpdateWithoutSaleDelinquenciesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4306,6 +4463,7 @@ export type OrganizationCreateWithoutSaleImportTemplatesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4342,6 +4500,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportTemplatesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4394,6 +4553,7 @@ export type OrganizationUpdateWithoutSaleImportTemplatesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4430,6 +4590,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportTemplatesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4466,6 +4627,7 @@ export type OrganizationCreateWithoutSaleImportAuditsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4502,6 +4664,7 @@ export type OrganizationUncheckedCreateWithoutSaleImportAuditsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4554,6 +4717,7 @@ export type OrganizationUpdateWithoutSaleImportAuditsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4590,6 +4754,7 @@ export type OrganizationUncheckedUpdateWithoutSaleImportAuditsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4626,6 +4791,7 @@ export type OrganizationCreateWithoutTransactionsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4662,6 +4828,7 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4714,6 +4881,7 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4750,6 +4918,7 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4786,6 +4955,7 @@ export type OrganizationCreateWithoutRecurrencesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4822,6 +4992,7 @@ export type OrganizationUncheckedCreateWithoutRecurrencesInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   ownerId: string
   createdAt?: Date | string
@@ -4874,6 +5045,7 @@ export type OrganizationUpdateWithoutRecurrencesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4910,6 +5082,7 @@ export type OrganizationUncheckedUpdateWithoutRecurrencesInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4946,6 +5119,7 @@ export type OrganizationCreateManyOwnerInput = {
   domain?: string | null
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: number | null
   avatarUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4958,6 +5132,7 @@ export type OrganizationUpdateWithoutOwnerInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4994,6 +5169,7 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -5030,6 +5206,7 @@ export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shouldAttachUserByDomain?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enableSalesTransactionsSync?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  preCancellationDelinquencyThreshold?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -5280,6 +5457,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   domain?: boolean
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -5319,6 +5497,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   domain?: boolean
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -5333,6 +5512,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   domain?: boolean
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
@@ -5347,13 +5527,14 @@ export type OrganizationSelectScalar = {
   domain?: boolean
   shouldAttachUserByDomain?: boolean
   enableSalesTransactionsSync?: boolean
+  preCancellationDelinquencyThreshold?: boolean
   avatarUrl?: boolean
   ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "shouldAttachUserByDomain" | "enableSalesTransactionsSync" | "avatarUrl" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "shouldAttachUserByDomain" | "enableSalesTransactionsSync" | "preCancellationDelinquencyThreshold" | "avatarUrl" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
   invites?: boolean | Prisma.Organization$invitesArgs<ExtArgs>
@@ -5425,6 +5606,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     domain: string | null
     shouldAttachUserByDomain: boolean
     enableSalesTransactionsSync: boolean
+    preCancellationDelinquencyThreshold: number | null
     avatarUrl: string | null
     ownerId: string
     createdAt: Date
@@ -5883,6 +6065,7 @@ export interface OrganizationFieldRefs {
   readonly domain: Prisma.FieldRef<"Organization", 'String'>
   readonly shouldAttachUserByDomain: Prisma.FieldRef<"Organization", 'Boolean'>
   readonly enableSalesTransactionsSync: Prisma.FieldRef<"Organization", 'Boolean'>
+  readonly preCancellationDelinquencyThreshold: Prisma.FieldRef<"Organization", 'Int'>
   readonly avatarUrl: Prisma.FieldRef<"Organization", 'String'>
   readonly ownerId: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>

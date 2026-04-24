@@ -62,6 +62,7 @@ import {
 } from "./-components/sale-history-presenter";
 import { SaleDelinquencySection } from "./-components/sale-delinquency-section";
 import { SaleInstallmentsDrawer } from "./-components/sale-installments-drawer";
+import { SalePreCancellationBadge } from "./-components/sale-pre-cancellation-badge";
 import { SaleStatusAction } from "./-components/sale-status-action";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
 
@@ -205,6 +206,8 @@ export function SaleDetailsPage() {
 		isLoading: isSaleNavigationLoading,
 	} = useSaleNavigation(saleId);
 	const { organization } = useApp();
+	const preCancellationDelinquencyThreshold =
+		organization?.preCancellationDelinquencyThreshold ?? null;
 	const slug = organization?.slug ?? "";
 	const navigate = useNavigate();
 	const { data, isLoading, isError } = useSale(saleId);
@@ -425,7 +428,13 @@ export function SaleDetailsPage() {
 						</div>
 						<div className="space-y-1">
 							<p className="text-muted-foreground text-sm">Status</p>
-							<SaleStatusBadge status={sale.status} />
+							<div className="flex flex-wrap items-center gap-2">
+								<SaleStatusBadge status={sale.status} />
+								<SalePreCancellationBadge
+									threshold={preCancellationDelinquencyThreshold}
+									summary={sale.delinquencySummary}
+								/>
+							</div>
 						</div>
 					</div>
 				</Card>

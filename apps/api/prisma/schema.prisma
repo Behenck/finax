@@ -195,6 +195,7 @@ model Organization {
   domain                      String?  @unique
   shouldAttachUserByDomain    Boolean  @default(false) @map("should_attach_user_by_domain")
   enableSalesTransactionsSync Boolean  @default(false) @map("enable_sales_transactions_sync")
+  preCancellationDelinquencyThreshold Int? @map("pre_cancellation_delinquency_threshold")
   avatarUrl                   String?  @map("avatar_url")
   ownerId                     String   @map("owner_id")
   createdAt                   DateTime @default(now()) @map("created_at")

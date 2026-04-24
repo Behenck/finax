@@ -448,6 +448,11 @@ const SalesDashboardTimelineItemSchema = z.object({
 	amount: z.number().int().nonnegative(),
 });
 
+const SalesDashboardPreCancellationSummarySchema = z.object({
+	count: z.number().int().nonnegative(),
+	threshold: z.number().int().min(1).nullable(),
+});
+
 const SalesDashboardTopProductSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
@@ -660,16 +665,15 @@ const PartnerSalesDashboardRiskRankingItemSchema = z.object({
 	lastSaleDate: z.date().nullable(),
 });
 
-const PartnerSalesDashboardDelinquencyBucketKeySchema = z.enum([
-	"RANGE_1_30",
-	"RANGE_31_60",
-	"RANGE_61_90",
-	"RANGE_90_PLUS",
-] as const);
-
 const PartnerSalesDashboardDelinquencyBucketSchema = z.object({
-	key: PartnerSalesDashboardDelinquencyBucketKeySchema,
+	key: z.string().min(1),
 	label: z.string(),
+	salesCount: z.number().int().nonnegative(),
+	grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardPreCancellationSummarySchema = z.object({
+	threshold: z.number().int().min(1).nullable(),
 	salesCount: z.number().int().nonnegative(),
 	grossAmount: z.number().int().nonnegative(),
 });
@@ -724,6 +728,7 @@ export const PartnerSalesDashboardResponseSchema = z.object({
 	}),
 	delinquencyBreakdown: z.object({
 		totalSales: z.number().int().nonnegative(),
+		preCancellation: PartnerSalesDashboardPreCancellationSummarySchema,
 		buckets: z.array(PartnerSalesDashboardDelinquencyBucketSchema),
 	}),
 	recencyBreakdown: z.object({
@@ -743,6 +748,7 @@ export const SalesDashboardResponseSchema = z.object({
 	sales: z.object({
 		current: SalesDashboardSalesSummarySchema,
 		previous: SalesDashboardSalesSummarySchema,
+		preCancellation: SalesDashboardPreCancellationSummarySchema,
 		byStatus: z.object({
 			PENDING: CommissionInstallmentSummaryBucketSchema,
 			APPROVED: CommissionInstallmentSummaryBucketSchema,
@@ -754,7 +760,7 @@ export const SalesDashboardResponseSchema = z.object({
 		topResponsibles: z.array(SalesDashboardTopResponsibleSchema),
 	}),
 	commissions: z.object({
-		reference: z.literal("EXPECTED_PAYMENT_DATE"),
+		reference: z.literal("SALE_DATE"),
 		current: SalesDashboardCommissionsPeriodSchema,
 		previous: SalesDashboardCommissionsPeriodSchema,
 	}),

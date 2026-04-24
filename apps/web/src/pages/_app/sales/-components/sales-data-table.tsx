@@ -115,6 +115,7 @@ import { formatCurrencyBRL } from "@/utils/format-amount";
 import { formatSaleDynamicFieldValue } from "./sale-dynamic-fields";
 import { SaleInstallmentsDrawer } from "./sale-installments-drawer";
 import { SaleDelinquencyBadge } from "./sale-delinquency-badge";
+import { SalePreCancellationBadge } from "./sale-pre-cancellation-badge";
 import { SaleStatusAction } from "./sale-status-action";
 import { SaleStatusBadge } from "./sale-status-badge";
 
@@ -540,6 +541,8 @@ export function SalesDataTable({
 	const canUseBulkActions = canChangeSaleStatus || canDeleteSale;
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
+	const preCancellationDelinquencyThreshold =
+		organization?.preCancellationDelinquencyThreshold ?? null;
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
 		() => readStorageJson<VisibilityState>(SALES_COLUMNS_STORAGE_KEY, {}),
@@ -1290,7 +1293,13 @@ export function SalesDataTable({
 					return row.getValue(columnId) === value;
 				},
 				cell: ({ row }) => (
-					<SaleStatusBadge status={row.original.status as SaleStatus} />
+					<div className="flex flex-wrap items-center gap-2">
+						<SaleStatusBadge status={row.original.status as SaleStatus} />
+						<SalePreCancellationBadge
+							threshold={preCancellationDelinquencyThreshold}
+							summary={row.original.delinquencySummary}
+						/>
+					</div>
 				),
 			},
 			...dynamicFieldColumnsReady.map<ColumnDef<SaleTableRow>>((field) => ({
@@ -2154,7 +2163,13 @@ export function SalesDataTable({
 										</div>
 
 										<div className="flex items-center justify-between gap-3">
-											<SaleStatusBadge status={sale.status as SaleStatus} />
+											<div className="flex flex-wrap items-center gap-2">
+												<SaleStatusBadge status={sale.status as SaleStatus} />
+												<SalePreCancellationBadge
+													threshold={preCancellationDelinquencyThreshold}
+													summary={sale.delinquencySummary}
+												/>
+											</div>
 											<p
 												className={
 													sale.totalAmount === 0

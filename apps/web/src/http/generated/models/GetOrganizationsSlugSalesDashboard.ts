@@ -27,7 +27,7 @@ export type TopResponsiblesTypeEnumKey =
   (typeof topResponsiblesTypeEnum)[keyof typeof topResponsiblesTypeEnum];
 
 export const commissionsReferenceEnum = {
-  EXPECTED_PAYMENT_DATE: "EXPECTED_PAYMENT_DATE",
+  SALE_DATE: "SALE_DATE",
 } as const;
 
 export type CommissionsReferenceEnumKey =
@@ -132,6 +132,23 @@ export type GetOrganizationsSlugSalesDashboard200 = {
        * @type integer
        */
       averageTicket: number;
+    };
+    /**
+     * @type object
+     */
+    preCancellation: {
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      count: number;
+      /**
+       * @minLength 1
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      threshold: number | null;
     };
     /**
      * @type object

@@ -71,6 +71,12 @@ export type GetMe200 = {
      * @type boolean
      */
     enableSalesTransactionsSync: boolean;
+    /**
+     * @minLength 1
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    preCancellationDelinquencyThreshold: number | null;
   };
   /**
    * @type array

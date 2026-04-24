@@ -34,6 +34,11 @@ export async function getMe(app: FastifyInstance) {
 								role: z.enum(Role),
 								ownerId: z.uuid(),
 								enableSalesTransactionsSync: z.boolean(),
+								preCancellationDelinquencyThreshold: z
+									.number()
+									.int()
+									.min(1)
+									.nullable(),
 							}),
 							effectivePermissions: z.array(z.string()),
 						}),
@@ -72,6 +77,7 @@ export async function getMe(app: FastifyInstance) {
 								slug: true,
 								ownerId: true,
 								enableSalesTransactionsSync: true,
+								preCancellationDelinquencyThreshold: true,
 							},
 						},
 					},
@@ -99,6 +105,8 @@ export async function getMe(app: FastifyInstance) {
 						ownerId: membership.organization.ownerId,
 						enableSalesTransactionsSync:
 							membership.organization.enableSalesTransactionsSync,
+						preCancellationDelinquencyThreshold:
+							membership.organization.preCancellationDelinquencyThreshold,
 						role: membership.role,
 					},
 					effectivePermissions,

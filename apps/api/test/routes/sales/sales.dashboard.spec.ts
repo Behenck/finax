@@ -4,6 +4,9 @@ import {
 	CustomerStatus,
 	PartnerDocumentType,
 	PartnerStatus,
+	ProductBonusMetric,
+	ProductBonusParticipantType,
+	ProductBonusPeriodFrequency,
 	Role,
 	SaleCommissionInstallmentStatus,
 	SaleCommissionRecipientType,
@@ -246,6 +249,80 @@ async function createSaleSeed(
 	});
 }
 
+async function createBonusInstallmentSeed(
+	fixture: DashboardFixture,
+	input: {
+		productId: string;
+		amount: number;
+		status: SaleCommissionInstallmentStatus;
+		expectedPaymentDate: string;
+		paymentDate?: string | null;
+	},
+) {
+	const scenario = await prisma.productBonusScenario.create({
+		data: {
+			productId: input.productId,
+			name: `Bonus ${Date.now()}-${Math.floor(Math.random() * 10_000)}`,
+			metric: ProductBonusMetric.SALE_TOTAL,
+			targetAmount: 100_000,
+			periodFrequency: ProductBonusPeriodFrequency.MONTHLY,
+			payoutEnabled: true,
+		},
+	});
+
+	const settlement = await prisma.bonusSettlement.create({
+		data: {
+			organizationId: fixture.org.id,
+			productId: input.productId,
+			periodFrequency: ProductBonusPeriodFrequency.MONTHLY,
+			periodYear: 2026,
+			periodIndex: 3,
+			settledById: fixture.user.id,
+			winnersCount: 1,
+		},
+	});
+
+	const result = await prisma.bonusSettlementResult.create({
+		data: {
+			settlementId: settlement.id,
+			scenarioId: scenario.id,
+			participantType: ProductBonusParticipantType.COMPANY,
+			beneficiaryCompanyId: fixture.company.id,
+			beneficiaryLabel: fixture.company.name,
+			achievedAmount: input.amount,
+			targetAmount: 100_000,
+			payoutEnabled: true,
+			payoutAmount: input.amount,
+		},
+	});
+
+	await prisma.bonusInstallment.create({
+		data: {
+			organizationId: fixture.org.id,
+			settlementId: settlement.id,
+			resultId: result.id,
+			scenarioId: scenario.id,
+			productId: input.productId,
+			scenarioName: scenario.name,
+			periodFrequency: ProductBonusPeriodFrequency.MONTHLY,
+			periodYear: 2026,
+			periodIndex: 3,
+			recipientType: SaleCommissionRecipientType.COMPANY,
+			direction: "INCOME",
+			beneficiaryCompanyId: fixture.company.id,
+			beneficiaryLabel: fixture.company.name,
+			installmentNumber: 1,
+			percentage: 100_000,
+			amount: input.amount,
+			status: input.status,
+			expectedPaymentDate: new Date(`${input.expectedPaymentDate}T00:00:00.000Z`),
+			paymentDate: input.paymentDate
+				? new Date(`${input.paymentDate}T00:00:00.000Z`)
+				: null,
+		},
+	});
+}
+
 async function seedDashboardData(fixture: DashboardFixture) {
 	await createSaleSeed(fixture, {
 		saleDate: "2026-02-05",
@@ -374,213 +451,227 @@ describe("sales dashboard", () => {
 		await app.close();
 	});
 
-	it("should aggregate monthly sales and commissions for the dashboard", async () => {
-		const fixture = await createFixture();
-		await seedDashboardData(fixture);
+	it(
+		"should aggregate monthly sales and commissions for the dashboard",
+		async () => {
+			const fixture = await createFixture();
+			await seedDashboardData(fixture);
+			await createBonusInstallmentSeed(fixture, {
+				productId: fixture.productAlpha.id,
+				amount: 99_000,
+				status: SaleCommissionInstallmentStatus.PENDING,
+				expectedPaymentDate: "2026-03-10",
+			});
 
-		const response = await request(app.server)
-			.get(`/organizations/${fixture.org.slug}/sales/dashboard`)
-			.query({
-				month: "2026-03",
-			})
-			.set("Authorization", `Bearer ${fixture.token}`);
+			const response = await request(app.server)
+				.get(`/organizations/${fixture.org.slug}/sales/dashboard`)
+				.query({
+					month: "2026-03",
+				})
+				.set("Authorization", `Bearer ${fixture.token}`);
 
-		expect(response.statusCode).toBe(200);
-		expect(response.body.period.selectedMonth).toBe("2026-03");
-		expect(response.body.period.current.month).toBe("2026-03");
-		expect(response.body.period.previous.month).toBe("2026-02");
+			expect(response.statusCode).toBe(200);
+			expect(response.body.period.selectedMonth).toBe("2026-03");
+			expect(response.body.period.current.month).toBe("2026-03");
+			expect(response.body.period.previous.month).toBe("2026-02");
 
-		expect(response.body.sales.current).toEqual({
-			count: 4,
-			grossAmount: 550_000,
-			averageTicket: 137_500,
-		});
-		expect(response.body.sales.previous).toEqual({
-			count: 1,
-			grossAmount: 100_000,
-			averageTicket: 100_000,
-		});
-
-		expect(response.body.sales.byStatus).toEqual({
-			PENDING: {
+			expect(response.body.sales.current).toEqual({
+				count: 4,
+				grossAmount: 550_000,
+				averageTicket: 137_500,
+			});
+			expect(response.body.sales.previous).toEqual({
 				count: 1,
-				amount: 200_000,
-			},
-			APPROVED: {
-				count: 2,
-				amount: 200_000,
-			},
-			COMPLETED: {
+				grossAmount: 100_000,
+				averageTicket: 100_000,
+			});
+			expect(response.body.sales.preCancellation).toEqual({
+				count: 0,
+				threshold: null,
+			});
+
+			expect(response.body.sales.byStatus).toEqual({
+				PENDING: {
+					count: 1,
+					amount: 200_000,
+				},
+				APPROVED: {
+					count: 2,
+					amount: 200_000,
+				},
+				COMPLETED: {
+					count: 1,
+					amount: 150_000,
+				},
+				CANCELED: {
+					count: 1,
+					amount: 500_000,
+				},
+			});
+
+			expect(response.body.sales.timeline).toHaveLength(31);
+			expect(
+				response.body.sales.timeline.find(
+					(item: { date: string }) => item.date.slice(0, 10) === "2026-03-02",
+				),
+			).toEqual({
+				date: expect.stringContaining("2026-03-02"),
 				count: 1,
 				amount: 150_000,
-			},
-			CANCELED: {
-				count: 1,
-				amount: 500_000,
-			},
-		});
+			});
+			expect(
+				response.body.sales.timeline.find(
+					(item: { date: string }) => item.date.slice(0, 10) === "2026-03-15",
+				),
+			).toEqual({
+				date: expect.stringContaining("2026-03-15"),
+				count: 0,
+				amount: 0,
+			});
 
-		expect(response.body.sales.timeline).toHaveLength(31);
-		expect(
-			response.body.sales.timeline.find(
-				(item: { date: string }) => item.date.slice(0, 10) === "2026-03-02",
-			),
-		).toEqual({
-			date: expect.stringContaining("2026-03-02"),
-			count: 1,
-			amount: 150_000,
-		});
-		expect(
-			response.body.sales.timeline.find(
-				(item: { date: string }) => item.date.slice(0, 10) === "2026-03-15",
-			),
-		).toEqual({
-			date: expect.stringContaining("2026-03-15"),
-			count: 0,
-			amount: 0,
-		});
-
-		expect(response.body.sales.topProducts).toEqual([
-			{
-				id: fixture.productAlpha.id,
-				name: fixture.productAlpha.name,
-				count: 2,
-				grossAmount: 200_000,
-			},
-			{
-				id: fixture.productGamma.id,
-				name: fixture.productGamma.name,
-				count: 1,
-				grossAmount: 200_000,
-			},
-			{
-				id: fixture.productBeta.id,
-				name: fixture.productBeta.name,
-				count: 1,
-				grossAmount: 150_000,
-			},
-		]);
-
-		expect(response.body.sales.topResponsibles).toEqual([
-			{
-				id: fixture.seller.id,
-				type: "SELLER",
-				name: fixture.seller.name,
-				count: 2,
-				grossAmount: 300_000,
-			},
-			{
-				id: fixture.partner.id,
-				type: "PARTNER",
-				name: fixture.partner.name,
-				count: 1,
-				grossAmount: 200_000,
-			},
-			{
-				id: fixture.partnerTwo.id,
-				type: "PARTNER",
-				name: fixture.partnerTwo.name,
-				count: 1,
-				grossAmount: 50_000,
-			},
-		]);
-
-		expect(response.body.commissions.reference).toBe("EXPECTED_PAYMENT_DATE");
-		expect(response.body.commissions.current).toEqual({
-			INCOME: {
-				total: {
+			expect(response.body.sales.topProducts).toEqual([
+				{
+					id: fixture.productAlpha.id,
+					name: fixture.productAlpha.name,
 					count: 2,
-					amount: 12_000,
+					grossAmount: 200_000,
 				},
-				pending: {
-					count: 0,
-					amount: 0,
-				},
-				paid: {
+				{
+					id: fixture.productGamma.id,
+					name: fixture.productGamma.name,
 					count: 1,
-					amount: 7_000,
+					grossAmount: 200_000,
 				},
-				canceled: {
+				{
+					id: fixture.productBeta.id,
+					name: fixture.productBeta.name,
 					count: 1,
-					amount: 5_000,
+					grossAmount: 150_000,
 				},
-				reversed: {
-					count: 0,
-					amount: 0,
+			]);
+
+			expect(response.body.sales.topResponsibles).toEqual([
+				{
+					id: fixture.seller.id,
+					type: "SELLER",
+					name: fixture.seller.name,
+					count: 2,
+					grossAmount: 300_000,
 				},
-			},
-			OUTCOME: {
-				total: {
-					count: 3,
-					amount: 34_000,
-				},
-				pending: {
+				{
+					id: fixture.partner.id,
+					type: "PARTNER",
+					name: fixture.partner.name,
 					count: 1,
-					amount: 10_000,
+					grossAmount: 200_000,
 				},
-				paid: {
+				{
+					id: fixture.partnerTwo.id,
+					type: "PARTNER",
+					name: fixture.partnerTwo.name,
 					count: 1,
-					amount: 15_000,
+					grossAmount: 50_000,
 				},
-				canceled: {
-					count: 1,
-					amount: 9_000,
+			]);
+
+			expect(response.body.commissions.reference).toBe("SALE_DATE");
+			expect(response.body.commissions.current).toEqual({
+				INCOME: {
+					total: {
+						count: 3,
+						amount: 42_000,
+					},
+					pending: {
+						count: 1,
+						amount: 30_000,
+					},
+					paid: {
+						count: 1,
+						amount: 7_000,
+					},
+					canceled: {
+						count: 1,
+						amount: 5_000,
+					},
+					reversed: {
+						count: 0,
+						amount: 0,
+					},
 				},
-				reversed: {
-					count: 0,
-					amount: 0,
+				OUTCOME: {
+					total: {
+						count: 1,
+						amount: 15_000,
+					},
+					pending: {
+						count: 0,
+						amount: 0,
+					},
+					paid: {
+						count: 1,
+						amount: 15_000,
+					},
+					canceled: {
+						count: 0,
+						amount: 0,
+					},
+					reversed: {
+						count: 0,
+						amount: 0,
+					},
 				},
-			},
-			netAmount: -22_000,
-		});
-		expect(response.body.commissions.previous).toEqual({
-			INCOME: {
-				total: {
-					count: 1,
-					amount: 9_000,
+				netAmount: 27_000,
+			});
+			expect(response.body.commissions.previous).toEqual({
+				INCOME: {
+					total: {
+						count: 1,
+						amount: 9_000,
+					},
+					pending: {
+						count: 1,
+						amount: 9_000,
+					},
+					paid: {
+						count: 0,
+						amount: 0,
+					},
+					canceled: {
+						count: 0,
+						amount: 0,
+					},
+					reversed: {
+						count: 0,
+						amount: 0,
+					},
 				},
-				pending: {
-					count: 1,
-					amount: 9_000,
+				OUTCOME: {
+					total: {
+						count: 2,
+						amount: 14_000,
+					},
+					pending: {
+						count: 1,
+						amount: 10_000,
+					},
+					paid: {
+						count: 1,
+						amount: 4_000,
+					},
+					canceled: {
+						count: 0,
+						amount: 0,
+					},
+					reversed: {
+						count: 0,
+						amount: 0,
+					},
 				},
-				paid: {
-					count: 0,
-					amount: 0,
-				},
-				canceled: {
-					count: 0,
-					amount: 0,
-				},
-				reversed: {
-					count: 0,
-					amount: 0,
-				},
-			},
-			OUTCOME: {
-				total: {
-					count: 1,
-					amount: 4_000,
-				},
-				pending: {
-					count: 0,
-					amount: 0,
-				},
-				paid: {
-					count: 1,
-					amount: 4_000,
-				},
-				canceled: {
-					count: 0,
-					amount: 0,
-				},
-				reversed: {
-					count: 0,
-					amount: 0,
-				},
-			},
-			netAmount: 5_000,
-		});
-	});
+				netAmount: -5_000,
+			});
+		},
+		20_000,
+	);
 
 	it("should return empty summaries and a full monthly timeline when there is no data", async () => {
 		const fixture = await createFixture();
@@ -603,6 +694,10 @@ describe("sales dashboard", () => {
 			grossAmount: 0,
 			averageTicket: 0,
 		});
+		expect(response.body.sales.preCancellation).toEqual({
+			count: 0,
+			threshold: null,
+		});
 		expect(response.body.sales.timeline).toHaveLength(30);
 		expect(
 			response.body.sales.timeline.every(
@@ -614,5 +709,86 @@ describe("sales dashboard", () => {
 		expect(response.body.sales.topResponsibles).toEqual([]);
 		expect(response.body.commissions.current.netAmount).toBe(0);
 		expect(response.body.commissions.previous.netAmount).toBe(0);
+	});
+
+	it("should count only sales with open delinquencies at or above the configured threshold", async () => {
+		const fixture = await createFixture();
+		await seedDashboardData(fixture);
+
+		await prisma.organization.update({
+			where: {
+				id: fixture.org.id,
+			},
+			data: {
+				preCancellationDelinquencyThreshold: 2,
+			},
+		});
+
+		const [completedBetaSale, approvedAlphaSale] = await Promise.all([
+			prisma.sale.findFirstOrThrow({
+				where: {
+					organizationId: fixture.org.id,
+					productId: fixture.productBeta.id,
+					status: "COMPLETED",
+				},
+				select: {
+					id: true,
+				},
+			}),
+			prisma.sale.findFirstOrThrow({
+				where: {
+					organizationId: fixture.org.id,
+					productId: fixture.productAlpha.id,
+					status: "APPROVED",
+				},
+				select: {
+					id: true,
+				},
+			}),
+		]);
+
+		await prisma.saleDelinquency.createMany({
+			data: [
+				{
+					saleId: completedBetaSale.id,
+					organizationId: fixture.org.id,
+					dueDate: new Date("2026-03-05T00:00:00.000Z"),
+					createdById: fixture.user.id,
+				},
+				{
+					saleId: completedBetaSale.id,
+					organizationId: fixture.org.id,
+					dueDate: new Date("2026-03-20T00:00:00.000Z"),
+					createdById: fixture.user.id,
+				},
+				{
+					saleId: approvedAlphaSale.id,
+					organizationId: fixture.org.id,
+					dueDate: new Date("2026-03-08T00:00:00.000Z"),
+					createdById: fixture.user.id,
+					resolvedAt: new Date("2026-03-12T00:00:00.000Z"),
+					resolvedById: fixture.user.id,
+				},
+				{
+					saleId: approvedAlphaSale.id,
+					organizationId: fixture.org.id,
+					dueDate: new Date("2026-03-18T00:00:00.000Z"),
+					createdById: fixture.user.id,
+				},
+			],
+		});
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/dashboard`)
+			.query({
+				month: "2026-03",
+			})
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.sales.preCancellation).toEqual({
+			count: 1,
+			threshold: 2,
+		});
 	});
 });

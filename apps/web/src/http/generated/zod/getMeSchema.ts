@@ -23,6 +23,9 @@ export const getMe200Schema = z.object({
     role: z.enum(["ADMIN", "MEMBER", "SUPERVISOR", "SELLER", "PARTNER"]),
     ownerId: z.uuid(),
     enableSalesTransactionsSync: z.boolean(),
+    preCancellationDelinquencyThreshold: z.nullable(
+      z.int().min(1).max(9007199254740991),
+    ),
   }),
   effectivePermissions: z.array(z.string()),
 });

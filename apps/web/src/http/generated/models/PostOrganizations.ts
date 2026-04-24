@@ -30,6 +30,12 @@ export type PostOrganizationsMutationRequest = {
    * @type boolean | undefined
    */
   enableSalesTransactionsSync?: boolean;
+  /**
+   * @minLength 1
+   * @maxLength 9007199254740991
+   * @type integer
+   */
+  preCancellationDelinquencyThreshold?: number | null;
 };
 
 export type PostOrganizationsMutationResponse = PostOrganizations201;

@@ -33,6 +33,7 @@ import { useAbility } from "@/permissions/access";
 import type { SaleStatus } from "@/schemas/types/sales";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { SaleDelinquencyBadge } from "./-components/sale-delinquency-badge";
+import { SalePreCancellationBadge } from "./-components/sale-pre-cancellation-badge";
 import { SaleStatusBadge } from "./-components/sale-status-badge";
 
 export const Route = createFileRoute("/_app/sales/delinquency")({
@@ -62,6 +63,8 @@ export function SalesDelinquencyPage() {
 	);
 	const { data, isLoading, isError, refetch } = useSalesDelinquency();
 	const slug = organization?.slug ?? "";
+	const preCancellationDelinquencyThreshold =
+		organization?.preCancellationDelinquencyThreshold ?? null;
 	const companiesQuery = useGetOrganizationsSlugCompanies(
 		{ slug },
 		{
@@ -319,6 +322,10 @@ export function SalesDelinquencyPage() {
 
 									<div className="flex flex-wrap items-center gap-2">
 										<SaleStatusBadge status={sale.status as SaleStatus} />
+										<SalePreCancellationBadge
+											threshold={preCancellationDelinquencyThreshold}
+											summary={sale.delinquencySummary}
+										/>
 										<SaleDelinquencyBadge
 											summary={sale.delinquencySummary}
 											showOldestDueDate
@@ -384,7 +391,13 @@ export function SalesDelinquencyPage() {
 												</div>
 											</TableCell>
 											<TableCell>
-												<SaleStatusBadge status={sale.status as SaleStatus} />
+												<div className="flex flex-wrap items-center gap-2">
+													<SaleStatusBadge status={sale.status as SaleStatus} />
+													<SalePreCancellationBadge
+														threshold={preCancellationDelinquencyThreshold}
+														summary={sale.delinquencySummary}
+													/>
+												</div>
 											</TableCell>
 											<TableCell>
 												<div className="space-y-2">

@@ -22,6 +22,11 @@ export async function createOrganization(app: FastifyInstance) {
 						domain: z.string().nullish(),
 						shouldAttachUserByDomain: z.boolean().optional(),
 						enableSalesTransactionsSync: z.boolean().optional(),
+						preCancellationDelinquencyThreshold: z
+							.number()
+							.int()
+							.min(1)
+							.nullish(),
 					}),
 					response: {
 						201: z.object({
@@ -37,6 +42,7 @@ export async function createOrganization(app: FastifyInstance) {
 					domain,
 					shouldAttachUserByDomain,
 					enableSalesTransactionsSync,
+					preCancellationDelinquencyThreshold,
 				} = request.body;
 
 				if (domain) {
@@ -58,6 +64,7 @@ export async function createOrganization(app: FastifyInstance) {
 						domain,
 						shouldAttachUserByDomain,
 						enableSalesTransactionsSync,
+						preCancellationDelinquencyThreshold,
 						ownerId: userId,
 						members: {
 							create: {

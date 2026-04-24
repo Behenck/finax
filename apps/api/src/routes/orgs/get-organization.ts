@@ -26,6 +26,11 @@ export async function getOrganization(app: FastifyInstance) {
 								domain: z.string().nullable(),
 								shouldAttachUserByDomain: z.boolean(),
 								enableSalesTransactionsSync: z.boolean(),
+								preCancellationDelinquencyThreshold: z
+									.number()
+									.int()
+									.min(1)
+									.nullable(),
 								avatarUrl: z.url().nullable(),
 								ownerId: z.uuid(),
 								createdAt: z.date(),

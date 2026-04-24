@@ -166,6 +166,8 @@ function buildDashboardData(
 		return {
 			id: item.partnerId,
 			name: item.partnerName,
+			partnerName: item.partnerName,
+			partnerCompanyName: null,
 			status: "ACTIVE",
 			supervisors: item.supervisors,
 		};
@@ -281,6 +283,11 @@ function buildDashboardData(
 		},
 		delinquencyBreakdown: {
 			totalSales: 0,
+			preCancellation: {
+				threshold: null,
+				salesCount: 0,
+				grossAmount: 0,
+			},
 			buckets: [],
 		},
 		recencyBreakdown: {
@@ -353,6 +360,52 @@ describe("DashboardPartnersOverview", () => {
 		expect(refetch).toHaveBeenCalledTimes(1);
 	});
 
+	it("renders delinquency buckets by open count and highlights pre-cancellation", () => {
+		const data = buildDashboardData([]);
+		data.delinquencyBreakdown = {
+			totalSales: 3,
+			preCancellation: {
+				threshold: 3,
+				salesCount: 1,
+				grossAmount: 150000,
+			},
+			buckets: [
+				{
+					key: "OPEN_COUNT_1",
+					label: "1 inadimplência",
+					salesCount: 1,
+					grossAmount: 40000,
+				},
+				{
+					key: "OPEN_COUNT_2",
+					label: "2 inadimplências",
+					salesCount: 1,
+					grossAmount: 60000,
+				},
+				{
+					key: "PRE_CANCELLATION",
+					label: "Pré-cancelamento",
+					salesCount: 1,
+					grossAmount: 150000,
+				},
+			],
+		};
+
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data,
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		expect(screen.getByText("1 inadimplência")).toBeInTheDocument();
+		expect(screen.getByText("2 inadimplências")).toBeInTheDocument();
+		expect(screen.getAllByText("Pré-cancelamento").length).toBeGreaterThan(0);
+		expect(screen.getByText("A partir de 3 inadimplências")).toBeInTheDocument();
+	});
+
 	it("uses filtered range for dashboard data and previous month only for canceled metrics", () => {
 		mocks.usePartnerSalesDashboard.mockReturnValue({
 			isLoading: false,
@@ -380,6 +433,54 @@ describe("DashboardPartnersOverview", () => {
 					call.endDate === PREVIOUS_MONTH_END_DATE,
 			),
 		).toBe(true);
+	});
+
+	it("keeps the selected partner filter while the dashboard refetches", async () => {
+		const user = userEvent.setup();
+		const partnerId = "11111111-1111-4111-8111-111111111111";
+
+		mocks.usePartnerSalesDashboard.mockImplementation(
+			(args: { partnerIds?: string }) => {
+				if (args.partnerIds) {
+					return {
+						isLoading: true,
+						isError: false,
+						data: undefined,
+						refetch: vi.fn(),
+					};
+				}
+
+				return {
+					isLoading: false,
+					isError: false,
+					data: buildDashboardData([
+						buildRankingItem({
+							partnerId,
+							partnerName: "Parceiro Alpha",
+							supervisorId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+							supervisorName: "Supervisor Base",
+							concludedCount: 0,
+							concludedAmount: 0,
+							pendingCount: 0,
+							pendingAmount: 0,
+							canceledCount: 0,
+							canceledAmount: 0,
+							delinquentCount: 0,
+							delinquentAmount: 0,
+						}),
+					]),
+					refetch: vi.fn(),
+				};
+			},
+		);
+
+		render(<DashboardPartnersOverview />);
+
+		await user.click(screen.getByRole("button", { name: "Filtros" }));
+		await user.click(screen.getByRole("button", { name: /Todos os parceiros/i }));
+		await user.click(screen.getByText("Parceiro Alpha"));
+
+		expect(mocks.values.get("partnerIds")).toBe(partnerId);
 	});
 
 	it("renders supervisors and linked partners from the same filtered ranking data", async () => {
@@ -540,6 +641,108 @@ describe("DashboardPartnersOverview", () => {
 			'[data-slot="scroll-area"].h-\\[15\\.5rem\\]',
 		);
 		expect(scrollArea).toBeInTheDocument();
+		expect(screen.getByText("Participação por parceiro")).toBeInTheDocument();
+	});
+
+	it("renders the partner sales share card with sold partners only", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([
+				buildRankingItem({
+					partnerId: "30000000-0000-0000-0000-000000000001",
+					partnerName: "Parceiro Líder",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 3,
+					concludedAmount: 300_000,
+					pendingCount: 1,
+					pendingAmount: 50_000,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "30000000-0000-0000-0000-000000000002",
+					partnerName: "Parceiro Apoio",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 2,
+					concludedAmount: 100_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "30000000-0000-0000-0000-000000000003",
+					partnerName: "Parceiro Sem Valor",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 0,
+					concludedAmount: 0,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 1,
+					canceledAmount: 20_000,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+			]),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		const shareCard = screen
+			.getByText("Participação por parceiro")
+			.closest('[data-slot="card"]');
+		expect(shareCard).not.toBeNull();
+		expect(
+			within(shareCard as HTMLElement).getByText(
+				"Distribuição do valor vendido por parceiro no período filtrado.",
+			),
+		).toBeInTheDocument();
+		expect(
+			(shareCard as HTMLElement).querySelector(
+				'[data-slot="chart"].h-\\[340px\\]',
+			),
+		).toBeInTheDocument();
+		expect(
+			within(shareCard as HTMLElement).queryByText("Valor total vendido"),
+		).not.toBeInTheDocument();
+		expect(
+			(shareCard as HTMLElement).querySelector(
+				'[data-slot="scroll-area"].max-h-\\[224px\\]',
+			),
+		).toBeNull();
+		expect(
+			within(shareCard as HTMLElement).queryByText("Parceiro Sem Valor"),
+		).not.toBeInTheDocument();
+	});
+
+	it("renders an empty state in the partner sales share card when there are no sold partners", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([]),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		const shareCard = screen
+			.getByText("Participação por parceiro")
+			.closest('[data-slot="card"]');
+		expect(shareCard).not.toBeNull();
+		expect(
+			within(shareCard as HTMLElement).getByText(
+				"Nenhum parceiro com valor vendido no período selecionado.",
+			),
+		).toBeInTheDocument();
 	});
 
 	it("keeps the supervisor dropdown partner list inside a scroll area with fixed height", async () => {

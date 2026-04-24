@@ -15,6 +15,7 @@ type Organization = {
 	slug: string;
 	ownerId: string;
 	enableSalesTransactionsSync: boolean;
+	preCancellationDelinquencyThreshold: number | null;
 };
 
 type AppContextType = {

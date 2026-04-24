@@ -19,6 +19,11 @@ export const putOrganizationSlugMutationRequestSchema = z.object({
   domain: z.string().nullish(),
   shouldAttachUserByDomain: z.optional(z.boolean()),
   enableSalesTransactionsSync: z.optional(z.boolean()),
+  preCancellationDelinquencyThreshold: z
+    .int()
+    .min(1)
+    .max(9007199254740991)
+    .nullish(),
 });
 
 export const putOrganizationSlugMutationResponseSchema = z.lazy(

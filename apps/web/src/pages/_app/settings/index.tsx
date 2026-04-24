@@ -20,7 +20,25 @@ export const Route = createFileRoute("/_app/settings/")({
 	component: RouteComponent,
 });
 
-function RouteComponent() {
+function parsePreCancellationThresholdInput(value: string) {
+	const normalizedValue = value.trim();
+
+	if (!normalizedValue) {
+		return null;
+	}
+
+	const parsedValue = Number(normalizedValue);
+
+	if (!Number.isInteger(parsedValue) || parsedValue < 1) {
+		throw new Error(
+			"Informe um número inteiro maior ou igual a 1 para ativar o pré-cancelamento.",
+		);
+	}
+
+	return parsedValue;
+}
+
+export function RouteComponent() {
 	const queryClient = useQueryClient();
 	const { organization } = useApp();
 	const slug = organization?.slug;
@@ -47,13 +65,34 @@ function RouteComponent() {
 		data?.organization.enableSalesTransactionsSync,
 		organization?.enableSalesTransactionsSync,
 	]);
+	const currentPreCancellationThresholdValue = useMemo(() => {
+		const threshold =
+			data?.organization.preCancellationDelinquencyThreshold ??
+			organization?.preCancellationDelinquencyThreshold ??
+			null;
+
+		return threshold === null ? "" : String(threshold);
+	}, [
+		data?.organization.preCancellationDelinquencyThreshold,
+		organization?.preCancellationDelinquencyThreshold,
+	]);
 
 	const [enableSalesTransactionsSync, setEnableSalesTransactionsSync] =
 		useState(currentSyncValue);
+	const [
+		preCancellationDelinquencyThresholdInput,
+		setPreCancellationDelinquencyThresholdInput,
+	] = useState(currentPreCancellationThresholdValue);
 
 	useEffect(() => {
 		setEnableSalesTransactionsSync(currentSyncValue);
 	}, [currentSyncValue]);
+
+	useEffect(() => {
+		setPreCancellationDelinquencyThresholdInput(
+			currentPreCancellationThresholdValue,
+		);
+	}, [currentPreCancellationThresholdValue]);
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -73,6 +112,11 @@ function RouteComponent() {
 		}
 
 		try {
+			const preCancellationDelinquencyThreshold =
+				parsePreCancellationThresholdInput(
+					preCancellationDelinquencyThresholdInput,
+				);
+
 			await updateOrganization({
 				slug,
 				data: {
@@ -81,6 +125,7 @@ function RouteComponent() {
 					shouldAttachUserByDomain:
 						organizationPayload?.shouldAttachUserByDomain ?? false,
 					enableSalesTransactionsSync,
+					preCancellationDelinquencyThreshold,
 				},
 			});
 
@@ -113,6 +158,28 @@ function RouteComponent() {
 					<Field className="gap-1">
 						<FieldLabel>Nome do Sistema</FieldLabel>
 						<Input placeholder="Finax" />
+					</Field>
+				</FieldGroup>
+				<FieldGroup>
+					<Field className="gap-1">
+						<FieldLabel>Pré-cancelamento por inadimplência</FieldLabel>
+						<Input
+							type="number"
+							inputMode="numeric"
+							min={1}
+							placeholder="Deixe vazio para desativar"
+							value={preCancellationDelinquencyThresholdInput}
+							onChange={(event) =>
+								setPreCancellationDelinquencyThresholdInput(
+									event.target.value,
+								)
+							}
+							disabled={!slug || isUpdatingOrganization}
+						/>
+						<span className="text-sm text-muted-foreground">
+							A venda entra em pré-cancelamento quando atinge este número de
+							inadimplências abertas.
+						</span>
 					</Field>
 				</FieldGroup>
 				<FieldGroup>

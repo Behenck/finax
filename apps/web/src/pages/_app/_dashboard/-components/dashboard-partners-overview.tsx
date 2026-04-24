@@ -227,6 +227,8 @@ type PartnerDashboardIdentity = {
 	partnerCompanyName?: string | null;
 };
 type BreakdownPieDataItem = DashboardBreakdownItem & {
+	quantityCount: number;
+	sharePct: number;
 	fill: string;
 };
 type StatusFunnelPieDataItem = StatusFunnelItem & {
@@ -234,10 +236,41 @@ type StatusFunnelPieDataItem = StatusFunnelItem & {
 };
 type DelinquencyPieDataItem =
 	PartnerDashboardData["delinquencyBreakdown"]["buckets"][number] & {
+		delinquencyCount: number;
+		sharePct: number;
 		fill: string;
+	};
+type PartnerDashboardDelinquencyBreakdown =
+	PartnerDashboardData["delinquencyBreakdown"] & {
+		preCancellation?: {
+			threshold: number | null;
+			salesCount: number;
+			grossAmount: number;
+		};
 	};
 type AvailableDynamicFieldOption =
 	PartnerDashboardData["dynamicFieldBreakdown"]["availableFields"][number];
+type PartnerSalesSharePieDataItem = PartnerDashboardData["ranking"][number] & {
+	soldAmount: number;
+	sharePct: number;
+	fill: string;
+};
+type PartnerSalesSharePieLabelProps = {
+	cx?: number;
+	cy?: number;
+	midAngle?: number;
+	outerRadius?: number;
+	fill?: string;
+	payload?: PartnerSalesSharePieDataItem;
+};
+type BreakdownPieLabelProps = {
+	cx?: number;
+	cy?: number;
+	midAngle?: number;
+	outerRadius?: number;
+	fill?: string;
+	payload?: BreakdownPieDataItem;
+};
 
 type PartnerKpiCardProps = {
 	title: string;
@@ -367,10 +400,170 @@ function getPartnerSecondaryName(partner: PartnerDashboardIdentity) {
 }
 
 function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
+	const totalSales = items.reduce((sum, item) => sum + item.salesCount, 0);
+
 	return items.map((item, index) => ({
 		...item,
+		quantityCount: item.salesCount,
+		sharePct: totalSales > 0 ? (item.salesCount / totalSales) * 100 : 0,
 		fill: BREAKDOWN_PIE_COLORS[index % BREAKDOWN_PIE_COLORS.length]!,
 	})) satisfies BreakdownPieDataItem[];
+}
+
+function renderBreakdownPieLabel(props: BreakdownPieLabelProps) {
+	const {
+		cx = 0,
+		cy = 0,
+		midAngle = 0,
+		outerRadius = 0,
+		fill = "currentColor",
+		payload,
+	} = props;
+
+	if (!payload) {
+		return null;
+	}
+
+	const radians = (-midAngle * Math.PI) / 180;
+	const explodedOffset = 8;
+	const offsetX = Math.cos(radians) * explodedOffset;
+	const offsetY = Math.sin(radians) * explodedOffset;
+	const lineStartRadius = outerRadius + 2;
+	const lineBreakRadius = outerRadius + 12;
+	const textRadius = outerRadius + 24;
+	const startX = cx + offsetX + Math.cos(radians) * lineStartRadius;
+	const startY = cy + offsetY + Math.sin(radians) * lineStartRadius;
+	const breakX = cx + offsetX + Math.cos(radians) * lineBreakRadius;
+	const breakY = cy + offsetY + Math.sin(radians) * lineBreakRadius;
+	const endX =
+		cx +
+		offsetX +
+		Math.cos(radians) * textRadius +
+		(Math.cos(radians) >= 0 ? 10 : -10);
+	const endY = cy + offsetY + Math.sin(radians) * textRadius;
+	const textAnchor = endX >= cx ? "start" : "end";
+
+	return (
+		<g>
+			<path
+				d={`M ${startX} ${startY} L ${breakX} ${breakY} L ${endX} ${endY}`}
+				fill="none"
+				stroke={fill}
+				strokeWidth={1.5}
+				strokeLinecap="round"
+			/>
+			<circle cx={startX} cy={startY} r={2.5} fill={fill} />
+			<text
+				x={endX}
+				y={endY - 4}
+				textAnchor={textAnchor}
+				className="fill-foreground text-[11px] font-semibold"
+			>
+				{payload.label}
+			</text>
+			<text
+				x={endX}
+				y={endY + 12}
+				textAnchor={textAnchor}
+				className="fill-muted-foreground text-[10px]"
+			>
+				{formatCount(payload.quantityCount)} •{" "}
+				{formatSharePercentage(payload.sharePct)}
+			</text>
+		</g>
+	);
+}
+
+function buildPartnerSalesSharePieData(items: PartnerDashboardData["ranking"]) {
+	const soldPartners = [...items]
+		.filter((partner) => partner.grossAmount > 0)
+		.sort(
+			(left, right) =>
+				right.grossAmount - left.grossAmount ||
+				right.salesCount - left.salesCount ||
+				getPartnerPrimaryName(left).localeCompare(
+					getPartnerPrimaryName(right),
+					"pt-BR",
+				),
+		);
+	const totalSoldAmount = soldPartners.reduce(
+		(total, partner) => total + partner.grossAmount,
+		0,
+	);
+
+	return soldPartners.map((partner, index) => ({
+		...partner,
+		soldAmount: partner.grossAmount,
+		sharePct:
+			totalSoldAmount > 0 ? (partner.grossAmount / totalSoldAmount) * 100 : 0,
+		fill: BREAKDOWN_PIE_COLORS[index % BREAKDOWN_PIE_COLORS.length]!,
+	})) satisfies PartnerSalesSharePieDataItem[];
+}
+
+function renderPartnerSalesSharePieLabel(
+	props: PartnerSalesSharePieLabelProps,
+) {
+	const {
+		cx = 0,
+		cy = 0,
+		midAngle = 0,
+		outerRadius = 0,
+		fill = "currentColor",
+		payload,
+	} = props;
+
+	if (!payload) {
+		return null;
+	}
+
+	const radians = (-midAngle * Math.PI) / 180;
+	const explodedOffset = 12;
+	const offsetX = Math.cos(radians) * explodedOffset;
+	const offsetY = Math.sin(radians) * explodedOffset;
+	const lineStartRadius = outerRadius + 2;
+	const lineBreakRadius = outerRadius + 16;
+	const textRadius = outerRadius + 34;
+	const startX = cx + offsetX + Math.cos(radians) * lineStartRadius;
+	const startY = cy + offsetY + Math.sin(radians) * lineStartRadius;
+	const breakX = cx + offsetX + Math.cos(radians) * lineBreakRadius;
+	const breakY = cy + offsetY + Math.sin(radians) * lineBreakRadius;
+	const endX =
+		cx +
+		offsetX +
+		Math.cos(radians) * textRadius +
+		(Math.cos(radians) >= 0 ? 16 : -16);
+	const endY = cy + offsetY + Math.sin(radians) * textRadius;
+	const textAnchor = endX >= cx ? "start" : "end";
+	const primaryName = getPartnerPrimaryName(payload);
+
+	return (
+		<g>
+			<path
+				d={`M ${startX} ${startY} L ${breakX} ${breakY} L ${endX} ${endY}`}
+				fill="none"
+				stroke={fill}
+				strokeWidth={1.5}
+				strokeLinecap="round"
+			/>
+			<circle cx={startX} cy={startY} r={2.5} fill={fill} />
+			<text
+				x={endX}
+				y={endY - 4}
+				textAnchor={textAnchor}
+				className="fill-foreground text-[11px] font-medium"
+			>
+				{primaryName}
+			</text>
+			<text
+				x={endX}
+				y={endY + 12}
+				textAnchor={textAnchor}
+				className="fill-muted-foreground text-[10px] font-medium"
+			>
+				{formatAmountFromCents(payload.soldAmount)}
+			</text>
+		</g>
+	);
 }
 
 export function dedupeAvailableDynamicFields(
@@ -406,10 +599,87 @@ export function dedupeAvailableDynamicFields(
 function buildDelinquencyPieData(
 	buckets: PartnerDashboardData["delinquencyBreakdown"]["buckets"],
 ) {
+	const totalSales = buckets.reduce((sum, bucket) => sum + bucket.salesCount, 0);
+
 	return buckets.map((bucket, index) => ({
 		...bucket,
+		delinquencyCount: bucket.salesCount,
+		sharePct: totalSales > 0 ? (bucket.salesCount / totalSales) * 100 : 0,
 		fill: DELINQUENCY_PIE_COLORS[index % DELINQUENCY_PIE_COLORS.length]!,
 	})) satisfies DelinquencyPieDataItem[];
+}
+
+type DelinquencyPieLabelProps = {
+	cx?: number;
+	cy?: number;
+	midAngle?: number;
+	outerRadius?: number;
+	fill?: string;
+	payload?: DelinquencyPieDataItem;
+};
+
+function renderDelinquencyPieLabel(props: DelinquencyPieLabelProps) {
+	const {
+		cx = 0,
+		cy = 0,
+		midAngle = 0,
+		outerRadius = 0,
+		fill = "currentColor",
+		payload,
+	} = props;
+
+	if (!payload) {
+		return null;
+	}
+
+	const radians = (-midAngle * Math.PI) / 180;
+	const explodedOffset = 12;
+	const offsetX = Math.cos(radians) * explodedOffset;
+	const offsetY = Math.sin(radians) * explodedOffset;
+	const lineStartRadius = outerRadius + 2;
+	const lineBreakRadius = outerRadius + 16;
+	const textRadius = outerRadius + 34;
+	const startX = cx + offsetX + Math.cos(radians) * lineStartRadius;
+	const startY = cy + offsetY + Math.sin(radians) * lineStartRadius;
+	const breakX = cx + offsetX + Math.cos(radians) * lineBreakRadius;
+	const breakY = cy + offsetY + Math.sin(radians) * lineBreakRadius;
+	const endX =
+		cx +
+		offsetX +
+		Math.cos(radians) * textRadius +
+		(Math.cos(radians) >= 0 ? 16 : -16);
+	const endY = cy + offsetY + Math.sin(radians) * textRadius;
+	const textAnchor = endX >= cx ? "start" : "end";
+
+	return (
+		<g>
+			<path
+				d={`M ${startX} ${startY} L ${breakX} ${breakY} L ${endX} ${endY}`}
+				fill="none"
+				stroke={fill}
+				strokeWidth={1.5}
+				strokeLinecap="round"
+			/>
+			<circle cx={startX} cy={startY} r={2.5} fill={fill} />
+			<text
+				x={endX}
+				y={endY - 4}
+				textAnchor={textAnchor}
+				className="fill-foreground text-[11px] font-semibold"
+			>
+				{payload.label}
+			</text>
+			<text
+				x={endX}
+				y={endY + 12}
+				textAnchor={textAnchor}
+				className="fill-muted-foreground text-[10px]"
+			>
+				{formatCount(payload.delinquencyCount)} •{" "}
+				{formatSharePercentage(payload.sharePct)}
+			</text>
+		</g>
+	);
 }
 
 function PartnerKpiCard({
@@ -420,7 +690,7 @@ function PartnerKpiCard({
 	toneClassName,
 }: PartnerKpiCardProps) {
 	return (
-		<Card className="border-border/70">
+		<Card className="h-full w-full border-border/70">
 			<CardContent className="flex items-start justify-between gap-4 p-5">
 				<div className="space-y-1.5">
 					<p className="text-sm text-muted-foreground">{title}</p>
@@ -626,7 +896,7 @@ function PartnerBreakdownPieCard({
 	}, [pieData]);
 
 	return (
-		<Card className="h-full border-border/70">
+		<Card className="h-full w-full border-border/70">
 			<CardHeader
 				className={cn(
 					isCompact ? "gap-2 pb-3" : "gap-3 pb-4",
@@ -656,14 +926,23 @@ function PartnerBreakdownPieCard({
 						<div
 							className={cn(
 								"relative mx-auto w-full",
-								isCompact ? "max-w-[260px]" : "max-w-[292px]",
+								isCompact
+									? "max-w-[320px] 2xl:max-w-[360px]"
+									: "max-w-[360px] 2xl:max-w-[420px]",
 							)}
 						>
 							<ChartContainer
 								config={breakdownPieChartConfig}
-								className={cn("w-full", isCompact ? "h-[230px]" : "h-[250px]")}
+								className={cn("w-full", isCompact ? "h-[260px]" : "h-[300px]")}
 							>
-								<PieChart>
+								<PieChart
+									margin={{
+										top: 24,
+										right: isCompact ? 72 : 84,
+										bottom: 24,
+										left: isCompact ? 72 : 84,
+									}}
+								>
 									<ChartTooltip
 										content={
 											<ChartTooltipContent
@@ -686,6 +965,14 @@ function PartnerBreakdownPieCard({
 															</div>
 															<div className="flex items-center justify-between gap-3">
 																<span className="text-muted-foreground">
+																	Participação
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatSharePercentage(dataPoint.sharePct)}
+																</span>
+															</div>
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
 																	Produção
 																</span>
 																<span className="font-mono font-medium tabular-nums text-foreground">
@@ -700,11 +987,16 @@ function PartnerBreakdownPieCard({
 									/>
 									<Pie
 										data={pieData}
-										dataKey="salesCount"
+										dataKey="quantityCount"
 										nameKey="label"
-										innerRadius={isCompact ? 54 : 60}
-										outerRadius={isCompact ? 88 : 96}
-										paddingAngle={2}
+										cx="50%"
+										cy="48%"
+										innerRadius={isCompact ? 44 : 50}
+										outerRadius={isCompact ? 78 : 88}
+										paddingAngle={3}
+										labelLine={false}
+										label={renderBreakdownPieLabel}
+										isAnimationActive={false}
 									>
 										{pieData.map((entry) => (
 											<Cell
@@ -715,12 +1007,6 @@ function PartnerBreakdownPieCard({
 									</Pie>
 								</PieChart>
 							</ChartContainer>
-							<div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-								<div className="text-2xl font-semibold tracking-tight text-foreground">
-									{formatCount(totalSales)}
-								</div>
-								<div className="text-xs text-muted-foreground">vendas</div>
-							</div>
 						</div>
 
 						<div className="grid grid-cols-2 gap-2">
@@ -777,14 +1063,117 @@ function PartnerBreakdownPieCard({
 												isCompact ? "text-xs" : "text-xs sm:text-sm",
 											)}
 										>
-											{formatCount(item.salesCount)}
+											{formatCount(item.quantityCount)}
 										</div>
 									</div>
 									<div className="mt-1 text-right text-xs text-muted-foreground">
-										{formatAmountFromCents(item.grossAmount)}
+										{formatSharePercentage(item.sharePct)}
 									</div>
 								</div>
 							))}
+						</div>
+					</div>
+				)}
+			</CardContent>
+		</Card>
+	);
+}
+
+function PartnerSalesSharePieCard({
+	items,
+}: {
+	items: PartnerDashboardData["ranking"];
+}) {
+	const pieData = useMemo(() => buildPartnerSalesSharePieData(items), [items]);
+
+	return (
+		<Card className="h-full border-border/70">
+			<CardHeader className="pb-3">
+				<CardTitle className="flex items-center gap-2">
+					<CircleDollarSign className="size-4 text-muted-foreground" />
+					Participação por parceiro
+				</CardTitle>
+				<CardDescription>
+					Distribuição do valor vendido por parceiro no período filtrado.
+				</CardDescription>
+			</CardHeader>
+			<CardContent className="pt-0">
+				{pieData.length === 0 ? (
+					<div className="flex h-[340px] items-center justify-center rounded-xl border border-dashed bg-muted/20 px-5 text-center text-sm text-muted-foreground">
+						Nenhum parceiro com valor vendido no período selecionado.
+					</div>
+				) : (
+					<div className="mx-auto w-full max-w-[460px]">
+						<div className="mx-auto w-full max-w-[420px] 2xl:max-w-[480px]">
+							<ChartContainer
+								config={breakdownPieChartConfig}
+								className="h-[340px] w-full"
+							>
+								<PieChart margin={{ top: 24, right: 56, bottom: 24, left: 56 }}>
+									<ChartTooltip
+										content={
+											<ChartTooltipContent
+												hideLabel
+												formatter={(_value, _name, item) => {
+													const dataPoint =
+														item.payload as PartnerSalesSharePieDataItem;
+													const primaryName = getPartnerPrimaryName(dataPoint);
+													const secondaryName =
+														getPartnerSecondaryName(dataPoint);
+													return (
+														<div className="flex w-full flex-col gap-1">
+															<div className="font-medium text-foreground">
+																{primaryName}
+															</div>
+															{secondaryName ? (
+																<div className="text-xs text-muted-foreground">
+																	{secondaryName}
+																</div>
+															) : null}
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
+																	Valor vendido
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatAmountFromCents(dataPoint.soldAmount)}
+																</span>
+															</div>
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
+																	Participação
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatSharePercentage(dataPoint.sharePct)}
+																</span>
+															</div>
+														</div>
+													);
+												}}
+											/>
+										}
+									/>
+									<Pie
+										data={pieData}
+										dataKey="soldAmount"
+										nameKey="partnerName"
+										cx="50%"
+										cy="48%"
+										innerRadius={44}
+										outerRadius={78}
+										paddingAngle={3}
+										labelLine={false}
+										label={renderPartnerSalesSharePieLabel}
+										isAnimationActive={false}
+									>
+										{pieData.map((entry) => (
+											<Cell
+												key={`${entry.partnerId}-${entry.fill}`}
+												fill={entry.fill}
+											/>
+										))}
+									</Pie>
+								</PieChart>
+							</ChartContainer>
 						</div>
 					</div>
 				)}
@@ -1791,9 +2180,9 @@ function PartnerCommissionsByCompetencyCard({
 	return (
 		<Card className="border-border/70">
 			<CardHeader>
-				<CardTitle>Comissões por competência</CardTitle>
+				<CardTitle>Comissões das vendas do período</CardTitle>
 				<CardDescription>
-					Parcelas previstas no mês, separadas entre receber e pagar.
+					Parcelas geradas pelas vendas do período, separadas entre receber e pagar.
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
@@ -1820,9 +2209,13 @@ function PartnerCommissionsByCompetencyCard({
 
 function DelinquencyBreakdownCard({
 	totalSales,
+	preCancellation,
 	buckets,
 }: {
 	totalSales: number;
+	preCancellation: NonNullable<
+		PartnerDashboardDelinquencyBreakdown["preCancellation"]
+	>;
 	buckets: PartnerDashboardData["delinquencyBreakdown"]["buckets"];
 }) {
 	const pieData = useMemo(() => buildDelinquencyPieData(buckets), [buckets]);
@@ -1840,11 +2233,12 @@ function DelinquencyBreakdownCard({
 			<CardHeader>
 				<CardTitle>Inadimplência</CardTitle>
 				<CardDescription>
-					Faixas de atraso das vendas de parceiros atualmente inadimplentes.
+					Agrupamento por quantidade de inadimplências abertas nas vendas dos
+					parceiros.
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="grid grid-cols-2 gap-2">
+				<div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
 					<div className="rounded-xl border bg-muted/20 p-3">
 						<div className="text-xs text-muted-foreground">
 							Vendas inadimplentes
@@ -1861,6 +2255,19 @@ function DelinquencyBreakdownCard({
 							{formatAmountFromCents(totalDelinquentAmount)}
 						</div>
 					</div>
+					<div className="rounded-xl border bg-muted/20 p-3 sm:text-right">
+						<div className="text-xs text-muted-foreground">
+							Pré-cancelamento
+						</div>
+						<div className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+							{formatCount(preCancellation.salesCount)}
+						</div>
+						<div className="text-[11px] text-muted-foreground">
+							{preCancellation.threshold === null
+								? "Regra desativada"
+								: `A partir de ${preCancellation.threshold} inadimpl${preCancellation.threshold === 1 ? "ência" : "ências"}`}
+						</div>
+					</div>
 				</div>
 				{pieDataWithSales.length === 0 ? (
 					<div className="flex h-[220px] items-center justify-center rounded-xl border border-dashed bg-muted/20 px-4 text-center text-sm text-muted-foreground">
@@ -1868,12 +2275,12 @@ function DelinquencyBreakdownCard({
 					</div>
 				) : (
 					<div className="space-y-4">
-						<div className="relative mx-auto w-full max-w-[260px]">
+						<div className="mx-auto w-full max-w-[460px]">
 							<ChartContainer
 								config={delinquencyChartConfig}
-								className="h-[230px] w-full"
+								className="h-[340px] w-full"
 							>
-								<PieChart>
+								<PieChart margin={{ top: 24, right: 56, bottom: 24, left: 56 }}>
 									<ChartTooltip
 										content={
 											<ChartTooltipContent
@@ -1888,10 +2295,18 @@ function DelinquencyBreakdownCard({
 															</div>
 															<div className="flex items-center justify-between gap-3">
 																<span className="text-muted-foreground">
-																	Vendas
+																	Inadimplências
 																</span>
 																<span className="font-mono font-medium tabular-nums text-foreground">
 																	{formatCount(Number(value))}
+																</span>
+															</div>
+															<div className="flex items-center justify-between gap-3">
+																<span className="text-muted-foreground">
+																	Participação
+																</span>
+																<span className="font-mono font-medium tabular-nums text-foreground">
+																	{formatSharePercentage(dataPoint.sharePct)}
 																</span>
 															</div>
 															<div className="flex items-center justify-between gap-3">
@@ -1910,11 +2325,16 @@ function DelinquencyBreakdownCard({
 									/>
 									<Pie
 										data={pieDataWithSales}
-										dataKey="salesCount"
+										dataKey="delinquencyCount"
 										nameKey="label"
-										innerRadius={56}
-										outerRadius={92}
-										paddingAngle={2}
+										cx="50%"
+										cy="48%"
+										innerRadius={44}
+										outerRadius={78}
+										paddingAngle={3}
+										labelLine={false}
+										label={renderDelinquencyPieLabel}
+										isAnimationActive={false}
 									>
 										{pieDataWithSales.map((entry) => (
 											<Cell
@@ -1925,12 +2345,6 @@ function DelinquencyBreakdownCard({
 									</Pie>
 								</PieChart>
 							</ChartContainer>
-							<div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-								<div className="text-2xl font-semibold tracking-tight text-foreground">
-									{formatCount(totalSales)}
-								</div>
-								<div className="text-xs text-muted-foreground">vendas</div>
-							</div>
 						</div>
 
 						<div className="space-y-2">
@@ -1950,10 +2364,10 @@ function DelinquencyBreakdownCard({
 									</div>
 									<div className="text-right">
 										<div className="text-xs font-medium tabular-nums text-foreground">
-											{formatCount(item.salesCount)}
+											{formatCount(item.delinquencyCount)}
 										</div>
 										<div className="text-[11px] text-muted-foreground">
-											{formatAmountFromCents(item.grossAmount)}
+											{formatSharePercentage(item.sharePct)}
 										</div>
 									</div>
 								</div>
@@ -2095,6 +2509,7 @@ export function DashboardPartnersOverview() {
 		supervisorId: effectiveSupervisorId || undefined,
 		partnerIds: effectivePartnerIdsCsv,
 		dynamicFieldId: effectiveDynamicFieldId || undefined,
+		keepPreviousData: false,
 	});
 	const productBreakdownQuery = usePartnerSalesDashboard({
 		startDate: effectiveStartDate,
@@ -2160,6 +2575,10 @@ export function DashboardPartnersOverview() {
 	]);
 
 	useEffect(() => {
+		if (!data) {
+			return;
+		}
+
 		const allowedIds = new Set(partnerOptions.map((partner) => partner.id));
 		const sanitizedIds = selectedPartnerIds.filter((id) => allowedIds.has(id));
 		if (sanitizedIds.length === selectedPartnerIds.length) {
@@ -2167,7 +2586,7 @@ export function DashboardPartnersOverview() {
 		}
 
 		void setPartnerIdsCsv(serializePartnerIdsCsv(sanitizedIds));
-	}, [partnerOptions, selectedPartnerIds, setPartnerIdsCsv]);
+	}, [data, partnerOptions, selectedPartnerIds, setPartnerIdsCsv]);
 
 	useEffect(() => {
 		if (!data) {
@@ -2626,16 +3045,17 @@ export function DashboardPartnersOverview() {
 					/>
 				</div>
 
-				<div className="space-y-6">
+				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)]">
 					<PartnerRankingSection items={data?.ranking ?? []} />
-					<SupervisorRankingSection
-						items={data?.ranking ?? []}
-						canceledByPartnerId={previousMonthCanceledByPartnerId}
-						hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
-					/>
+					<PartnerSalesSharePieCard items={data?.ranking ?? []} />
 				</div>
+				<SupervisorRankingSection
+					items={data?.ranking ?? []}
+					canceledByPartnerId={previousMonthCanceledByPartnerId}
+					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
+				/>
 
-				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
+				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1.05fr)_minmax(0,1.2fr)]">
 					<LoadingReveal
 						loading={
 							Boolean(effectiveDynamicFieldId) &&
@@ -2734,11 +3154,11 @@ export function DashboardPartnersOverview() {
 						contentKey={`product-breakdown-${productBreakdownDepth}`}
 					>
 						<PartnerBreakdownPieCard
-							title="Vendas por subproduto do produto pai"
+							title="Vendas por Produto"
 							description={
 								productBreakdownDepth === "ALL_LEVELS"
-									? "Distribuição pelo caminho completo dos produtos usados nas vendas."
-									: "Distribuição apenas pelo primeiro nível abaixo do produto pai."
+									? "Distribuição pelo caminho completo dos produtos vendidos."
+									: "Distribuição pelo primeiro nível abaixo do produto pai."
 							}
 							items={productBreakdown?.items ?? []}
 							emptyMessage="Nenhum produto encontrado nas vendas do período selecionado."
@@ -2765,7 +3185,20 @@ export function DashboardPartnersOverview() {
 					</LoadingReveal>
 
 					<DelinquencyBreakdownCard
-						totalSales={data?.delinquencyBreakdown.totalSales ?? 0}
+						totalSales={(
+							(data?.delinquencyBreakdown ??
+								{}) as PartnerDashboardDelinquencyBreakdown
+						).totalSales ?? 0}
+						preCancellation={
+							(
+								(data?.delinquencyBreakdown ??
+									{}) as PartnerDashboardDelinquencyBreakdown
+							).preCancellation ?? {
+								threshold: null,
+								salesCount: 0,
+								grossAmount: 0,
+							}
+						}
 						buckets={data?.delinquencyBreakdown.buckets ?? []}
 					/>
 				</div>

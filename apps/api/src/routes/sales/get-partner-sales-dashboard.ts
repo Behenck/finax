@@ -12,7 +12,6 @@ import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import {
-	buildCommissionInstallmentsVisibilityWhere,
 	buildPartnersVisibilityWhere,
 	buildSalesVisibilityWhere,
 	loadMemberDataVisibilityContext,
@@ -25,6 +24,7 @@ import {
 	parseSaleDateInput,
 	type GetPartnerSalesDashboardQuery,
 } from "./sale-schemas";
+import { normalizePreCancellationDelinquencyThreshold } from "./sale-pre-cancellation";
 import {
 	parseSaleDynamicFieldSchemaJson,
 	parseSaleDynamicFieldValuesJson,
@@ -44,17 +44,6 @@ const PARTNER_DASHBOARD_FUNNEL_STATUSES = [
 ] as const;
 const DAY_TIMELINE_MAX_RANGE_DAYS = 90;
 const PARTNER_DASHBOARD_TOP_LIST_LIMIT = 10;
-const DELINQUENCY_BUCKETS = [
-	{ key: "RANGE_1_30", label: "1 a 30 dias", min: 0, max: 30 },
-	{ key: "RANGE_31_60", label: "31 a 60 dias", min: 31, max: 60 },
-	{ key: "RANGE_61_90", label: "61 a 90 dias", min: 61, max: 90 },
-	{
-		key: "RANGE_90_PLUS",
-		label: "90+ dias",
-		min: 91,
-		max: Number.POSITIVE_INFINITY,
-	},
-] as const;
 const RECENCY_BUCKETS = [
 	{ key: "RANGE_0_30", label: "0 a 30 dias", min: 0, max: 30 },
 	{ key: "RANGE_31_60", label: "31 a 60 dias", min: 31, max: 60 },
@@ -536,22 +525,89 @@ function buildProductBreakdown(
 	};
 }
 
-function getDelinquencyBucketKey(ageInDays: number) {
-	for (const bucket of DELINQUENCY_BUCKETS) {
-		if (ageInDays >= bucket.min && ageInDays <= bucket.max) {
-			return bucket.key;
-		}
-	}
-
-	return null;
+function formatDelinquencyCountBucketLabel(
+	count: number,
+	includeOrMore = false,
+) {
+	const baseLabel = `${count} inadimpl${count === 1 ? "ência" : "ências"}`;
+	return includeOrMore ? `${baseLabel} ou mais` : baseLabel;
 }
 
-function buildEmptyDelinquencyBuckets() {
-	return DELINQUENCY_BUCKETS.map((bucket) => ({
+function buildEmptyDelinquencyBuckets(
+	preCancellationThreshold: number | null,
+	maxObservedOpenCount: number,
+) {
+	if (preCancellationThreshold !== null) {
+		const buckets = Array.from(
+			{ length: Math.max(preCancellationThreshold - 1, 0) },
+			(_, index) => {
+				const openCount = index + 1;
+				return {
+					key: `OPEN_COUNT_${openCount}`,
+					label: formatDelinquencyCountBucketLabel(openCount),
+					openCount,
+					isPreCancellationBucket: false,
+					salesCount: 0,
+					grossAmount: 0,
+				};
+			},
+		);
+
+		buckets.push({
+			key: "PRE_CANCELLATION",
+			label: "Pré-cancelamento",
+			openCount: preCancellationThreshold,
+			isPreCancellationBucket: true,
+			salesCount: 0,
+			grossAmount: 0,
+		});
+
+		return buckets;
+	}
+
+	const bucketCount = Math.max(maxObservedOpenCount, 1);
+
+	return Array.from({ length: bucketCount }, (_, index) => {
+		const openCount = index + 1;
+
+		return {
+			key: `OPEN_COUNT_${openCount}`,
+			label: formatDelinquencyCountBucketLabel(openCount),
+			openCount,
+			isPreCancellationBucket: false,
+			salesCount: 0,
+			grossAmount: 0,
+		};
+	});
+}
+
+function resolveDelinquencyBucketIndex(params: {
+	openCount: number;
+	preCancellationThreshold: number | null;
+	bucketCount: number;
+}) {
+	if (params.openCount <= 0) {
+		return null;
+	}
+
+	if (
+		params.preCancellationThreshold !== null &&
+		params.openCount >= params.preCancellationThreshold
+	) {
+		return params.bucketCount - 1;
+	}
+
+	return Math.min(params.openCount, params.bucketCount) - 1;
+}
+
+function toPublicDelinquencyBuckets(
+	buckets: ReturnType<typeof buildEmptyDelinquencyBuckets>,
+) {
+	return buckets.map((bucket) => ({
 		key: bucket.key,
 		label: bucket.label,
-		salesCount: 0,
-		grossAmount: 0,
+		salesCount: bucket.salesCount,
+		grossAmount: bucket.grossAmount,
 	}));
 }
 
@@ -691,6 +747,10 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				const startDate = parseSaleDateInput(startDateInput);
 				const endDate = parseSaleDateInput(endDateInput);
 				const inactivityStartDate = addUtcMonths(endDate, -inactiveMonths);
+				const preCancellationThreshold =
+					normalizePreCancellationDelinquencyThreshold(
+						organization.preCancellationDelinquencyThreshold,
+					);
 				const partnerIdFilterSet = partnerIds ? new Set(partnerIds) : null;
 				const partnersVisibilityWhere =
 					buildPartnersVisibilityWhere(visibilityContext);
@@ -764,8 +824,6 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				);
 				const salesVisibilityWhere =
 					buildSalesVisibilityWhere(visibilityContext);
-				const commissionInstallmentsVisibilityWhere =
-					buildCommissionInstallmentsVisibilityWhere(visibilityContext);
 				const dashboardSalesWhere: Prisma.SaleWhereInput = {
 					AND: [
 						{
@@ -963,46 +1021,17 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				const saleIds = sales.map((sale) => sale.id);
 				const [
 					delinquencySummaryBySaleId,
-					commissionInstallmentsInCompetencyRange,
+					commissionInstallmentsBySalePeriod,
 				] = await Promise.all([
 					loadSaleDelinquencySummaryBySaleIds(prisma, organization.id, saleIds),
-					filteredPartnerIds.length > 0
+					saleIds.length > 0
 						? prisma.saleCommissionInstallment.findMany({
 								where: {
-									AND: [
-										{
-											expectedPaymentDate: {
-												gte: startDate,
-												lte: endDate,
-											},
+									saleCommission: {
+										saleId: {
+											in: saleIds,
 										},
-										{
-											saleCommission: {
-												sale: {
-													organizationId: organization.id,
-													status: {
-														in: [...PARTNER_DASHBOARD_SALE_STATUSES],
-													},
-													responsibleType: SaleResponsibleType.PARTNER,
-													responsibleId: {
-														in: filteredPartnerIds,
-													},
-												},
-											},
-										},
-										...(salesVisibilityWhere
-											? [
-													{
-														saleCommission: {
-															sale: salesVisibilityWhere,
-														},
-													},
-												]
-											: []),
-										...(commissionInstallmentsVisibilityWhere
-											? [commissionInstallmentsVisibilityWhere]
-											: []),
-									],
+									},
 								},
 								select: {
 									amount: true,
@@ -1037,7 +1066,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					string,
 					PartnerCommissionTotals
 				>();
-				for (const installment of commissionInstallmentsInCompetencyRange) {
+				for (const installment of commissionInstallmentsBySalePeriod) {
 					const partnerId = installment.saleCommission.sale.responsibleId;
 					if (!partnerId) {
 						continue;
@@ -1217,10 +1246,17 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						.map((row) => row.responsibleId)
 						.filter((value): value is string => typeof value === "string"),
 				);
-				const delinquencyBuckets = buildEmptyDelinquencyBuckets();
-				const delinquencyBucketIndexByKey = new Map(
-					delinquencyBuckets.map((bucket, index) => [bucket.key, index]),
+				const maxObservedOpenDelinquencyCount = sales.reduce((currentMax, sale) => {
+					const openCount =
+						delinquencySummaryBySaleId.get(sale.id)?.openCount ?? 0;
+					return Math.max(currentMax, openCount);
+				}, 0);
+				const delinquencyBuckets = buildEmptyDelinquencyBuckets(
+					preCancellationThreshold,
+					maxObservedOpenDelinquencyCount,
 				);
+				let preCancellationSalesCount = 0;
+				let preCancellationGrossAmount = 0;
 				const recencyBuckets = buildEmptyRecencyBuckets();
 				const recencyBucketIndexByKey = new Map(
 					recencyBuckets.map((bucket, index) => [bucket.key, index]),
@@ -1293,22 +1329,20 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						partnerDelinquentSalesCount += 1;
 						partnerDelinquentGrossAmount += sale.totalAmount;
 
-						const oldestDueDate = delinquencySummary.oldestDueDate;
-						if (!oldestDueDate) {
-							continue;
+						if (
+							preCancellationThreshold !== null &&
+							delinquencySummary.openCount >= preCancellationThreshold
+						) {
+							preCancellationSalesCount += 1;
+							preCancellationGrossAmount += sale.totalAmount;
 						}
 
-						const ageInDays = getUtcCalendarDayDifference(
-							endDate,
-							oldestDueDate,
-						);
-						const bucketKey = getDelinquencyBucketKey(ageInDays);
-						if (!bucketKey) {
-							continue;
-						}
-
-						const bucketIndex = delinquencyBucketIndexByKey.get(bucketKey);
-						if (bucketIndex === undefined) {
+						const bucketIndex = resolveDelinquencyBucketIndex({
+							openCount: delinquencySummary.openCount,
+							preCancellationThreshold,
+							bucketCount: delinquencyBuckets.length,
+						});
+						if (bucketIndex === null) {
 							continue;
 						}
 
@@ -1641,7 +1675,12 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					commissionBreakdown,
 					delinquencyBreakdown: {
 						totalSales: delinquentSalesCount,
-						buckets: delinquencyBuckets,
+						preCancellation: {
+							threshold: preCancellationThreshold,
+							salesCount: preCancellationSalesCount,
+							grossAmount: preCancellationGrossAmount,
+						},
+						buckets: toPublicDelinquencyBuckets(delinquencyBuckets),
 					},
 					recencyBreakdown: {
 						buckets: recencyBuckets,

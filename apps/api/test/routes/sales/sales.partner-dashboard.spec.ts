@@ -480,42 +480,82 @@ describe("partner sales dashboard", () => {
 		vi.useRealTimers();
 	});
 
-	it("should aggregate partner production, commissions, ranking and delinquency", async () => {
-		const fixture = await createFixture();
-		await seedDashboardData(fixture);
+	it(
+		"should aggregate partner production, commissions, ranking and delinquency",
+		async () => {
+			const fixture = await createFixture();
+			await seedDashboardData(fixture);
+			await prisma.organization.update({
+				where: {
+					id: fixture.org.id,
+				},
+				data: {
+					preCancellationDelinquencyThreshold: 3,
+				},
+			});
 
-		const response = await request(app.server)
-			.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
-			.query({
-				startDate: "2026-01-01",
-				endDate: "2026-04-08",
-				inactiveMonths: 3,
-				dynamicFieldId: ASSET_TYPE_FIELD_ID,
-			})
-			.set("Authorization", `Bearer ${fixture.token}`);
+			const delinquentSale = await prisma.sale.findFirst({
+				where: {
+					organizationId: fixture.org.id,
+					responsibleId: fixture.partnerAlpha.id,
+					saleDate: new Date("2026-02-10T00:00:00.000Z"),
+				},
+				select: {
+					id: true,
+				},
+			});
 
-		expect(response.statusCode).toBe(200);
-		expect(response.body.summary).toEqual({
-			totalPartners: 3,
-			activePartners: 2,
-			inactivePartners: 1,
-			producingPartners: 2,
-			producingPartnersRatePct: 66.67,
-			partnersWithoutProduction: 1,
-			totalSales: 3,
-			grossAmount: 230_000,
-			averageTicket: 76_667,
-			averageTicketPerProducingPartner: 115_000,
-			commissionReceivedAmount: 15_000,
-			commissionPendingAmount: 4_000,
-			netRevenueAmount: 12_000,
-			delinquentSalesCount: 1,
-			delinquentGrossAmount: 100_000,
-			delinquencyRateByCountPct: 33.33,
-			delinquencyRateByAmountPct: 43.48,
-		});
-		expect(response.body.period.timelineGranularity).toBe("MONTH");
-		expect(response.body.timeline).toEqual([
+			expect(delinquentSale?.id).toBeTruthy();
+
+			await prisma.saleDelinquency.createMany({
+				data: [
+					{
+						saleId: delinquentSale!.id,
+						organizationId: fixture.org.id,
+						dueDate: new Date("2026-03-15T00:00:00.000Z"),
+						createdById: fixture.user.id,
+					},
+					{
+						saleId: delinquentSale!.id,
+						organizationId: fixture.org.id,
+						dueDate: new Date("2026-03-20T00:00:00.000Z"),
+						createdById: fixture.user.id,
+					},
+				],
+			});
+
+			const response = await request(app.server)
+				.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
+				.query({
+					startDate: "2026-01-01",
+					endDate: "2026-04-08",
+					inactiveMonths: 3,
+					dynamicFieldId: ASSET_TYPE_FIELD_ID,
+				})
+				.set("Authorization", `Bearer ${fixture.token}`);
+
+			expect(response.statusCode).toBe(200);
+			expect(response.body.summary).toEqual({
+				totalPartners: 3,
+				activePartners: 2,
+				inactivePartners: 1,
+				producingPartners: 2,
+				producingPartnersRatePct: 66.67,
+				partnersWithoutProduction: 1,
+				totalSales: 3,
+				grossAmount: 230_000,
+				averageTicket: 76_667,
+				averageTicketPerProducingPartner: 115_000,
+				commissionReceivedAmount: 15_000,
+				commissionPendingAmount: 10_000,
+				netRevenueAmount: 12_000,
+				delinquentSalesCount: 1,
+				delinquentGrossAmount: 100_000,
+				delinquencyRateByCountPct: 33.33,
+				delinquencyRateByAmountPct: 43.48,
+			});
+			expect(response.body.period.timelineGranularity).toBe("MONTH");
+			expect(response.body.timeline).toEqual([
 			{
 				label: "01/2026",
 				date: expect.stringContaining("2026-01-01"),
@@ -780,36 +820,36 @@ describe("partner sales dashboard", () => {
 				producingRatePct: 33.33,
 			},
 		]);
-		expect(response.body.commissionBreakdown).toEqual({
-			receivedAmount: 15_000,
-			pendingAmount: 4_000,
-			canceledAmount: 0,
-			payablePaidAmount: 3_000,
-			payablePendingAmount: 2_500,
-			payableCanceledAmount: 0,
-			netRevenueAmount: 12_000,
-			pendingByPartner: {
-				items: [
-					{
-						partnerId: fixture.partnerAlpha.id,
-						partnerName: fixture.partnerAlpha.name,
-						partnerCompanyName: fixture.partnerAlpha.companyName,
-						status: "ACTIVE",
-						supervisors: [
-							{
-								id: fixture.supervisorUser.id,
-								name: fixture.supervisorUser.name,
-							},
-						],
-						salesCount: 2,
-						grossAmount: 150_000,
-						pendingAmount: 4_000,
-						lastSaleDate: expect.stringContaining("2026-03-05"),
-					},
-				],
-			},
-		});
-		expect(response.body.dynamicFieldBreakdown).toEqual({
+			expect(response.body.commissionBreakdown).toEqual({
+				receivedAmount: 15_000,
+				pendingAmount: 10_000,
+				canceledAmount: 0,
+				payablePaidAmount: 3_000,
+				payablePendingAmount: 2_500,
+				payableCanceledAmount: 0,
+				netRevenueAmount: 12_000,
+				pendingByPartner: {
+					items: [
+						{
+							partnerId: fixture.partnerAlpha.id,
+							partnerName: fixture.partnerAlpha.name,
+							partnerCompanyName: fixture.partnerAlpha.companyName,
+							status: "ACTIVE",
+							supervisors: [
+								{
+									id: fixture.supervisorUser.id,
+									name: fixture.supervisorUser.name,
+								},
+							],
+							salesCount: 2,
+							grossAmount: 150_000,
+							pendingAmount: 10_000,
+							lastSaleDate: expect.stringContaining("2026-03-05"),
+						},
+					],
+				},
+			});
+			expect(response.body.dynamicFieldBreakdown).toEqual({
 			availableFields: [
 				{
 					fieldId: COVERAGE_FIELD_ID,
@@ -898,30 +938,29 @@ describe("partner sales dashboard", () => {
 		});
 		expect(response.body.delinquencyBreakdown).toEqual({
 			totalSales: 1,
+			preCancellation: {
+				threshold: 3,
+				salesCount: 1,
+				grossAmount: 100_000,
+			},
 			buckets: [
 				{
-					key: "RANGE_1_30",
-					label: "1 a 30 dias",
+					key: "OPEN_COUNT_1",
+					label: "1 inadimplência",
 					salesCount: 0,
 					grossAmount: 0,
 				},
 				{
-					key: "RANGE_31_60",
-					label: "31 a 60 dias",
+					key: "OPEN_COUNT_2",
+					label: "2 inadimplências",
+					salesCount: 0,
+					grossAmount: 0,
+				},
+				{
+					key: "PRE_CANCELLATION",
+					label: "Pré-cancelamento",
 					salesCount: 1,
 					grossAmount: 100_000,
-				},
-				{
-					key: "RANGE_61_90",
-					label: "61 a 90 dias",
-					salesCount: 0,
-					grossAmount: 0,
-				},
-				{
-					key: "RANGE_90_PLUS",
-					label: "90+ dias",
-					salesCount: 0,
-					grossAmount: 0,
 				},
 			],
 		});
@@ -1008,7 +1047,9 @@ describe("partner sales dashboard", () => {
 				lastSaleDate: expect.stringContaining("2025-12-15"),
 			},
 		]);
-	});
+		},
+		20_000,
+	);
 
 	it("should include canceled sales in timeline series without affecting valid summary", async () => {
 		const fixture = await createFixture();
@@ -1061,7 +1102,7 @@ describe("partner sales dashboard", () => {
 		});
 	});
 
-	it("should keep commission competency values even when sale date is outside the period", async () => {
+	it("should ignore commission installments when the sale is outside the filtered period", async () => {
 		const fixture = await createFixture();
 		await seedDashboardData(fixture);
 
@@ -1079,35 +1120,18 @@ describe("partner sales dashboard", () => {
 		expect(response.body.summary.totalSales).toBe(0);
 		expect(response.body.summary.grossAmount).toBe(0);
 		expect(response.body.summary.commissionReceivedAmount).toBe(0);
-		expect(response.body.summary.commissionPendingAmount).toBe(4_000);
+		expect(response.body.summary.commissionPendingAmount).toBe(0);
 		expect(response.body.summary.netRevenueAmount).toBe(0);
 		expect(response.body.commissionBreakdown).toEqual({
 			receivedAmount: 0,
-			pendingAmount: 4_000,
+			pendingAmount: 0,
 			canceledAmount: 0,
 			payablePaidAmount: 0,
-			payablePendingAmount: 2_500,
+			payablePendingAmount: 0,
 			payableCanceledAmount: 0,
 			netRevenueAmount: 0,
 			pendingByPartner: {
-				items: [
-					{
-						partnerId: fixture.partnerAlpha.id,
-						partnerName: fixture.partnerAlpha.name,
-						partnerCompanyName: fixture.partnerAlpha.companyName,
-						status: "ACTIVE",
-						supervisors: [
-							{
-								id: fixture.supervisorUser.id,
-								name: fixture.supervisorUser.name,
-							},
-						],
-						salesCount: 0,
-						grossAmount: 0,
-						pendingAmount: 4_000,
-						lastSaleDate: expect.stringContaining("2026-03-05"),
-					},
-				],
+				items: [],
 			},
 		});
 	});

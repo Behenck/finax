@@ -20,6 +20,9 @@ export const getOrganizationSlug200Schema = z.object({
     domain: z.nullable(z.string()),
     shouldAttachUserByDomain: z.boolean(),
     enableSalesTransactionsSync: z.boolean(),
+    preCancellationDelinquencyThreshold: z.nullable(
+      z.int().min(1).max(9007199254740991),
+    ),
     avatarUrl: z.nullable(z.url()),
     ownerId: z.uuid(),
     createdAt: z.iso.datetime(),

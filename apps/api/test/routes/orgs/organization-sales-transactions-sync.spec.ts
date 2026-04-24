@@ -34,7 +34,7 @@ describe("organization sales transactions sync", () => {
 		await app.close();
 	});
 
-	it("should expose enableSalesTransactionsSync in get organization and get me", async () => {
+	it("should expose organization preferences in get organization and get me", async () => {
 		const fixture = await createFixture();
 
 		const getOrganizationResponse = await request(app.server)
@@ -45,6 +45,10 @@ describe("organization sales transactions sync", () => {
 		expect(
 			getOrganizationResponse.body.organization.enableSalesTransactionsSync,
 		).toBe(false);
+		expect(
+			getOrganizationResponse.body.organization
+				.preCancellationDelinquencyThreshold,
+		).toBeNull();
 
 		const meResponse = await request(app.server)
 			.get("/me")
@@ -54,9 +58,12 @@ describe("organization sales transactions sync", () => {
 		expect(meResponse.body.organization.enableSalesTransactionsSync).toBe(
 			false,
 		);
+		expect(
+			meResponse.body.organization.preCancellationDelinquencyThreshold,
+		).toBeNull();
 	});
 
-	it("should persist enableSalesTransactionsSync when updating organization", async () => {
+	it("should persist organization preferences when updating organization", async () => {
 		const fixture = await createFixture();
 
 		const updateResponse = await request(app.server)
@@ -67,6 +74,7 @@ describe("organization sales transactions sync", () => {
 				domain: null,
 				shouldAttachUserByDomain: false,
 				enableSalesTransactionsSync: true,
+				preCancellationDelinquencyThreshold: 3,
 			});
 
 		expect(updateResponse.statusCode).toBe(204);
@@ -77,10 +85,12 @@ describe("organization sales transactions sync", () => {
 			},
 			select: {
 				enableSalesTransactionsSync: true,
+				preCancellationDelinquencyThreshold: true,
 			},
 		});
 
 		expect(updatedOrganization?.enableSalesTransactionsSync).toBe(true);
+		expect(updatedOrganization?.preCancellationDelinquencyThreshold).toBe(3);
 
 		const getOrganizationResponse = await request(app.server)
 			.get(`/organization/${fixture.org.slug}`)
@@ -90,9 +100,13 @@ describe("organization sales transactions sync", () => {
 		expect(
 			getOrganizationResponse.body.organization.enableSalesTransactionsSync,
 		).toBe(true);
+		expect(
+			getOrganizationResponse.body.organization
+				.preCancellationDelinquencyThreshold,
+		).toBe(3);
 	});
 
-	it("should persist enableSalesTransactionsSync when creating organizations", async () => {
+	it("should persist organization preferences when creating organizations", async () => {
 		const fixture = await createFixture();
 		const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
 
@@ -103,6 +117,7 @@ describe("organization sales transactions sync", () => {
 				name: `Org Enabled ${suffix}`,
 				domain: null,
 				enableSalesTransactionsSync: true,
+				preCancellationDelinquencyThreshold: 4,
 			});
 
 		expect(createEnabledResponse.statusCode).toBe(201);
@@ -113,9 +128,11 @@ describe("organization sales transactions sync", () => {
 			},
 			select: {
 				enableSalesTransactionsSync: true,
+				preCancellationDelinquencyThreshold: true,
 			},
 		});
 		expect(enabledOrganization?.enableSalesTransactionsSync).toBe(true);
+		expect(enabledOrganization?.preCancellationDelinquencyThreshold).toBe(4);
 
 		const createDefaultResponse = await request(app.server)
 			.post("/organizations")
@@ -133,8 +150,10 @@ describe("organization sales transactions sync", () => {
 			},
 			select: {
 				enableSalesTransactionsSync: true,
+				preCancellationDelinquencyThreshold: true,
 			},
 		});
 		expect(defaultOrganization?.enableSalesTransactionsSync).toBe(false);
+		expect(defaultOrganization?.preCancellationDelinquencyThreshold).toBeNull();
 	});
 });

@@ -1,12 +1,20 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import type { Prisma } from "generated/prisma/client";
-import { SaleResponsibleType, SaleStatus } from "generated/prisma/enums";
+import {
+	SaleCommissionInstallmentStatus,
+	SaleResponsibleType,
+	SaleStatus,
+} from "generated/prisma/enums";
 import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/middleware/auth";
 import { BadRequestError } from "../_errors/bad-request-error";
-import { loadOrganizationInstallmentsSummaryByDirection } from "./sale-commissions";
+import { loadSaleDelinquencySummaryBySaleIds } from "./sale-delinquencies";
+import {
+	isSaleInPreCancellation,
+	normalizePreCancellationDelinquencyThreshold,
+} from "./sale-pre-cancellation";
 import {
 	GetSalesDashboardQuerySchema,
 	SalesDashboardResponseSchema,
@@ -34,6 +42,19 @@ type PeriodRange = {
 type SummaryBucket = {
 	count: number;
 	amount: number;
+};
+
+type InstallmentSummaryBucket = {
+	count: number;
+	amount: number;
+};
+
+type InstallmentDirectionSummary = {
+	total: InstallmentSummaryBucket;
+	pending: InstallmentSummaryBucket;
+	paid: InstallmentSummaryBucket;
+	canceled: InstallmentSummaryBucket;
+	reversed: InstallmentSummaryBucket;
 };
 
 function createUtcDate(year: number, monthIndex: number, day: number) {
@@ -204,6 +225,57 @@ async function loadSalesStatusSummary(
 			bucketsByStatus.get(status) ?? { count: 0, amount: 0 },
 		]),
 	) as Record<(typeof dashboardSaleStatuses)[number], SummaryBucket>;
+}
+
+async function loadSalesPreCancellationSummary(
+	organizationId: string,
+	range: PeriodRange,
+	threshold: number | null | undefined,
+) {
+	const normalizedThreshold =
+		normalizePreCancellationDelinquencyThreshold(threshold);
+
+	if (normalizedThreshold === null) {
+		return {
+			count: 0,
+			threshold: null,
+		};
+	}
+
+	const sales = await prisma.sale.findMany({
+		where: buildSalesDateWhere(organizationId, range),
+		select: {
+			id: true,
+		},
+	});
+
+	const saleIds = sales.map((sale) => sale.id);
+	const delinquencySummaryBySaleId = await loadSaleDelinquencySummaryBySaleIds(
+		prisma,
+		organizationId,
+		saleIds,
+	);
+
+	const count = saleIds.reduce((total, saleId) => {
+		const delinquencySummary = delinquencySummaryBySaleId.get(saleId);
+
+		if (
+			!delinquencySummary ||
+			!isSaleInPreCancellation({
+				threshold: normalizedThreshold,
+				openDelinquencyCount: delinquencySummary.openCount,
+			})
+		) {
+			return total;
+		}
+
+		return total + 1;
+	}, 0);
+
+	return {
+		count,
+		threshold: normalizedThreshold,
+	};
 }
 
 async function loadSalesTimeline(organizationId: string, range: PeriodRange) {
@@ -393,21 +465,82 @@ async function loadCommissionPeriodSummary(
 	organizationId: string,
 	range: PeriodRange,
 ) {
-	const summaryByDirection =
-		await loadOrganizationInstallmentsSummaryByDirection({
-			organizationId,
-			q: "",
-			status: "ALL",
-			expectedFrom: range.from,
-			expectedTo: range.to,
+	const loadDirectionSummary = async (
+		direction: "INCOME" | "OUTCOME",
+	): Promise<InstallmentDirectionSummary> => {
+		const buildWhere = (
+			status?: SaleCommissionInstallmentStatus,
+		): Prisma.SaleCommissionInstallmentWhereInput => ({
+			saleCommission: {
+				direction,
+				sale: {
+					organizationId,
+					status: {
+						in: [...headlineSaleStatuses],
+					},
+					saleDate: {
+						gte: range.from,
+						lte: range.to,
+					},
+				},
+			},
+			...(status ? { status } : {}),
 		});
 
+		const toBucket = (aggregate: {
+			_count: { _all: number };
+			_sum: { amount: number | null };
+		}): InstallmentSummaryBucket => ({
+			count: aggregate._count._all,
+			amount: aggregate._sum.amount ?? 0,
+		});
+
+		const [total, pending, paid, canceled, reversed] = await Promise.all([
+			prisma.saleCommissionInstallment.aggregate({
+				where: buildWhere(),
+				_count: { _all: true },
+				_sum: { amount: true },
+			}),
+			prisma.saleCommissionInstallment.aggregate({
+				where: buildWhere(SaleCommissionInstallmentStatus.PENDING),
+				_count: { _all: true },
+				_sum: { amount: true },
+			}),
+			prisma.saleCommissionInstallment.aggregate({
+				where: buildWhere(SaleCommissionInstallmentStatus.PAID),
+				_count: { _all: true },
+				_sum: { amount: true },
+			}),
+			prisma.saleCommissionInstallment.aggregate({
+				where: buildWhere(SaleCommissionInstallmentStatus.CANCELED),
+				_count: { _all: true },
+				_sum: { amount: true },
+			}),
+			prisma.saleCommissionInstallment.aggregate({
+				where: buildWhere(SaleCommissionInstallmentStatus.REVERSED),
+				_count: { _all: true },
+				_sum: { amount: true },
+			}),
+		]);
+
+		return {
+			total: toBucket(total),
+			pending: toBucket(pending),
+			paid: toBucket(paid),
+			canceled: toBucket(canceled),
+			reversed: toBucket(reversed),
+		};
+	};
+
+	const [income, outcome] = await Promise.all([
+		loadDirectionSummary("INCOME"),
+		loadDirectionSummary("OUTCOME"),
+	]);
+
 	return {
-		INCOME: summaryByDirection.INCOME,
-		OUTCOME: summaryByDirection.OUTCOME,
-		netAmount:
-			summaryByDirection.INCOME.total.amount -
-			summaryByDirection.OUTCOME.total.amount,
+		INCOME: income,
+		OUTCOME: outcome,
+		netAmount: income.total.amount - outcome.total.amount,
 	};
 }
 
@@ -441,6 +574,7 @@ export async function getSalesDashboard(app: FastifyInstance) {
 					},
 					select: {
 						id: true,
+						preCancellationDelinquencyThreshold: true,
 					},
 				});
 
@@ -454,6 +588,7 @@ export async function getSalesDashboard(app: FastifyInstance) {
 				const [
 					currentSales,
 					previousSales,
+					preCancellationSummary,
 					byStatus,
 					timeline,
 					topProducts,
@@ -463,6 +598,11 @@ export async function getSalesDashboard(app: FastifyInstance) {
 				] = await Promise.all([
 					loadSalesHeadlineSummary(organization.id, currentPeriod),
 					loadSalesHeadlineSummary(organization.id, previousPeriod),
+					loadSalesPreCancellationSummary(
+						organization.id,
+						currentPeriod,
+						organization.preCancellationDelinquencyThreshold,
+					),
 					loadSalesStatusSummary(organization.id, currentPeriod),
 					loadSalesTimeline(organization.id, currentPeriod),
 					loadTopProducts(organization.id, currentPeriod),
@@ -480,13 +620,14 @@ export async function getSalesDashboard(app: FastifyInstance) {
 					sales: {
 						current: currentSales,
 						previous: previousSales,
+						preCancellation: preCancellationSummary,
 						byStatus,
 						timeline,
 						topProducts,
 						topResponsibles,
 					},
 					commissions: {
-						reference: "EXPECTED_PAYMENT_DATE" as const,
+						reference: "SALE_DATE" as const,
 						current: currentCommissions,
 						previous: previousCommissions,
 					},

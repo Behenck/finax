@@ -211,6 +211,7 @@ export const OrganizationScalarFieldEnum = {
   domain: 'domain',
   shouldAttachUserByDomain: 'shouldAttachUserByDomain',
   enableSalesTransactionsSync: 'enableSalesTransactionsSync',
+  preCancellationDelinquencyThreshold: 'preCancellationDelinquencyThreshold',
   avatarUrl: 'avatarUrl',
   ownerId: 'ownerId',
   createdAt: 'createdAt',

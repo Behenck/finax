@@ -41,6 +41,10 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
       grossAmount: z.int().min(0).max(9007199254740991),
       averageTicket: z.int().min(0).max(9007199254740991),
     }),
+    preCancellation: z.object({
+      count: z.int().min(0).max(9007199254740991),
+      threshold: z.nullable(z.int().min(1).max(9007199254740991)),
+    }),
     byStatus: z.object({
       PENDING: z.object({
         count: z.int().min(0).max(9007199254740991),
@@ -85,7 +89,7 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
     ),
   }),
   commissions: z.object({
-    reference: z.enum(["EXPECTED_PAYMENT_DATE"]),
+    reference: z.enum(["SALE_DATE"]),
     current: z.object({
       INCOME: z.object({
         total: z.object({

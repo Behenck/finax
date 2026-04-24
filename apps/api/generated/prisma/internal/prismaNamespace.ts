@@ -4062,6 +4062,7 @@ export const OrganizationScalarFieldEnum = {
   domain: 'domain',
   shouldAttachUserByDomain: 'shouldAttachUserByDomain',
   enableSalesTransactionsSync: 'enableSalesTransactionsSync',
+  preCancellationDelinquencyThreshold: 'preCancellationDelinquencyThreshold',
   avatarUrl: 'avatarUrl',
   ownerId: 'ownerId',
   createdAt: 'createdAt',
@@ -4910,6 +4911,20 @@ export type ListEnumMemberDataScopeFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'PermissionOverrideEffect'
  */
 export type EnumPermissionOverrideEffectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionOverrideEffect'>
@@ -5032,20 +5047,6 @@ export type EnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInp
  * Reference to a field of type 'CustomerResponsibleType[]'
  */
 export type ListEnumCustomerResponsibleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerResponsibleType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 

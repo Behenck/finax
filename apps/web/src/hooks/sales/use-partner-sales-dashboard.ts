@@ -9,6 +9,7 @@ interface UsePartnerSalesDashboardParams {
 	partnerIds?: string;
 	dynamicFieldId?: string;
 	productBreakdownDepth?: "FIRST_LEVEL" | "ALL_LEVELS";
+	keepPreviousData?: boolean;
 }
 
 export function usePartnerSalesDashboard({
@@ -19,6 +20,7 @@ export function usePartnerSalesDashboard({
 	partnerIds,
 	dynamicFieldId,
 	productBreakdownDepth,
+	keepPreviousData = true,
 }: UsePartnerSalesDashboardParams) {
 	const { organization } = useApp();
 	const slug = organization?.slug ?? "";
@@ -39,6 +41,9 @@ export function usePartnerSalesDashboard({
 		{
 			query: {
 				enabled: Boolean(organization?.slug && startDate && endDate),
+				placeholderData: keepPreviousData
+					? (previousData) => previousData
+					: undefined,
 			},
 		},
 	);

@@ -4,6 +4,7 @@ import { useQueryState } from "nuqs";
 import { Link } from "@tanstack/react-router";
 import {
 	BadgeDollarSign,
+	BadgeAlert,
 	BarChart3,
 	CalendarClock,
 	CircleDollarSign,
@@ -302,7 +303,7 @@ function CommercialKpiGrid({
 	previousMonthLabel: string;
 }) {
 	return (
-		<section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+		<section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
 			<KpiCard
 				title="Vendas realizadas"
 				value={data.sales.current.count}
@@ -332,6 +333,17 @@ function CommercialKpiGrid({
 				differenceFormatter={formatSignedCents}
 				helpText={`${currentMonthLabel} vs ${previousMonthLabel}`}
 			/>
+			<StaticKpiCard
+				title="Pré-cancelamento"
+				value={data.sales.preCancellation.count.toLocaleString("pt-BR")}
+				icon={BadgeAlert}
+				helpText={
+					data.sales.preCancellation.threshold === null
+						? "Regra desativada"
+						: `${data.sales.preCancellation.threshold}+ inadimplência(s) abertas`
+				}
+				intent="decrease"
+			/>
 			<KpiCard
 				title="Comissões a receber"
 				value={data.commissions.current.INCOME.total.amount}
@@ -339,7 +351,7 @@ function CommercialKpiGrid({
 				icon={Wallet}
 				formatter={formatCents}
 				differenceFormatter={formatSignedCents}
-				helpText="Competência por vencimento previsto"
+				helpText="Base pela data da venda"
 			/>
 			<KpiCard
 				title="Comissões a pagar"
@@ -348,7 +360,7 @@ function CommercialKpiGrid({
 				icon={CalendarClock}
 				formatter={formatCents}
 				differenceFormatter={formatSignedCents}
-				helpText="Competência por vencimento previsto"
+				helpText="Base pela data da venda"
 				intent="decrease"
 			/>
 			<KpiCard
@@ -363,6 +375,49 @@ function CommercialKpiGrid({
 				helpText="Receber menos pagar"
 			/>
 		</section>
+	);
+}
+
+function StaticKpiCard({
+	title,
+	value,
+	icon: Icon,
+	helpText,
+	intent = "increase",
+}: {
+	title: string;
+	value: string;
+	icon: ComponentType<{ className?: string }>;
+	helpText: string;
+	intent?: "increase" | "decrease";
+}) {
+	const toneClass =
+		intent === "decrease"
+			? "border-orange-500/30 bg-orange-500/10"
+			: "border-border bg-background";
+	const iconClass =
+		intent === "decrease"
+			? "bg-orange-600 text-white"
+			: "bg-foreground text-background";
+
+	return (
+		<Card className={cn("border shadow-sm", toneClass)}>
+			<CardContent className="space-y-4 p-5">
+				<div className="flex items-center justify-between">
+					<div className="text-sm text-muted-foreground">{title}</div>
+					<div className={cn("rounded-xl p-2", iconClass)}>
+						<Icon className="size-4" />
+					</div>
+				</div>
+
+				<div className="space-y-1">
+					<div className="text-2xl font-semibold tabular-nums text-foreground">
+						{value}
+					</div>
+					<div className="text-xs text-muted-foreground">{helpText}</div>
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 
@@ -576,9 +631,9 @@ function CommissionsSummaryCard({ data }: { data: SalesDashboardData }) {
 	return (
 		<Card className="border-border/70">
 			<CardHeader>
-				<CardTitle>Comissões por competência</CardTitle>
+				<CardTitle>Comissões das vendas do período</CardTitle>
 				<CardDescription>
-					Parcelas previstas no mês, separadas entre receber e pagar.
+					Parcelas geradas pelas vendas do mês, separadas entre receber e pagar.
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">

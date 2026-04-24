@@ -43,6 +43,12 @@ export type GetOrganizationSlug200 = {
      */
     enableSalesTransactionsSync: boolean;
     /**
+     * @minLength 1
+     * @maxLength 9007199254740991
+     * @type integer
+     */
+    preCancellationDelinquencyThreshold: number | null;
+    /**
      * @type string, uri
      */
     avatarUrl: string | null;
