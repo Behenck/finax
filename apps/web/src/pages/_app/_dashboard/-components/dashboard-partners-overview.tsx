@@ -385,6 +385,24 @@ function formatSharePercentage(value: number) {
 	})}%`;
 }
 
+function getPieSliceEmphasisProps(index: number, activeIndex: number | null) {
+	const isActive = activeIndex === index;
+	const isInactive = activeIndex !== null && !isActive;
+
+	return {
+		opacity: isInactive ? 0.38 : 1,
+		stroke: isActive ? "rgba(255, 255, 255, 0.92)" : "transparent",
+		strokeWidth: isActive ? 4 : 0,
+		style: {
+			cursor: "pointer",
+			filter: isActive
+				? "drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18))"
+				: "none",
+			transition: "opacity 160ms ease, filter 160ms ease, stroke-width 160ms ease",
+		},
+	};
+}
+
 function getPartnerPrimaryName(partner: PartnerDashboardIdentity) {
 	return partner.partnerCompanyName?.trim() || partner.partnerName;
 }
@@ -882,6 +900,7 @@ function PartnerBreakdownPieCard({
 	headerAction?: ReactNode;
 	variant?: "compact" | "regular";
 }) {
+	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
 	const pieData = useMemo(() => buildBreakdownPieData(items), [items]);
 	const isCompact = variant === "compact";
 	const { totalSales, totalGrossAmount } = useMemo(() => {
@@ -995,12 +1014,19 @@ function PartnerBreakdownPieCard({
 										paddingAngle={3}
 										labelLine={false}
 										label={renderBreakdownPieLabel}
+										activeIndex={activeSliceIndex ?? undefined}
 										isAnimationActive={false}
+										onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
+										onMouseLeave={() => setActiveSliceIndex(null)}
 									>
-										{pieData.map((entry) => (
+										{pieData.map((entry, index) => (
 											<Cell
 												key={`${entry.valueId}-${entry.fill}`}
 												fill={entry.fill}
+												{...getPieSliceEmphasisProps(
+													index,
+													activeSliceIndex,
+												)}
 											/>
 										))}
 									</Pie>
@@ -1083,6 +1109,7 @@ function PartnerSalesSharePieCard({
 }: {
 	items: PartnerDashboardData["ranking"];
 }) {
+	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
 	const pieData = useMemo(() => buildPartnerSalesSharePieData(items), [items]);
 
 	return (
@@ -1162,12 +1189,19 @@ function PartnerSalesSharePieCard({
 										paddingAngle={3}
 										labelLine={false}
 										label={renderPartnerSalesSharePieLabel}
+										activeIndex={activeSliceIndex ?? undefined}
 										isAnimationActive={false}
+										onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
+										onMouseLeave={() => setActiveSliceIndex(null)}
 									>
-										{pieData.map((entry) => (
+										{pieData.map((entry, index) => (
 											<Cell
 												key={`${entry.partnerId}-${entry.fill}`}
 												fill={entry.fill}
+												{...getPieSliceEmphasisProps(
+													index,
+													activeSliceIndex,
+												)}
 											/>
 										))}
 									</Pie>
@@ -2071,6 +2105,7 @@ function SupervisorRankingSection({
 }
 
 function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
+	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
 	const visibleItems = useMemo(
 		() => items.filter((item) => item.status !== "APPROVED"),
 		[items],
@@ -2125,11 +2160,16 @@ function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
 								innerRadius={54}
 								outerRadius={92}
 								paddingAngle={2}
+								activeIndex={activeSliceIndex ?? undefined}
+								isAnimationActive={false}
+								onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
+								onMouseLeave={() => setActiveSliceIndex(null)}
 							>
-								{pieData.map((entry) => (
+								{pieData.map((entry, index) => (
 									<Cell
 										key={`${entry.status}-${entry.fill}`}
 										fill={entry.fill}
+										{...getPieSliceEmphasisProps(index, activeSliceIndex)}
 									/>
 								))}
 							</Pie>
@@ -2300,6 +2340,7 @@ function DelinquencyBreakdownCard({
 	>;
 	buckets: PartnerDashboardData["delinquencyBreakdown"]["buckets"];
 }) {
+	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
 	const pieData = useMemo(() => buildDelinquencyPieData(buckets), [buckets]);
 	const pieDataWithSales = useMemo(
 		() => pieData.filter((item) => item.salesCount > 0),
@@ -2416,12 +2457,19 @@ function DelinquencyBreakdownCard({
 										paddingAngle={3}
 										labelLine={false}
 										label={renderDelinquencyPieLabel}
+										activeIndex={activeSliceIndex ?? undefined}
 										isAnimationActive={false}
+										onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
+										onMouseLeave={() => setActiveSliceIndex(null)}
 									>
-										{pieDataWithSales.map((entry) => (
+										{pieDataWithSales.map((entry, index) => (
 											<Cell
 												key={`${entry.key}-${entry.fill}`}
 												fill={entry.fill}
+												{...getPieSliceEmphasisProps(
+													index,
+													activeSliceIndex,
+												)}
 											/>
 										))}
 									</Pie>
