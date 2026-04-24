@@ -638,10 +638,79 @@ describe("DashboardPartnersOverview", () => {
 		expect(screen.getAllByText("Parceiro 6").length).toBeGreaterThan(0);
 
 		const scrollArea = container.querySelector(
-			'[data-slot="scroll-area"].h-\\[15\\.5rem\\]',
+			'[data-slot="scroll-area"].h-\\[19rem\\]',
 		);
 		expect(scrollArea).toBeInTheDocument();
 		expect(screen.getByText("Participação por parceiro")).toBeInTheDocument();
+	});
+
+	it("shows podium details when hovering the top ranked partner", async () => {
+		const user = userEvent.setup();
+
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000001",
+					partnerName: "Parceiro 1",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 5,
+					concludedAmount: 500_000,
+					pendingCount: 1,
+					pendingAmount: 50_000,
+					canceledCount: 1,
+					canceledAmount: 25_000,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000002",
+					partnerName: "Parceiro 2",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 4,
+					concludedAmount: 400_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "10000000-0000-0000-0000-000000000003",
+					partnerName: "Parceiro 3",
+					supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Base",
+					concludedCount: 3,
+					concludedAmount: 300_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+			]),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		await user.hover(
+			screen.getByRole("button", {
+				name: /detalhes do parceiro parceiro 1 na posição 1/i,
+			}),
+		);
+
+		expect((await screen.findAllByText("#1 Parceiro 1")).length).toBeGreaterThan(
+			0,
+		);
+		expect(screen.getAllByText("Produção total").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Participação").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Canceladas").length).toBeGreaterThan(0);
 	});
 
 	it("renders the partner sales share card with sold partners only", () => {

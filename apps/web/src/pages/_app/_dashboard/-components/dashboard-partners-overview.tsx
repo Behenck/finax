@@ -1232,24 +1232,24 @@ function PartnerRankingSection({
 						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,500px)_1px_minmax(0,1fr)] xl:items-start">
-						<div className="w-full max-w-[500px] justify-self-center xl:justify-self-start xl:pr-6">
-							<div className="grid grid-cols-3 items-end gap-1.5">
+					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,360px)_1px_minmax(0,1fr)] xl:items-stretch">
+						<div className="flex h-full w-full max-w-[360px] justify-self-center xl:justify-self-start xl:pr-5">
+							<div className="grid h-full w-full grid-cols-3 items-end gap-1">
 								{[
 									{
 										rank: 2,
 										partner: topThree[1] ?? null,
-										pedestalClassName: "h-14",
+										pedestalClassName: "h-18",
 									},
 									{
 										rank: 1,
 										partner: topThree[0] ?? null,
-										pedestalClassName: "h-20",
+										pedestalClassName: "h-28",
 									},
 									{
 										rank: 3,
 										partner: topThree[2] ?? null,
-										pedestalClassName: "h-10",
+										pedestalClassName: "h-14",
 									},
 								].map((slot) => {
 									const partner = slot.partner;
@@ -1311,58 +1311,141 @@ function PartnerRankingSection({
 									const totalSoldAmount =
 										partner.salesBreakdown.concluded.grossAmount +
 										partner.salesBreakdown.pending.grossAmount;
+									const totalSoldCount =
+										partner.salesBreakdown.concluded.salesCount +
+										partner.salesBreakdown.pending.salesCount;
+									const productionShare =
+										totalProductionCount > 0
+											? (totalSoldCount / totalProductionCount) * 100
+											: 0;
 									const primaryName = getPartnerPrimaryName(partner);
 									const secondaryName = getPartnerSecondaryName(partner);
 
 									return (
-										<div key={partner.partnerId} className="flex flex-col">
-											<div className="rounded-t-2xl p-2 text-center min-h-[170px] flex flex-col">
-												<div className="relative mx-auto mt-1">
-													<Avatar className="size-13 border-2 border-background shadow-sm">
-														<AvatarFallback
+										<Tooltip key={partner.partnerId}>
+											<TooltipTrigger asChild>
+												<button
+													type="button"
+													className="group flex h-full w-full cursor-help flex-col justify-end rounded-t-2xl text-left transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+													aria-label={`Detalhes do parceiro ${primaryName} na posição ${slot.rank}`}
+												>
+													<div className="flex min-h-[140px] flex-col justify-end rounded-t-2xl px-2 pb-2 pt-1 text-center transition-colors duration-200 group-hover:bg-muted/35">
+														<div className="relative mx-auto">
+															<Avatar className="size-13 border-2 border-background shadow-sm transition-transform duration-200 group-hover:scale-[1.04]">
+																<AvatarFallback
+																	className={cn(
+																		"text-sm font-semibold transition-[filter] duration-200 group-hover:brightness-110",
+																		avatarGradientClass,
+																		avatarLabelClass,
+																	)}
+																>
+																	{getInitials(primaryName)}
+																</AvatarFallback>
+															</Avatar>
+														</div>
+
+														<div className="mt-1 min-h-[36px] px-1 text-center leading-tight">
+															<div className="break-words text-[11px] font-semibold text-foreground sm:text-[12px]">
+																{primaryName}
+															</div>
+															{secondaryName ? (
+																<div className="mt-0.5 hidden break-words text-[10px] text-muted-foreground sm:block">
+																	{secondaryName}
+																</div>
+															) : null}
+														</div>
+
+														<div className="mt-16 px-1 text-center font-mono text-[9px] font-medium leading-tight tracking-tight text-foreground sm:text-[11px]">
+															<span className="block truncate tabular-nums">
+																{formatAmountFromCents(totalSoldAmount)}
+															</span>
+														</div>
+													</div>
+													<div
+														className={cn(
+															"relative flex items-center justify-center rounded-t-2xl transition-all duration-200 group-hover:brightness-110 group-hover:saturate-150 group-hover:shadow-lg",
+															pedestalGradientClass,
+															slot.pedestalClassName,
+														)}
+													>
+														<span
 															className={cn(
-																"text-sm font-semibold",
-																avatarGradientClass,
-																avatarLabelClass,
+																"font-bungee text-base font-black tabular-nums tracking-wide",
+																pedestalLabelClass,
 															)}
 														>
-															{getInitials(primaryName)}
-														</AvatarFallback>
-													</Avatar>
-												</div>
-
-												<div className="mt-1 min-h-[40px] px-1 text-center leading-tight">
-													<div className="break-words text-[11px] font-semibold text-foreground sm:text-[12px]">
-														{primaryName}
+															{slot.rank}
+														</span>
 													</div>
-													{secondaryName ? (
-														<div className="mt-0.5 hidden break-words text-[10px] text-muted-foreground sm:block">
-															{secondaryName}
-														</div>
-													) : null}
-												</div>
-
-												<div className="mt-auto pt-2 font-mono text-[11px] font-medium tabular-nums leading-none tracking-tight text-foreground sm:text-base">
-													{formatAmountFromCents(totalSoldAmount)}
-												</div>
-											</div>
-											<div
-												className={cn(
-													"relative flex items-center justify-center rounded-t-2xl",
-													pedestalGradientClass,
-													slot.pedestalClassName,
-												)}
+												</button>
+											</TooltipTrigger>
+											<TooltipContent
+												side="top"
+												sideOffset={10}
+												className="min-w-[220px] space-y-1.5"
 											>
-												<span
-													className={cn(
-														"font-bungee text-base font-black tabular-nums tracking-wide",
-														pedestalLabelClass,
-													)}
-												>
-													{slot.rank}
-												</span>
-											</div>
-										</div>
+												<div className="text-xs font-semibold">
+													#{slot.rank} {primaryName}
+												</div>
+												{secondaryName ? (
+													<div className="text-[11px] text-background/80">
+														{secondaryName}
+													</div>
+												) : null}
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">
+														Produção total
+													</span>
+													<span className="font-mono font-medium tabular-nums">
+														{formatAmountFromCents(totalSoldAmount)}
+													</span>
+												</div>
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">Vendas</span>
+													<span className="font-mono font-medium tabular-nums">
+														{totalSoldCount}
+													</span>
+												</div>
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">
+														Participação
+													</span>
+													<span className="font-mono font-medium tabular-nums">
+														{formatSharePercentage(productionShare)}
+													</span>
+												</div>
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">
+														Concluídas
+													</span>
+													<span className="font-mono font-medium tabular-nums">
+														{formatAmountFromCents(
+															partner.salesBreakdown.concluded.grossAmount,
+														)}
+													</span>
+												</div>
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">
+														Processando
+													</span>
+													<span className="font-mono font-medium tabular-nums">
+														{formatAmountFromCents(
+															partner.salesBreakdown.pending.grossAmount,
+														)}
+													</span>
+												</div>
+												<div className="flex items-center justify-between gap-3">
+													<span className="text-background/80">
+														Canceladas
+													</span>
+													<span className="font-mono font-medium tabular-nums">
+														{formatAmountFromCents(
+															partner.salesBreakdown.canceled.grossAmount,
+														)}
+													</span>
+												</div>
+											</TooltipContent>
+										</Tooltip>
 									);
 								})}
 							</div>
@@ -1374,7 +1457,7 @@ function PartnerRankingSection({
 						/>
 
 						<div className="rounded-md p-2 sm:p-3">
-							<ScrollArea className="h-[15.5rem] pr-2 sm:h-[17rem]">
+							<ScrollArea className="h-[19rem] pr-2 sm:h-[20.5rem]">
 								<Table className="table-fixed">
 									<TableBody className="[&_tr]:border-0">
 										{soldPartners.map((partner, index) => {
