@@ -19,7 +19,6 @@ import {
 	YAxis,
 } from "recharts";
 import {
-	Fragment,
 	useEffect,
 	useId,
 	useMemo,
@@ -1232,8 +1231,8 @@ function PartnerRankingSection({
 						Nenhum parceiro com venda para o período selecionado.
 					</div>
 				) : (
-					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,360px)_1px_minmax(0,1fr)] xl:items-stretch">
-						<div className="flex h-full w-full max-w-[360px] justify-self-center xl:justify-self-start xl:pr-5">
+					<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_1px_minmax(0,1fr)] xl:items-stretch">
+						<div className="flex h-full w-full max-w-[420px] justify-self-center xl:justify-self-start xl:pr-5">
 							<div className="grid h-full w-full grid-cols-3 items-end gap-1">
 								{[
 									{
@@ -1355,8 +1354,8 @@ function PartnerRankingSection({
 															) : null}
 														</div>
 
-														<div className="mt-16 px-1 text-center font-mono text-[9px] font-medium leading-tight tracking-tight text-foreground sm:text-[11px]">
-															<span className="block truncate tabular-nums">
+														<div className="mt-16 -mx-2 w-[calc(100%+1rem)] text-center font-mono text-[11px] font-medium leading-tight tracking-tight text-foreground sm:text-[13px]">
+															<span className="block w-full truncate px-1 tabular-nums">
 																{formatAmountFromCents(totalSoldAmount)}
 															</span>
 														</div>
@@ -1459,10 +1458,8 @@ function PartnerRankingSection({
 						<div className="rounded-md p-2 sm:p-3">
 							<ScrollArea className="h-[19rem] pr-2 sm:h-[20.5rem]">
 								<Table className="table-fixed">
-									<TableBody className="[&_tr]:border-0">
-										{soldPartners.map((partner, index) => {
+									{soldPartners.map((partner, index) => {
 										const rank = index + 1;
-										const rowToneClass = "bg-transparent";
 										const productionAmount =
 											partner.salesBreakdown.concluded.grossAmount +
 											partner.salesBreakdown.pending.grossAmount;
@@ -1482,22 +1479,25 @@ function PartnerRankingSection({
 										const primaryName = getPartnerPrimaryName(partner);
 										const secondaryName = getPartnerSecondaryName(partner);
 										return (
-												<Fragment key={partner.partnerId}>
-													<TableRow className={cn("border-0", rowToneClass)}>
+											<TableBody
+												key={partner.partnerId}
+												className="group/ranking [&_tr]:border-0"
+											>
+												<TableRow className="border-0 hover:bg-transparent">
 														<TableCell className="w-10 whitespace-nowrap pb-1 pl-2 pr-2 pt-2 text-left align-middle">
-															<span className="inline-flex h-8 items-center font-mono font-medium leading-none tabular-nums text-foreground">
+															<span className="inline-flex h-8 items-center font-mono font-medium leading-none tabular-nums text-foreground transition-colors group-hover/ranking:text-emerald-600 dark:group-hover/ranking:text-emerald-400">
 																{String(rank).padStart(2, "0")}
 															</span>
 														</TableCell>
 														<TableCell className="pb-1 pl-2 pr-3 pt-2">
 															<div className="flex min-w-0 items-center gap-2">
-																<Avatar className="size-8 border border-border/70">
-																	<AvatarFallback className="text-[11px] font-medium">
+																<Avatar className="size-8 border border-border/70 transition-all duration-200 group-hover/ranking:border-emerald-400/60 group-hover/ranking:shadow-sm">
+																	<AvatarFallback className="text-[11px] font-medium transition-colors group-hover/ranking:bg-emerald-500/10 group-hover/ranking:text-emerald-700 dark:group-hover/ranking:text-emerald-300">
 																		{getInitials(primaryName)}
 																	</AvatarFallback>
 																</Avatar>
 																<div className="min-w-0">
-																	<div className="truncate font-medium text-foreground">
+																	<div className="truncate font-medium text-foreground transition-colors group-hover/ranking:text-emerald-700 dark:group-hover/ranking:text-emerald-300">
 																		{primaryName}
 																	</div>
 																	{secondaryName ? (
@@ -1510,9 +1510,9 @@ function PartnerRankingSection({
 														</TableCell>
 														<TableCell
 															className={cn(
-																"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums sm:text-sm",
+																"w-[8.5rem] px-2 pb-1 pt-2 text-right font-mono text-[13px] tabular-nums transition-colors sm:text-sm",
 																productionHasValue
-																	? "font-semibold text-foreground"
+																	? "font-semibold text-foreground group-hover/ranking:text-emerald-700 dark:group-hover/ranking:text-emerald-300"
 																	: "font-normal text-muted-foreground",
 															)}
 														>
@@ -1520,8 +1520,8 @@ function PartnerRankingSection({
 																{formatAmountFromCents(productionAmount)}
 															</div>
 														</TableCell>
-													</TableRow>
-													<TableRow className={cn("border-0", rowToneClass)}>
+												</TableRow>
+												<TableRow className="border-0 hover:bg-transparent">
 														<TableCell className="py-0 pl-2 pr-1" />
 														<TableCell colSpan={2} className="px-3 pb-2 pt-0">
 															<div className="flex items-center gap-2">
@@ -1532,10 +1532,10 @@ function PartnerRankingSection({
 																			className="block w-full flex-1 cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 																			aria-label={`Detalhes de produção de ${primaryName}`}
 																		>
-																			<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+																			<div className="h-1.5 overflow-hidden rounded-full bg-muted transition-all duration-200 group-hover/ranking:h-2 group-hover/ranking:bg-emerald-500/10">
 																				<div
 																					className={cn(
-																						"h-full rounded-full transition-[width]",
+																						"h-full rounded-full transition-[width,filter] duration-200 group-hover/ranking:brightness-110 group-hover/ranking:saturate-150",
 																						productionHasValue
 																							? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-lime-400"
 																							: "bg-muted-foreground/30",
@@ -1596,23 +1596,22 @@ function PartnerRankingSection({
 																	</TooltipContent>
 																</Tooltip>
 																{productionShare >= 100 ? (
-																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-emerald-600 transition-colors group-hover/ranking:text-emerald-700 dark:text-emerald-400 dark:group-hover/ranking:text-emerald-300">
 																		<TrendingUp className="size-3" />
 																		{formatSharePercentage(productionShare)}
 																	</span>
 																) : (
-																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 dark:text-amber-400">
+																	<span className="inline-flex w-[4.5rem] shrink-0 items-center justify-end gap-1 text-[11px] font-semibold tabular-nums text-amber-600 transition-colors group-hover/ranking:text-amber-700 dark:text-amber-400 dark:group-hover/ranking:text-amber-300">
 																		<Minus className="size-3" />
 																		{formatSharePercentage(productionShare)}
 																	</span>
 																)}
 															</div>
 														</TableCell>
-													</TableRow>
-												</Fragment>
+												</TableRow>
+											</TableBody>
 											);
 										})}
-									</TableBody>
 								</Table>
 							</ScrollArea>
 						</div>
