@@ -645,17 +645,21 @@ function SummaryCard({
 	}[tone];
 
 	return (
-		<Card className={cn("gap-4 border bg-gradient-to-br py-4", toneClass)}>
-			<CardContent className="flex items-start justify-between px-4">
-				<div>
-					<div className="text-sm text-muted-foreground">{title}</div>
-					<div className="mt-1 text-3xl font-semibold tabular-nums">
+		<Card className={cn("gap-2.5 border bg-gradient-to-br py-2.5 min-[1800px]:gap-4 min-[1800px]:py-4", toneClass)}>
+			<CardContent className="flex items-start justify-between gap-2.5 px-2.5 min-[1800px]:gap-3 min-[1800px]:px-4">
+				<div className="min-w-0">
+					<div className="text-[10px] leading-tight text-muted-foreground min-[1800px]:text-sm">
+						{title}
+					</div>
+					<div className="mt-1 text-base leading-none font-semibold tabular-nums min-[1800px]:text-3xl">
 						{value}
 					</div>
-					<div className="mt-1 text-xs text-muted-foreground">{subtitle}</div>
+					<div className="mt-1 truncate text-[9px] leading-tight text-muted-foreground min-[1800px]:text-xs">
+						{subtitle}
+					</div>
 				</div>
-				<div className={cn("rounded-lg p-2.5", iconClass)}>
-					<Icon className="size-4" />
+				<div className={cn("shrink-0 rounded-lg p-1 min-[1800px]:p-2", iconClass)}>
+					<Icon className="size-2.5 min-[1800px]:size-3.5" />
 				</div>
 			</CardContent>
 		</Card>

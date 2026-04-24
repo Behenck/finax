@@ -43,7 +43,7 @@ function AppLayout() {
 
 					<main className="min-w-0 flex-1 bg-background">
 						<AppTopHeader />
-						<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-10 lg:py-10">
+						<div className="px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-8 lg:py-8 2xl:px-10 2xl:py-10">
 							<Outlet />
 						</div>
 					</main>

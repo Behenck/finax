@@ -402,19 +402,23 @@ function StaticKpiCard({
 
 	return (
 		<Card className={cn("border shadow-sm", toneClass)}>
-			<CardContent className="space-y-4 p-5">
+			<CardContent className="space-y-2.5 p-2.5 min-[1800px]:space-y-4 min-[1800px]:p-5">
 				<div className="flex items-center justify-between">
-					<div className="text-sm text-muted-foreground">{title}</div>
-					<div className={cn("rounded-xl p-2", iconClass)}>
-						<Icon className="size-4" />
+					<div className="text-[10px] leading-tight text-muted-foreground min-[1800px]:text-sm">
+						{title}
+					</div>
+					<div className={cn("shrink-0 rounded-xl p-1 min-[1800px]:p-1.75", iconClass)}>
+						<Icon className="size-2.5 min-[1800px]:size-3.5" />
 					</div>
 				</div>
 
 				<div className="space-y-1">
-					<div className="text-2xl font-semibold tabular-nums text-foreground">
+					<div className="text-base leading-none font-semibold tabular-nums text-foreground min-[1800px]:text-2xl">
 						{value}
 					</div>
-					<div className="text-xs text-muted-foreground">{helpText}</div>
+					<div className="truncate text-[9px] leading-tight text-muted-foreground min-[1800px]:text-xs">
+						{helpText}
+					</div>
 				</div>
 			</CardContent>
 		</Card>
@@ -753,32 +757,36 @@ function KpiCard({
 
 	return (
 		<Card className={cn("border shadow-sm", toneClass)}>
-			<CardContent className="space-y-4 p-5">
+			<CardContent className="space-y-2.5 p-2.5 min-[1800px]:space-y-4 min-[1800px]:p-5">
 				<div className="flex items-center justify-between">
-					<div className="text-sm text-muted-foreground">{title}</div>
-					<div className="rounded-xl bg-foreground p-2 text-background">
-						<Icon className="size-4" />
+					<div className="text-[10px] leading-tight text-muted-foreground min-[1800px]:text-sm">
+						{title}
+					</div>
+					<div className="shrink-0 rounded-xl bg-foreground p-1 text-background min-[1800px]:p-1.75">
+						<Icon className="size-2.5 min-[1800px]:size-3.5" />
 					</div>
 				</div>
 
 				<div className="space-y-1">
-					<div className="text-2xl font-semibold tabular-nums text-foreground">
+					<div className="text-base leading-none font-semibold tabular-nums text-foreground min-[1800px]:text-2xl">
 						{formatter(value)}
 					</div>
-					<div className="text-xs text-muted-foreground">
+					<div className="truncate text-[9px] leading-tight text-muted-foreground min-[1800px]:text-xs">
 						Anterior: {formatter(previousValue)}
 					</div>
 				</div>
 
 				<div className="space-y-1">
-					<div className={cn("text-xs font-medium", deltaClass)}>
+					<div className={cn("truncate text-[9px] leading-tight font-medium min-[1800px]:text-xs", deltaClass)}>
 						{delta.difference === 0
 							? `sem variação • ${helpText}`
 							: `${formatDeltaPercentage(delta.percentage)} • ${differenceFormatter(
 									delta.difference,
 								)}`}
 					</div>
-					<div className="text-xs text-muted-foreground">{helpText}</div>
+					<div className="truncate text-[9px] leading-tight text-muted-foreground min-[1800px]:text-xs">
+						{helpText}
+					</div>
 				</div>
 			</CardContent>
 		</Card>
@@ -800,11 +808,11 @@ function CommissionDirectionPanel({
 		: "border-amber-500/30 bg-amber-500/10";
 
 	return (
-		<div className={cn("rounded-2xl border p-4", tone)}>
-			<div className="mb-4 flex items-start justify-between gap-3">
+		<div className={cn("rounded-2xl border p-3.5 2xl:p-4", tone)}>
+			<div className="mb-3 flex items-start justify-between gap-3 2xl:mb-4">
 				<div>
-					<div className="text-sm font-medium text-foreground">{title}</div>
-					<div className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
+					<div className="text-[13px] font-medium text-foreground 2xl:text-sm">{title}</div>
+					<div className="mt-1 text-[1.35rem] font-semibold tabular-nums text-foreground 2xl:text-2xl">
 						{formatCents(summary.total.amount)}
 					</div>
 				</div>
@@ -918,8 +926,8 @@ function CompactMetric({ label, value }: { label: string; value: string }) {
 function CommercialDashboardSkeleton() {
 	return (
 		<div className="space-y-6">
-			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-				{Array.from({ length: 6 }).map((_, index) => (
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+				{Array.from({ length: 7 }).map((_, index) => (
 					<Card key={`kpi-skeleton-${index}`}>
 						<CardContent className="space-y-4 p-5">
 							<div className="flex items-center justify-between">

@@ -707,17 +707,26 @@ function PartnerKpiCard({
 	toneClassName,
 }: PartnerKpiCardProps) {
 	return (
-		<Card className="h-full w-full border-border/70">
-			<CardContent className="flex items-start justify-between gap-4 p-5">
-				<div className="space-y-1.5">
-					<p className="text-sm text-muted-foreground">{title}</p>
-					<p className="text-2xl font-semibold tracking-tight text-foreground">
+		<Card className="h-full w-full justify-center border-border/70 py-2.5 min-[1800px]:py-6">
+			<CardContent className="flex items-start justify-between gap-2.5 px-2.5 min-[1800px]:gap-4 min-[1800px]:px-6">
+				<div className="min-w-0 space-y-3">
+					<p className="text-[9px] leading-tight text-muted-foreground min-[1800px]:text-sm">
+						{title}
+					</p>
+					<p className="text-[15px] leading-none font-semibold tracking-tight text-foreground min-[1800px]:text-xl">
 						{value}
 					</p>
-					<p className="text-xs text-muted-foreground">{subtitle}</p>
+					<p className="truncate text-[8px] leading-tight text-muted-foreground min-[1800px]:text-xs">
+						{subtitle}
+					</p>
 				</div>
-				<div className={cn("rounded-2xl p-3", toneClassName)}>
-					<Icon className="size-5" />
+				<div
+					className={cn(
+						"shrink-0 rounded-2xl p-1.5 min-[1800px]:p-2.5",
+						toneClassName,
+					)}
+				>
+					<Icon className="size-3 min-[1800px]:size-4" />
 				</div>
 			</CardContent>
 		</Card>
@@ -2235,8 +2244,8 @@ function PartnerCommissionDirectionPanel({
 		{ key: "canceled", amount: canceledAmount },
 	] as const;
 
-	return (
-		<div className={cn("rounded-2xl border p-4", tone)}>
+		return (
+			<div className={cn("h-full rounded-2xl border p-4", tone)}>
 			<div className="mb-4 flex items-start justify-between gap-3">
 				<div>
 					<div className="text-sm font-medium text-foreground">{title}</div>
@@ -2307,7 +2316,7 @@ function PartnerCommissionsByCompetencyCard({
 					Parcelas geradas pelas vendas do período, separadas entre receber e pagar.
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-4">
+			<CardContent className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-1">
 				<PartnerCommissionDirectionPanel
 					title="A receber"
 					totalAmount={incomeTotalAmount}
@@ -3042,7 +3051,7 @@ export function DashboardPartnersOverview() {
 					</Card>
 				) : null}
 
-				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr_1fr]">
+				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr] 2xl:grid-cols-[1.6fr_1fr_1fr]">
 					<Card className="overflow-hidden border-border/70">
 						<CardHeader className="border-b">
 							<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -3170,22 +3179,25 @@ export function DashboardPartnersOverview() {
 					</Card>
 
 					<PartnerSalesStatusCard items={data?.statusFunnel.items ?? []} />
-					<PartnerCommissionsByCompetencyCard
-						commissionBreakdown={data?.commissionBreakdown}
-					/>
+					<div className="xl:col-span-2 2xl:col-span-1">
+						<PartnerCommissionsByCompetencyCard
+							commissionBreakdown={data?.commissionBreakdown}
+						/>
+					</div>
 				</div>
 
-				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)]">
-					<PartnerRankingSection items={data?.ranking ?? []} />
-					<PartnerSalesSharePieCard items={data?.ranking ?? []} />
-				</div>
 				<SupervisorRankingSection
 					items={data?.ranking ?? []}
 					canceledByPartnerId={previousMonthCanceledByPartnerId}
 					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
 				/>
+				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)_minmax(0,1.2fr)]">
+					<div className="xl:col-span-2 2xl:col-span-2">
+						<PartnerRankingSection items={data?.ranking ?? []} />
+					</div>
 
-				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1.05fr)_minmax(0,1.2fr)]">
+					<PartnerSalesSharePieCard items={data?.ranking ?? []} />
+
 					<LoadingReveal
 						loading={
 							Boolean(effectiveDynamicFieldId) &&
@@ -3314,23 +3326,25 @@ export function DashboardPartnersOverview() {
 						/>
 					</LoadingReveal>
 
-					<DelinquencyBreakdownCard
-						totalSales={(
-							(data?.delinquencyBreakdown ??
-								{}) as PartnerDashboardDelinquencyBreakdown
-						).totalSales ?? 0}
-						preCancellation={
-							(
+					<div>
+						<DelinquencyBreakdownCard
+							totalSales={(
 								(data?.delinquencyBreakdown ??
 									{}) as PartnerDashboardDelinquencyBreakdown
-							).preCancellation ?? {
-								threshold: null,
-								salesCount: 0,
-								grossAmount: 0,
+							).totalSales ?? 0}
+							preCancellation={
+								(
+									(data?.delinquencyBreakdown ??
+										{}) as PartnerDashboardDelinquencyBreakdown
+								).preCancellation ?? {
+									threshold: null,
+									salesCount: 0,
+									grossAmount: 0,
+								}
 							}
-						}
-						buckets={data?.delinquencyBreakdown.buckets ?? []}
-					/>
+							buckets={data?.delinquencyBreakdown.buckets ?? []}
+						/>
+					</div>
 				</div>
 			</LoadingReveal>
 		</section>
