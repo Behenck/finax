@@ -778,26 +778,26 @@ function PartnerKpiCard({
 	toneClassName,
 }: PartnerKpiCardProps) {
 	return (
-		<Card className="h-full w-full justify-center border-border/70 py-2.5 min-[1800px]:py-6">
-			<CardContent className="flex items-start justify-between gap-2.5 px-2.5 min-[1800px]:gap-4 min-[1800px]:px-6">
+		<Card className="h-full w-full justify-center border-border/70 py-2.5 2xl:py-6">
+			<CardContent className="flex items-start justify-between gap-2.5 px-2.5 2xl:gap-4 2xl:px-6">
 				<div className="min-w-0 space-y-3">
-					<p className="text-[9px] leading-tight text-muted-foreground min-[1800px]:text-sm">
+					<p className="text-[9px] leading-tight text-muted-foreground 2xl:text-sm">
 						{title}
 					</p>
-					<p className="text-[15px] leading-none font-semibold tracking-tight text-foreground min-[1800px]:text-xl">
+					<p className="text-[15px] leading-none font-semibold tracking-tight text-foreground 2xl:text-xl">
 						{value}
 					</p>
-					<p className="truncate text-[8px] leading-tight text-muted-foreground min-[1800px]:text-xs">
+					<p className="truncate text-[8px] leading-tight text-muted-foreground 2xl:text-xs">
 						{subtitle}
 					</p>
 				</div>
 				<div
 					className={cn(
-						"shrink-0 rounded-2xl p-1.5 min-[1800px]:p-2.5",
+						"shrink-0 rounded-2xl p-1.5 2xl:p-2.5",
 						toneClassName,
 					)}
 				>
-					<Icon className="size-3 min-[1800px]:size-4" />
+					<Icon className="size-3 2xl:size-4" />
 				</div>
 			</CardContent>
 		</Card>
