@@ -270,6 +270,14 @@ type BreakdownPieLabelProps = {
 	fill?: string;
 	payload?: BreakdownPieDataItem;
 };
+type StatusFunnelPieLabelProps = {
+	cx?: number;
+	cy?: number;
+	midAngle?: number;
+	outerRadius?: number;
+	fill?: string;
+	payload?: StatusFunnelPieDataItem;
+};
 
 type PartnerKpiCardProps = {
 	title: string;
@@ -578,6 +586,69 @@ function renderPartnerSalesSharePieLabel(
 				className="fill-muted-foreground text-[10px] font-medium"
 			>
 				{formatAmountFromCents(payload.soldAmount)}
+			</text>
+		</g>
+	);
+}
+
+function renderStatusFunnelPieLabel(props: StatusFunnelPieLabelProps) {
+	const {
+		cx = 0,
+		cy = 0,
+		midAngle = 0,
+		outerRadius = 0,
+		fill = "currentColor",
+		payload,
+	} = props;
+
+	if (!payload) {
+		return null;
+	}
+
+	const radians = (-midAngle * Math.PI) / 180;
+	const explodedOffset = 10;
+	const offsetX = Math.cos(radians) * explodedOffset;
+	const offsetY = Math.sin(radians) * explodedOffset;
+	const lineStartRadius = outerRadius + 2;
+	const lineBreakRadius = outerRadius + 10;
+	const textRadius = outerRadius + 18;
+	const startX = cx + offsetX + Math.cos(radians) * lineStartRadius;
+	const startY = cy + offsetY + Math.sin(radians) * lineStartRadius;
+	const breakX = cx + offsetX + Math.cos(radians) * lineBreakRadius;
+	const breakY = cy + offsetY + Math.sin(radians) * lineBreakRadius;
+	const endX =
+		cx +
+		offsetX +
+		Math.cos(radians) * textRadius +
+			(Math.cos(radians) >= 0 ? 8 : -8);
+	const endY = cy + offsetY + Math.sin(radians) * textRadius;
+	const textAnchor = endX >= cx ? "start" : "end";
+
+	return (
+		<g>
+			<path
+				d={`M ${startX} ${startY} L ${breakX} ${breakY} L ${endX} ${endY}`}
+				fill="none"
+				stroke={fill}
+				strokeWidth={1.5}
+				strokeLinecap="round"
+			/>
+			<circle cx={startX} cy={startY} r={2.5} fill={fill} />
+			<text
+				x={endX}
+				y={endY - 4}
+				textAnchor={textAnchor}
+				className="fill-foreground text-[10px] font-medium"
+			>
+				{payload.label}
+			</text>
+			<text
+				x={endX}
+				y={endY + 12}
+				textAnchor={textAnchor}
+				className="fill-muted-foreground text-[9px] font-medium"
+			>
+				{formatAmountFromCents(payload.grossAmount)}
 			</text>
 		</g>
 	);
@@ -2134,16 +2205,16 @@ function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
 					Volume de vendas do mês, incluindo canceladas na visão de status.
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-5">
-				<div className="mx-auto flex justify-center">
-					<ChartContainer
-						config={statusFunnelChartConfig}
-						className="h-[220px] w-[220px]"
-					>
-						<PieChart>
-							<ChartTooltip
-								content={
-									<ChartTooltipContent
+				<CardContent className="space-y-5">
+					<div className="mx-auto w-full max-w-[420px] px-2">
+						<ChartContainer
+							config={statusFunnelChartConfig}
+							className="h-[280px] w-full"
+						>
+							<PieChart margin={{ top: 20, right: 56, bottom: 20, left: 56 }}>
+								<ChartTooltip
+									content={
+										<ChartTooltipContent
 										nameKey="status"
 										labelKey="label"
 										formatter={(value, _name, item) => {
@@ -2162,16 +2233,20 @@ function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
 									/>
 								}
 							/>
-							<Pie
-								data={pieData}
-								dataKey="salesCount"
-								nameKey="status"
-								innerRadius={54}
-								outerRadius={92}
-								paddingAngle={2}
-								activeIndex={activeSliceIndex ?? undefined}
-								isAnimationActive={false}
-								onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
+								<Pie
+									data={pieData}
+									dataKey="salesCount"
+									nameKey="status"
+									cx="50%"
+									cy="48%"
+									innerRadius={44}
+									outerRadius={78}
+									paddingAngle={2}
+									labelLine={false}
+									label={renderStatusFunnelPieLabel}
+									activeIndex={activeSliceIndex ?? undefined}
+									isAnimationActive={false}
+									onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}
 								onMouseLeave={() => setActiveSliceIndex(null)}
 							>
 								{pieData.map((entry, index) => (
