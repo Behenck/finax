@@ -2596,7 +2596,7 @@ function DelinquencyBreakdownCard({
 
 function DashboardPartnersSkeleton() {
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4 2xl:space-y-6">
 			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
 				{Array.from({ length: 8 }).map((_, index) => (
 					<Card key={index} className="border-border/70">
@@ -2608,14 +2608,14 @@ function DashboardPartnersSkeleton() {
 					</Card>
 				))}
 			</div>
-			<div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_360px]">
+			<div className="grid grid-cols-1 items-start gap-4 2xl:gap-6 xl:grid-cols-[minmax(0,1.8fr)_360px]">
 				<Skeleton className="h-[360px] rounded-xl" />
 				<div className="grid grid-cols-1 gap-4">
 					<Skeleton className="h-[220px] rounded-xl" />
 					<Skeleton className="h-[220px] rounded-xl" />
 				</div>
 			</div>
-			<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.45fr_1fr]">
+			<div className="grid grid-cols-1 gap-4 2xl:gap-6 xl:grid-cols-[1.45fr_1fr]">
 				<Skeleton className="h-[420px] rounded-xl" />
 				<Skeleton className="h-[360px] rounded-xl" />
 			</div>
@@ -2909,8 +2909,8 @@ export function DashboardPartnersOverview() {
 	}
 
 	return (
-		<section className="space-y-6">
-			<header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+		<section className="space-y-4 2xl:space-y-6">
+			<header className="flex flex-col gap-4 2xl:gap-6 lg:flex-row lg:items-end lg:justify-between">
 				<div className="space-y-2">
 					<div>
 						<h1 className="text-3xl font-semibold tracking-tight text-foreground">
@@ -3040,7 +3040,7 @@ export function DashboardPartnersOverview() {
 				loading={query.isLoading && !data}
 				skeleton={<DashboardPartnersSkeleton />}
 				contentKey={`${effectiveStartDate}-${effectiveEndDate}-${effectiveSupervisorId}-${effectivePartnerIdsCsv}-${inactiveMonths}`}
-				className="space-y-6"
+				className="space-y-4 2xl:space-y-6"
 				stagger
 			>
 				{!hasPartners ? (
@@ -3062,7 +3062,7 @@ export function DashboardPartnersOverview() {
 					</Card>
 				) : null}
 
-				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+				<div className="grid grid-cols-1 gap-4 2xl:gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
 					<PartnerKpiCard
 						title="Total de parceiros"
 						value={formatCount(summary?.totalPartners ?? 0)}
@@ -3126,7 +3126,7 @@ export function DashboardPartnersOverview() {
 					</Card>
 				) : null}
 
-				<div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr] 2xl:grid-cols-[1.6fr_1fr_1fr]">
+				<div className="grid grid-cols-1 gap-4 2xl:gap-6 xl:grid-cols-[1.6fr_1fr] 2xl:grid-cols-[1.6fr_1fr_1fr]">
 					<Card className="overflow-hidden border-border/70">
 						<CardHeader className="border-b">
 							<div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -3266,7 +3266,7 @@ export function DashboardPartnersOverview() {
 					canceledByPartnerId={previousMonthCanceledByPartnerId}
 					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
 				/>
-				<div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)_minmax(0,1.2fr)]">
+				<div className="grid grid-cols-1 items-stretch gap-4 2xl:gap-6 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)_minmax(0,1.2fr)]">
 					<div className="xl:col-span-2 2xl:col-span-2">
 						<PartnerRankingSection items={data?.ranking ?? []} />
 					</div>
