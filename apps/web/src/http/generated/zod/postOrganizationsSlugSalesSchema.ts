@@ -22,8 +22,16 @@ export const postOrganizationsSlugSalesMutationRequestSchema = z.object({
   productId: z.uuid(),
   totalAmount: z.int().max(9007199254740991),
   responsible: z.object({
-    type: z.enum(["SELLER", "PARTNER"]),
-    id: z.uuid(),
+    type: z.enum([
+      "COMPANY",
+      "UNIT",
+      "SELLER",
+      "PARTNER",
+      "SUPERVISOR",
+      "OTHER",
+    ]),
+    id: z.optional(z.uuid()),
+    label: z.optional(z.string().min(1).max(255)),
   }),
   companyId: z.uuid(),
   unitId: z.optional(z.uuid()),

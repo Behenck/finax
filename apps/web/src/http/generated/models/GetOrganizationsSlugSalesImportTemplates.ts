@@ -19,13 +19,17 @@ export type GetOrganizationsSlugSalesImportTemplatesQueryParams = {
   headerSignature?: string;
 };
 
-export const responsibleTypeEnum12 = {
+export const responsibleTypeEnum13 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum12Key =
-  (typeof responsibleTypeEnum12)[keyof typeof responsibleTypeEnum12];
+export type ResponsibleTypeEnum13Key =
+  (typeof responsibleTypeEnum13)[keyof typeof responsibleTypeEnum13];
 
 /**
  * @description Default Response
@@ -148,7 +152,7 @@ export type GetOrganizationsSlugSalesImportTemplates200 = {
         /**
          * @type string
          */
-        type: ResponsibleTypeEnum12Key;
+        type: ResponsibleTypeEnum13Key;
         /**
          * @type string, uuid
          */

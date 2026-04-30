@@ -1138,8 +1138,12 @@ enum SaleStatus {
 }
 
 enum SaleResponsibleType {
+  COMPANY
+  UNIT
   SELLER
   PARTNER
+  SUPERVISOR
+  OTHER
 }
 
 enum SaleCommissionSourceType {
@@ -1199,6 +1203,7 @@ model Sale {
   status             SaleStatus           @default(PENDING)
   responsibleType    SaleResponsibleType? @map("responsible_type")
   responsibleId      String?              @map("responsible_id")
+  responsibleLabel   String?              @map("responsible_label")
   notes              String?
   dynamicFieldSchema Json                 @default("[]") @map("dynamic_field_schema")
   dynamicFieldValues Json                 @default("{}") @map("dynamic_field_values")

@@ -5238,6 +5238,58 @@ describe("sales crud", () => {
 		);
 	});
 
+	it("should allow editing installment fields without status change when sale is pending", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+		const installment = installmentsResponse.body.installments[0] as {
+			id: string;
+		};
+
+		const patchResponse = await request(app.server)
+			.patch(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments/${installment.id}`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				percentage: 0.65,
+				amount: 820,
+				expectedPaymentDate: "2026-05-10",
+			});
+
+		expect(patchResponse.statusCode).toBe(204);
+
+		const updatedInstallment =
+			await prisma.saleCommissionInstallment.findUnique({
+				where: {
+					id: installment.id,
+				},
+				select: {
+					percentage: true,
+					amount: true,
+					status: true,
+					expectedPaymentDate: true,
+				},
+			});
+
+		expect(updatedInstallment?.percentage).toBe(6500);
+		expect(updatedInstallment?.amount).toBe(820);
+		expect(updatedInstallment?.status).toBe("PENDING");
+		expect(updatedInstallment?.expectedPaymentDate).toEqual(
+			new Date("2026-05-10T00:00:00.000Z"),
+		);
+	});
+
 	it("should patch commission installment with full edit fields", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(

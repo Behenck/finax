@@ -75,6 +75,12 @@ function tokenizeProductSearchValue(value: string) {
 		}
 
 		tokens.add(token);
+		if (token.endsWith("eis") && token.length > 3) {
+			tokens.add(`${token.slice(0, -3)}el`);
+		}
+		if (token.endsWith("s") && token.length > 3) {
+			tokens.add(token.slice(0, -1));
+		}
 		if (!token.includes("-")) {
 			continue;
 		}

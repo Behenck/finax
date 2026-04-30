@@ -40,13 +40,17 @@ export const salesStatusEnum2 = {
 export type SalesStatusEnum2Key =
   (typeof salesStatusEnum2)[keyof typeof salesStatusEnum2];
 
-export const responsibleTypeEnum5 = {
+export const responsibleTypeEnum6 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum5Key =
-  (typeof responsibleTypeEnum5)[keyof typeof responsibleTypeEnum5];
+export type ResponsibleTypeEnum6Key =
+  (typeof responsibleTypeEnum6)[keyof typeof responsibleTypeEnum6];
 
 /**
  * @description Default Response
@@ -257,11 +261,11 @@ export type GetOrganizationsSlugPartnersPartnerid200 = {
         /**
          * @type string
          */
-        type: ResponsibleTypeEnum5Key;
+        type: ResponsibleTypeEnum6Key;
         /**
-         * @type string, uuid
+         * @type string
          */
-        id: string;
+        id: string | null;
         /**
          * @type string
          */

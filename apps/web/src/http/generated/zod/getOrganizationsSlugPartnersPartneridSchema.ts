@@ -80,8 +80,15 @@ export const getOrganizationsSlugPartnersPartnerid200Schema = z.object({
         ),
         responsible: z.nullable(
           z.object({
-            type: z.enum(["SELLER", "PARTNER"]),
-            id: z.uuid(),
+            type: z.enum([
+              "COMPANY",
+              "UNIT",
+              "SELLER",
+              "PARTNER",
+              "SUPERVISOR",
+              "OTHER",
+            ]),
+            id: z.nullable(z.string()),
             name: z.string(),
           }),
         ),

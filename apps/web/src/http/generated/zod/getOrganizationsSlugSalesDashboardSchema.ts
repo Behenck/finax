@@ -80,8 +80,15 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
     ),
     topResponsibles: z.array(
       z.object({
-        id: z.uuid(),
-        type: z.enum(["SELLER", "PARTNER"]),
+        id: z.nullable(z.string()),
+        type: z.enum([
+          "COMPANY",
+          "UNIT",
+          "SELLER",
+          "PARTNER",
+          "SUPERVISOR",
+          "OTHER",
+        ]),
         name: z.string(),
         count: z.int().min(0).max(9007199254740991),
         grossAmount: z.int().min(0).max(9007199254740991),

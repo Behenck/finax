@@ -24,17 +24,25 @@ export const saleStatusEnum = {
 export type SaleStatusEnumKey =
   (typeof saleStatusEnum)[keyof typeof saleStatusEnum];
 
-export const responsibleTypeEnum10 = {
+export const responsibleTypeEnum11 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum10Key =
-  (typeof responsibleTypeEnum10)[keyof typeof responsibleTypeEnum10];
+export type ResponsibleTypeEnum11Key =
+  (typeof responsibleTypeEnum11)[keyof typeof responsibleTypeEnum11];
 
 export const saleResponsibleTypeEnum = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
 export type SaleResponsibleTypeEnumKey =
@@ -216,16 +224,20 @@ export type GetOrganizationsSlugSalesSaleid200 = {
       /**
        * @type string
        */
-      type: ResponsibleTypeEnum10Key;
+      type: ResponsibleTypeEnum11Key;
       /**
-       * @type string, uuid
+       * @type string
        */
-      id: string;
+      id: string | null;
       /**
        * @type string
        */
       name: string;
     } | null;
+    /**
+     * @type string
+     */
+    responsibleLabel: string | null;
     /**
      * @type string, uuid
      */
@@ -251,7 +263,7 @@ export type GetOrganizationsSlugSalesSaleid200 = {
      */
     responsibleType: SaleResponsibleTypeEnumKey | null;
     /**
-     * @type string, uuid
+     * @type string
      */
     responsibleId: string | null;
     /**

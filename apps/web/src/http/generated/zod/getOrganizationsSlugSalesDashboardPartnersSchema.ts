@@ -241,14 +241,14 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
   }),
   delinquencyBreakdown: z.object({
     totalSales: z.int().min(0).max(9007199254740991),
+    preCancellation: z.object({
+      threshold: z.nullable(z.int().min(1).max(9007199254740991)),
+      salesCount: z.int().min(0).max(9007199254740991),
+      grossAmount: z.int().min(0).max(9007199254740991),
+    }),
     buckets: z.array(
       z.object({
-        key: z.enum([
-          "RANGE_1_30",
-          "RANGE_31_60",
-          "RANGE_61_90",
-          "RANGE_90_PLUS",
-        ]),
+        key: z.string().min(1),
         label: z.string(),
         salesCount: z.int().min(0).max(9007199254740991),
         grossAmount: z.int().min(0).max(9007199254740991),

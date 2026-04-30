@@ -1026,6 +1026,66 @@ describe("sale-installments-panel", () => {
 		});
 	});
 
+	it("should allow editing installment fields for pending sale without changing status", async () => {
+		const user = userEvent.setup();
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.commissions.installments.update",
+		);
+
+		const { container } = render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="PENDING"
+				saleProductId="product-1"
+			/>,
+		);
+
+		const actionButtons = container.querySelectorAll(
+			'button[aria-haspopup="menu"]',
+		);
+		expect(actionButtons[0]).toBeTruthy();
+
+		await user.click(actionButtons[0] as HTMLButtonElement);
+		await user.click(screen.getByRole("menuitem", { name: "Editar parcela" }));
+
+		const dialog = screen.getByRole("dialog");
+		expect(
+			within(dialog).getByText(/status permanece bloqueado/i),
+		).toBeInTheDocument();
+
+		const statusTrigger = within(dialog).getByRole("combobox");
+		expect(statusTrigger).toBeDisabled();
+
+		const amountInput = within(dialog).getByPlaceholderText("R$ 0,00");
+		await user.clear(amountInput);
+		await user.type(amountInput, "R$ 150,00");
+
+		await user.click(
+			within(dialog).getByRole("button", { name: "Salvar alterações" }),
+		);
+
+		await waitFor(() => {
+			expect(mocks.updateInstallment).toHaveBeenCalledWith(
+				expect.objectContaining({
+					saleId: "sale-1",
+					installmentId: "inst-1",
+					data: expect.objectContaining({
+						amount: 15000,
+					}),
+				}),
+			);
+		});
+
+		expect(mocks.updateInstallment).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.not.objectContaining({
+					status: expect.anything(),
+				}),
+			}),
+		);
+	});
+
 	it("should undo a reversed installment", async () => {
 		const user = userEvent.setup();
 

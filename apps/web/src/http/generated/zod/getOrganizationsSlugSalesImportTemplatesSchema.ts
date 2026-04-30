@@ -58,7 +58,14 @@ export const getOrganizationsSlugSalesImportTemplates200Schema = z.object({
         parentProductId: z.uuid(),
         responsible: z.optional(
           z.object({
-            type: z.enum(["SELLER", "PARTNER"]),
+            type: z.enum([
+              "COMPANY",
+              "UNIT",
+              "SELLER",
+              "PARTNER",
+              "SUPERVISOR",
+              "OTHER",
+            ]),
             id: z.uuid(),
           }),
         ),

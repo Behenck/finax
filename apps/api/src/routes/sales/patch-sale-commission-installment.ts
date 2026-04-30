@@ -87,12 +87,6 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 					throw new BadRequestError("Sale not found");
 				}
 
-				if (sale.status === SaleStatus.PENDING) {
-					throw new BadRequestError(
-						"Cannot update commission installments while sale is pending",
-					);
-				}
-
 				if (sale.status === SaleStatus.CANCELED) {
 					throw new BadRequestError(
 						"Cannot update commission installments for canceled sale",
@@ -146,6 +140,15 @@ export async function patchSaleCommissionInstallment(app: FastifyInstance) {
 
 						if (!installment) {
 							throw new BadRequestError("Commission installment not found");
+						}
+
+						const isStatusChangeRequested =
+							data.status !== undefined && data.status !== installment.status;
+
+						if (sale.status === SaleStatus.PENDING && isStatusChangeRequested) {
+							throw new BadRequestError(
+								"Cannot update commission installment status while sale is pending",
+							);
 						}
 
 						const finalStatus = data.status ?? installment.status;

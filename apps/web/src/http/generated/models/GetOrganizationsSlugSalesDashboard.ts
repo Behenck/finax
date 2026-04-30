@@ -19,8 +19,12 @@ export type GetOrganizationsSlugSalesDashboardQueryParams = {
 };
 
 export const topResponsiblesTypeEnum = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
 export type TopResponsiblesTypeEnumKey =
@@ -274,9 +278,9 @@ export type GetOrganizationsSlugSalesDashboard200 = {
      */
     topResponsibles: {
       /**
-       * @type string, uuid
+       * @type string
        */
-      id: string;
+      id: string | null;
       /**
        * @type string
        */
