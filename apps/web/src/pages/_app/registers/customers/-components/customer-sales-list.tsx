@@ -81,7 +81,7 @@ export type LinkedSale = {
 	} | null;
 	responsible: {
 		type: string;
-		id: string;
+		id: string | null;
 		name: string;
 	} | null;
 	delinquencySummary: {

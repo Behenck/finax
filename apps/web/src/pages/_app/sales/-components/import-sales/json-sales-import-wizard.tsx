@@ -130,7 +130,10 @@ export function JsonSalesImportWizard() {
   );
 
   const productOptions = rootProducts.length > 0 ? rootProducts : products;
-  const saleFields = saleFieldsQuery.data?.fields ?? [];
+  const saleFields = useMemo(
+    () => saleFieldsQuery.data?.fields ?? [],
+    [saleFieldsQuery.data?.fields],
+  );
   const unitOptions = useMemo(
     () =>
       companies.flatMap((company) =>
@@ -342,7 +345,9 @@ export function JsonSalesImportWizard() {
           unitId: unitResolutions[group.key]?.unitId,
         }))
         .filter((resolution) => Boolean(resolution.companyId)),
-      responsibleResolutions: preview.unitGroups.flatMap((group) => {
+      responsibleResolutions: preview.unitGroups.flatMap<
+        SaleJsonImportApplyBody["responsibleResolutions"][number]
+      >((group) => {
         const resolution = unitResolutions[group.key];
         if (!resolution?.responsibleType) {
           return [];

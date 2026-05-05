@@ -102,10 +102,10 @@ export function useUpdateSaleImportTemplate() {
 				data: params.data,
 			});
 		},
-			onSuccess: async (result: SaleJsonImportResult) => {
-				if (!organization?.slug) {
-					return;
-				}
+		onSuccess: async () => {
+			if (!organization?.slug) {
+				return;
+			}
 
 			await queryClient.invalidateQueries({
 				queryKey: ["sales", "import-templates", organization.slug],
