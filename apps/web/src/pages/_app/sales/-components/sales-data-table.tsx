@@ -1598,7 +1598,7 @@ export function SalesDataTable({
     },
     {
       id: "paid",
-      label: "Pagas",
+      label: "Concluídas",
       subtitle: "Status concluída",
       valueClassName: "text-emerald-700 dark:text-emerald-300",
       data: salesSummary.paid,

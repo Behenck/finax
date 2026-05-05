@@ -4,6 +4,7 @@ import axios, {
 	type AxiosResponse,
 } from "axios";
 import { getAuthToken } from "./auth-token";
+import { performClientSignOut } from "./session-logout";
 
 export function resolveApiBaseUrl() {
 	const configuredUrl = import.meta.env.VITE_API_URL;
@@ -39,6 +40,63 @@ export const api = axios.create({
 	withCredentials: true,
 });
 
+const PUBLIC_AUTH_PATHS = new Set([
+	"/sessions/password",
+	"/auth/verify-otp",
+	"/sessions/google/complete",
+	"/password/recover",
+	"/password/reset",
+]);
+
+function resolveRequestPath(config?: AxiosRequestConfig) {
+	if (!config?.url) {
+		return null;
+	}
+
+	try {
+		const baseURL =
+			config.baseURL ??
+			(typeof window === "undefined" ? "http://localhost" : window.location.origin);
+		return new URL(config.url, baseURL).pathname;
+	} catch {
+		return config.url.startsWith("/") ? config.url : null;
+	}
+}
+
+function hasAuthorizationHeader(config?: AxiosRequestConfig) {
+	const headers = config?.headers;
+	if (!headers) {
+		return false;
+	}
+
+	if ("Authorization" in headers) {
+		return Boolean(headers.Authorization);
+	}
+
+	if ("authorization" in headers) {
+		return Boolean(headers.authorization);
+	}
+
+	return false;
+}
+
+function shouldAutoLogout(error: AxiosError<{ message?: string }>) {
+	if (error.response?.status !== 401) {
+		return false;
+	}
+
+	if (!hasAuthorizationHeader(error.config)) {
+		return false;
+	}
+
+	const requestPath = resolveRequestPath(error.config);
+	if (requestPath && PUBLIC_AUTH_PATHS.has(requestPath)) {
+		return false;
+	}
+
+	return true;
+}
+
 api.interceptors.request.use((config) => {
 	const token = getAuthToken();
 
@@ -49,6 +107,19 @@ api.interceptors.request.use((config) => {
 
 	return config;
 });
+
+api.interceptors.response.use(
+	(response) => response,
+	async (error: AxiosError<{ message?: string }>) => {
+		if (shouldAutoLogout(error)) {
+			await performClientSignOut({
+				reason: "expired",
+			});
+		}
+
+		throw error;
+	},
+);
 
 export function isAxiosError(
 	error: unknown,

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -24,10 +26,18 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
 	type GetOrganizationsSlugPermissionsCatalog200,
 	getOrganizationsSlugMembersMemberidPermissionsQueryKey,
 	getOrganizationsSlugMembersQueryKey,
 	type PutOrganizationsSlugMembersMemberidMutationRequest,
+	useGetOrganizationsSlugMembers,
 	useGetOrganizationsSlugMembersMemberidPermissions,
 	useGetOrganizationsSlugPermissionsCatalog,
 	usePutOrganizationsSlugMembersMemberid,
@@ -165,6 +175,20 @@ function chunkBySize<T>(items: T[], size: number): T[][] {
 	return chunks;
 }
 
+function buildPermissionStateMap(
+	permissions: PermissionCatalogItem[],
+	effectivePermissions: Iterable<string>,
+) {
+	const effectivePermissionSet = new Set(effectivePermissions);
+	const nextState: Record<string, boolean> = {};
+
+	for (const permission of permissions) {
+		nextState[permission.key] = effectivePermissionSet.has(permission.key);
+	}
+
+	return nextState;
+}
+
 function buildPermissionSections(
 	permissions: PermissionCatalogItem[],
 ): PermissionModuleSection[] {
@@ -259,6 +283,16 @@ export function MemberAccessManager({
 		Record<string, boolean>
 	>({});
 	const [openCards, setOpenCards] = useState<Record<string, boolean>>({});
+	const [selectedPermissionSourceId, setSelectedPermissionSourceId] =
+		useState("");
+	const [pendingPermissionSourceId, setPendingPermissionSourceId] = useState<
+		string | null
+	>(null);
+	const [copiedPermissionSourceLabel, setCopiedPermissionSourceLabel] =
+		useState<string | null>(null);
+	const [permissionCopyErrorMessage, setPermissionCopyErrorMessage] = useState<
+		string | null
+	>(null);
 
 	const { mutateAsync: updateMemberAccess, isPending: isSavingAccess } =
 		usePutOrganizationsSlugMembersMemberid();
@@ -266,6 +300,15 @@ export function MemberAccessManager({
 		mutateAsync: updateMemberPermissions,
 		isPending: isSavingPermissions,
 	} = usePutOrganizationsSlugMembersMemberidPermissions();
+	const { data: organizationMembersData, isLoading: isLoadingOrganizationMembers } =
+		useGetOrganizationsSlugMembers(
+			{ slug: organizationSlug },
+			{
+				query: {
+					enabled: open && canManagePermissions,
+				},
+			},
+		);
 
 	const { data: permissionCatalogData, isLoading: isLoadingPermissionCatalog } =
 		useGetOrganizationsSlugPermissionsCatalog(
@@ -285,11 +328,43 @@ export function MemberAccessManager({
 				},
 			},
 		);
+	const {
+		data: permissionSourceData,
+		isLoading: isLoadingPermissionSource,
+		error: permissionSourceError,
+	} = useGetOrganizationsSlugMembersMemberidPermissions(
+		{ slug: organizationSlug, memberId: pendingPermissionSourceId ?? "" },
+		{
+			query: {
+				enabled:
+					open &&
+					canManagePermissions &&
+					activeTab === "permissions" &&
+					Boolean(pendingPermissionSourceId),
+				refetchOnWindowFocus: false,
+				retry: false,
+			},
+		},
+	);
 
-	const catalogPermissions = permissionCatalogData?.permissions ?? [];
+	const catalogPermissions = useMemo(
+		() => permissionCatalogData?.permissions ?? [],
+		[permissionCatalogData?.permissions],
+	);
 	const permissionSections = useMemo(
 		() => buildPermissionSections(catalogPermissions),
 		[catalogPermissions],
+	);
+	const permissionCopySources = useMemo(
+		() =>
+			(organizationMembersData?.members ?? [])
+				.filter((listedMember) => listedMember.id !== member.id)
+				.sort((first, second) => {
+					const firstLabel = first.name ?? first.email;
+					const secondLabel = second.name ?? second.email;
+					return firstLabel.localeCompare(secondLabel);
+				}),
+		[organizationMembersData?.members, member.id],
 	);
 	const presetPermissionSet = useMemo(
 		() => new Set(memberPermissionsData?.presetPermissions ?? []),
@@ -303,6 +378,17 @@ export function MemberAccessManager({
 	useEffect(() => {
 		setScope(getMemberScope(member));
 	}, [member, open]);
+
+	useEffect(() => {
+		if (open) {
+			return;
+		}
+
+		setSelectedPermissionSourceId("");
+		setPendingPermissionSourceId(null);
+		setCopiedPermissionSourceLabel(null);
+		setPermissionCopyErrorMessage(null);
+	}, [open]);
 
 	useEffect(() => {
 		if (!open) {
@@ -323,12 +409,9 @@ export function MemberAccessManager({
 			return;
 		}
 
-		const nextState: Record<string, boolean> = {};
-		for (const permission of catalogPermissions) {
-			nextState[permission.key] = effectivePermissionSet.has(permission.key);
-		}
-
-		setPermissionStates(nextState);
+		setPermissionStates(
+			buildPermissionStateMap(catalogPermissions, effectivePermissionSet),
+		);
 		setOpenCards({});
 	}, [
 		open,
@@ -338,6 +421,44 @@ export function MemberAccessManager({
 		effectivePermissionSet,
 		member.id,
 	]);
+
+	useEffect(() => {
+		if (!pendingPermissionSourceId || !permissionSourceData) {
+			return;
+		}
+
+		if (permissionSourceData.member.id !== pendingPermissionSourceId) {
+			return;
+		}
+
+		setPermissionStates(
+			buildPermissionStateMap(
+				catalogPermissions,
+				permissionSourceData.effectivePermissions,
+			),
+		);
+		setCopiedPermissionSourceLabel(
+			permissionSourceData.member.name ?? permissionSourceData.member.email,
+		);
+		setPermissionCopyErrorMessage(null);
+		setPendingPermissionSourceId(null);
+		setOpenCards({});
+	}, [catalogPermissions, pendingPermissionSourceId, permissionSourceData]);
+
+	useEffect(() => {
+		if (!pendingPermissionSourceId || !permissionSourceError) {
+			return;
+		}
+
+		setPermissionCopyErrorMessage(
+			getErrorMessage(
+				permissionSourceError,
+				"Não foi possível copiar as permissões desse membro.",
+			),
+		);
+		setSelectedPermissionSourceId("");
+		setPendingPermissionSourceId(null);
+	}, [pendingPermissionSourceId, permissionSourceError]);
 
 	const isLoadingPermissionsTab =
 		canManagePermissions &&
@@ -364,6 +485,8 @@ export function MemberAccessManager({
 	]);
 
 	const isSaving = isSavingAccess || isSavingPermissions;
+	const isLoadingPermissionCopySources =
+		canManagePermissions && isLoadingOrganizationMembers;
 
 	const saveAccessChanges = async () => {
 		const data: PutOrganizationsSlugMembersMemberidMutationRequest = {
@@ -441,6 +564,10 @@ export function MemberAccessManager({
 			if (activeTab === "permissions") {
 				if (hasPermissionChanges) {
 					await savePermissionChanges();
+					setSelectedPermissionSourceId("");
+					setPendingPermissionSourceId(null);
+					setCopiedPermissionSourceLabel(null);
+					setPermissionCopyErrorMessage(null);
 				}
 
 				if (hasPermissionChanges) {
@@ -464,6 +591,13 @@ export function MemberAccessManager({
 				),
 			);
 		}
+	};
+
+	const handlePermissionSourceChange = (sourceMemberId: string) => {
+		setSelectedPermissionSourceId(sourceMemberId);
+		setPendingPermissionSourceId(sourceMemberId);
+		setCopiedPermissionSourceLabel(null);
+		setPermissionCopyErrorMessage(null);
 	};
 
 	const saveButtonLabel =
@@ -569,6 +703,76 @@ export function MemberAccessManager({
 									</div>
 								) : (
 									<div className="space-y-5">
+										<Card className="space-y-3 p-4">
+											<div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+												<div className="space-y-1">
+													<p className="text-sm font-medium">
+														Copiar permissões de outro usuário
+													</p>
+													<p className="text-xs text-muted-foreground">
+														Use um membro já configurado como base, revise os
+														ajustes e salve para aplicar.
+													</p>
+												</div>
+
+												<Select
+													value={selectedPermissionSourceId}
+													onValueChange={handlePermissionSourceChange}
+													disabled={
+														isLoadingPermissionCopySources ||
+														isLoadingPermissionSource ||
+														permissionCopySources.length === 0
+													}
+												>
+													<SelectTrigger aria-label="Copiar permissões de">
+														<SelectValue
+															placeholder={
+																permissionCopySources.length === 0
+																	? "Nenhum outro membro disponível"
+																	: "Selecionar membro"
+															}
+														/>
+													</SelectTrigger>
+													<SelectContent>
+														{permissionCopySources.map((permissionSource) => (
+															<SelectItem
+																key={permissionSource.id}
+																value={permissionSource.id}
+															>
+																{permissionSource.name ??
+																	permissionSource.email}
+																{permissionSource.name ? (
+																	<span className="ml-1 text-muted-foreground">
+																		({permissionSource.email})
+																	</span>
+																) : null}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											</div>
+
+											{isLoadingPermissionSource ? (
+												<div className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">
+													Carregando permissões do usuário selecionado...
+												</div>
+											) : null}
+
+											{permissionCopyErrorMessage ? (
+												<div className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+													{permissionCopyErrorMessage}
+												</div>
+											) : null}
+
+											{copiedPermissionSourceLabel && hasPermissionChanges ? (
+												<div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-primary">
+													Permissões copiadas de{" "}
+													<strong>{copiedPermissionSourceLabel}</strong>. Revise
+													e salve para aplicar ao membro atual.
+												</div>
+											) : null}
+										</Card>
+
 										{permissionSections.map((section) => (
 											<div key={section.id} className="space-y-3">
 												<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
