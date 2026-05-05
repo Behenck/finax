@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 
 interface AssignSupervisorProps {
 	partner: GetOrganizationsSlugPartners200["partners"][number];
@@ -118,7 +119,8 @@ export function AssignSupervisor({
 				<DialogHeader>
 					<DialogTitle>Atribuir Supervisor</DialogTitle>
 					<DialogDescription>
-						Selecione os supervisores para <strong>{partner.name}</strong>.
+						Selecione os supervisores para{" "}
+						<strong>{getPartnerDisplayName(partner)}</strong>.
 					</DialogDescription>
 				</DialogHeader>
 				<form className="space-y-2" onSubmit={handleSubmit}>

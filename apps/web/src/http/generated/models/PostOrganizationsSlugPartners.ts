@@ -38,34 +38,37 @@ export type PostOrganizationsSlugPartnersMutationRequestStatusEnumKey =
 
 export type PostOrganizationsSlugPartnersMutationRequest = {
   /**
-   * @type string
+   * @type string | undefined
    */
-  name: string;
+  name?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  email: string;
+  email?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  phone: string;
+  phone?: string;
   /**
+   * @minLength 1
    * @type string
    */
   companyName: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  documentType: PostOrganizationsSlugPartnersMutationRequestDocumentTypeEnumKey;
+  documentType?: PostOrganizationsSlugPartnersMutationRequestDocumentTypeEnumKey;
   /**
-   * @type string
+   * @type string | undefined
    */
-  document: string;
+  document?: string;
   /**
+   * @minLength 1
    * @type string
    */
   country: string;
   /**
+   * @minLength 1
    * @type string
    */
   state: string;

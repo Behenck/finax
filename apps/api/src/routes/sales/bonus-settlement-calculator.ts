@@ -7,6 +7,7 @@ import {
 	SaleResponsibleType,
 	SaleStatus,
 } from "generated/prisma/enums";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { BONUS_PERCENTAGE_SCALE } from "../products/bonus-scenarios-schema";
 import { BadRequestError } from "../_errors/bad-request-error";
 
@@ -298,7 +299,7 @@ type ScenarioWithRelations = {
 		sellerId: string | null;
 		supervisorId: string | null;
 		company: { id: string; name: string } | null;
-		partner: { id: string; name: string } | null;
+		partner: { id: string; name: string | null; companyName: string } | null;
 		seller: { id: string; name: string } | null;
 		supervisor: {
 			id: string;
@@ -465,6 +466,7 @@ export async function calculateBonusSettlementPreview(params: {
 							select: {
 								id: true,
 								name: true,
+								companyName: true,
 							},
 						},
 						seller: {
@@ -693,7 +695,9 @@ export async function calculateBonusSettlementPreview(params: {
 				beneficiaryLabel: resolveBeneficiaryLabel({
 					type: participant.type,
 					companyName: participant.company?.name,
-					partnerName: participant.partner?.name,
+					partnerName: participant.partner
+						? getPartnerDisplayName(participant.partner)
+						: null,
 					sellerName: participant.seller?.name,
 					supervisorName: participant.supervisor?.user.name,
 					supervisorEmail: participant.supervisor?.user.email,

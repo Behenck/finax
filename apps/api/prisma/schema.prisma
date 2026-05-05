@@ -575,12 +575,12 @@ enum PartnerDocumentType {
 model Partner {
   id String @id @default(uuid())
 
-  name  String
-  email String
-  phone String
+  name  String?
+  email String?
+  phone String?
 
-  documentType PartnerDocumentType
-  document     String
+  documentType PartnerDocumentType?
+  document     String?
 
   companyName String @map("company_name")
 

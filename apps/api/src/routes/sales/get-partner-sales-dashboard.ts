@@ -773,7 +773,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 					})
 				).map((partner) => ({
 					id: partner.id,
-					name: partner.name,
+					name: partner.name ?? partner.companyName,
 					companyName: partner.companyName,
 					displayName: getPartnerDisplayName(partner),
 					status: partner.status,
@@ -1013,37 +1013,39 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				]);
 
 				const saleIds = sales.map((sale) => sale.id);
-				const [
-					delinquencySummaryBySaleId,
-					commissionInstallmentsBySalePeriod,
-				] = await Promise.all([
-					loadSaleDelinquencySummaryBySaleIds(prisma, organization.id, saleIds),
-					saleIds.length > 0
-						? prisma.saleCommissionInstallment.findMany({
-								where: {
-									saleCommission: {
-										saleId: {
-											in: saleIds,
+				const [delinquencySummaryBySaleId, commissionInstallmentsBySalePeriod] =
+					await Promise.all([
+						loadSaleDelinquencySummaryBySaleIds(
+							prisma,
+							organization.id,
+							saleIds,
+						),
+						saleIds.length > 0
+							? prisma.saleCommissionInstallment.findMany({
+									where: {
+										saleCommission: {
+											saleId: {
+												in: saleIds,
+											},
 										},
 									},
-								},
-								select: {
-									amount: true,
-									status: true,
-									saleCommission: {
-										select: {
-											direction: true,
-											sale: {
-												select: {
-													responsibleId: true,
+									select: {
+										amount: true,
+										status: true,
+										saleCommission: {
+											select: {
+												direction: true,
+												sale: {
+													select: {
+														responsibleId: true,
+													},
 												},
 											},
 										},
 									},
-								},
-							})
-						: Promise.resolve([]),
-				]);
+								})
+							: Promise.resolve([]),
+					]);
 
 				const salesByPartnerId = new Map<string, DashboardSaleRow[]>();
 				for (const sale of sales) {
@@ -1237,11 +1239,14 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						.map((row) => row.responsibleId)
 						.filter((value): value is string => typeof value === "string"),
 				);
-				const maxObservedOpenDelinquencyCount = sales.reduce((currentMax, sale) => {
-					const openCount =
-						delinquencySummaryBySaleId.get(sale.id)?.openCount ?? 0;
-					return Math.max(currentMax, openCount);
-				}, 0);
+				const maxObservedOpenDelinquencyCount = sales.reduce(
+					(currentMax, sale) => {
+						const openCount =
+							delinquencySummaryBySaleId.get(sale.id)?.openCount ?? 0;
+						return Math.max(currentMax, openCount);
+					},
+					0,
+				);
 				const delinquencyBuckets = buildEmptyDelinquencyBuckets(
 					preCancellationThreshold,
 					maxObservedOpenDelinquencyCount,

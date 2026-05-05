@@ -258,7 +258,10 @@ function resolveCommissionInstallmentExpectedPaymentDates(params: {
 			const resolvedDate =
 				index === 0
 					? startDate
-					: addMonths(startDate, Math.max(0, installment.installmentNumber - 1));
+					: addMonths(
+							startDate,
+							Math.max(0, installment.installmentNumber - 1),
+						);
 			lastInstallmentDateWithValue = resolvedDate;
 			return resolvedDate;
 		}
@@ -389,6 +392,7 @@ export async function resolveSaleCommissionsData(
 					select: {
 						id: true,
 						name: true,
+						companyName: true,
 					},
 				})
 			: Promise.resolve([]),
@@ -469,8 +473,7 @@ export async function resolveSaleCommissionsData(
 			commission.totalPercentage,
 		);
 		const calculationBase = commission.calculationBase ?? "SALE_TOTAL";
-		const useAdvancedDateSchedule =
-			commission.useAdvancedDateSchedule ?? false;
+		const useAdvancedDateSchedule = commission.useAdvancedDateSchedule ?? false;
 		const baseCommissionIndex =
 			calculationBase === "COMMISSION"
 				? commission.baseCommissionIndex
@@ -518,20 +521,22 @@ export async function resolveSaleCommissionsData(
 			totalPercentage: totalPercentageScaled,
 			useAdvancedDateSchedule,
 			sortOrder: index,
-			installments: commission.installments.map((installment, installmentIndex) => ({
-				installmentNumber: installment.installmentNumber,
-				percentage: toScaledPercentage(installment.percentage),
-				status: SaleCommissionInstallmentStatus.PENDING,
-				paymentDate: null,
-				expectedPaymentDate: null,
-				monthsToAdvance: useAdvancedDateSchedule
-					? installmentIndex === 0
-						? 0
-						: installment.monthsToAdvance ?? 1
-					: installmentIndex === 0
-						? 0
-						: 1,
-			})),
+			installments: commission.installments.map(
+				(installment, installmentIndex) => ({
+					installmentNumber: installment.installmentNumber,
+					percentage: toScaledPercentage(installment.percentage),
+					status: SaleCommissionInstallmentStatus.PENDING,
+					paymentDate: null,
+					expectedPaymentDate: null,
+					monthsToAdvance: useAdvancedDateSchedule
+						? installmentIndex === 0
+							? 0
+							: (installment.monthsToAdvance ?? 1)
+						: installmentIndex === 0
+							? 0
+							: 1,
+				}),
+			),
 		};
 	});
 
@@ -559,14 +564,15 @@ export async function resolveSaleCommissionsData(
 					effectivePercentages?.installmentsScaled ??
 					commission.installments.map((installment) => installment.percentage),
 			});
-			const expectedPaymentDates = resolveCommissionInstallmentExpectedPaymentDates({
-				startDate: commission.startDate,
-				useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
-				installments: commission.installments.map((installment) => ({
-					installmentNumber: installment.installmentNumber,
-					monthsToAdvance: installment.monthsToAdvance,
-				})),
-			});
+			const expectedPaymentDates =
+				resolveCommissionInstallmentExpectedPaymentDates({
+					startDate: commission.startDate,
+					useAdvancedDateSchedule: commission.useAdvancedDateSchedule,
+					installments: commission.installments.map((installment) => ({
+						installmentNumber: installment.installmentNumber,
+						monthsToAdvance: installment.monthsToAdvance,
+					})),
+				});
 
 			return {
 				sourceType: commission.sourceType,
@@ -590,8 +596,7 @@ export async function resolveSaleCommissionsData(
 						percentage: installment.percentage,
 						amount: installmentAmounts[installmentIndex] ?? 0,
 						status: installment.status,
-						expectedPaymentDate:
-							expectedPaymentDates[installmentIndex] ?? null,
+						expectedPaymentDate: expectedPaymentDates[installmentIndex] ?? null,
 						paymentDate: installment.paymentDate,
 						monthsToAdvance: installment.monthsToAdvance,
 					}),
@@ -1198,7 +1203,7 @@ function resolveSaleCommissionBeneficiaryLabel(commission: {
 	beneficiaryCompany: { name: string } | null;
 	beneficiaryUnit: { name: string; company: { name: string } } | null;
 	beneficiarySeller: { name: string } | null;
-	beneficiaryPartner: { name: string } | null;
+	beneficiaryPartner: { name: string | null; companyName: string } | null;
 	beneficiarySupervisor: {
 		user: { name: string | null; email: string };
 	} | null;
@@ -1217,7 +1222,9 @@ function resolveSaleCommissionBeneficiaryLabel(commission: {
 		case "SELLER":
 			return commission.beneficiarySeller?.name ?? null;
 		case "PARTNER":
-			return commission.beneficiaryPartner?.name ?? null;
+			return commission.beneficiaryPartner
+				? getPartnerDisplayName(commission.beneficiaryPartner)
+				: null;
 		case "SUPERVISOR":
 			return commission.beneficiarySupervisor
 				? (commission.beneficiarySupervisor.user.name ??
@@ -1301,6 +1308,7 @@ export async function loadSaleCommissions(
 			beneficiaryPartner: {
 				select: {
 					name: true,
+					companyName: true,
 				},
 			},
 			beneficiarySupervisor: {
@@ -1458,6 +1466,7 @@ export async function loadSaleCommissionInstallments(
 					beneficiaryPartner: {
 						select: {
 							name: true,
+							companyName: true,
 						},
 					},
 					beneficiarySupervisor: {
@@ -2259,6 +2268,7 @@ export async function loadOrganizationCommissionInstallments({
 						beneficiaryPartner: {
 							select: {
 								name: true,
+								companyName: true,
 							},
 						},
 						beneficiarySupervisor: {

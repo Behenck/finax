@@ -106,14 +106,16 @@ function onlyDigits(value?: string | null) {
 	return String(value ?? "").replace(/\D/g, "");
 }
 
-function formatEmail(value: string) {
-	return value.toLowerCase();
+function formatEmail(value?: string | null) {
+	return String(value ?? "")
+		.trim()
+		.toLowerCase();
 }
 
 function normalizePartnerFormData(data: PartnerForm): PartnerForm {
 	return {
 		...data,
-		name: formatTitleCase(data.name),
+		name: data.name ? formatTitleCase(data.name) : "",
 		companyName: formatTitleCase(data.companyName),
 		email: formatEmail(data.email),
 		city: data.city ? formatTitleCase(data.city) : data.city,
@@ -344,7 +346,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup className="md:max-w-48">
 						<Field className="gap-1">
-							<FieldLabel>Tipo de documento *</FieldLabel>
+							<FieldLabel>Tipo de documento</FieldLabel>
 							<Controller
 								name="documentType"
 								control={control}
@@ -388,7 +390,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 					</FieldGroup>
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>CNPJ / CPF *</FieldLabel>
+							<FieldLabel>CNPJ / CPF</FieldLabel>
 							<Controller
 								control={control}
 								name="document"
@@ -428,7 +430,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>Nome do representante *</FieldLabel>
+							<FieldLabel>Nome do representante</FieldLabel>
 							<Controller
 								control={control}
 								name="name"
@@ -472,7 +474,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>email *</FieldLabel>
+							<FieldLabel>Email</FieldLabel>
 							<Controller
 								control={control}
 								name="email"
@@ -493,7 +495,7 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 					</FieldGroup>
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>Telefone para contato *</FieldLabel>
+							<FieldLabel>Telefone para contato</FieldLabel>
 							<Controller
 								control={control}
 								name="phone"

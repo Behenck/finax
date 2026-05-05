@@ -41,6 +41,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatCurrencyBRL } from "@/utils/format-amount";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { formatPhone } from "@/utils/format-phone";
 import { AssignSupervisor } from "./assign-supervisor";
 import { DetailsPartner } from "./details-partner";
@@ -122,12 +123,12 @@ export function ListPartners({
 				slug: organization.slug,
 				partnerId: partner.id,
 				data: {
-					name: partner.name,
-					email: partner.email,
-					phone: partner.phone,
+					name: partner.name ?? undefined,
+					email: partner.email ?? undefined,
+					phone: partner.phone ?? undefined,
 					companyName: partner.companyName,
-					documentType: partner.documentType,
-					document: partner.document,
+					documentType: partner.documentType ?? undefined,
+					document: partner.document ?? undefined,
 					country: partner.country,
 					state: partner.state,
 					city: partner.city ?? undefined,
@@ -147,7 +148,7 @@ export function ListPartners({
 			});
 
 			toast.success(
-				`Parceiro ${partner.name} ${partner.status === "ACTIVE" ? "inativado" : "ativado"} com sucesso!`,
+				`Parceiro ${getPartnerDisplayName(partner)} ${partner.status === "ACTIVE" ? "inativado" : "ativado"} com sucesso!`,
 			);
 		} catch (error) {
 			const message = resolveErrorMessage(normalizeApiError(error));
@@ -181,7 +182,7 @@ export function ListPartners({
 								<div className="flex items-start justify-between gap-3">
 									<div className="min-w-0">
 										<p className="truncate text-sm font-semibold">
-											{partner.name}
+											{getPartnerDisplayName(partner)}
 										</p>
 										<p className="truncate text-xs text-muted-foreground">
 											{partner.email ?? "Sem e-mail"}
@@ -337,9 +338,11 @@ export function ListPartners({
 									>
 										<TableCell>
 											<div className="flex flex-col">
-												<span className="font-semibold">{partner.name}</span>
+												<span className="font-semibold">
+													{getPartnerDisplayName(partner)}
+												</span>
 												<span className="text-xs text-muted-foreground">
-													{partner.email}
+													{partner.email ?? "Sem e-mail"}
 												</span>
 											</div>
 										</TableCell>

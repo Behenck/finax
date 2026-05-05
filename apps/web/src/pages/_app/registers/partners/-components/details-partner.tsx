@@ -21,6 +21,7 @@ import { getInitials } from "@/utils/get-initials";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatPhone } from "@/utils/format-phone";
+import { getPartnerDisplayName } from "@/utils/partner-display";
 import { formatDocument } from "@/utils/format-document";
 import { Card } from "@/components/ui/card";
 
@@ -47,11 +48,13 @@ export function DetailsPartner({ partner }: DetailsPartnerProps) {
 					<Avatar className="rounded-md! w-full h-full max-w-24">
 						<AvatarImage src="" />
 						<AvatarFallback className="rounded-md!">
-							{getInitials(partner.name)}
+							{getInitials(getPartnerDisplayName(partner))}
 						</AvatarFallback>
 					</Avatar>
 					<div className="flex flex-col gap-1 flex-1">
-						<h2 className="font-bold text-xl">{partner.name}</h2>
+						<h2 className="font-bold text-xl">
+							{getPartnerDisplayName(partner)}
+						</h2>
 						<span>{partner.companyName}</span>
 						<Badge>{partner.status === "ACTIVE" ? "Ativo" : "Inativo"}</Badge>
 					</div>
@@ -79,7 +82,7 @@ export function DetailsPartner({ partner }: DetailsPartnerProps) {
 							<span className="text-sm font-light">{partner.companyName}</span>
 						</div>
 					)}
-					{partner.document && (
+					{partner.document && partner.documentType && (
 						<div className="flex items-center gap-2">
 							<BookUser className="size-4" />
 							<span className="text-sm font-light">

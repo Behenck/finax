@@ -239,11 +239,11 @@ export type PartnerGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type PartnerGroupByOutputType = {
   id: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name: string | null
+  email: string | null
+  phone: string | null
+  documentType: $Enums.PartnerDocumentType | null
+  document: string | null
   companyName: string
   street: string | null
   number: string | null
@@ -283,11 +283,11 @@ export type PartnerWhereInput = {
   OR?: Prisma.PartnerWhereInput[]
   NOT?: Prisma.PartnerWhereInput | Prisma.PartnerWhereInput[]
   id?: Prisma.StringFilter<"Partner"> | string
-  name?: Prisma.StringFilter<"Partner"> | string
-  email?: Prisma.StringFilter<"Partner"> | string
-  phone?: Prisma.StringFilter<"Partner"> | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFilter<"Partner"> | $Enums.PartnerDocumentType
-  document?: Prisma.StringFilter<"Partner"> | string
+  name?: Prisma.StringNullableFilter<"Partner"> | string | null
+  email?: Prisma.StringNullableFilter<"Partner"> | string | null
+  phone?: Prisma.StringNullableFilter<"Partner"> | string | null
+  documentType?: Prisma.EnumPartnerDocumentTypeNullableFilter<"Partner"> | $Enums.PartnerDocumentType | null
+  document?: Prisma.StringNullableFilter<"Partner"> | string | null
   companyName?: Prisma.StringFilter<"Partner"> | string
   street?: Prisma.StringNullableFilter<"Partner"> | string | null
   number?: Prisma.StringNullableFilter<"Partner"> | string | null
@@ -314,11 +314,11 @@ export type PartnerWhereInput = {
 
 export type PartnerOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  documentType?: Prisma.SortOrder
-  document?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  document?: Prisma.SortOrderInput | Prisma.SortOrder
   companyName?: Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
   number?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,11 +350,11 @@ export type PartnerWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PartnerWhereInput | Prisma.PartnerWhereInput[]
   OR?: Prisma.PartnerWhereInput[]
   NOT?: Prisma.PartnerWhereInput | Prisma.PartnerWhereInput[]
-  name?: Prisma.StringFilter<"Partner"> | string
-  email?: Prisma.StringFilter<"Partner"> | string
-  phone?: Prisma.StringFilter<"Partner"> | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFilter<"Partner"> | $Enums.PartnerDocumentType
-  document?: Prisma.StringFilter<"Partner"> | string
+  name?: Prisma.StringNullableFilter<"Partner"> | string | null
+  email?: Prisma.StringNullableFilter<"Partner"> | string | null
+  phone?: Prisma.StringNullableFilter<"Partner"> | string | null
+  documentType?: Prisma.EnumPartnerDocumentTypeNullableFilter<"Partner"> | $Enums.PartnerDocumentType | null
+  document?: Prisma.StringNullableFilter<"Partner"> | string | null
   companyName?: Prisma.StringFilter<"Partner"> | string
   street?: Prisma.StringNullableFilter<"Partner"> | string | null
   number?: Prisma.StringNullableFilter<"Partner"> | string | null
@@ -381,11 +381,11 @@ export type PartnerWhereUniqueInput = Prisma.AtLeast<{
 
 export type PartnerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  documentType?: Prisma.SortOrder
-  document?: Prisma.SortOrder
+  name?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  document?: Prisma.SortOrderInput | Prisma.SortOrder
   companyName?: Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
   number?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -410,11 +410,11 @@ export type PartnerScalarWhereWithAggregatesInput = {
   OR?: Prisma.PartnerScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PartnerScalarWhereWithAggregatesInput | Prisma.PartnerScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Partner"> | string
-  name?: Prisma.StringWithAggregatesFilter<"Partner"> | string
-  email?: Prisma.StringWithAggregatesFilter<"Partner"> | string
-  phone?: Prisma.StringWithAggregatesFilter<"Partner"> | string
-  documentType?: Prisma.EnumPartnerDocumentTypeWithAggregatesFilter<"Partner"> | $Enums.PartnerDocumentType
-  document?: Prisma.StringWithAggregatesFilter<"Partner"> | string
+  name?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
+  documentType?: Prisma.EnumPartnerDocumentTypeNullableWithAggregatesFilter<"Partner"> | $Enums.PartnerDocumentType | null
+  document?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
   companyName?: Prisma.StringWithAggregatesFilter<"Partner"> | string
   street?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
   number?: Prisma.StringNullableWithAggregatesFilter<"Partner"> | string | null
@@ -433,11 +433,11 @@ export type PartnerScalarWhereWithAggregatesInput = {
 
 export type PartnerCreateInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -462,11 +462,11 @@ export type PartnerCreateInput = {
 
 export type PartnerUncheckedCreateInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -491,11 +491,11 @@ export type PartnerUncheckedCreateInput = {
 
 export type PartnerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -520,11 +520,11 @@ export type PartnerUpdateInput = {
 
 export type PartnerUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -549,11 +549,11 @@ export type PartnerUncheckedUpdateInput = {
 
 export type PartnerCreateManyInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -572,11 +572,11 @@ export type PartnerCreateManyInput = {
 
 export type PartnerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -593,11 +593,11 @@ export type PartnerUpdateManyMutationInput = {
 
 export type PartnerUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -797,8 +797,8 @@ export type PartnerUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.PartnerScalarWhereInput | Prisma.PartnerScalarWhereInput[]
 }
 
-export type EnumPartnerDocumentTypeFieldUpdateOperationsInput = {
-  set?: $Enums.PartnerDocumentType
+export type NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput = {
+  set?: $Enums.PartnerDocumentType | null
 }
 
 export type EnumPartnerStatusFieldUpdateOperationsInput = {
@@ -901,11 +901,11 @@ export type PartnerUpdateOneWithoutSaleCommissionsNestedInput = {
 
 export type PartnerCreateWithoutUserInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -929,11 +929,11 @@ export type PartnerCreateWithoutUserInput = {
 
 export type PartnerUncheckedCreateWithoutUserInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -986,11 +986,11 @@ export type PartnerScalarWhereInput = {
   OR?: Prisma.PartnerScalarWhereInput[]
   NOT?: Prisma.PartnerScalarWhereInput | Prisma.PartnerScalarWhereInput[]
   id?: Prisma.StringFilter<"Partner"> | string
-  name?: Prisma.StringFilter<"Partner"> | string
-  email?: Prisma.StringFilter<"Partner"> | string
-  phone?: Prisma.StringFilter<"Partner"> | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFilter<"Partner"> | $Enums.PartnerDocumentType
-  document?: Prisma.StringFilter<"Partner"> | string
+  name?: Prisma.StringNullableFilter<"Partner"> | string | null
+  email?: Prisma.StringNullableFilter<"Partner"> | string | null
+  phone?: Prisma.StringNullableFilter<"Partner"> | string | null
+  documentType?: Prisma.EnumPartnerDocumentTypeNullableFilter<"Partner"> | $Enums.PartnerDocumentType | null
+  document?: Prisma.StringNullableFilter<"Partner"> | string | null
   companyName?: Prisma.StringFilter<"Partner"> | string
   street?: Prisma.StringNullableFilter<"Partner"> | string | null
   number?: Prisma.StringNullableFilter<"Partner"> | string | null
@@ -1009,11 +1009,11 @@ export type PartnerScalarWhereInput = {
 
 export type PartnerCreateWithoutOrganizationInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1037,11 +1037,11 @@ export type PartnerCreateWithoutOrganizationInput = {
 
 export type PartnerUncheckedCreateWithoutOrganizationInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1091,11 +1091,11 @@ export type PartnerUpdateManyWithWhereWithoutOrganizationInput = {
 
 export type PartnerCreateWithoutSupervisorsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1119,11 +1119,11 @@ export type PartnerCreateWithoutSupervisorsInput = {
 
 export type PartnerUncheckedCreateWithoutSupervisorsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1163,11 +1163,11 @@ export type PartnerUpdateToOneWithWhereWithoutSupervisorsInput = {
 
 export type PartnerUpdateWithoutSupervisorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1191,11 +1191,11 @@ export type PartnerUpdateWithoutSupervisorsInput = {
 
 export type PartnerUncheckedUpdateWithoutSupervisorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1219,11 +1219,11 @@ export type PartnerUncheckedUpdateWithoutSupervisorsInput = {
 
 export type PartnerCreateWithoutProductBonusParticipantsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1247,11 +1247,11 @@ export type PartnerCreateWithoutProductBonusParticipantsInput = {
 
 export type PartnerUncheckedCreateWithoutProductBonusParticipantsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1291,11 +1291,11 @@ export type PartnerUpdateToOneWithWhereWithoutProductBonusParticipantsInput = {
 
 export type PartnerUpdateWithoutProductBonusParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1319,11 +1319,11 @@ export type PartnerUpdateWithoutProductBonusParticipantsInput = {
 
 export type PartnerUncheckedUpdateWithoutProductBonusParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1347,11 +1347,11 @@ export type PartnerUncheckedUpdateWithoutProductBonusParticipantsInput = {
 
 export type PartnerCreateWithoutBonusSettlementResultsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1375,11 +1375,11 @@ export type PartnerCreateWithoutBonusSettlementResultsInput = {
 
 export type PartnerUncheckedCreateWithoutBonusSettlementResultsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1419,11 +1419,11 @@ export type PartnerUpdateToOneWithWhereWithoutBonusSettlementResultsInput = {
 
 export type PartnerUpdateWithoutBonusSettlementResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1447,11 +1447,11 @@ export type PartnerUpdateWithoutBonusSettlementResultsInput = {
 
 export type PartnerUncheckedUpdateWithoutBonusSettlementResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1475,11 +1475,11 @@ export type PartnerUncheckedUpdateWithoutBonusSettlementResultsInput = {
 
 export type PartnerCreateWithoutBonusInstallmentsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1503,11 +1503,11 @@ export type PartnerCreateWithoutBonusInstallmentsInput = {
 
 export type PartnerUncheckedCreateWithoutBonusInstallmentsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1547,11 +1547,11 @@ export type PartnerUpdateToOneWithWhereWithoutBonusInstallmentsInput = {
 
 export type PartnerUpdateWithoutBonusInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1575,11 +1575,11 @@ export type PartnerUpdateWithoutBonusInstallmentsInput = {
 
 export type PartnerUncheckedUpdateWithoutBonusInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1603,11 +1603,11 @@ export type PartnerUncheckedUpdateWithoutBonusInstallmentsInput = {
 
 export type PartnerCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1631,11 +1631,11 @@ export type PartnerCreateWithoutProductCommissionScenarioConditionsInput = {
 
 export type PartnerUncheckedCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1675,11 +1675,11 @@ export type PartnerUpdateToOneWithWhereWithoutProductCommissionScenarioCondition
 
 export type PartnerUpdateWithoutProductCommissionScenarioConditionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1703,11 +1703,11 @@ export type PartnerUpdateWithoutProductCommissionScenarioConditionsInput = {
 
 export type PartnerUncheckedUpdateWithoutProductCommissionScenarioConditionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1731,11 +1731,11 @@ export type PartnerUncheckedUpdateWithoutProductCommissionScenarioConditionsInpu
 
 export type PartnerCreateWithoutSaleCommissionsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1759,11 +1759,11 @@ export type PartnerCreateWithoutSaleCommissionsInput = {
 
 export type PartnerUncheckedCreateWithoutSaleCommissionsInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1803,11 +1803,11 @@ export type PartnerUpdateToOneWithWhereWithoutSaleCommissionsInput = {
 
 export type PartnerUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1831,11 +1831,11 @@ export type PartnerUpdateWithoutSaleCommissionsInput = {
 
 export type PartnerUncheckedUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1859,11 +1859,11 @@ export type PartnerUncheckedUpdateWithoutSaleCommissionsInput = {
 
 export type PartnerCreateManyUserInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1881,11 +1881,11 @@ export type PartnerCreateManyUserInput = {
 
 export type PartnerUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1909,11 +1909,11 @@ export type PartnerUpdateWithoutUserInput = {
 
 export type PartnerUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1937,11 +1937,11 @@ export type PartnerUncheckedUpdateWithoutUserInput = {
 
 export type PartnerUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1959,11 +1959,11 @@ export type PartnerUncheckedUpdateManyWithoutUserInput = {
 
 export type PartnerCreateManyOrganizationInput = {
   id?: string
-  name: string
-  email: string
-  phone: string
-  documentType: $Enums.PartnerDocumentType
-  document: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  documentType?: $Enums.PartnerDocumentType | null
+  document?: string | null
   companyName: string
   street?: string | null
   number?: string | null
@@ -1981,11 +1981,11 @@ export type PartnerCreateManyOrganizationInput = {
 
 export type PartnerUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2009,11 +2009,11 @@ export type PartnerUpdateWithoutOrganizationInput = {
 
 export type PartnerUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2037,11 +2037,11 @@ export type PartnerUncheckedUpdateWithoutOrganizationInput = {
 
 export type PartnerUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
-  documentType?: Prisma.EnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType
-  document?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.NullableEnumPartnerDocumentTypeFieldUpdateOperationsInput | $Enums.PartnerDocumentType | null
+  document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2273,11 +2273,11 @@ export type $PartnerPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    name: string
-    email: string
-    phone: string
-    documentType: $Enums.PartnerDocumentType
-    document: string
+    name: string | null
+    email: string | null
+    phone: string | null
+    documentType: $Enums.PartnerDocumentType | null
+    document: string | null
     companyName: string
     street: string | null
     number: string | null

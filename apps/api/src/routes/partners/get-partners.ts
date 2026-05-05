@@ -60,12 +60,12 @@ export async function getPartners(app: FastifyInstance) {
 							partners: z.array(
 								z.object({
 									id: z.uuid(),
-									name: z.string(),
-									email: z.string(),
-									phone: z.string(),
+									name: z.string().nullable(),
+									email: z.string().nullable(),
+									phone: z.string().nullable(),
 									companyName: z.string(),
-									documentType: z.enum(PartnerDocumentType),
-									document: z.string(),
+									documentType: z.enum(PartnerDocumentType).nullable(),
+									document: z.string().nullable(),
 									country: z.string(),
 									state: z.string(),
 									city: z.string().nullable(),

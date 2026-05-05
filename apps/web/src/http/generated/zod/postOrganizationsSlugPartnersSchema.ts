@@ -17,14 +17,14 @@ export const postOrganizationsSlugPartners201Schema = z.object({
 });
 
 export const postOrganizationsSlugPartnersMutationRequestSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  phone: z.string(),
-  companyName: z.string(),
-  documentType: z.enum(["CPF", "CNPJ"]),
-  document: z.string(),
-  country: z.string(),
-  state: z.string(),
+  name: z.optional(z.string()),
+  email: z.optional(z.string()),
+  phone: z.optional(z.string()),
+  companyName: z.string().min(1),
+  documentType: z.optional(z.enum(["CPF", "CNPJ"])),
+  document: z.optional(z.string()),
+  country: z.string().min(1),
+  state: z.string().min(1),
   city: z.optional(z.string()),
   street: z.optional(z.string()),
   zipCode: z.optional(z.string()),

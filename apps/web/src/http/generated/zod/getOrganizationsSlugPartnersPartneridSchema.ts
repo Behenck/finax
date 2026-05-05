@@ -16,12 +16,12 @@ export const getOrganizationsSlugPartnersPartneridPathParamsSchema = z.object({
 export const getOrganizationsSlugPartnersPartnerid200Schema = z.object({
   partner: z.object({
     id: z.uuid(),
-    name: z.string(),
-    email: z.string(),
-    phone: z.string(),
+    name: z.nullable(z.string()),
+    email: z.nullable(z.string()),
+    phone: z.nullable(z.string()),
     companyName: z.string(),
-    documentType: z.enum(["CPF", "CNPJ"]),
-    document: z.string(),
+    documentType: z.nullable(z.enum(["CPF", "CNPJ"])),
+    document: z.nullable(z.string()),
     country: z.string(),
     state: z.string(),
     city: z.nullable(z.string()),

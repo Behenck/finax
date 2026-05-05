@@ -66,15 +66,15 @@ export type GetOrganizationsSlugPartnersPartnerid200 = {
     /**
      * @type string
      */
-    name: string;
+    name: string | null;
     /**
      * @type string
      */
-    email: string;
+    email: string | null;
     /**
      * @type string
      */
-    phone: string;
+    phone: string | null;
     /**
      * @type string
      */
@@ -82,11 +82,11 @@ export type GetOrganizationsSlugPartnersPartnerid200 = {
     /**
      * @type string
      */
-    documentType: PartnerDocumentTypeEnumKey;
+    documentType: PartnerDocumentTypeEnumKey | null;
     /**
      * @type string
      */
-    document: string;
+    document: string | null;
     /**
      * @type string
      */

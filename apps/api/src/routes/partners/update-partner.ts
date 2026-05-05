@@ -5,11 +5,14 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
-import { PartnerDocumentType, PartnerStatus } from "generated/prisma/enums";
 import {
 	assertSupervisorUserIds,
 	replacePartnerSupervisors,
 } from "./partner-supervisors";
+import {
+	normalizePartnerWriteBody,
+	partnerWriteBodySchema,
+} from "./partner-payload";
 
 export async function updatePartner(app: FastifyInstance) {
 	app
@@ -26,24 +29,7 @@ export async function updatePartner(app: FastifyInstance) {
 						slug: z.string(),
 						partnerId: z.uuid(),
 					}),
-					body: z.object({
-						name: z.string(),
-						email: z.string(),
-						phone: z.string(),
-						companyName: z.string(),
-						documentType: z.enum(PartnerDocumentType),
-						document: z.string(),
-						country: z.string(),
-						state: z.string(),
-						city: z.string().optional(),
-						street: z.string().optional(),
-						zipCode: z.string().optional(),
-						neighborhood: z.string().optional(),
-						number: z.string().optional(),
-						complement: z.string().optional(),
-						status: z.enum(PartnerStatus).optional(),
-						supervisorIds: z.array(z.uuid()).optional(),
-					}),
+					body: partnerWriteBodySchema,
 					response: {
 						204: z.null(),
 					},
@@ -51,7 +37,7 @@ export async function updatePartner(app: FastifyInstance) {
 			},
 			async (request, reply) => {
 				const { slug, partnerId } = request.params;
-				const data = request.body;
+				const data = normalizePartnerWriteBody(request.body);
 
 				const organization = await prisma.organization.findUnique({
 					where: {

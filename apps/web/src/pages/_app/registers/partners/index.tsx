@@ -50,6 +50,7 @@ function PartnersPage() {
 			const matchesText =
 				!hasQuery ||
 				partner.name?.toLowerCase().includes(query) ||
+				partner.companyName.toLowerCase().includes(query) ||
 				partner.email?.toLowerCase().includes(query) ||
 				partner.phone?.includes(query);
 			const matchesStatus =

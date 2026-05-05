@@ -44,34 +44,37 @@ export type PutOrganizationsSlugPartnersPartneridMutationRequestStatusEnumKey =
 
 export type PutOrganizationsSlugPartnersPartneridMutationRequest = {
   /**
-   * @type string
+   * @type string | undefined
    */
-  name: string;
+  name?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  email: string;
+  email?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  phone: string;
+  phone?: string;
   /**
+   * @minLength 1
    * @type string
    */
   companyName: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  documentType: PutOrganizationsSlugPartnersPartneridMutationRequestDocumentTypeEnumKey;
+  documentType?: PutOrganizationsSlugPartnersPartneridMutationRequestDocumentTypeEnumKey;
   /**
-   * @type string
+   * @type string | undefined
    */
-  document: string;
+  document?: string;
   /**
+   * @minLength 1
    * @type string
    */
   country: string;
   /**
+   * @minLength 1
    * @type string
    */
   state: string;
