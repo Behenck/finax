@@ -26,13 +26,17 @@ export type PostOrganizationsSlugSalesBatch201 = {
   createdCount: number;
 };
 
-export const responsibleTypeEnum8 = {
+export const responsibleTypeEnum9 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum8Key =
-  (typeof responsibleTypeEnum8)[keyof typeof responsibleTypeEnum8];
+export type ResponsibleTypeEnum9Key =
+  (typeof responsibleTypeEnum9)[keyof typeof responsibleTypeEnum9];
 
 export type PostOrganizationsSlugSalesBatchMutationRequest = {
   /**
@@ -46,11 +50,17 @@ export type PostOrganizationsSlugSalesBatchMutationRequest = {
     /**
      * @type string
      */
-    type: ResponsibleTypeEnum8Key;
+    type: ResponsibleTypeEnum9Key;
     /**
-     * @type string, uuid
+     * @type string | undefined, uuid
      */
-    id: string;
+    id?: string;
+    /**
+     * @minLength 1
+     * @maxLength 255
+     * @type string | undefined
+     */
+    label?: string;
   };
   /**
    * @type string, uuid

@@ -2,10 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Dispatch, SetStateAction } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	DashboardPartnersOverview,
-	dedupeAvailableDynamicFields,
-} from "../src/pages/_app/_dashboard/-components/dashboard-partners-overview";
+import { DashboardPartnersOverview } from "../src/pages/_app/_dashboard/-components/dashboard-partners-overview";
+import { dedupeAvailableDynamicFields } from "../src/pages/_app/_dashboard/-components/dashboard-partners-overview-utils";
 
 const FILTER_START_DATE = "2025-12-01";
 const FILTER_END_DATE = "2026-01-10";
@@ -240,12 +238,6 @@ function buildDashboardData(
 		statusFunnel: {
 			items: [
 				{ status: "PENDING", label: "Pendente", salesCount: 0, grossAmount: 0 },
-				{
-					status: "APPROVED",
-					label: "Aprovada",
-					salesCount: 0,
-					grossAmount: 0,
-				},
 				{
 					status: "COMPLETED",
 					label: "Concluída",

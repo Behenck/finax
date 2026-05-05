@@ -34,9 +34,7 @@ export const getOrganizationsSlugCommissionsInstallments200Schema = z.object({
     z.object({
       id: z.uuid(),
       saleId: z.nullable(z.uuid()),
-      saleStatus: z.nullable(
-        z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
-      ),
+      saleStatus: z.nullable(z.enum(["PENDING", "COMPLETED", "CANCELED"])),
       saleDate: z.nullable(z.iso.datetime()),
       customer: z.nullable(
         z.object({

@@ -21,7 +21,7 @@ export const patchOrganizationsSlugSalesSaleidStatus204Schema = z
 
 export const patchOrganizationsSlugSalesSaleidStatusMutationRequestSchema =
   z.object({
-    status: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+    status: z.enum(["PENDING", "COMPLETED", "CANCELED"]),
   });
 
 export const patchOrganizationsSlugSalesSaleidStatusMutationResponseSchema =

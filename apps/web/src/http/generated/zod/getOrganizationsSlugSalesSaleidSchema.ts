@@ -18,7 +18,7 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
     id: z.uuid(),
     saleDate: z.iso.datetime(),
     totalAmount: z.int().min(-9007199254740991).max(9007199254740991),
-    status: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+    status: z.enum(["PENDING", "COMPLETED", "CANCELED"]),
     notes: z.nullable(z.string()),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
@@ -47,18 +47,28 @@ export const getOrganizationsSlugSalesSaleid200Schema = z.object({
     }),
     responsible: z.nullable(
       z.object({
-        type: z.enum(["SELLER", "PARTNER"]),
-        id: z.uuid(),
+        type: z.enum([
+          "COMPANY",
+          "UNIT",
+          "SELLER",
+          "PARTNER",
+          "SUPERVISOR",
+          "OTHER",
+        ]),
+        id: z.nullable(z.string()),
         name: z.string(),
       }),
     ),
+    responsibleLabel: z.nullable(z.string()),
     organizationId: z.uuid(),
     companyId: z.uuid(),
     unitId: z.nullable(z.uuid()),
     customerId: z.uuid(),
     productId: z.uuid(),
-    responsibleType: z.nullable(z.enum(["SELLER", "PARTNER"])),
-    responsibleId: z.nullable(z.uuid()),
+    responsibleType: z.nullable(
+      z.enum(["COMPANY", "UNIT", "SELLER", "PARTNER", "SUPERVISOR", "OTHER"]),
+    ),
+    responsibleId: z.nullable(z.string()),
     createdById: z.uuid(),
     dynamicFieldSchema: z.array(
       z.object({

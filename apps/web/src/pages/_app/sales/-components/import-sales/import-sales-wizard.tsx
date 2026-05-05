@@ -1230,7 +1230,11 @@ function SingleProductDynamicMappingCard({
 	);
 }
 
-export function ImportSalesWizard() {
+export function ImportSalesWizard({
+	hideHeader = false,
+}: {
+	hideHeader?: boolean;
+}) {
 	const [step, setStep] = useState<WizardStep>("UPLOAD");
 	const [parsedFile, setParsedFile] = useState<ParsedImportFile | null>(null);
 	const [isParsing, setIsParsing] = useState(false);
@@ -2144,15 +2148,17 @@ export function ImportSalesWizard() {
 
 	return (
 		<main className="w-full space-y-6">
-			<PageHeader
-				title="Importar vendas por planilha"
-				description={`Fluxo seguro com análise, mapeamento e importação parcial (máximo ${MAX_IMPORT_ROWS} linhas).`}
-				actions={
-					<Button asChild variant="outline">
-						<Link to="/sales">Voltar para vendas</Link>
-					</Button>
-				}
-			/>
+			{hideHeader ? null : (
+				<PageHeader
+					title="Importar vendas por planilha"
+					description={`Fluxo seguro com análise, mapeamento e importação parcial (máximo ${MAX_IMPORT_ROWS} linhas).`}
+					actions={
+						<Button asChild variant="outline">
+							<Link to="/sales">Voltar para vendas</Link>
+						</Button>
+					}
+				/>
+			)}
 
 			<Card className="flex flex-col gap-4 p-4">
 				<div className="flex flex-wrap items-center gap-2 text-sm">

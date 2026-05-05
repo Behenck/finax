@@ -75,6 +75,10 @@ export function UpdateSalePage() {
 	}
 	const canEditSale =
 		canUpdateSale || (canCreateSale && data.sale.status === "PENDING");
+	const availableStatusTransitions =
+		data.sale.status === "COMPLETED"
+			? (["CANCELED"] as SaleStatus[])
+			: undefined;
 
 	if (!canEditSale) {
 		return (
@@ -176,16 +180,22 @@ export function UpdateSalePage() {
 							canCreateSale={canCreateSale}
 							canViewSale={canViewSale}
 							canEditSale={canEditSale}
+							canChangeSaleStatus={
+								canChangeSaleStatus && data.sale.status === "COMPLETED"
+							}
+							currentStatus={data.sale.status as SaleStatus}
+							availableTransitionsOverride={availableStatusTransitions}
 							canDeleteSale={canDeleteSalePermission}
 							isDeleting={isDeletingSale}
 							saleNavigationAction="details"
 							onRequestDelete={() => setDeleteDialogOpen(true)}
 						/>
-						{canChangeSaleStatus ? (
+						{canChangeSaleStatus && data.sale.status !== "COMPLETED" ? (
 							<SaleStatusAction
 								saleId={data.sale.id}
 								currentStatus={data.sale.status as SaleStatus}
 								buttonMode="modal-only"
+								availableTransitionsOverride={availableStatusTransitions}
 							/>
 						) : null}
 					</>

@@ -35,7 +35,7 @@ type BulkInstallmentCandidate = {
 };
 
 function canUpdateInstallmentBySaleStatus(saleStatus: SaleStatus) {
-	return saleStatus === SaleStatus.APPROVED || saleStatus === SaleStatus.COMPLETED;
+	return saleStatus === SaleStatus.COMPLETED;
 }
 
 function isValidBulkInstallmentStatusTransition(params: {

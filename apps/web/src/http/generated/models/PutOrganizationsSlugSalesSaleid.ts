@@ -25,13 +25,17 @@ export type PutOrganizationsSlugSalesSaleid204EnumKey =
 export type PutOrganizationsSlugSalesSaleid204 =
   PutOrganizationsSlugSalesSaleid204EnumKey | null;
 
-export const responsibleTypeEnum9 = {
+export const responsibleTypeEnum10 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum9Key =
-  (typeof responsibleTypeEnum9)[keyof typeof responsibleTypeEnum9];
+export type ResponsibleTypeEnum10Key =
+  (typeof responsibleTypeEnum10)[keyof typeof responsibleTypeEnum10];
 
 export const commissionsSourceTypeEnum2 = {
   PULLED: "PULLED",
@@ -96,11 +100,17 @@ export type PutOrganizationsSlugSalesSaleidMutationRequest = {
     /**
      * @type string
      */
-    type: ResponsibleTypeEnum9Key;
+    type: ResponsibleTypeEnum10Key;
     /**
-     * @type string, uuid
+     * @type string | undefined, uuid
      */
-    id: string;
+    id?: string;
+    /**
+     * @minLength 1
+     * @maxLength 255
+     * @type string | undefined
+     */
+    label?: string;
   };
   /**
    * @type string, uuid

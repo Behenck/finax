@@ -1,9 +1,10 @@
 import { Component, type ReactNode } from "react";
 import { RouterProvider } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { queryClient } from "@/lib/query-client";
 import { router } from "./router";
 
 declare module "@tanstack/react-router" {
@@ -11,15 +12,6 @@ declare module "@tanstack/react-router" {
 		router: typeof router;
 	}
 }
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			refetchOnWindowFocus: false,
-			retry: 1,
-		},
-	},
-});
 
 type ToasterErrorBoundaryProps = {
 	children: ReactNode;

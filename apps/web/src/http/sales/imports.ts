@@ -2,6 +2,10 @@ import { api } from "@/lib/axios";
 import type {
 	CreateSaleImportTemplateBody,
 	ExecuteSaleImportBody,
+	SaleJsonImportApplyBody,
+	SaleJsonImportPayload,
+	SaleJsonImportPreview,
+	SaleJsonImportResult,
 	SaleImportResult,
 	SaleImportTemplatesResponse,
 	UpdateSaleImportTemplateBody,
@@ -63,6 +67,30 @@ export async function executeSaleImport(params: {
 }) {
 	const response = await api.post<SaleImportResult>(
 		`/organizations/${params.slug}/sales/imports`,
+		params.data,
+	);
+
+	return response.data;
+}
+
+export async function previewSaleJsonImport(params: {
+	slug: string;
+	data: SaleJsonImportPayload;
+}) {
+	const response = await api.post<SaleJsonImportPreview>(
+		`/organizations/${params.slug}/sales/json-imports/preview`,
+		params.data,
+	);
+
+	return response.data;
+}
+
+export async function applySaleJsonImport(params: {
+	slug: string;
+	data: SaleJsonImportApplyBody;
+}) {
+	const response = await api.post<SaleJsonImportResult>(
+		`/organizations/${params.slug}/sales/json-imports/apply`,
 		params.data,
 	);
 

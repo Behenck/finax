@@ -95,7 +95,6 @@ export type DynamicFieldBreakdownSelectedFieldTypeEnumKey =
 
 export const itemsStatusEnum2 = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;
@@ -112,16 +111,6 @@ export type ItemsStatusEnum3Key =
   (typeof itemsStatusEnum3)[keyof typeof itemsStatusEnum3];
 
 export const bucketsKeyEnum = {
-  RANGE_1_30: "RANGE_1_30",
-  RANGE_31_60: "RANGE_31_60",
-  RANGE_61_90: "RANGE_61_90",
-  RANGE_90_PLUS: "RANGE_90_PLUS",
-} as const;
-
-export type BucketsKeyEnumKey =
-  (typeof bucketsKeyEnum)[keyof typeof bucketsKeyEnum];
-
-export const bucketsKeyEnum2 = {
   RANGE_0_30: "RANGE_0_30",
   RANGE_31_60: "RANGE_31_60",
   RANGE_61_90: "RANGE_61_90",
@@ -129,8 +118,8 @@ export const bucketsKeyEnum2 = {
   NO_SALES: "NO_SALES",
 } as const;
 
-export type BucketsKeyEnum2Key =
-  (typeof bucketsKeyEnum2)[keyof typeof bucketsKeyEnum2];
+export type BucketsKeyEnumKey =
+  (typeof bucketsKeyEnum)[keyof typeof bucketsKeyEnum];
 
 /**
  * @description Default Response
@@ -903,13 +892,37 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
      */
     totalSales: number;
     /**
+     * @type object
+     */
+    preCancellation: {
+      /**
+       * @minLength 1
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      threshold: number | null;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      salesCount: number;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      grossAmount: number;
+    };
+    /**
      * @type array
      */
     buckets: {
       /**
+       * @minLength 1
        * @type string
        */
-      key: BucketsKeyEnumKey;
+      key: string;
       /**
        * @type string
        */
@@ -939,7 +952,7 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
       /**
        * @type string
        */
-      key: BucketsKeyEnum2Key;
+      key: BucketsKeyEnumKey;
       /**
        * @type string
        */

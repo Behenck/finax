@@ -4576,6 +4576,7 @@ export const SaleScalarFieldEnum = {
   status: 'status',
   responsibleType: 'responsibleType',
   responsibleId: 'responsibleId',
+  responsibleLabel: 'responsibleLabel',
   notes: 'notes',
   dynamicFieldSchema: 'dynamicFieldSchema',
   dynamicFieldValues: 'dynamicFieldValues',

@@ -91,7 +91,7 @@ export function readStorageJson<T>(key: string, fallback: T): T {
 }
 
 export function canUpdateInstallments(saleStatus: SaleStatus | null) {
-	return saleStatus === "APPROVED" || saleStatus === "COMPLETED";
+	return saleStatus === "COMPLETED";
 }
 
 export function canPayInstallment(installment: CommissionInstallmentRow) {

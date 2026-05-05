@@ -12,7 +12,6 @@ export type GetOrganizationsSlugSalesDelinquencyPathParams = {
 
 export const salesStatusEnum4 = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;
@@ -20,13 +19,17 @@ export const salesStatusEnum4 = {
 export type SalesStatusEnum4Key =
   (typeof salesStatusEnum4)[keyof typeof salesStatusEnum4];
 
-export const responsibleTypeEnum11 = {
+export const responsibleTypeEnum12 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
-export type ResponsibleTypeEnum11Key =
-  (typeof responsibleTypeEnum11)[keyof typeof responsibleTypeEnum11];
+export type ResponsibleTypeEnum12Key =
+  (typeof responsibleTypeEnum12)[keyof typeof responsibleTypeEnum12];
 
 /**
  * @description Default Response
@@ -142,16 +145,20 @@ export type GetOrganizationsSlugSalesDelinquency200 = {
       /**
        * @type string
        */
-      type: ResponsibleTypeEnum11Key;
+      type: ResponsibleTypeEnum12Key;
       /**
-       * @type string, uuid
+       * @type string
        */
-      id: string;
+      id: string | null;
       /**
        * @type string
        */
       name: string;
     } | null;
+    /**
+     * @type string
+     */
+    responsibleLabel: string | null;
     /**
      * @type object
      */

@@ -19,8 +19,12 @@ export type GetOrganizationsSlugSalesDashboardQueryParams = {
 };
 
 export const topResponsiblesTypeEnum = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
   SELLER: "SELLER",
   PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
 } as const;
 
 export type TopResponsiblesTypeEnumKey =
@@ -174,23 +178,6 @@ export type GetOrganizationsSlugSalesDashboard200 = {
       /**
        * @type object
        */
-      APPROVED: {
-        /**
-         * @minLength 0
-         * @maxLength 9007199254740991
-         * @type integer
-         */
-        count: number;
-        /**
-         * @minLength -9007199254740991
-         * @maxLength 9007199254740991
-         * @type integer
-         */
-        amount: number;
-      };
-      /**
-       * @type object
-       */
       COMPLETED: {
         /**
          * @minLength 0
@@ -274,9 +261,9 @@ export type GetOrganizationsSlugSalesDashboard200 = {
      */
     topResponsibles: {
       /**
-       * @type string, uuid
+       * @type string
        */
-      id: string;
+      id: string | null;
       /**
        * @type string
        */

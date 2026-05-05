@@ -253,8 +253,9 @@ export function SaleInstallmentsPanel({
 		"access",
 		"sales.commissions.installments.delete",
 	);
-	const canUpdateInstallmentsBySaleStatus =
-		saleStatus === "APPROVED" || saleStatus === "COMPLETED";
+	const canEditInstallmentsBySaleStatus =
+		saleStatus === "PENDING" || saleStatus === "COMPLETED";
+	const canChangeInstallmentStatusBySaleStatus = saleStatus === "COMPLETED";
 	const installments = useMemo(
 		() => data?.installments ?? [],
 		[data?.installments],
@@ -365,7 +366,7 @@ export function SaleInstallmentsPanel({
 		return installmentsByBeneficiary[0]?.key ?? "";
 	}, [activeBeneficiaryTab, installmentsByBeneficiary]);
 	const canBulkStatusInstallments =
-		canUpdateInstallmentsBySaleStatus && canChangeInstallmentStatus;
+		canChangeInstallmentStatusBySaleStatus && canChangeInstallmentStatus;
 	const selectableInstallmentIds = useMemo(() => {
 		if (!canBulkStatusInstallments) {
 			return new Set<string>();
@@ -558,7 +559,10 @@ export function SaleInstallmentsPanel({
 	}
 
 	function requestInstallmentReversal(installment: SaleInstallmentRow) {
-		if (!canChangeInstallmentStatus || !canUpdateInstallmentsBySaleStatus) {
+		if (
+			!canChangeInstallmentStatus ||
+			!canChangeInstallmentStatusBySaleStatus
+		) {
 			return;
 		}
 		if (installment.originInstallmentId) {
@@ -592,7 +596,10 @@ export function SaleInstallmentsPanel({
 	}
 
 	function requestInstallmentReversalUndo(installment: SaleInstallmentRow) {
-		if (!canChangeInstallmentStatus || !canUpdateInstallmentsBySaleStatus) {
+		if (
+			!canChangeInstallmentStatus ||
+			!canChangeInstallmentStatusBySaleStatus
+		) {
 			return;
 		}
 
@@ -896,7 +903,9 @@ export function SaleInstallmentsPanel({
 				data: {
 					percentage: parsedPercentage,
 					amount: parsedAmount,
-					status: editingInstallment.status,
+					...(saleStatus === "PENDING"
+						? {}
+						: { status: editingInstallment.status }),
 					expectedPaymentDate:
 						editingInstallment.expectedPaymentDate || null,
 					paymentDate:
@@ -1191,23 +1200,23 @@ export function SaleInstallmentsPanel({
 																!isReversalMovement &&
 																displayAmount !== installment.amount;
 															const canPayRowAction =
-																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatusBySaleStatus &&
 																canChangeInstallmentStatus &&
 																installment.status === "PENDING";
 															const canEditRowAction =
-																canUpdateInstallmentsBySaleStatus &&
+																canEditInstallmentsBySaleStatus &&
 																canEditInstallment;
 															const canDeleteRowAction =
-																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatusBySaleStatus &&
 																canDeleteInstallment;
 															const canReverseRowAction =
-																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatusBySaleStatus &&
 																canChangeInstallmentStatus &&
 																!isReversalMovement &&
 																(installment.status === "PENDING" ||
 																	installment.status === "PAID");
 															const canUndoReversalRowAction =
-																canUpdateInstallmentsBySaleStatus &&
+																canChangeInstallmentStatusBySaleStatus &&
 																canChangeInstallmentStatus &&
 																installment.status === "REVERSED";
 															const canOpenRowActions =
@@ -1805,7 +1814,9 @@ export function SaleInstallmentsPanel({
 					<DialogHeader>
 						<DialogTitle>Editar parcela</DialogTitle>
 						<DialogDescription>
-							Ajuste percentual, valor, status e datas da parcela.
+							{saleStatus === "PENDING"
+								? "Ajuste percentual, valor e datas da parcela. O status permanece bloqueado enquanto a venda estiver pendente."
+								: "Ajuste percentual, valor, status e datas da parcela."}
 						</DialogDescription>
 					</DialogHeader>
 
@@ -1858,6 +1869,7 @@ export function SaleInstallmentsPanel({
 								<p className="text-sm font-medium">Status</p>
 								<Select
 									value={editingInstallment?.status}
+									disabled={saleStatus === "PENDING"}
 									onValueChange={(value) => {
 										setEditingInstallment((current) =>
 											current

@@ -56,7 +56,6 @@ vi.mock(
 vi.mock("@/components/loading-reveal", () => ({
 	LoadingReveal: ({
 		loading,
-		contentKey: _contentKey,
 		skeleton,
 		children,
 	}: {
@@ -88,8 +87,7 @@ describe("dashboard commercial overview", () => {
 					},
 					byStatus: {
 						PENDING: { count: 1, amount: 200_000 },
-						APPROVED: { count: 2, amount: 200_000 },
-						COMPLETED: { count: 1, amount: 150_000 },
+						COMPLETED: { count: 3, amount: 350_000 },
 						CANCELED: { count: 1, amount: 500_000 },
 					},
 					timeline: [

@@ -24,7 +24,6 @@ export type PatchOrganizationsSlugSalesStatusBulk200 = {
 
 export const patchOrganizationsSlugSalesStatusBulkMutationRequestStatusEnum = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

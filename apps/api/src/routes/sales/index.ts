@@ -38,6 +38,8 @@ import { postSaleDelinquencyImportApply } from "./post-sale-delinquency-import-a
 import { postSaleDelinquencyImportPreview } from "./post-sale-delinquency-import-preview";
 import { postCommissionReceiptImportApply } from "./post-commission-receipt-import-apply";
 import { postCommissionReceiptImportPreview } from "./post-commission-receipt-import-preview";
+import { postSaleJsonImportApply } from "./post-sale-json-import-apply";
+import { postSaleJsonImportPreview } from "./post-sale-json-import-preview";
 import { postSalesBatch } from "./post-sales-batch";
 import { postSalesImport } from "./post-sales-import";
 import { postSaleDelinquency } from "./post-sale-delinquency";
@@ -60,6 +62,8 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 		routeUrl === "/organizations/:slug/sales/import-templates" ||
 		routeUrl === "/organizations/:slug/sales/import-templates/:templateId" ||
 		routeUrl === "/organizations/:slug/sales/imports" ||
+		routeUrl === "/organizations/:slug/sales/json-imports/preview" ||
+		routeUrl === "/organizations/:slug/sales/json-imports/apply" ||
 		routeUrl === "/organizations/:slug/commissions/receipts/import-templates" ||
 		routeUrl ===
 			"/organizations/:slug/commissions/receipts/import-templates/:templateId" ||
@@ -262,4 +266,6 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(updateSaleImportTemplate);
 	await app.register(deleteSaleImportTemplate);
 	await app.register(postSalesImport);
+	await app.register(postSaleJsonImportPreview);
+	await app.register(postSaleJsonImportApply);
 }

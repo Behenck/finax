@@ -4,15 +4,20 @@ import { useApp } from "@/context/app-context";
 import { normalizeApiError } from "@/errors/api-error";
 import { resolveErrorMessage } from "@/errors";
 import {
+	applySaleJsonImport,
 	createSaleImportTemplate,
 	deleteSaleImportTemplate,
 	executeSaleImport,
 	getSaleImportTemplates,
+	previewSaleJsonImport,
 	updateSaleImportTemplate,
 } from "@/http/sales/imports";
 import type {
 	CreateSaleImportTemplateBody,
 	ExecuteSaleImportBody,
+	SaleJsonImportApplyBody,
+	SaleJsonImportPayload,
+	SaleJsonImportResult,
 	UpdateSaleImportTemplateBody,
 } from "@/schemas/types/sale-import";
 import { getOrganizationsSlugSalesQueryKey } from "@/http/generated";
@@ -97,10 +102,10 @@ export function useUpdateSaleImportTemplate() {
 				data: params.data,
 			});
 		},
-		onSuccess: async () => {
-			if (!organization?.slug) {
-				return;
-			}
+			onSuccess: async (result: SaleJsonImportResult) => {
+				if (!organization?.slug) {
+					return;
+				}
 
 			await queryClient.invalidateQueries({
 				queryKey: ["sales", "import-templates", organization.slug],
@@ -183,6 +188,74 @@ export function useExecuteSaleImport() {
 			});
 			toast.success("Importação finalizada.");
 		},
+		onError: (error) => {
+			const message = resolveErrorMessage(normalizeApiError(error));
+			toast.error(message);
+		},
+	});
+}
+
+export function usePreviewSaleJsonImport() {
+	const { organization } = useApp();
+
+	return useMutation({
+		mutationFn: async (data: SaleJsonImportPayload) => {
+			if (!organization?.slug) {
+				throw new Error("Organização não encontrada");
+			}
+
+			return previewSaleJsonImport({
+				slug: organization.slug,
+				data,
+			});
+		},
+		onError: (error) => {
+			const message = resolveErrorMessage(normalizeApiError(error));
+			toast.error(message);
+		},
+	});
+}
+
+export function useApplySaleJsonImport() {
+	const queryClient = useQueryClient();
+	const { organization } = useApp();
+
+	return useMutation({
+		mutationFn: async (data: SaleJsonImportApplyBody) => {
+			if (!organization?.slug) {
+				throw new Error("Organização não encontrada");
+			}
+
+			return applySaleJsonImport({
+				slug: organization.slug,
+				data,
+			});
+		},
+			onSuccess: async (result: SaleJsonImportResult) => {
+				if (!organization?.slug) {
+					return;
+				}
+
+				await queryClient.invalidateQueries({
+					queryKey: getOrganizationsSlugSalesQueryKey({
+						slug: organization.slug,
+					}),
+				});
+				if (result.importedRows === 0) {
+					const firstFailure = result.failures[0]?.message;
+					toast.error(firstFailure ?? "Nenhuma venda foi importada.");
+					return;
+				}
+
+				if (result.failedRows > 0) {
+					toast.warning(
+						`Importação JSON parcial: ${result.importedRows} venda(s) importada(s) e ${result.failedRows} falha(s).`,
+					);
+					return;
+				}
+
+				toast.success("Importação JSON finalizada.");
+			},
 		onError: (error) => {
 			const message = resolveErrorMessage(normalizeApiError(error));
 			toast.error(message);

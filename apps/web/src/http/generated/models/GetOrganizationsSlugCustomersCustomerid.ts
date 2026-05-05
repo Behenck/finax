@@ -52,13 +52,24 @@ export type ResponsibleTypeEnum4Key =
 
 export const salesStatusEnum = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;
 
 export type SalesStatusEnumKey =
   (typeof salesStatusEnum)[keyof typeof salesStatusEnum];
+
+export const responsibleTypeEnum5 = {
+  COMPANY: "COMPANY",
+  UNIT: "UNIT",
+  SELLER: "SELLER",
+  PARTNER: "PARTNER",
+  SUPERVISOR: "SUPERVISOR",
+  OTHER: "OTHER",
+} as const;
+
+export type ResponsibleTypeEnum5Key =
+  (typeof responsibleTypeEnum5)[keyof typeof responsibleTypeEnum5];
 
 /**
  * @description Default Response
@@ -255,11 +266,11 @@ export type GetOrganizationsSlugCustomersCustomerid200 = {
         /**
          * @type string
          */
-        type: ResponsibleTypeEnum4Key;
+        type: ResponsibleTypeEnum5Key;
         /**
-         * @type string, uuid
+         * @type string
          */
-        id: string;
+        id: string | null;
         /**
          * @type string
          */

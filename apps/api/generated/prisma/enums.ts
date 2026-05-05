@@ -241,7 +241,6 @@ export type ProductCommissionCalculationBase = (typeof ProductCommissionCalculat
 
 export const SaleStatus = {
   PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
   COMPLETED: 'COMPLETED',
   CANCELED: 'CANCELED'
 } as const
@@ -250,8 +249,12 @@ export type SaleStatus = (typeof SaleStatus)[keyof typeof SaleStatus]
 
 
 export const SaleResponsibleType = {
+  COMPANY: 'COMPANY',
+  UNIT: 'UNIT',
   SELLER: 'SELLER',
-  PARTNER: 'PARTNER'
+  PARTNER: 'PARTNER',
+  SUPERVISOR: 'SUPERVISOR',
+  OTHER: 'OTHER'
 } as const
 
 export type SaleResponsibleType = (typeof SaleResponsibleType)[keyof typeof SaleResponsibleType]

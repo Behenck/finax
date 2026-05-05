@@ -13,7 +13,6 @@ import {
 	WalletCards,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { LoadingReveal } from "@/components/loading-reveal";
 import {
 	DetailPageSkeleton,
 	TimelineSectionSkeleton,
@@ -248,6 +247,12 @@ export function SaleDetailsPage() {
 		);
 	}
 
+	if (isLoading) {
+		return (
+			<DetailPageSkeleton actionCount={4} summaryCount={4} detailCount={4} />
+		);
+	}
+
 	async function handleDeleteSale() {
 		try {
 			await deleteSale({
@@ -315,6 +320,8 @@ export function SaleDetailsPage() {
 	const canEditSale =
 		canUpdateSale || (canCreateSale && sale.status === "PENDING");
 	const isSaleCompleted = sale.status === "COMPLETED";
+	const availableStatusTransitions =
+		sale.status === "COMPLETED" ? (["CANCELED"] as SaleStatus[]) : undefined;
 	const saleProductPath =
 		productPathById.get(sale.product.id) ?? sale.product.name;
 	const dynamicFields = sale.dynamicFieldSchema.map((field) => ({
@@ -325,14 +332,7 @@ export function SaleDetailsPage() {
 	}));
 
 	return (
-		<LoadingReveal
-			loading={isLoading}
-			skeleton={
-				<DetailPageSkeleton actionCount={4} summaryCount={4} detailCount={4} />
-			}
-			contentKey={saleId}
-		>
-			<main className="w-full space-y-6">
+		<main className="w-full space-y-6">
 				<header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
 					<div className="min-w-0 space-y-1">
 						<h1 className="text-2xl font-semibold">Detalhes da Venda</h1>
@@ -385,15 +385,19 @@ export function SaleDetailsPage() {
 							customerId={sale.customer.id}
 							canCreateSale={canCreateSale}
 							canEditSale={canEditSale}
+							canChangeSaleStatus={canChangeSaleStatus && isSaleCompleted}
+							currentStatus={sale.status as SaleStatus}
+							availableTransitionsOverride={availableStatusTransitions}
 							canDeleteSale={canDeleteSalePermission}
 							isDeleting={isDeletingSale}
 							onRequestDelete={() => setDeleteDialogOpen(true)}
 						/>
-						{canChangeSaleStatus ? (
+						{canChangeSaleStatus && !isSaleCompleted ? (
 							<SaleStatusAction
 								saleId={sale.id}
 								currentStatus={sale.status as SaleStatus}
 								buttonMode="modal-only"
+								availableTransitionsOverride={availableStatusTransitions}
 							/>
 						) : null}
 					</div>
@@ -759,7 +763,6 @@ export function SaleDetailsPage() {
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
-			</main>
-		</LoadingReveal>
+		</main>
 	);
 }

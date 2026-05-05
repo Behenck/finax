@@ -86,7 +86,6 @@ export type GetOrganizationsSlugCommissionsInstallmentsQueryParams = {
 
 export const itemsSaleStatusEnum = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;
