@@ -33,12 +33,10 @@ import {
 
 const PARTNER_DASHBOARD_SALE_STATUSES = [
 	SaleStatus.PENDING,
-	SaleStatus.APPROVED,
 	SaleStatus.COMPLETED,
 ] as const;
 const PARTNER_DASHBOARD_FUNNEL_STATUSES = [
 	SaleStatus.PENDING,
-	SaleStatus.APPROVED,
 	SaleStatus.COMPLETED,
 	SaleStatus.CANCELED,
 ] as const;
@@ -644,10 +642,6 @@ function getStatusLabel(
 		return "Pendente";
 	}
 
-	if (status === SaleStatus.APPROVED) {
-		return "Aprovada";
-	}
-
 	if (status === SaleStatus.COMPLETED) {
 		return "Concluída";
 	}
@@ -1156,10 +1150,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						continue;
 					}
 
-					if (
-						sale.status === SaleStatus.APPROVED ||
-						sale.status === SaleStatus.COMPLETED
-					) {
+					if (sale.status === SaleStatus.COMPLETED) {
 						bucketSummary.concludedGrossAmount += sale.totalAmount;
 						bucketSummary.concludedAndProcessedGrossAmount += sale.totalAmount;
 						continue;

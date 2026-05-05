@@ -8,7 +8,10 @@ const mocks = vi.hoisted(() => ({
 	canMock: vi.fn(),
 	navigateMock: vi.fn(),
 	deleteSaleMock: vi.fn().mockResolvedValue(undefined),
+	patchSaleStatusMock: vi.fn().mockResolvedValue(undefined),
 	saleStatus: "COMPLETED" as "COMPLETED" | "PENDING",
+	saleIsLoading: false,
+	saleIsError: false,
 }));
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -46,86 +49,88 @@ vi.mock("@/permissions/access", () => ({
 
 vi.mock("@/hooks/sales", () => ({
 	useSale: () => ({
-		data: {
-			sale: {
-				id: "sale-1",
-				saleDate: "2026-03-10",
-				totalAmount: 100_000,
-				status: mocks.saleStatus,
-				customer: {
-					id: "customer-1",
-					name: "Cliente Teste",
-				},
-				product: {
-					id: "product-1",
-					name: "Produto Teste",
-				},
-				company: {
-					id: "company-1",
-					name: "Empresa Teste",
-				},
-				unit: null,
-				responsibleType: "SELLER",
-				responsibleId: "seller-1",
-				responsible: {
-					id: "seller-1",
-					type: "SELLER",
-					name: "Vendedor Teste",
-				},
-				dynamicFieldSchema: [],
-				dynamicFieldValues: {},
-				delinquencySummary: {
-					hasOpen: false,
-					openCount: 0,
-					oldestDueDate: null,
-				},
-				openDelinquencies: [],
-				commissions: [
-					{
-						id: "commission-1",
-						sourceType: "PULLED",
-						recipientType: "SELLER",
-						direction: "OUTCOME",
-						beneficiaryId: "seller-1",
-						beneficiaryLabel: "Vendedor Teste",
-						totalPercentage: 2,
-						totalAmount: 2000,
-						installments: [
+		data: mocks.saleIsLoading
+			? undefined
+			: {
+					sale: {
+						id: "sale-1",
+						saleDate: "2026-03-10",
+						totalAmount: 100_000,
+						status: mocks.saleStatus,
+						customer: {
+							id: "customer-1",
+							name: "Cliente Teste",
+						},
+						product: {
+							id: "product-1",
+							name: "Produto Teste",
+						},
+						company: {
+							id: "company-1",
+							name: "Empresa Teste",
+						},
+						unit: null,
+						responsibleType: "SELLER",
+						responsibleId: "seller-1",
+						responsible: {
+							id: "seller-1",
+							type: "SELLER",
+							name: "Vendedor Teste",
+						},
+						dynamicFieldSchema: [],
+						dynamicFieldValues: {},
+						delinquencySummary: {
+							hasOpen: false,
+							openCount: 0,
+							oldestDueDate: null,
+						},
+						openDelinquencies: [],
+						commissions: [
 							{
-								installmentNumber: 1,
-								percentage: 2,
-								amount: 2000,
+								id: "commission-1",
+								sourceType: "PULLED",
+								recipientType: "SELLER",
+								direction: "OUTCOME",
+								beneficiaryId: "seller-1",
+								beneficiaryLabel: "Vendedor Teste",
+								totalPercentage: 2,
+								totalAmount: 2000,
+								installments: [
+									{
+										installmentNumber: 1,
+										percentage: 2,
+										amount: 2000,
+									},
+								],
+							},
+							{
+								id: "commission-2",
+								sourceType: "MANUAL",
+								recipientType: "PARTNER",
+								direction: "OUTCOME",
+								beneficiaryId: "partner-1",
+								beneficiaryLabel: "Parceiro Teste",
+								totalPercentage: 1,
+								totalAmount: 1000,
+								installments: [
+									{
+										installmentNumber: 1,
+										percentage: 1,
+										amount: 1000,
+									},
+								],
 							},
 						],
+						createdBy: {
+							name: "Usuário Teste",
+						},
+						createdAt: "2026-03-10T00:00:00.000Z",
+						updatedAt: "2026-03-10T00:00:00.000Z",
+						notes: null,
 					},
-					{
-						id: "commission-2",
-						sourceType: "MANUAL",
-						recipientType: "PARTNER",
-						direction: "OUTCOME",
-						beneficiaryId: "partner-1",
-						beneficiaryLabel: "Parceiro Teste",
-						totalPercentage: 1,
-						totalAmount: 1000,
-						installments: [
-							{
-								installmentNumber: 1,
-								percentage: 1,
-								amount: 1000,
-							},
-						],
-					},
-				],
-				createdBy: {
-					name: "Usuário Teste",
 				},
-				createdAt: "2026-03-10T00:00:00.000Z",
-				updatedAt: "2026-03-10T00:00:00.000Z",
-				notes: null,
-			},
-		},
-		isLoading: false,
-		isError: false,
+		isLoading: mocks.saleIsLoading,
+		isError: mocks.saleIsError,
 	}),
 	useSaleHistory: () => ({
 		data: {
@@ -136,6 +141,10 @@ vi.mock("@/hooks/sales", () => ({
 	}),
 	useDeleteSale: () => ({
 		mutateAsync: mocks.deleteSaleMock,
+		isPending: false,
+	}),
+	usePatchSaleStatus: () => ({
+		mutateAsync: mocks.patchSaleStatusMock,
 		isPending: false,
 	}),
 	useSaleNavigation: () => ({
@@ -179,7 +188,10 @@ describe("sale details commission actions", () => {
 	beforeEach(() => {
 		mocks.navigateMock.mockReset();
 		mocks.deleteSaleMock.mockReset();
+		mocks.patchSaleStatusMock.mockReset();
 		mocks.saleStatus = "COMPLETED";
+		mocks.saleIsLoading = false;
+		mocks.saleIsError = false;
 		mocks.canMock.mockImplementation(
 			(_action: string, permission: string) =>
 				permission === "sales.view" ||
@@ -262,5 +274,73 @@ describe("sale details commission actions", () => {
 		expect(
 			screen.queryByTestId("sale-delinquency-section"),
 		).not.toBeInTheDocument();
+	});
+
+	it("should keep the loading state without showing an error before the sale fetch resolves", () => {
+		mocks.saleIsLoading = true;
+
+		render(<SaleDetailsPage />);
+
+		expect(
+			screen.queryByText("Não foi possível carregar a venda."),
+		).not.toBeInTheDocument();
+	});
+
+	it("should allow changing a completed sale to canceled in details page", async () => {
+		const user = userEvent.setup();
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.view" ||
+				permission === "sales.create" ||
+				permission === "sales.status.change",
+		);
+
+		render(<SaleDetailsPage />);
+
+		await user.click(
+			screen.getByRole("button", {
+				name: "Ações",
+			}),
+		);
+
+		expect(screen.getByText("Alterar status")).toBeInTheDocument();
+		expect(screen.queryByText("Sem transição")).not.toBeInTheDocument();
+
+		await user.click(screen.getByText("Alterar status"));
+
+		expect(await screen.findByText("Alterar status da venda")).toBeInTheDocument();
+		expect(screen.getByText("Cancelada")).toBeInTheDocument();
+	});
+
+	it("should render a direct conclude action for pending sale in details page", async () => {
+		const user = userEvent.setup();
+		mocks.saleStatus = "PENDING";
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.view" ||
+				permission === "sales.create" ||
+				permission === "sales.status.change",
+		);
+
+		render(<SaleDetailsPage />);
+
+		expect(
+			screen.getByRole("button", {
+				name: "Concluir venda",
+			}),
+		).toBeInTheDocument();
+		expect(screen.queryByText("Mudar status")).not.toBeInTheDocument();
+		expect(screen.queryByText("Alterar status da venda")).not.toBeInTheDocument();
+
+		await user.click(
+			screen.getByRole("button", {
+				name: "Concluir venda",
+			}),
+		);
+
+		expect(mocks.patchSaleStatusMock).toHaveBeenCalledWith({
+			saleId: "sale-1",
+			status: "COMPLETED",
+		});
 	});
 });

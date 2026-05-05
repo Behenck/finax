@@ -110,6 +110,7 @@ import type { GetOrganizationsSlugSalesDashboardPartners200 } from "@/http/gener
 import { cn } from "@/lib/utils";
 import { formatCurrencyBRL } from "@/utils/format-amount";
 import { getInitials } from "@/utils/get-initials";
+import { dedupeAvailableDynamicFields } from "./dashboard-partners-overview-utils";
 
 const PARTNER_SALES_STATUS_META = {
 	PENDING: {
@@ -117,12 +118,6 @@ const PARTNER_SALES_STATUS_META = {
 		color: "#f59e0b",
 		className:
 			"border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
-	},
-	APPROVED: {
-		label: "Aprovadas",
-		color: "#3b82f6",
-		className:
-			"border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
 	},
 	COMPLETED: {
 		label: "Concluídas",
@@ -179,10 +174,6 @@ const statusFunnelChartConfig = {
 	PENDING: {
 		label: PARTNER_SALES_STATUS_META.PENDING.label,
 		color: PARTNER_SALES_STATUS_META.PENDING.color,
-	},
-	APPROVED: {
-		label: PARTNER_SALES_STATUS_META.APPROVED.label,
-		color: PARTNER_SALES_STATUS_META.APPROVED.color,
 	},
 	COMPLETED: {
 		label: PARTNER_SALES_STATUS_META.COMPLETED.label,
@@ -247,8 +238,6 @@ type PartnerDashboardDelinquencyBreakdown =
 			grossAmount: number;
 		};
 	};
-type AvailableDynamicFieldOption =
-	PartnerDashboardData["dynamicFieldBreakdown"]["availableFields"][number];
 type PartnerSalesSharePieDataItem = PartnerDashboardData["ranking"][number] & {
 	soldAmount: number;
 	sharePct: number;
@@ -652,36 +641,6 @@ function renderStatusFunnelPieLabel(props: StatusFunnelPieLabelProps) {
 			</text>
 		</g>
 	);
-}
-
-export function dedupeAvailableDynamicFields(
-	availableFields: AvailableDynamicFieldOption[],
-	selectedFieldId: string | null,
-) {
-	const uniqueFieldsByKey = new Map<string, AvailableDynamicFieldOption>();
-	const seenFieldIds = new Set<string>();
-
-	for (const field of availableFields) {
-		if (seenFieldIds.has(field.fieldId)) {
-			continue;
-		}
-
-		seenFieldIds.add(field.fieldId);
-		const normalizedLabel = field.label.trim().toLocaleLowerCase("pt-BR");
-		const dedupeKey = `${field.type}:${normalizedLabel}`;
-		const existingField = uniqueFieldsByKey.get(dedupeKey);
-
-		if (!existingField) {
-			uniqueFieldsByKey.set(dedupeKey, field);
-			continue;
-		}
-
-		if (selectedFieldId && field.fieldId === selectedFieldId) {
-			uniqueFieldsByKey.set(dedupeKey, field);
-		}
-	}
-
-	return Array.from(uniqueFieldsByKey.values());
 }
 
 function buildDelinquencyPieData(
@@ -2186,11 +2145,8 @@ function SupervisorRankingSection({
 
 function PartnerSalesStatusCard({ items }: { items: StatusFunnelItem[] }) {
 	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
-	const visibleItems = useMemo(
-		() => items.filter((item) => item.status !== "APPROVED"),
-		[items],
-	);
-	const pieData = visibleItems
+	const visibleItems = items;
+	const pieData = items
 		.map((item) => ({
 			...item,
 			fill: PARTNER_SALES_STATUS_META[item.status as StatusFunnelKey].color,

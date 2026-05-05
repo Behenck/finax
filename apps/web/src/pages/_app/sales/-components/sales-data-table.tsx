@@ -32,6 +32,7 @@ import {
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import {
   type MouseEvent as ReactMouseEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -54,6 +55,14 @@ import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -144,7 +153,6 @@ type ProductTreeNode = {
 const SALE_STATUS_FILTER_VALUES = [
   "ALL",
   "PENDING",
-  "APPROVED",
   "COMPLETED",
   "CANCELED",
 ] as const;
@@ -162,16 +170,10 @@ type SaleStatusFilter = (typeof SALE_STATUS_FILTER_VALUES)[number];
 type SaleResponsibleTypeFilter =
   (typeof SALE_RESPONSIBLE_TYPE_FILTER_VALUES)[number];
 
-type ResponsibleFilterOption = {
-  id: string;
-  name: string;
-};
-
 const SALE_STATUS_SORT_PRIORITY: Record<SaleStatus, number> = {
   PENDING: 0,
-  APPROVED: 1,
-  COMPLETED: 2,
-  CANCELED: 3,
+  COMPLETED: 1,
+  CANCELED: 2,
 };
 
 const saleStatusFilterParser = parseAsStringLiteral(SALE_STATUS_FILTER_VALUES)
@@ -341,11 +343,130 @@ interface SaleTableRowActionsProps {
   onNavigateSale(): void;
 }
 
-function SaleTableRowActions({
+type SaleTableRowActionMenuKind = "dropdown" | "context-menu";
+
+interface SaleTableRowActionMenuProps extends SaleTableRowActionsProps {
+  kind: SaleTableRowActionMenuKind;
+  trigger: ReactNode | ((isPending: boolean) => ReactNode);
+}
+
+interface SaleTableRowActionMenuItemsProps extends SaleTableRowActionsProps {
+  kind: SaleTableRowActionMenuKind;
+  canEditSale: boolean;
+  canDuplicateSale: boolean;
+  canChangeSaleStatus: boolean;
+  canDeleteSalePermission: boolean;
+  canAccessCommissionInstallments: boolean;
+  isPending: boolean;
+  onRequestDelete(): void;
+}
+
+function SaleTableRowActionMenuItems({
   sale,
+  kind,
   onOpenInstallments,
   onNavigateSale,
-}: SaleTableRowActionsProps) {
+  canEditSale,
+  canDuplicateSale,
+  canChangeSaleStatus,
+  canDeleteSalePermission,
+  canAccessCommissionInstallments,
+  isPending,
+  onRequestDelete,
+}: SaleTableRowActionMenuItemsProps) {
+  const MenuItem = kind === "dropdown" ? DropdownMenuItem : ContextMenuItem;
+  const MenuLabel = kind === "dropdown" ? DropdownMenuLabel : ContextMenuLabel;
+  const MenuSeparator =
+    kind === "dropdown" ? DropdownMenuSeparator : ContextMenuSeparator;
+
+  return (
+    <>
+      <MenuLabel>Ações</MenuLabel>
+      <MenuSeparator />
+      <MenuItem asChild>
+        <Link
+          to="/sales/$saleId"
+          params={{ saleId: sale.id }}
+          onClick={onNavigateSale}
+        >
+          <Eye className="size-4" />
+          Ver detalhes
+        </Link>
+      </MenuItem>
+      {canEditSale ? (
+        <MenuItem asChild>
+          <Link
+            to="/sales/update/$saleId"
+            params={{ saleId: sale.id }}
+            onClick={onNavigateSale}
+          >
+            <Pencil className="size-4" />
+            Editar
+          </Link>
+        </MenuItem>
+      ) : null}
+      {canDuplicateSale ? (
+        <MenuItem asChild>
+          <Link
+            to="/sales/create"
+            search={{
+              duplicateSaleId: sale.id,
+            }}
+          >
+            <Copy className="size-4" />
+            Duplicar
+          </Link>
+        </MenuItem>
+      ) : null}
+      {canAccessCommissionInstallments ? (
+        <MenuItem
+          disabled={sale.commissionInstallmentsSummary.total === 0}
+          onSelect={(event) => {
+            event.preventDefault();
+            onOpenInstallments(sale);
+          }}
+        >
+          <ListTree className="size-4" />
+          Ver parcelas
+        </MenuItem>
+      ) : null}
+      {canChangeSaleStatus ? (
+        <>
+          <MenuSeparator />
+          <SaleStatusAction
+            saleId={sale.id}
+            currentStatus={sale.status as SaleStatus}
+            trigger={kind === "dropdown" ? "dropdown-item" : "context-menu-item"}
+          />
+        </>
+      ) : null}
+      {canDeleteSalePermission ? (
+        <>
+          <MenuSeparator />
+          <MenuItem
+            variant="destructive"
+            disabled={isPending}
+            onSelect={(event) => {
+              event.preventDefault();
+              onRequestDelete();
+            }}
+          >
+            <Trash2 className="size-4" />
+            Excluir
+          </MenuItem>
+        </>
+      ) : null}
+    </>
+  );
+}
+
+function SaleTableRowActionMenu({
+  sale,
+  kind,
+  trigger,
+  onOpenInstallments,
+  onNavigateSale,
+}: SaleTableRowActionMenuProps) {
   const ability = useAbility();
   const canViewAllCommissions = ability.can(
     "access",
@@ -394,91 +515,37 @@ function SaleTableRowActions({
     }
   }
 
+  const menuItems = (
+    <SaleTableRowActionMenuItems
+      sale={sale}
+      kind={kind}
+      onOpenInstallments={onOpenInstallments}
+      onNavigateSale={onNavigateSale}
+      canEditSale={canEditSale}
+      canDuplicateSale={canDuplicateSale}
+      canChangeSaleStatus={canChangeSaleStatus}
+      canDeleteSalePermission={canDeleteSalePermission}
+      canAccessCommissionInstallments={canAccessCommissionInstallments}
+      isPending={isPending}
+      onRequestDelete={() => setDeleteDialogOpen(true)}
+    />
+  );
+  const resolvedTrigger =
+    typeof trigger === "function" ? trigger(isPending) : trigger;
+
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" disabled={isPending}>
-            <EllipsisVertical className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link
-              to="/sales/$saleId"
-              params={{ saleId: sale.id }}
-              onClick={onNavigateSale}
-            >
-              <Eye className="size-4" />
-              Ver detalhes
-            </Link>
-          </DropdownMenuItem>
-          {canEditSale ? (
-            <DropdownMenuItem asChild>
-              <Link
-                to="/sales/update/$saleId"
-                params={{ saleId: sale.id }}
-                onClick={onNavigateSale}
-              >
-                <Pencil className="size-4" />
-                Editar
-              </Link>
-            </DropdownMenuItem>
-          ) : null}
-          {canDuplicateSale ? (
-            <DropdownMenuItem asChild>
-              <Link
-                to="/sales/create"
-                search={{
-                  duplicateSaleId: sale.id,
-                }}
-              >
-                <Copy className="size-4" />
-                Duplicar
-              </Link>
-            </DropdownMenuItem>
-          ) : null}
-          {canAccessCommissionInstallments ? (
-            <DropdownMenuItem
-              onSelect={(event) => {
-                event.preventDefault();
-                onOpenInstallments(sale);
-              }}
-            >
-              <ListTree className="size-4" />
-              Ver parcelas
-            </DropdownMenuItem>
-          ) : null}
-          {canChangeSaleStatus ? (
-            <>
-              <DropdownMenuSeparator />
-              <SaleStatusAction
-                saleId={sale.id}
-                currentStatus={sale.status as SaleStatus}
-                trigger="dropdown-item"
-              />
-            </>
-          ) : null}
-          {canDeleteSalePermission ? (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                disabled={isPending}
-                onSelect={(event) => {
-                  event.preventDefault();
-                  setDeleteDialogOpen(true);
-                }}
-              >
-                <Trash2 className="size-4" />
-                Excluir
-              </DropdownMenuItem>
-            </>
-          ) : null}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {kind === "dropdown" ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>{resolvedTrigger}</DropdownMenuTrigger>
+          <DropdownMenuContent align="end">{menuItems}</DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <ContextMenu>
+          <ContextMenuTrigger asChild>{resolvedTrigger}</ContextMenuTrigger>
+          <ContextMenuContent>{menuItems}</ContextMenuContent>
+        </ContextMenu>
+      )}
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
@@ -503,6 +570,32 @@ function SaleTableRowActions({
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+function SaleTableRowActions({
+  sale,
+  onOpenInstallments,
+  onNavigateSale,
+}: SaleTableRowActionsProps) {
+  return (
+    <SaleTableRowActionMenu
+      kind="dropdown"
+      sale={sale}
+      onOpenInstallments={onOpenInstallments}
+      onNavigateSale={onNavigateSale}
+      trigger={(isPending) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={isPending}
+          aria-label={`Ações da venda de ${sale.customer.name}`}
+          title="Ações"
+        >
+          <EllipsisVertical className="size-4" />
+        </Button>
+      )}
+    />
   );
 }
 
@@ -1428,6 +1521,7 @@ export function SalesDataTable({
       dynamicFieldColumnsReady,
       dynamicFieldLabelByColumnId,
       handlePersistSaleNavigationContext,
+      preCancellationDelinquencyThreshold,
       saleDetailsBySaleId,
     ],
   );
@@ -1512,7 +1606,7 @@ export function SalesDataTable({
     {
       id: "pending",
       label: "Pendentes",
-      subtitle: "Pendente + aprovada",
+      subtitle: "Aguardando conclusão",
       valueClassName: "text-amber-700 dark:text-amber-300",
       data: salesSummary.pending,
     },
@@ -2275,16 +2369,27 @@ export function SalesDataTable({
                 <TableBody>
                   {table.getRowModel().rows.length > 0 ? (
                     table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
+                      <SaleTableRowActionMenu
+                        key={row.id}
+                        kind="context-menu"
+                        sale={row.original}
+                        onOpenInstallments={(sale) =>
+                          setInstallmentsDrawerSale(sale)
+                        }
+                        onNavigateSale={handlePersistSaleNavigationContext}
+                        trigger={
+                          <TableRow>
+                            {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id}>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                )}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        }
+                      />
                     ))
                   ) : (
                     <TableRow>

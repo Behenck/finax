@@ -78,12 +78,6 @@ const SALES_STATUS_META: Record<
 		className:
 			"border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
 	},
-	APPROVED: {
-		label: "Aprovadas",
-		color: "#3b82f6",
-		className:
-			"border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
-	},
 	COMPLETED: {
 		label: "Concluídas",
 		color: "#10b981",
@@ -131,10 +125,6 @@ const statusChartConfig = {
 	PENDING: {
 		label: SALES_STATUS_META.PENDING.label,
 		color: SALES_STATUS_META.PENDING.color,
-	},
-	APPROVED: {
-		label: SALES_STATUS_META.APPROVED.label,
-		color: SALES_STATUS_META.APPROVED.color,
 	},
 	COMPLETED: {
 		label: SALES_STATUS_META.COMPLETED.label,

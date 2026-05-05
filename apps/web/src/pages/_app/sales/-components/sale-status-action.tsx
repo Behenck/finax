@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ContextMenuItem } from "@/components/ui/context-menu";
 import {
 	Dialog,
 	DialogContent,
@@ -27,8 +28,9 @@ import { useMemo, useState } from "react";
 interface SaleStatusActionProps {
 	saleId: string;
 	currentStatus: SaleStatus;
-	trigger?: "button" | "dropdown-item";
+	trigger?: "button" | "dropdown-item" | "context-menu-item";
 	buttonMode?: "default" | "modal-only";
+	availableTransitionsOverride?: SaleStatus[];
 }
 
 export function SaleStatusAction({
@@ -36,25 +38,32 @@ export function SaleStatusAction({
 	currentStatus,
 	trigger = "button",
 	buttonMode = "default",
+	availableTransitionsOverride,
 }: SaleStatusActionProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [nextStatus, setNextStatus] = useState<SaleStatus | "">("");
 	const { mutateAsync: patchSaleStatus, isPending } = usePatchSaleStatus();
 
 	const availableTransitions = useMemo(
-		() => SALE_STATUS_TRANSITIONS[currentStatus],
-		[currentStatus],
+		() =>
+			availableTransitionsOverride ?? SALE_STATUS_TRANSITIONS[currentStatus],
+		[availableTransitionsOverride, currentStatus],
 	);
 	const canCompleteDirectly = availableTransitions.includes("COMPLETED");
 	const hasAlternativeTransitions = availableTransitions.some(
 		(status) => status !== "COMPLETED",
 	);
+	const isPendingDirectCompletionButton =
+		trigger === "button" &&
+		buttonMode === "modal-only" &&
+		currentStatus === "PENDING" &&
+		canCompleteDirectly;
 
 	function openStatusModal(preferAlternativeStatus = false) {
 		const defaultStatus = preferAlternativeStatus
-			? (availableTransitions.find((status) => status !== "APPROVED") ?? "")
-			: availableTransitions.includes("APPROVED")
-				? "APPROVED"
+			? (availableTransitions.find((status) => status !== "COMPLETED") ?? "")
+			: availableTransitions.includes("COMPLETED")
+				? "COMPLETED"
 				: (availableTransitions[0] ?? "");
 
 		setNextStatus(defaultStatus);
@@ -93,12 +102,15 @@ export function SaleStatusAction({
 		}
 	}
 
+	const MenuItem =
+		trigger === "context-menu-item" ? ContextMenuItem : DropdownMenuItem;
+
 	return (
 		<>
-			{trigger === "dropdown-item" ? (
+			{trigger === "dropdown-item" || trigger === "context-menu-item" ? (
 				<>
 					{canCompleteDirectly ? (
-						<DropdownMenuItem
+						<MenuItem
 							disabled={isPending}
 							onSelect={() => {
 								void handleCompleteDirectly();
@@ -106,12 +118,12 @@ export function SaleStatusAction({
 						>
 							<CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-300" />
 							Concluir venda
-						</DropdownMenuItem>
+						</MenuItem>
 					) : null}
 
 					{hasAlternativeTransitions ||
 					(!canCompleteDirectly && availableTransitions.length > 0) ? (
-						<DropdownMenuItem
+						<MenuItem
 							disabled={isPending}
 							onSelect={(event) => {
 								event.preventDefault();
@@ -120,19 +132,30 @@ export function SaleStatusAction({
 						>
 							<RefreshCcw className="size-4" />
 							Alterar status
-						</DropdownMenuItem>
+						</MenuItem>
 					) : null}
 
 					{availableTransitions.length === 0 ? (
-						<DropdownMenuItem disabled>
+						<MenuItem disabled>
 							<RefreshCcw className="size-4" />
 							Sem transição de status
-						</DropdownMenuItem>
+						</MenuItem>
 					) : null}
 				</>
 			) : (
 				<div className="flex flex-col gap-2 sm:flex-row">
-					{buttonMode === "modal-only" ? (
+					{isPendingDirectCompletionButton ? (
+						<Button
+							size="sm"
+							disabled={isPending}
+							onClick={() => {
+								void handleCompleteDirectly();
+							}}
+						>
+							<CheckCircle2 className="size-4" />
+							Concluir venda
+						</Button>
+					) : buttonMode === "modal-only" ? (
 						<Button
 							variant="outline"
 							size="sm"

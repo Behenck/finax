@@ -178,23 +178,6 @@ export type GetOrganizationsSlugSalesDashboard200 = {
       /**
        * @type object
        */
-      APPROVED: {
-        /**
-         * @minLength 0
-         * @maxLength 9007199254740991
-         * @type integer
-         */
-        count: number;
-        /**
-         * @minLength -9007199254740991
-         * @maxLength 9007199254740991
-         * @type integer
-         */
-        amount: number;
-      };
-      /**
-       * @type object
-       */
       COMPLETED: {
         /**
          * @minLength 0

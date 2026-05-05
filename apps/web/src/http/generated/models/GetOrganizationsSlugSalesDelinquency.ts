@@ -12,7 +12,6 @@ export type GetOrganizationsSlugSalesDelinquencyPathParams = {
 
 export const salesStatusEnum4 = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

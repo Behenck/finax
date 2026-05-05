@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const SaleStatusSchema = z.enum([
   "PENDING",
-  "APPROVED",
   "COMPLETED",
   "CANCELED",
 ]);
@@ -62,7 +61,6 @@ export type SaleCommissionInstallmentStatus = z.infer<
 
 export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
   PENDING: "Pendente",
-  APPROVED: "Aprovada",
   COMPLETED: "Concluída",
   CANCELED: "Cancelada",
 };
@@ -117,8 +115,7 @@ export const SALE_COMMISSION_INSTALLMENT_STATUS_LABEL: Record<
 };
 
 export const SALE_STATUS_TRANSITIONS: Record<SaleStatus, SaleStatus[]> = {
-  PENDING: ["APPROVED", "COMPLETED", "CANCELED"],
-  APPROVED: ["COMPLETED", "CANCELED"],
+  PENDING: ["COMPLETED", "CANCELED"],
   COMPLETED: [],
   CANCELED: [],
 };

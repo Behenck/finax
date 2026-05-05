@@ -52,7 +52,6 @@ export type ResponsibleTypeEnum4Key =
 
 export const salesStatusEnum = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

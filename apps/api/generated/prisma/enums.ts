@@ -241,7 +241,6 @@ export type ProductCommissionCalculationBase = (typeof ProductCommissionCalculat
 
 export const SaleStatus = {
   PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
   COMPLETED: 'COMPLETED',
   CANCELED: 'CANCELED'
 } as const

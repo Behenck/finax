@@ -269,6 +269,9 @@ importers:
       '@radix-ui/react-collapsible':
         specifier: ^1.1.12
         version: 1.1.12(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@radix-ui/react-context-menu':
+        specifier: ^2.2.16
+        version: 2.2.16(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1734,12 +1737,14 @@ packages:
   '@kubb/plugin-oas@2.28.4':
     resolution: {integrity: sha512-0sHNP0TY7kaiQdvLOm8LVPB4eLFJLJ/Zs1aECOZj7U2NkEbseIZKGDCBjG2vVWPtCEn0lomHLeQimJxFgrCAsw==}
     engines: {node: '>=18'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       '@kubb/react': 2.28.4
 
   '@kubb/plugin-oas@4.16.0':
     resolution: {integrity: sha512-pcQHiD0+SCvzeQ9JelYGZmZ+sOs6fNxmKnYbxqhQ6eZVojTrA0KmwO5CmJx/zlhTh1JEwEnglgNUP4W8nT2OAw==}
     engines: {node: '>=20'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       '@kubb/react-fabric': 0.9.5
 
@@ -1771,6 +1776,7 @@ packages:
   '@kubb/swagger@2.28.4':
     resolution: {integrity: sha512-/65oszj8VklGrdCpNR8pnCOjLGOVCylkrVxkGeuktQv+h725u2j8nPhyCSKF6niJytFfYKg0TwDzZoMW+rYmWw==}
     engines: {node: '>=18'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       '@kubb/react': 2.28.4
 

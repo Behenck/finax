@@ -22,14 +22,12 @@ import {
 
 const dashboardSaleStatuses = [
   SaleStatus.PENDING,
-  SaleStatus.APPROVED,
   SaleStatus.COMPLETED,
   SaleStatus.CANCELED,
 ] as const;
 
 const headlineSaleStatuses = [
   SaleStatus.PENDING,
-  SaleStatus.APPROVED,
   SaleStatus.COMPLETED,
 ] as const;
 

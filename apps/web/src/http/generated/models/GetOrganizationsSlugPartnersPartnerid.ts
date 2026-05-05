@@ -32,7 +32,6 @@ export type PartnerStatusEnumKey =
 
 export const salesStatusEnum2 = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

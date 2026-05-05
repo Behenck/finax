@@ -19,7 +19,7 @@ export const patchOrganizationsSlugSalesStatusBulk200Schema = z.object({
 export const patchOrganizationsSlugSalesStatusBulkMutationRequestSchema =
   z.object({
     saleIds: z.array(z.uuid()).min(1).max(100),
-    status: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+    status: z.enum(["PENDING", "COMPLETED", "CANCELED"]),
   });
 
 export const patchOrganizationsSlugSalesStatusBulkMutationResponseSchema =

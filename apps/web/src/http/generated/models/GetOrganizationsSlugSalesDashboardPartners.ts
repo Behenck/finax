@@ -95,7 +95,6 @@ export type DynamicFieldBreakdownSelectedFieldTypeEnumKey =
 
 export const itemsStatusEnum2 = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

@@ -111,6 +111,7 @@ export type PostOrganizationsSlugSalesJsonImportsApplyMutationRequest = {
       [key: string]: unknown;
     };
     unidade?: any;
+    situacao?: any;
     status?: any;
     administradora?: any;
     servico?: any;

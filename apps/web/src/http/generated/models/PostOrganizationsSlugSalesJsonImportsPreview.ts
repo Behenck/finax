@@ -279,6 +279,7 @@ export type PostOrganizationsSlugSalesJsonImportsPreviewMutationRequest = {
       [key: string]: unknown;
     };
     unidade?: any;
+    situacao?: any;
     status?: any;
     administradora?: any;
     servico?: any;

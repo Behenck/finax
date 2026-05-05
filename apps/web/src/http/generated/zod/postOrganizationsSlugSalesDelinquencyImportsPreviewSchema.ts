@@ -31,9 +31,7 @@ export const postOrganizationsSlugSalesDelinquencyImportsPreview200Schema =
         saleDate: z.nullable(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
         dueDate: z.nullable(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
         saleId: z.nullable(z.uuid()),
-        saleStatus: z.nullable(
-          z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
-        ),
+        saleStatus: z.nullable(z.enum(["PENDING", "COMPLETED", "CANCELED"])),
         customFieldValues: z.array(
           z.object({
             customFieldLabel: z.string(),

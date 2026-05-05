@@ -89,7 +89,11 @@ export async function patchSaleStatus(app: FastifyInstance) {
 					throw new BadRequestError("Sale not found");
 				}
 
-				if (!isValidSaleStatusTransition(sale.status, status)) {
+				if (
+					!isValidSaleStatusTransition(sale.status, status, {
+						allowCompletedCancellation: true,
+					})
+				) {
 					throw new BadRequestError(
 						`Cannot change sale status from ${sale.status} to ${status}`,
 					);

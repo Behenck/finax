@@ -28,6 +28,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { SaleStatus } from "@/schemas/types/sales";
+import { SaleStatusAction } from "./sale-status-action";
 
 interface SaleActionsDropdownProps {
 	saleId: string;
@@ -35,6 +37,9 @@ interface SaleActionsDropdownProps {
 	canCreateSale: boolean;
 	canViewSale?: boolean;
 	canEditSale: boolean;
+	canChangeSaleStatus?: boolean;
+	currentStatus?: SaleStatus;
+	availableTransitionsOverride?: SaleStatus[];
 	canDeleteSale: boolean;
 	isDeleting?: boolean;
 	saleNavigationAction?: "details" | "edit";
@@ -47,6 +52,9 @@ export function SaleActionsDropdown({
 	canCreateSale,
 	canViewSale = false,
 	canEditSale,
+	canChangeSaleStatus = false,
+	currentStatus,
+	availableTransitionsOverride,
 	canDeleteSale,
 	isDeleting = false,
 	saleNavigationAction = "edit",
@@ -57,7 +65,11 @@ export function SaleActionsDropdown({
 	const canShowSaleNavigationAction =
 		saleNavigationAction === "details" ? canViewSale : canEditSale;
 	const canRenderActions =
-		canCreateSale || canShowSaleNavigationAction || canDeleteSale || isDeleting;
+		canCreateSale ||
+		canShowSaleNavigationAction ||
+		canChangeSaleStatus ||
+		canDeleteSale ||
+		isDeleting;
 
 	if (!canRenderActions) {
 		return null;
@@ -149,6 +161,17 @@ export function SaleActionsDropdown({
 							<Copy className="size-4" />
 							Duplicar
 						</DropdownMenuItem>
+					) : null}
+					{canChangeSaleStatus && currentStatus ? (
+						<>
+							<DropdownMenuSeparator />
+							<SaleStatusAction
+								saleId={saleId}
+								currentStatus={currentStatus}
+								trigger="dropdown-item"
+								availableTransitionsOverride={availableTransitionsOverride}
+							/>
+						</>
 					) : null}
 					{canDeleteSale ? (
 						<>

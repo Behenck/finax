@@ -30,7 +30,6 @@ export type RowsActionEnumKey =
 
 export const rowsSaleStatusEnum = {
   PENDING: "PENDING",
-  APPROVED: "APPROVED",
   COMPLETED: "COMPLETED",
   CANCELED: "CANCELED",
 } as const;

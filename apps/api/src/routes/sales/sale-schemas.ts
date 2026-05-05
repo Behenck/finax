@@ -618,7 +618,6 @@ const PartnerSalesDashboardProductBreakdownItemSchema = z.object({
 
 const PartnerSalesDashboardStatusFunnelStatusSchema = z.enum([
   "PENDING",
-  "APPROVED",
   "COMPLETED",
   "CANCELED",
 ] as const);
@@ -785,7 +784,6 @@ export const SalesDashboardResponseSchema = z.object({
     preCancellation: SalesDashboardPreCancellationSummarySchema,
     byStatus: z.object({
       PENDING: CommissionInstallmentSummaryBucketSchema,
-      APPROVED: CommissionInstallmentSummaryBucketSchema,
       COMPLETED: CommissionInstallmentSummaryBucketSchema,
       CANCELED: CommissionInstallmentSummaryBucketSchema,
     }),

@@ -56,6 +56,7 @@ export const postOrganizationsSlugSalesJsonImportsApplyMutationRequestSchema =
                 .catchall(z.any()),
             ),
             unidade: z.optional(z.any()),
+            situacao: z.optional(z.any()),
             status: z.optional(z.any()),
             administradora: z.optional(z.any()),
             servico: z.optional(z.any()),

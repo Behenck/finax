@@ -8437,6 +8437,98 @@ describe("sales crud", () => {
 		);
 	});
 
+	it("should allow canceling a completed sale with unit status update", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await patchSaleStatusUsingApi(fixture, saleId, "COMPLETED");
+		await patchSaleStatusUsingApi(fixture, saleId, "CANCELED");
+
+		const sale = await prisma.sale.findUnique({
+			where: {
+				id: saleId,
+			},
+			select: {
+				status: true,
+			},
+		});
+		const installments = await prisma.saleCommissionInstallment.findMany({
+			where: {
+				saleCommission: {
+					saleId,
+				},
+				status: {
+					not: "REVERSED",
+				},
+			},
+			select: {
+				status: true,
+				amount: true,
+				paymentDate: true,
+			},
+		});
+
+		expect(sale?.status).toBe(SaleStatus.CANCELED);
+		expect(installments.length).toBeGreaterThan(0);
+		expect(
+			installments.every((installment) => installment.status === "CANCELED"),
+		).toBe(true);
+		expect(installments.every((installment) => installment.amount === 0)).toBe(
+			true,
+		);
+		expect(
+			installments.every((installment) => installment.paymentDate === null),
+		).toBe(true);
+	});
+
+	it("should reject canceling completed sales in bulk", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(fixture);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-05",
+			}),
+		);
+		const saleIds = [firstSaleId, secondSaleId];
+
+		const approveResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "APPROVED",
+			});
+		expect(approveResponse.statusCode).toBe(200);
+
+		const completeResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "COMPLETED",
+			});
+		expect(completeResponse.statusCode).toBe(200);
+
+		const cancelResponse = await request(app.server)
+			.patch(`/organizations/${fixture.org.slug}/sales/status/bulk`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleIds,
+				status: "CANCELED",
+			});
+
+		expect(cancelResponse.statusCode).toBe(400);
+		expect(cancelResponse.body.message).toBe(
+			"Cannot change sale status from COMPLETED to CANCELED",
+		);
+	});
+
 	it("should delete sale", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(

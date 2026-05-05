@@ -254,11 +254,8 @@ export function SaleInstallmentsPanel({
 		"sales.commissions.installments.delete",
 	);
 	const canEditInstallmentsBySaleStatus =
-		saleStatus === "PENDING" ||
-		saleStatus === "APPROVED" ||
-		saleStatus === "COMPLETED";
-	const canChangeInstallmentStatusBySaleStatus =
-		saleStatus === "APPROVED" || saleStatus === "COMPLETED";
+		saleStatus === "PENDING" || saleStatus === "COMPLETED";
+	const canChangeInstallmentStatusBySaleStatus = saleStatus === "COMPLETED";
 	const installments = useMemo(
 		() => data?.installments ?? [],
 		[data?.installments],

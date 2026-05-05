@@ -19,7 +19,6 @@ import {
 
 const PARTNER_LIST_SALE_STATUSES = [
 	SaleStatus.PENDING,
-	SaleStatus.APPROVED,
 	SaleStatus.COMPLETED,
 ] as const;
 

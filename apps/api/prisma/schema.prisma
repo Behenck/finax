@@ -1132,7 +1132,6 @@ model ProductCommissionInstallment {
 
 enum SaleStatus {
   PENDING
-  APPROVED
   COMPLETED
   CANCELED
 }

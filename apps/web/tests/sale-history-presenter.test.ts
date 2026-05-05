@@ -56,7 +56,7 @@ describe("sale-history-presenter", () => {
 					{
 						path: "sale.status",
 						before: "PENDING",
-						after: "APPROVED",
+						after: "COMPLETED",
 					},
 					{
 						path: "commissions[0].totalPercentage",
@@ -72,7 +72,7 @@ describe("sale-history-presenter", () => {
 		expect(timelineEvent.summaryMessages).toEqual(timelineEvent.messages);
 		expect(timelineEvent.detailMessages).toEqual(timelineEvent.messages);
 		expect(timelineEvent.messages[1]).toBe(
-			"Status alterado de Pendente para Aprovada.",
+			"Status alterado de Pendente para Concluída.",
 		);
 	});
 
@@ -88,7 +88,7 @@ describe("sale-history-presenter", () => {
 					{
 						path: "sale.status",
 						before: "PENDING",
-						after: "APPROVED",
+						after: "COMPLETED",
 					},
 					{
 						path: "sale.dynamicFieldValues.field-grupo",
@@ -154,7 +154,7 @@ describe("sale-history-presenter", () => {
 		expect(timelineEvent.summaryMessages).toEqual(timelineEvent.messages);
 		expect(timelineEvent.detailMessages).toHaveLength(9);
 		expect(timelineEvent.detailMessages).toContain(
-			"Status alterado de Pendente para Aprovada.",
+			"Status alterado de Pendente para Concluída.",
 		);
 		expect(timelineEvent.detailMessages).toContain(
 			"Grupo alterado de A para B.",
@@ -170,13 +170,13 @@ describe("sale-history-presenter", () => {
 		const statusSentence = formatSaleHistoryChange({
 			path: "sale.status",
 			before: "PENDING",
-			after: "APPROVED",
+			after: "COMPLETED",
 		});
 
 		expect(amountSentence).toMatch(
 			/Valor total alterado de R\$\s*2\.000,00 para R\$\s*3\.000,00\./u,
 		);
-		expect(statusSentence).toBe("Status alterado de Pendente para Aprovada.");
+		expect(statusSentence).toBe("Status alterado de Pendente para Concluída.");
 	});
 
 	it("should format summarized pending installments update change", () => {

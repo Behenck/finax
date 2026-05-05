@@ -166,7 +166,7 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
   statusFunnel: z.object({
     items: z.array(
       z.object({
-        status: z.enum(["PENDING", "APPROVED", "COMPLETED", "CANCELED"]),
+        status: z.enum(["PENDING", "COMPLETED", "CANCELED"]),
         label: z.string(),
         salesCount: z.int().min(0).max(9007199254740991),
         grossAmount: z.int().min(0).max(9007199254740991),

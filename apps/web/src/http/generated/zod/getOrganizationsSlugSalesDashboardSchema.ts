@@ -50,10 +50,6 @@ export const getOrganizationsSlugSalesDashboard200Schema = z.object({
         count: z.int().min(0).max(9007199254740991),
         amount: z.int().min(-9007199254740991).max(9007199254740991),
       }),
-      APPROVED: z.object({
-        count: z.int().min(0).max(9007199254740991),
-        amount: z.int().min(-9007199254740991).max(9007199254740991),
-      }),
       COMPLETED: z.object({
         count: z.int().min(0).max(9007199254740991),
         amount: z.int().min(-9007199254740991).max(9007199254740991),
