@@ -2,10 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import z from "zod";
 import { Card } from "@/components/ui/card";
 import { FormPageSkeleton } from "@/components/loading-skeletons";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugPartnersPartnerid } from "@/http/generated";
 import { useAbility } from "@/permissions/access";
+import { Link } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { LinkedSalesList } from "../-components/linked-sales-list";
 import { FormPartner } from "./-components/form-partner";
 
@@ -61,14 +65,18 @@ function UpdatePartner() {
 
 	return (
 		<main className="w-full space-y-6">
-			<header className="flex items-center justify-between">
-				<div>
-					<h1 className="text-2xl font-semibold">Atualizar Parceiro</h1>
-					<span className="text-xs text-muted-foreground">
-						Preencha os dados para atualizar os dados do parceiro.
-					</span>
-				</div>
-			</header>
+			<PageHeader
+				title="Atualizar Parceiro"
+				description="Preencha os dados para atualizar os dados do parceiro."
+				actions={
+					<Button asChild>
+						<Link to="/registers/partners/create">
+							<Plus />
+							Novo Parceiro
+						</Link>
+					</Button>
+				}
+			/>
 
 			<Tabs
 				value={activeTab}
