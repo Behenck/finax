@@ -115,8 +115,8 @@ async function createSaleWithIncomeInstallment(params: {
 	companyId: string;
 	customerId: string;
 	productId: string;
-	group: string;
-	quota: string;
+	group: string | number;
+	quota: string | number;
 	amount: number;
 	saleStatus?: SaleStatus;
 	installmentStatus?: SaleCommissionInstallmentStatus;
@@ -133,7 +133,7 @@ async function createSaleWithIncomeInstallment(params: {
 			productId: params.productId,
 			saleDate,
 			totalAmount: 500_000,
-			status: params.saleStatus ?? SaleStatus.APPROVED,
+			status: params.saleStatus ?? SaleStatus.COMPLETED,
 			dynamicFieldSchema: [
 				{
 					fieldId: groupFieldId,
@@ -386,6 +386,128 @@ describe("commission receipt import", () => {
 			installmentId: created.installment.id,
 		});
 		expect(response.body.rows[0].receivedAmount).toBe(15_000);
+	});
+
+	it("should match group and quota ignoring leading zeros when import row is numeric", async () => {
+		const fixture = await createFixture();
+		const created = await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "005488",
+			quota: "0616",
+			amount: 15_000,
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: 5488,
+							Cota: 616,
+							Parcela: "1",
+							Valor: "150,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "READY",
+			action: "MARK_AS_PAID",
+			saleId: created.sale.id,
+			installmentId: created.installment.id,
+		});
+	});
+
+	it("should match group and quota ignoring leading zeros when stored sale values are numeric", async () => {
+		const fixture = await createFixture();
+		const created = await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: 5488,
+			quota: 616,
+			amount: 15_000,
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "005488",
+							Cota: "0616",
+							Parcela: "1",
+							Valor: "150,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "READY",
+			action: "MARK_AS_PAID",
+			saleId: created.sale.id,
+			installmentId: created.installment.id,
+		});
+	});
+
+	it("should keep alphanumeric group and quota matching as exact normalized text", async () => {
+		const fixture = await createFixture();
+		await createSaleWithIncomeInstallment({
+			organizationId: fixture.org.id,
+			createdById: fixture.user.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			group: "000A5488",
+			quota: "00B616",
+			amount: 15_000,
+		});
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/commissions/receipts/imports/preview`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				baseImportBody({
+					rows: [
+						{
+							DataVenda: IMPORT_DATE,
+							Grupo: "A5488",
+							Cota: "B616",
+							Parcela: "1",
+							Valor: "150,00",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "ATTENTION",
+			action: "NONE",
+		});
+		expect(response.body.rows[0].reason).toContain("Nenhuma venda encontrada");
 	});
 
 	it("should classify attention and no-action scenarios in preview", async () => {

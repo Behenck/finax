@@ -9,9 +9,9 @@ import type {
 	CommissionReceiptImportTemplateMapping,
 } from "./commission-receipt-import-schemas";
 import {
-	parseSaleDynamicFieldSchemaJson,
-	parseSaleDynamicFieldValuesJson,
-} from "./sale-dynamic-fields";
+	normalizeComparableMatchValue,
+	readComparableDynamicFieldValueByLabel,
+} from "./sale-import-match-utils";
 import {
 	assertImportRowsSecurity,
 	sanitizeTextValue,
@@ -19,16 +19,6 @@ import {
 
 const GROUP_LABEL_NORMALIZED = "grupo";
 const QUOTA_LABEL_NORMALIZED = "cota";
-
-function normalizeMatchValue(value: string) {
-	return value
-		.normalize("NFD")
-		.replace(/\p{Diacritic}/gu, "")
-		.normalize("NFKC")
-		.toLowerCase()
-		.trim()
-		.replace(/\s+/g, " ");
-}
 
 function parseReceivedAmountToCents(rawValue: unknown) {
 	if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
@@ -313,65 +303,6 @@ function parseSaleDateFromImportRow(rawValue: unknown) {
 	return null;
 }
 
-function coerceDynamicValueToComparableText(rawValue: unknown) {
-	if (rawValue === null || rawValue === undefined) {
-		return null;
-	}
-
-	if (typeof rawValue === "string") {
-		const sanitized = sanitizeTextValue(rawValue, { maxLength: 320 });
-		return sanitized ? normalizeMatchValue(sanitized) : null;
-	}
-
-	if (typeof rawValue === "number" || typeof rawValue === "boolean") {
-		return normalizeMatchValue(String(rawValue));
-	}
-
-	if (Array.isArray(rawValue)) {
-		const flattened = rawValue
-			.map((value) => {
-				if (typeof value === "string") {
-					return sanitizeTextValue(value, { maxLength: 120 });
-				}
-
-				if (typeof value === "number" || typeof value === "boolean") {
-					return String(value);
-				}
-
-				return null;
-			})
-			.filter((value) => Boolean(value))
-			.join(" ");
-
-		if (!flattened) {
-			return null;
-		}
-
-		return normalizeMatchValue(flattened);
-	}
-
-	return null;
-}
-
-function readComparableDynamicFieldValueByLabel(params: {
-	dynamicFieldSchema: Prisma.JsonValue | null;
-	dynamicFieldValues: Prisma.JsonValue | null;
-	fieldLabelNormalized: string;
-}) {
-	const schema = parseSaleDynamicFieldSchemaJson(params.dynamicFieldSchema);
-	const values = parseSaleDynamicFieldValuesJson(params.dynamicFieldValues);
-
-	const matchedField = schema.find((field) => {
-		return normalizeMatchValue(field.label) === params.fieldLabelNormalized;
-	});
-
-	if (!matchedField) {
-		return null;
-	}
-
-	return coerceDynamicValueToComparableText(values[matchedField.fieldId]);
-}
-
 function parseInputText(rawValue: unknown) {
 	const value = sanitizeTextValue(rawValue, { maxLength: 320 });
 	if (!value) {
@@ -513,11 +444,13 @@ export async function buildCommissionReceiptImportPreview(params: {
 			dynamicFieldSchema: sale.dynamicFieldSchema as Prisma.JsonValue,
 			dynamicFieldValues: sale.dynamicFieldValues as Prisma.JsonValue,
 			fieldLabelNormalized: GROUP_LABEL_NORMALIZED,
+			ignoreLeadingZerosForNumeric: true,
 		});
 		const quotaValue = readComparableDynamicFieldValueByLabel({
 			dynamicFieldSchema: sale.dynamicFieldSchema as Prisma.JsonValue,
 			dynamicFieldValues: sale.dynamicFieldValues as Prisma.JsonValue,
 			fieldLabelNormalized: QUOTA_LABEL_NORMALIZED,
+			ignoreLeadingZerosForNumeric: true,
 		});
 
 		if (!groupValue || !quotaValue) {
@@ -646,8 +579,12 @@ export async function buildCommissionReceiptImportPreview(params: {
 			});
 		}
 
-		const normalizedGroupValue = normalizeMatchValue(groupValue);
-		const normalizedQuotaValue = normalizeMatchValue(quotaValue);
+		const normalizedGroupValue = normalizeComparableMatchValue(groupValue, {
+			ignoreLeadingZerosForNumeric: true,
+		});
+		const normalizedQuotaValue = normalizeComparableMatchValue(quotaValue, {
+			ignoreLeadingZerosForNumeric: true,
+		});
 		const matchKey = buildMatchKey(
 			saleDate,
 			normalizedGroupValue,

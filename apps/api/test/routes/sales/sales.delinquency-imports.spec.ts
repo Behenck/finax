@@ -177,6 +177,20 @@ function buildTemplateMapping() {
 	};
 }
 
+function buildTemplateMappingWithCustomFields(
+	customFieldMappings: Array<{
+		customFieldLabel: string;
+		columnKey: string;
+	}>,
+) {
+	return {
+		fields: {
+			saleDateColumn: "DataVenda",
+			customFieldMappings,
+		},
+	};
+}
+
 function buildPreviewBody(params: {
 	rows: Array<Record<string, unknown>>;
 	importDate?: string;
@@ -200,8 +214,8 @@ async function createSaleForMatching(params: {
 	createdById: string;
 	saleDate: string;
 	status?: SaleStatus;
-	group: string;
-	quota: string;
+	group: string | number;
+	quota: string | number;
 }) {
 	const groupFieldId = crypto.randomUUID();
 	const quotaFieldId = crypto.randomUUID();
@@ -235,6 +249,52 @@ async function createSaleForMatching(params: {
 				[groupFieldId]: params.group,
 				[quotaFieldId]: params.quota,
 			},
+			createdById: params.createdById,
+		},
+		select: {
+			id: true,
+		},
+	});
+}
+
+async function createSaleForCustomMatching(params: {
+	organizationId: string;
+	companyId: string;
+	customerId: string;
+	productId: string;
+	createdById: string;
+	saleDate: string;
+	status?: SaleStatus;
+	fields: Array<{
+		label: string;
+		value: string | number;
+	}>;
+}) {
+	const schemaFields = params.fields.map((field, index) => ({
+		fieldId: crypto.randomUUID(),
+		label: field.label,
+		type: SaleDynamicFieldType.TEXT,
+		required: false,
+		options: [],
+		sortOrder: index + 1,
+	}));
+
+	return prisma.sale.create({
+		data: {
+			organizationId: params.organizationId,
+			companyId: params.companyId,
+			customerId: params.customerId,
+			productId: params.productId,
+			saleDate: new Date(`${params.saleDate}T00:00:00.000Z`),
+			totalAmount: 100_000,
+			status: params.status ?? SaleStatus.COMPLETED,
+			dynamicFieldSchema: schemaFields,
+			dynamicFieldValues: Object.fromEntries(
+				schemaFields.map((field, index) => [
+					field.fieldId,
+					params.fields[index]?.value,
+				]),
+			),
 			createdById: params.createdById,
 		},
 		select: {
@@ -408,6 +468,87 @@ describe("sales delinquency import", () => {
 			saleId: sale.id,
 			dueDate: DEFAULT_IMPORT_DATE,
 		});
+	});
+
+	it("should match grupo and cota ignoring leading zeros during delinquency preview", async () => {
+		const fixture = await createFixture();
+		const sale = await createSaleForMatching({
+			organizationId: fixture.org.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			createdById: fixture.user.id,
+			saleDate: "2026-03-15",
+			status: SaleStatus.COMPLETED,
+			group: "005488",
+			quota: 616,
+		});
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/delinquency/imports/preview`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send(
+				buildPreviewBody({
+					rows: [
+						{
+							DataVenda: "2026-03-15",
+							Grupo: 5488,
+							Cota: "0616",
+						},
+					],
+				}),
+			);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "READY",
+			action: "CREATE_DELINQUENCY",
+			saleId: sale.id,
+		});
+	});
+
+	it("should keep literal matching for numeric custom fields other than grupo and cota", async () => {
+		const fixture = await createFixture();
+		const sale = await createSaleForCustomMatching({
+			organizationId: fixture.org.id,
+			companyId: fixture.company.id,
+			customerId: fixture.customer.id,
+			productId: fixture.product.id,
+			createdById: fixture.user.id,
+			saleDate: "2026-03-18",
+			status: SaleStatus.COMPLETED,
+			fields: [{ label: "Contrato", value: "000123" }],
+		});
+
+		const response = await request(app.server)
+			.post(`/organizations/${fixture.org.slug}/sales/delinquency/imports/preview`)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				fileType: "XLSX",
+				headerSignature: "sha256:sale-delinquency-import-contract-tests",
+				importDate: DEFAULT_IMPORT_DATE,
+				rows: [
+					{
+						DataVenda: "2026-03-18",
+						Contrato: "123",
+					},
+				],
+				mapping: buildTemplateMappingWithCustomFields([
+					{
+						customFieldLabel: "Contrato",
+						columnKey: "Contrato",
+					},
+				]),
+			});
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.rows[0]).toMatchObject({
+			status: "ATTENTION",
+			action: "NONE",
+			saleId: null,
+			matchCount: 0,
+		});
+		expect(response.body.rows[0].matchedSaleIds).not.toContain(sale.id);
 	});
 
 	it("should preview row as NO_ACTION when sale already has open delinquency in import month", async () => {

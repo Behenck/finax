@@ -1,9 +1,10 @@
 import type { Prisma } from "generated/prisma/client";
 import { SaleStatus } from "generated/prisma/enums";
 import {
-	parseSaleDynamicFieldSchemaJson,
-	parseSaleDynamicFieldValuesJson,
-} from "./sale-dynamic-fields";
+	normalizeComparableMatchValue,
+	normalizeMatchValue,
+	readComparableDynamicFieldValueByLabel,
+} from "./sale-import-match-utils";
 import { assertImportRowsSecurity, parseImportSaleDate, sanitizeTextValue } from "./sale-import-utils";
 import type {
 	SaleDelinquencyImportPreviewRow,
@@ -16,16 +17,6 @@ type SaleCandidate = {
 	openDelinquencyMonths: Set<string>;
 };
 
-function normalizeMatchValue(value: string) {
-	return value
-		.normalize("NFD")
-		.replace(/\p{Diacritic}/gu, "")
-		.normalize("NFKC")
-		.toLowerCase()
-		.trim()
-		.replace(/\s+/g, " ");
-}
-
 function parseInputText(rawValue: unknown) {
 	const value = sanitizeTextValue(rawValue, { maxLength: 320 });
 	if (!value) {
@@ -33,65 +24,6 @@ function parseInputText(rawValue: unknown) {
 	}
 
 	return value;
-}
-
-function coerceDynamicValueToComparableText(rawValue: unknown) {
-	if (rawValue === null || rawValue === undefined) {
-		return null;
-	}
-
-	if (typeof rawValue === "string") {
-		const sanitized = sanitizeTextValue(rawValue, { maxLength: 320 });
-		return sanitized ? normalizeMatchValue(sanitized) : null;
-	}
-
-	if (typeof rawValue === "number" || typeof rawValue === "boolean") {
-		return normalizeMatchValue(String(rawValue));
-	}
-
-	if (Array.isArray(rawValue)) {
-		const flattened = rawValue
-			.map((value) => {
-				if (typeof value === "string") {
-					return sanitizeTextValue(value, { maxLength: 120 });
-				}
-
-				if (typeof value === "number" || typeof value === "boolean") {
-					return String(value);
-				}
-
-				return null;
-			})
-			.filter((value) => Boolean(value))
-			.join(" ");
-
-		if (!flattened) {
-			return null;
-		}
-
-		return normalizeMatchValue(flattened);
-	}
-
-	return null;
-}
-
-function readComparableDynamicFieldValueByLabel(params: {
-	dynamicFieldSchema: Prisma.JsonValue | null;
-	dynamicFieldValues: Prisma.JsonValue | null;
-	fieldLabelNormalized: string;
-}) {
-	const schema = parseSaleDynamicFieldSchemaJson(params.dynamicFieldSchema);
-	const values = parseSaleDynamicFieldValuesJson(params.dynamicFieldValues);
-
-	const matchedField = schema.find((field) => {
-		return normalizeMatchValue(field.label) === params.fieldLabelNormalized;
-	});
-
-	if (!matchedField) {
-		return null;
-	}
-
-	return coerceDynamicValueToComparableText(values[matchedField.fieldId]);
 }
 
 function toDateOnly(value: Date) {
@@ -204,6 +136,9 @@ export async function buildSaleDelinquencyImportPreview(params: {
 			fieldLabelNormalized: normalizeMatchValue(
 				customFieldMapping.customFieldLabel,
 			),
+			ignoreLeadingZerosForNumeric:
+				normalizeMatchValue(customFieldMapping.customFieldLabel) === "grupo" ||
+				normalizeMatchValue(customFieldMapping.customFieldLabel) === "cota",
 		}));
 
 	const salesByMatchKey = new Map<string, SaleCandidate[]>();
@@ -217,6 +152,8 @@ export async function buildSaleDelinquencyImportPreview(params: {
 				dynamicFieldSchema: sale.dynamicFieldSchema as Prisma.JsonValue,
 				dynamicFieldValues: sale.dynamicFieldValues as Prisma.JsonValue,
 				fieldLabelNormalized: fieldMapping.fieldLabelNormalized,
+				ignoreLeadingZerosForNumeric:
+					fieldMapping.ignoreLeadingZerosForNumeric,
 			});
 
 			if (!dynamicFieldValue) {
@@ -291,7 +228,17 @@ export async function buildSaleDelinquencyImportPreview(params: {
 				};
 			}
 
-			normalizedCustomValues.push(normalizeMatchValue(customFieldValue.value));
+			const fieldMapping = customFieldMappingsNormalized.find(
+				(mapping) =>
+					mapping.customFieldLabel === customFieldValue.customFieldLabel,
+			);
+
+			normalizedCustomValues.push(
+				normalizeComparableMatchValue(customFieldValue.value, {
+					ignoreLeadingZerosForNumeric:
+						fieldMapping?.ignoreLeadingZerosForNumeric,
+				}),
+			);
 		}
 
 		const matchKey = buildMatchKey(saleDate, normalizedCustomValues);
