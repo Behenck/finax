@@ -179,9 +179,9 @@ function TransactionsPage() {
 			void setPage(storedFilters.page);
 		}
 		if (
-			pageSize === 20 &&
+			pageSize === 10 &&
 			storedFilters.pageSize &&
-			storedFilters.pageSize !== 20
+			storedFilters.pageSize !== 10
 		) {
 			void setPageSize(storedFilters.pageSize);
 		}
@@ -356,7 +356,7 @@ function TransactionsPage() {
 		void setDueFrom("");
 		void setDueTo("");
 		void setPage(1);
-		void setPageSize(20);
+		void setPageSize(10);
 		void setSortBy("dueDate");
 		void setSortDir("desc");
 	}

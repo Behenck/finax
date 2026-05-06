@@ -16,7 +16,6 @@ describe("CommissionsFiltersPanel", () => {
 				statusFilter="ALL"
 				effectiveExpectedFrom="2026-03-01"
 				effectiveExpectedTo="2026-03-31"
-				currentPageSize={20}
 				companies={[
 					{
 						id: "company-1",
@@ -42,7 +41,6 @@ describe("CommissionsFiltersPanel", () => {
 				onStatusChange={vi.fn()}
 				onExpectedFromChange={vi.fn()}
 				onExpectedToChange={vi.fn()}
-				onPageSizeChange={vi.fn()}
 				onClearFilters={onClearFilters}
 			/>,
 		);

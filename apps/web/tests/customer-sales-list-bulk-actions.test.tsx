@@ -11,6 +11,22 @@ const mocks = vi.hoisted(() => ({
 	toastWarningMock: vi.fn(),
 	toastInfoMock: vi.fn(),
 	toastErrorMock: vi.fn(),
+	queryValues: new Map<string, unknown>([
+		["page", 1],
+		["pageSize", 20],
+	]),
+	setQueryStateCalls: vi.fn<(key: string, value: unknown) => void>(),
+	resetQueryState(nextValues?: Record<string, unknown>) {
+		mocks.queryValues.clear();
+		for (const [key, value] of Object.entries({
+			page: 1,
+			pageSize: 20,
+			...nextValues,
+		})) {
+			mocks.queryValues.set(key, value);
+		}
+		mocks.setQueryStateCalls.mockReset();
+	},
 }));
 
 function buildSales() {
@@ -90,6 +106,38 @@ function buildSales() {
 	];
 }
 
+function buildPaginatedSales(total: number) {
+	return Array.from({ length: total }, (_, index) => ({
+		id: `sale-${index + 1}`,
+		saleDate: "2026-04-10T00:00:00.000Z",
+		totalAmount: 100000 + index,
+		status: "COMPLETED" as const,
+		createdAt: "2026-04-10T00:00:00.000Z",
+		updatedAt: "2026-04-10T00:00:00.000Z",
+		product: {
+			id: `product-${index + 1}`,
+			name: `Produto ${index + 1}`,
+		},
+		company: {
+			id: "company-1",
+			name: "Empresa Alpha",
+		},
+		unit: null,
+		responsible: {
+			type: "PARTNER" as const,
+			id: "partner-1",
+			name: "Parceiro 1",
+		},
+		delinquencySummary: {
+			hasOpen: false,
+			openCount: 0,
+			oldestDueDate: null,
+			latestDueDate: null,
+		},
+		openDelinquencies: [],
+	}));
+}
+
 vi.mock("@tanstack/react-router", () => ({
 	Link: ({
 		children,
@@ -99,13 +147,45 @@ vi.mock("@tanstack/react-router", () => ({
 	),
 }));
 
+vi.mock("nuqs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("nuqs")>();
+	const React = await import("react");
+
+	return {
+		...actual,
+		useQueryState: (key: string) => {
+			const [value, setValue] = React.useState(() =>
+				mocks.queryValues.get(key),
+			);
+
+			const setQueryState = (
+				next: unknown | ((previous: unknown) => unknown),
+			) => {
+				setValue((previous) => {
+					const resolvedValue =
+						typeof next === "function"
+							? (next as (previous: unknown) => unknown)(previous)
+							: next;
+					mocks.queryValues.set(key, resolvedValue);
+					mocks.setQueryStateCalls(key, resolvedValue);
+					return resolvedValue;
+				});
+
+				return Promise.resolve(null);
+			};
+
+			return [value, setQueryState] as const;
+		},
+	};
+});
+
 vi.mock("@/hooks/sales", () => ({
-	useCustomerSalesDelinquencyBulkActions: () => ({
-		markCustomerSalesAsDelinquent: mocks.markCustomerSalesAsDelinquentMock,
-		isMarkingCustomerSalesAsDelinquent: false,
-		resolveCustomerSalesDelinquencies:
+	useLinkedSalesDelinquencyBulkActions: () => ({
+		markLinkedSalesAsDelinquent: mocks.markCustomerSalesAsDelinquentMock,
+		isMarkingLinkedSalesAsDelinquent: false,
+		resolveLinkedSalesDelinquencies:
 			mocks.resolveCustomerSalesDelinquenciesMock,
-		isResolvingCustomerSalesDelinquencies: false,
+		isResolvingLinkedSalesDelinquencies: false,
 	}),
 }));
 
@@ -142,6 +222,7 @@ describe("customer sales list bulk delinquency actions", () => {
 		mocks.toastWarningMock.mockReset();
 		mocks.toastInfoMock.mockReset();
 		mocks.toastErrorMock.mockReset();
+		mocks.resetQueryState();
 	});
 
 	it("should render selection controls when user can manage delinquencies", async () => {
@@ -158,7 +239,9 @@ describe("customer sales list bulk delinquency actions", () => {
 			screen.getAllByLabelText("Selecionar todas as vendas visíveis").length,
 		).toBeGreaterThan(0);
 
-		await user.click(screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!);
+		await user.click(
+			screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!,
+		);
 
 		expect(screen.getByText("1 venda(s) selecionada(s)")).toBeInTheDocument();
 		expect(
@@ -207,9 +290,15 @@ describe("customer sales list bulk delinquency actions", () => {
 			/>,
 		);
 
-		await user.click(screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!);
-		await user.click(screen.getAllByLabelText("Selecionar venda Seguro Vida")[0]!);
-		await user.click(screen.getByRole("button", { name: "Marcar inadimplente" }));
+		await user.click(
+			screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!,
+		);
+		await user.click(
+			screen.getAllByLabelText("Selecionar venda Seguro Vida")[0]!,
+		);
+		await user.click(
+			screen.getByRole("button", { name: "Marcar inadimplente" }),
+		);
 		const markDialog = screen.getByRole("dialog", {
 			name: "Marcar vendas como inadimplentes",
 		});
@@ -229,7 +318,10 @@ describe("customer sales list bulk delinquency actions", () => {
 
 		expect(mocks.markCustomerSalesAsDelinquentMock).toHaveBeenCalledWith(
 			expect.objectContaining({
-				customerId: "customer-1",
+				owner: {
+					type: "CUSTOMER",
+					id: "customer-1",
+				},
 				dueDate: "2020-01-01",
 			}),
 		);
@@ -259,8 +351,12 @@ describe("customer sales list bulk delinquency actions", () => {
 			/>,
 		);
 
-		await user.click(screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!);
-		await user.click(screen.getAllByLabelText("Selecionar venda Seguro Vida")[0]!);
+		await user.click(
+			screen.getAllByLabelText("Selecionar venda Seguro Auto")[0]!,
+		);
+		await user.click(
+			screen.getAllByLabelText("Selecionar venda Seguro Vida")[0]!,
+		);
 		await user.click(
 			screen.getByRole("button", { name: "Remover inadimplências" }),
 		);
@@ -279,7 +375,10 @@ describe("customer sales list bulk delinquency actions", () => {
 
 		expect(mocks.resolveCustomerSalesDelinquenciesMock).toHaveBeenCalledWith(
 			expect.objectContaining({
-				customerId: "customer-1",
+				owner: {
+					type: "CUSTOMER",
+					id: "customer-1",
+				},
 			}),
 		);
 		expect(mocks.toastWarningMock).toHaveBeenCalledWith(
@@ -288,5 +387,41 @@ describe("customer sales list bulk delinquency actions", () => {
 		expect(
 			screen.queryByText("2 venda(s) selecionada(s)"),
 		).not.toBeInTheDocument();
+	});
+
+	it("should keep selections across pages while selecting only visible sales", async () => {
+		const user = userEvent.setup();
+		render(
+			<CustomerSalesList
+				sales={buildPaginatedSales(25)}
+				customerId="customer-1"
+				canManageDelinquencies
+			/>,
+		);
+
+		await user.click(
+			screen.getAllByLabelText("Selecionar todas as vendas visíveis")[0]!,
+		);
+
+		expect(screen.getByText("20 venda(s) selecionada(s)")).toBeInTheDocument();
+
+		await user.click(screen.getByRole("button", { name: "Próxima página" }));
+
+		await waitFor(() => {
+			expect(
+				screen.getByRole("button", { name: "Ir para página 2" }),
+			).toHaveAttribute("aria-current", "page");
+		});
+
+		expect(screen.getByText("20 venda(s) selecionada(s)")).toBeInTheDocument();
+		expect(
+			screen.getAllByLabelText("Selecionar venda Produto 21")[0],
+		).not.toBeChecked();
+
+		await user.click(
+			screen.getAllByLabelText("Selecionar todas as vendas visíveis")[0]!,
+		);
+
+		expect(screen.getByText("25 venda(s) selecionada(s)")).toBeInTheDocument();
 	});
 });

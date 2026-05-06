@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { textFilterParser } from "@/hooks/filters/parsers";
+import { useTablePagination } from "@/hooks/filters/use-table-pagination";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, Plus, Search, Users } from "lucide-react";
 import { ListSellers } from "./-components/list-sellers";
@@ -16,7 +18,7 @@ export const Route = createFileRoute("/_app/registers/sellers/")({
 	component: SellersPage,
 });
 
-function SellersPage() {
+export function SellersPage() {
 	const { organization } = useApp();
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const slug = organization?.slug ?? "";
@@ -52,6 +54,19 @@ function SellersPage() {
 
 		return { total, active, sales, commissions };
 	}, [sellers]);
+
+	const {
+		currentPage,
+		currentPageSize,
+		totalItems,
+		totalPages,
+		paginatedItems: paginatedSellers,
+		handlePageChange,
+		handlePageSizeChange,
+	} = useTablePagination({
+		items: filteredSellers,
+		resetKeys: [search],
+	});
 
 	if (isLoading) {
 		return (
@@ -130,8 +145,16 @@ function SellersPage() {
 				/>
 			</div>
 
-			<section className="space-y-2">
-				<ListSellers sellers={filteredSellers} />
+			<section className="space-y-4">
+				<ListSellers sellers={paginatedSellers} />
+				<DataTablePagination
+					page={currentPage}
+					pageSize={currentPageSize}
+					totalItems={totalItems}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+					onPageSizeChange={handlePageSizeChange}
+				/>
 			</section>
 		</main>
 	);

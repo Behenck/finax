@@ -140,9 +140,9 @@ export function useCommissionsInstallmentsFilters({
 		}
 
 		if (
-			pageSize === 20 &&
+			pageSize === 10 &&
 			storedFilters.pageSize &&
-			storedFilters.pageSize !== 20
+			storedFilters.pageSize !== 10
 		) {
 			void setPageSize(storedFilters.pageSize);
 		}
@@ -275,8 +275,8 @@ export function useCommissionsInstallmentsFilters({
 		setPage(1);
 	}
 
-	function handlePageSizeChange(value: string) {
-		setPageSize(Number(value));
+	function handlePageSizeChange(value: number) {
+		setPageSize(value);
 		setPage(1);
 	}
 
@@ -291,7 +291,7 @@ export function useCommissionsInstallmentsFilters({
 		setExpectedFromFilter(monthDateRange.from);
 		setExpectedToFilter(monthDateRange.to);
 		setPage(1);
-		setPageSize(20);
+		setPageSize(10);
 	}
 
 	return {

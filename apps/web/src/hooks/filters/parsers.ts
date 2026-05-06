@@ -39,7 +39,11 @@ const TRANSACTION_SORT_BY_VALUES = [
 const PARTNER_STATUS_FILTER_VALUES = ["ALL", "ACTIVE", "INACTIVE"] as const;
 const SORT_DIRECTION_VALUES = ["asc", "desc"] as const;
 const MEMBER_VIEW_VALUES = ["access", "role"] as const;
-const DASHBOARD_VIEW_VALUES = ["commercial", "operational", "partners"] as const;
+const DASHBOARD_VIEW_VALUES = [
+	"commercial",
+	"operational",
+	"partners",
+] as const;
 const PARTNERS_VIEW_VALUES = ["performance", "commission", "risk"] as const;
 const PRODUCT_BREAKDOWN_DEPTH_VALUES = ["FIRST_LEVEL", "ALL_LEVELS"] as const;
 
@@ -61,9 +65,9 @@ export const memberTargetParser = parseAsString.withOptions({
 	history: "replace",
 });
 
-export const memberViewParser = parseAsStringLiteral(MEMBER_VIEW_VALUES).withOptions(
-	{ history: "replace" },
-);
+export const memberViewParser = parseAsStringLiteral(
+	MEMBER_VIEW_VALUES,
+).withOptions({ history: "replace" });
 
 export const dashboardViewParser = parseAsStringLiteral(DASHBOARD_VIEW_VALUES)
 	.withDefault("commercial")
@@ -134,7 +138,7 @@ export const pageParser = parseAsInteger
 	.withOptions({ history: "replace" });
 
 export const pageSizeParser = parseAsInteger
-	.withDefault(20)
+	.withDefault(10)
 	.withOptions({ history: "replace" });
 
 export const productFilterParser = parseAsString

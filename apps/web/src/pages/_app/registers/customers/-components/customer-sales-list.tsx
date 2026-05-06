@@ -1,8 +1,9 @@
 import { format, parse } from "date-fns";
 import { EllipsisVertical, Eye, TriangleAlert } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
@@ -49,6 +50,7 @@ import {
 	type ResolveLinkedSalesDelinquenciesResult,
 	useLinkedSalesDelinquencyBulkActions,
 } from "@/hooks/sales";
+import { useTablePagination } from "@/hooks/filters/use-table-pagination";
 import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import type { GetOrganizationsSlugCustomersCustomerid200 } from "@/http/generated";
 import { formatCurrencyBRL } from "@/utils/format-amount";
@@ -117,7 +119,10 @@ interface LinkedSaleActionsProps {
 }
 
 function formatDate(value: string) {
-	return format(parse(value.slice(0, 10), "yyyy-MM-dd", new Date()), "dd/MM/yyyy");
+	return format(
+		parse(value.slice(0, 10), "yyyy-MM-dd", new Date()),
+		"dd/MM/yyyy",
+	);
 }
 
 function LinkedSaleActions({
@@ -127,7 +132,8 @@ function LinkedSaleActions({
 	onOpenResolveDelinquencyForSale,
 }: LinkedSaleActionsProps) {
 	const hasOpenDelinquency = sale.delinquencySummary.hasOpen;
-	const canHandleDelinquencyAction = hasOpenDelinquency || sale.status === "COMPLETED";
+	const canHandleDelinquencyAction =
+		hasOpenDelinquency || sale.status === "COMPLETED";
 	const delinquencyActionLabel = hasOpenDelinquency
 		? "Resolver inadimplência"
 		: "Adicionar inadimplência";
@@ -200,11 +206,28 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 		resolveLinkedSalesDelinquencies,
 		isResolvingLinkedSalesDelinquencies,
 	} = useLinkedSalesDelinquencyBulkActions();
+	const {
+		currentPage,
+		currentPageSize,
+		totalItems,
+		totalPages,
+		paginatedItems: paginatedSales,
+		handlePageChange,
+		handlePageSizeChange,
+	} = useTablePagination({
+		items: sales,
+	});
 
-	const visibleSaleIds = useMemo(() => sales.map((sale) => sale.id), [sales]);
+	const visibleSaleIds = useMemo(
+		() => paginatedSales.map((sale) => sale.id),
+		[paginatedSales],
+	);
 	const selectedSaleIds = useMemo(
-		() => visibleSaleIds.filter((saleId) => Boolean(rowSelection[saleId])),
-		[rowSelection, visibleSaleIds],
+		() =>
+			sales
+				.filter((sale) => Boolean(rowSelection[sale.id]))
+				.map((sale) => sale.id),
+		[rowSelection, sales],
 	);
 	const isAllVisibleSelected =
 		visibleSaleIds.length > 0 &&
@@ -214,6 +237,23 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 		visibleSaleIds.some((saleId) => Boolean(rowSelection[saleId]));
 	const markTargetSaleIds = markDialogSaleIds ?? selectedSaleIds;
 	const resolveTargetSaleIds = resolveDialogSaleIds ?? selectedSaleIds;
+
+	useEffect(() => {
+		setRowSelection((current) => {
+			const availableSaleIds = new Set(sales.map((sale) => sale.id));
+			const nextEntries = Object.entries(current).filter(
+				([saleId, isSelected]) => {
+					return isSelected && availableSaleIds.has(saleId);
+				},
+			);
+
+			if (nextEntries.length === Object.keys(current).length) {
+				return current;
+			}
+
+			return Object.fromEntries(nextEntries);
+		});
+	}, [sales]);
 
 	function clearSelection() {
 		setRowSelection({});
@@ -255,9 +295,7 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 
 	if (sales.length === 0) {
 		return (
-			<Card className="p-6 text-sm text-muted-foreground">
-				{emptyMessage}
-			</Card>
+			<Card className="p-6 text-sm text-muted-foreground">{emptyMessage}</Card>
 		);
 	}
 
@@ -495,13 +533,13 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 										<span>Selecionar vendas visíveis</span>
 									</div>
 									<span className="text-xs text-muted-foreground">
-										{sales.length} registro(s)
+										{paginatedSales.length} nesta página
 									</span>
 								</div>
 							</Card>
 						) : null}
 
-						{sales.map((sale) => (
+						{paginatedSales.map((sale) => (
 							<Card
 								key={sale.id}
 								className={`space-y-3 p-4 ${
@@ -607,7 +645,7 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{sales.map((sale) => (
+								{paginatedSales.map((sale) => (
 									<TableRow key={sale.id}>
 										{canManageDelinquencies ? (
 											<TableCell className="w-10">
@@ -654,7 +692,9 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 										</TableCell>
 										<TableCell>
 											{sale.delinquencySummary.hasOpen ? (
-												<SaleDelinquencyBadge summary={sale.delinquencySummary} />
+												<SaleDelinquencyBadge
+													summary={sale.delinquencySummary}
+												/>
 											) : (
 												<span className="text-sm text-muted-foreground">-</span>
 											)}
@@ -682,6 +722,15 @@ export function LinkedSalesList<TSale extends LinkedSale>({
 						</Table>
 					</div>
 				}
+			/>
+
+			<DataTablePagination
+				page={currentPage}
+				pageSize={currentPageSize}
+				totalItems={totalItems}
+				totalPages={totalPages}
+				onPageChange={handlePageChange}
+				onPageSizeChange={handlePageSizeChange}
 			/>
 
 			<Dialog

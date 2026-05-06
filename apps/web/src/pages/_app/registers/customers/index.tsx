@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { LoadingReveal } from "@/components/loading-reveal";
 import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { textFilterParser } from "@/hooks/filters/parsers";
+import { useTablePagination } from "@/hooks/filters/use-table-pagination";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Search, ShieldUser, User, UserCheck, Users } from "lucide-react";
 import { ListCustomers } from "./-components/list-customers";
@@ -17,7 +19,7 @@ export const Route = createFileRoute("/_app/registers/customers/")({
 	component: CustomersPage,
 });
 
-function CustomersPage() {
+export function CustomersPage() {
 	const { organization } = useApp();
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const slug = organization?.slug ?? "";
@@ -53,6 +55,19 @@ function CustomersPage() {
 
 		return { total, active, pf, pj };
 	}, [customers]);
+
+	const {
+		currentPage,
+		currentPageSize,
+		totalItems,
+		totalPages,
+		paginatedItems: paginatedCustomers,
+		handlePageChange,
+		handlePageSizeChange,
+	} = useTablePagination({
+		items: filteredCustomers,
+		resetKeys: [search],
+	});
 
 	if (!organization) return null;
 	if (isError)
@@ -125,8 +140,16 @@ function CustomersPage() {
 					/>
 				</div>
 
-				<section className="space-y-2">
-					<ListCustomers customers={filteredCustomers} />
+				<section className="space-y-4">
+					<ListCustomers customers={paginatedCustomers} />
+					<DataTablePagination
+						page={currentPage}
+						pageSize={currentPageSize}
+						totalItems={totalItems}
+						totalPages={totalPages}
+						onPageChange={handlePageChange}
+						onPageSizeChange={handlePageSizeChange}
+					/>
 				</section>
 			</main>
 		</LoadingReveal>

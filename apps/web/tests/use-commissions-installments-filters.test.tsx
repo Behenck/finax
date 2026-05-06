@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => {
 		expectedFrom: "",
 		expectedTo: "",
 		page: 1,
-		pageSize: 20,
+		pageSize: 10,
 	};
 
 	const values = new Map<string, unknown>(Object.entries(defaults));
@@ -109,10 +109,7 @@ describe("useCommissionsInstallmentsFilters", () => {
 			expect(result.current.productIdFilter).toBe("product-1");
 		});
 
-		expect(mocks.setCalls).toHaveBeenCalledWith(
-			"expectedFrom",
-			"2026-03-01",
-		);
+		expect(mocks.setCalls).toHaveBeenCalledWith("expectedFrom", "2026-03-01");
 		expect(mocks.setCalls).toHaveBeenCalledWith("expectedTo", "2026-03-31");
 		expect(mocks.setCalls).toHaveBeenCalledWith("page", 3);
 		expect(mocks.setCalls).toHaveBeenCalledWith("pageSize", 50);
@@ -158,7 +155,7 @@ describe("useCommissionsInstallmentsFilters", () => {
 			expect(result.current.unitIdFilter).toBe("");
 			expect(result.current.productIdFilter).toBe("");
 			expect(result.current.currentPage).toBe(1);
-			expect(result.current.currentPageSize).toBe(20);
+			expect(result.current.currentPageSize).toBe(10);
 		});
 	});
 });

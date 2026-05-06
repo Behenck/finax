@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { ListPageSkeleton } from "@/components/loading-skeletons";
 import {
 	Select,
@@ -14,6 +15,7 @@ import {
 	partnerStatusFilterParser,
 	textFilterParser,
 } from "@/hooks/filters/parsers";
+import { useTablePagination } from "@/hooks/filters/use-table-pagination";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, Plus, Search, Users } from "lucide-react";
 import { ListPartners } from "./-components/list-partners";
@@ -27,7 +29,7 @@ export const Route = createFileRoute("/_app/registers/partners/")({
 	component: PartnersPage,
 });
 
-function PartnersPage() {
+export function PartnersPage() {
 	const { organization } = useApp();
 	const [search, setSearch] = useQueryState("q", textFilterParser);
 	const [statusFilter, setStatusFilter] = useQueryState(
@@ -78,6 +80,19 @@ function PartnersPage() {
 
 		return { total, active, salesAmount, salesCount, commissions };
 	}, [partners]);
+
+	const {
+		currentPage,
+		currentPageSize,
+		totalItems,
+		totalPages,
+		paginatedItems: paginatedPartners,
+		handlePageChange,
+		handlePageSizeChange,
+	} = useTablePagination({
+		items: filteredPartners,
+		resetKeys: [search, statusFilter],
+	});
 
 	if (isLoading) {
 		return (
@@ -174,8 +189,16 @@ function PartnersPage() {
 				</Select>
 			</div>
 
-			<section className="space-y-2">
-				<ListPartners partners={filteredPartners} />
+			<section className="space-y-4">
+				<ListPartners partners={paginatedPartners} />
+				<DataTablePagination
+					page={currentPage}
+					pageSize={currentPageSize}
+					totalItems={totalItems}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+					onPageSizeChange={handlePageSizeChange}
+				/>
 			</section>
 		</main>
 	);

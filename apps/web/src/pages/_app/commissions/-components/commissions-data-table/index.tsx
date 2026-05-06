@@ -10,6 +10,7 @@ import {
 	Undo2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { LoadingReveal } from "@/components/loading-reveal";
 import { CardSectionSkeleton } from "@/components/loading-skeletons";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
@@ -522,7 +523,6 @@ export function CommissionsDataTable() {
 					statusFilter={statusFilter}
 					effectiveExpectedFrom={effectiveExpectedFrom}
 					effectiveExpectedTo={effectiveExpectedTo}
-					currentPageSize={currentPageSize}
 					companies={companies}
 					unitsBySelectedCompany={unitsBySelectedCompany}
 					productOptions={productOptions}
@@ -533,7 +533,6 @@ export function CommissionsDataTable() {
 					onStatusChange={handleStatusChange}
 					onExpectedFromChange={handleExpectedFromChange}
 					onExpectedToChange={handleExpectedToChange}
-					onPageSizeChange={handlePageSizeChange}
 					onClearFilters={clearFilters}
 				/>
 
@@ -1214,33 +1213,14 @@ export function CommissionsDataTable() {
 							}
 						/>
 
-						<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-							<p className="text-sm text-muted-foreground">
-								Página {pagination?.page ?? currentPage} de{" "}
-								{pagination?.totalPages ?? 1} · {pagination?.total ?? 0}{" "}
-								parcelas
-							</p>
-							<div className="flex items-center gap-2">
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={() => setPage(Math.max(1, currentPage - 1))}
-									disabled={currentPage <= 1}
-								>
-									Anterior
-								</Button>
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={() => setPage(currentPage + 1)}
-									disabled={currentPage >= (pagination?.totalPages ?? 1)}
-								>
-									Próxima
-								</Button>
-							</div>
-						</div>
+						<DataTablePagination
+							page={pagination?.page ?? currentPage}
+							pageSize={currentPageSize}
+							totalItems={pagination?.total ?? 0}
+							totalPages={pagination?.totalPages ?? 1}
+							onPageChange={(page) => void setPage(page)}
+							onPageSizeChange={handlePageSizeChange}
+						/>
 					</LoadingReveal>
 				)}
 			</div>

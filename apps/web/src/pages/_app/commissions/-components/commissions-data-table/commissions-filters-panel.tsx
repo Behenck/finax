@@ -27,7 +27,6 @@ interface CommissionsFiltersPanelProps {
 	statusFilter: GetOrganizationsSlugCommissionsInstallmentsQueryParamsStatusEnumKey;
 	effectiveExpectedFrom: string;
 	effectiveExpectedTo: string;
-	currentPageSize: number;
 	companies: EntityOption[];
 	unitsBySelectedCompany: EntityOption[];
 	productOptions: ProductOption[];
@@ -40,7 +39,6 @@ interface CommissionsFiltersPanelProps {
 	) => void;
 	onExpectedFromChange: (value: string) => void;
 	onExpectedToChange: (value: string) => void;
-	onPageSizeChange: (value: string) => void;
 	onClearFilters: () => void;
 }
 
@@ -52,7 +50,6 @@ export function CommissionsFiltersPanel({
 	statusFilter,
 	effectiveExpectedFrom,
 	effectiveExpectedTo,
-	currentPageSize,
 	companies,
 	unitsBySelectedCompany,
 	productOptions,
@@ -63,7 +60,6 @@ export function CommissionsFiltersPanel({
 	onStatusChange,
 	onExpectedFromChange,
 	onExpectedToChange,
-	onPageSizeChange,
 	onClearFilters,
 }: CommissionsFiltersPanelProps) {
 	return (
@@ -183,23 +179,6 @@ export function CommissionsFiltersPanel({
 					onChange={onExpectedToChange}
 					locale={ptBR}
 				/>
-			</div>
-
-			<div className="space-y-1">
-				<p className="text-xs text-muted-foreground">Por página</p>
-				<Select
-					value={String(currentPageSize)}
-					onValueChange={onPageSizeChange}
-				>
-					<SelectTrigger className="w-full">
-						<SelectValue placeholder="Tamanho" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="20">20</SelectItem>
-						<SelectItem value="50">50</SelectItem>
-						<SelectItem value="100">100</SelectItem>
-					</SelectContent>
-				</Select>
 			</div>
 
 			<Button

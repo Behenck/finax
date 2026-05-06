@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Search, Trash2, MessageCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,6 +34,7 @@ import {
 	useDeleteOrganizationsSlugEmployeesEmployeeid,
 } from "@/http/generated";
 import { textFilterParser } from "@/hooks/filters/parsers";
+import { useTablePagination } from "@/hooks/filters/use-table-pagination";
 import type { Employee } from "@/schemas/types/employee";
 import { formatPhone } from "@/utils/format-phone";
 import { getInitials } from "@/utils/get-initials";
@@ -43,7 +45,7 @@ import { EmployeeLinkedUserBadge } from "./-components/employee-linked-user-badg
 import { UpdateEmployee } from "./-components/update-employee";
 
 export const Route = createFileRoute("/_app/registers/employees/")({
-	component: Employees,
+	component: EmployeesPage,
 });
 
 type PixQrDialogState = {
@@ -63,7 +65,7 @@ function buildWhatsappLink(phone: string) {
 	return `https://wa.me/${normalizedPhone}`;
 }
 
-function Employees() {
+export function EmployeesPage() {
 	const { organization } = useApp();
 	const queryClient = useQueryClient();
 	const [pixQrDialog, setPixQrDialog] = useState<PixQrDialogState | null>(null);
@@ -91,6 +93,19 @@ function Employees() {
 			);
 		});
 	}, [data?.employees, search]);
+
+	const {
+		currentPage,
+		currentPageSize,
+		totalItems,
+		totalPages,
+		paginatedItems: paginatedEmployees,
+		handlePageChange,
+		handlePageSizeChange,
+	} = useTablePagination({
+		items: filteredEmployees,
+		resetKeys: [search],
+	});
 
 	async function handleDeleteEmployee(employee: Employee) {
 		const confirmed = window.confirm(
@@ -157,12 +172,12 @@ function Employees() {
 			<ResponsiveDataView
 				mobile={
 					<section className="space-y-3">
-						{filteredEmployees.length === 0 ? (
+						{paginatedEmployees.length === 0 ? (
 							<Card className="p-6 text-center text-sm text-muted-foreground">
 								Nenhum funcionário encontrado.
 							</Card>
 						) : (
-							filteredEmployees.map((employee) => (
+							paginatedEmployees.map((employee) => (
 								<Card key={employee.id} className="space-y-3 p-4">
 									<div className="flex items-start gap-3">
 										<Avatar className="size-10">
@@ -268,7 +283,7 @@ function Employees() {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{filteredEmployees.length === 0 ? (
+									{paginatedEmployees.length === 0 ? (
 										<TableRow>
 											<TableCell
 												colSpan={5}
@@ -278,7 +293,7 @@ function Employees() {
 											</TableCell>
 										</TableRow>
 									) : (
-										filteredEmployees.map((employee) => (
+										paginatedEmployees.map((employee) => (
 											<TableRow key={employee.id}>
 												<TableCell>
 													<div className="flex items-center gap-3">
@@ -372,6 +387,15 @@ function Employees() {
 						</div>
 					</section>
 				}
+			/>
+
+			<DataTablePagination
+				page={currentPage}
+				pageSize={currentPageSize}
+				totalItems={totalItems}
+				totalPages={totalPages}
+				onPageChange={handlePageChange}
+				onPageSizeChange={handlePageSizeChange}
 			/>
 
 			<Dialog
