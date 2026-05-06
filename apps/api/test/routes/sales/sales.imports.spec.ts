@@ -2175,6 +2175,132 @@ describe("sales import", () => {
     ]);
   });
 
+  it("should import reversed JSON commission installment when situacao is composite", async () => {
+    const fixture = await createFixture();
+    const payload = {
+      parentProductId: fixture.productConsortiumParent.id,
+      cotas: [
+        {
+          cota: 5210,
+          data_pagamento: "2026-03-12",
+          cliente: {
+            nome: "Cliente Comissão Estornada",
+            telefone: "51999992222",
+          },
+          vendedor: {
+            nome: fixture.seller.name,
+            email: fixture.seller.email,
+          },
+          unidade: fixture.unit.name,
+          status: "Não confirmada",
+          servico: "imovel",
+          credito: 250_000,
+          comissoes: {
+            unidade: [],
+            vendedor: [],
+            terceiros: [
+              {
+                comissionado: {
+                  tipo: "Usuário",
+                  nome: fixture.supervisor.user.name,
+                  email: fixture.supervisor.user.email,
+                },
+                comissoes: [
+                  {
+                    parcela: 2,
+                    porcentagem: 0.2,
+                    data_vencimento: "2026-04-14",
+                    situacao: "Estornada,Pago",
+                    data_pagamento: "2026-04-15",
+                    valor: -500,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const previewResponse = await request(app.server)
+      .post(`/organizations/${fixture.org.slug}/sales/json-imports/preview`)
+      .set("Authorization", `Bearer ${fixture.token}`)
+      .send(payload);
+
+    expect(previewResponse.statusCode).toBe(200);
+    expect(previewResponse.body.invalidRows).toBe(0);
+
+    const commissionGroup = previewResponse.body.commissionBeneficiaryGroups[0];
+    const supervisorSuggestion = commissionGroup.suggestions.find(
+      (suggestion: { type: string }) => suggestion.type === "SUPERVISOR",
+    );
+
+    const applyResponse = await request(app.server)
+      .post(`/organizations/${fixture.org.slug}/sales/json-imports/apply`)
+      .set("Authorization", `Bearer ${fixture.token}`)
+      .send({
+        ...payload,
+        unitResolutions: [
+          {
+            key: previewResponse.body.unitGroups[0].key,
+            companyId: fixture.company.id,
+            unitId: fixture.unit.id,
+          },
+        ],
+        responsibleResolutions: [
+          {
+            key: previewResponse.body.responsibleGroups[0].key,
+            sellerId: fixture.seller.id,
+          },
+        ],
+        commissionBeneficiaryResolutions: [
+          {
+            key: commissionGroup.key,
+            recipientType: "SUPERVISOR",
+            beneficiaryId: supervisorSuggestion.id,
+          },
+        ],
+      });
+
+    expect(applyResponse.statusCode).toBe(200);
+    expect(applyResponse.body.importedRows).toBe(1);
+    expect(applyResponse.body.failedRows).toBe(0);
+
+    const importedSale = await prisma.sale.findUnique({
+      where: { id: applyResponse.body.createdSaleIds[0] },
+      include: {
+        commissions: {
+          include: {
+            installments: {
+              orderBy: { installmentNumber: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    expect(
+      importedSale?.commissions[0]?.installments.map((installment) => ({
+        installmentNumber: installment.installmentNumber,
+        status: installment.status,
+        amount: installment.amount,
+        expectedPaymentDate: installment.expectedPaymentDate
+          ?.toISOString()
+          .slice(0, 10),
+        paymentDate:
+          installment.paymentDate?.toISOString().slice(0, 10) ?? null,
+      })),
+    ).toEqual([
+      {
+        installmentNumber: 2,
+        status: SaleCommissionInstallmentStatus.REVERSED,
+        amount: -50000,
+        expectedPaymentDate: "2026-04-14",
+        paymentDate: "2026-04-15",
+      },
+    ]);
+  });
+
   it('should keep commission expected payment date null when data_vencimento is "0000-00-00"', async () => {
     const fixture = await createFixture();
     const payload = {
@@ -2295,7 +2421,7 @@ describe("sales import", () => {
     ]);
   });
 
-  it("should reject JSON commission installments with unknown status or paid without payment date", async () => {
+  it("should reject JSON commission installments with unknown status, paid without payment date, or reversed with positive amount", async () => {
     const fixture = await createFixture();
 
     const response = await request(app.server)
@@ -2375,15 +2501,54 @@ describe("sales import", () => {
               ],
             },
           },
+          {
+            cota: 5211,
+            data_pagamento: "2026-03-12",
+            cliente: {
+              nome: "Cliente Estorno Positivo",
+              telefone: "51999991111",
+            },
+            vendedor: {
+              nome: fixture.seller.name,
+              email: fixture.seller.email,
+            },
+            unidade: fixture.unit.name,
+            status: "Não confirmada",
+            servico: "imovel",
+            credito: 250_000,
+            comissoes: {
+              terceiros: [
+                {
+                  comissionado: {
+                    tipo: "Usuário",
+                    nome: fixture.supervisor.user.name,
+                    email: fixture.supervisor.user.email,
+                  },
+                  comissoes: [
+                    {
+                      parcela: 1,
+                      porcentagem: 0.1,
+                      situacao: "Estornada,Pago",
+                      data_pagamento: "2026-03-13",
+                      valor: 250,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
         ],
       });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.invalidRows).toBe(2);
+    expect(response.body.invalidRows).toBe(3);
     expect(response.body.rows[0].errors).toContain(
       "Comissão inválida em terceiros[0]",
     );
     expect(response.body.rows[1].errors).toContain(
+      "Comissão inválida em terceiros[0]",
+    );
+    expect(response.body.rows[2].errors).toContain(
       "Comissão inválida em terceiros[0]",
     );
   });

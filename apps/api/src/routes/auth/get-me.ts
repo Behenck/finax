@@ -54,6 +54,24 @@ export async function getMe(app: FastifyInstance) {
 						name: true,
 						email: true,
 						avatarUrl: true,
+						member_on: {
+							take: 1,
+							select: {
+								id: true,
+								userId: true,
+								role: true,
+								organization: {
+									select: {
+										id: true,
+										name: true,
+										slug: true,
+										ownerId: true,
+										enableSalesTransactionsSync: true,
+										preCancellationDelinquencyThreshold: true,
+									},
+								},
+							},
+						},
 					},
 					where: {
 						id: userId,
@@ -64,24 +82,7 @@ export async function getMe(app: FastifyInstance) {
 					throw new BadRequestError("User not found.");
 				}
 
-				const membership = await prisma.member.findFirst({
-					where: { userId },
-					select: {
-						id: true,
-						userId: true,
-						role: true,
-						organization: {
-							select: {
-								id: true,
-								name: true,
-								slug: true,
-								ownerId: true,
-								enableSalesTransactionsSync: true,
-								preCancellationDelinquencyThreshold: true,
-							},
-						},
-					},
-				});
+				const membership = user.member_on[0];
 
 				if (!membership) {
 					throw new BadRequestError("Organization in User not found.");
@@ -96,7 +97,12 @@ export async function getMe(app: FastifyInstance) {
 				});
 
 				return reply.send({
-					user,
+					user: {
+						id: user.id,
+						name: user.name,
+						email: user.email,
+						avatarUrl: user.avatarUrl,
+					},
 					organization: {
 						id: membership.organization.id,
 						memberId: membership.id,

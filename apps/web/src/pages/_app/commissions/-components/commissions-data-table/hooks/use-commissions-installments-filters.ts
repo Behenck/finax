@@ -97,7 +97,7 @@ export function useCommissionsInstallmentsFilters({
 
 		if (
 			canViewAllCommissions &&
-			directionFilter === "OUTCOME" &&
+			directionFilter === "INCOME" &&
 			storedFilters.direction
 		) {
 			void setDirectionFilter(storedFilters.direction);
@@ -282,7 +282,7 @@ export function useCommissionsInstallmentsFilters({
 
 	function clearFilters() {
 		onBeforeFilterChange?.();
-		setDirectionFilter("OUTCOME");
+		setDirectionFilter("INCOME");
 		setSearchFilter("");
 		setCompanyIdFilter("");
 		setUnitIdFilter("");

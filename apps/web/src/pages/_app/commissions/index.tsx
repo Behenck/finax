@@ -17,7 +17,7 @@ function CommissionsPage() {
 	const canManageSalesImports = ability.can("access", "sales.import.manage");
 
 	return (
-		<main className="w-full space-y-6">
+		<main className="w-full space-y-4">
 			<PageHeader
 				title="Comissões"
 				description="Acompanhe parcelas de comissão a pagar e a receber, com filtros e ações operacionais."

@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { describe, beforeAll, afterAll, it, expect } from "vitest";
 import request from "supertest";
 import { createTestApp } from "../../utils/test-app";
@@ -48,5 +49,13 @@ describe("Get me", () => {
 		expect(
 			typeof meResponse.body.organization.enableSalesTransactionsSync,
 		).toBe("boolean");
+
+		const rolePermissionRows = await prisma.organizationRolePermission.count({
+			where: {
+				organizationId: org.id,
+			},
+		});
+
+		expect(rolePermissionRows).toBe(0);
 	});
 });

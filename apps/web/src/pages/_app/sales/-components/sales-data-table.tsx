@@ -19,6 +19,8 @@ import { format, parse, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
 	ArrowUpDown,
+	ChevronDown,
+	ChevronUp,
 	Copy,
 	EllipsisVertical,
 	Eye,
@@ -189,6 +191,8 @@ const saleResponsibleTypeFilterParser = parseAsStringLiteral(
 
 const SALES_FILTERS_STORAGE_KEY = "finax:sales:list:filters";
 const SALES_COLUMNS_STORAGE_KEY = "finax:sales:list:columns";
+const SALES_SUMMARY_VISIBILITY_STORAGE_KEY =
+	"finax:sales:list:summary-visible";
 const SALE_DYNAMIC_FIELD_COLUMN_PREFIX = "dynamicField:";
 const DEFAULT_SALES_PAGE_SIZE = 10;
 
@@ -650,6 +654,9 @@ export function SalesDataTable({
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
 		() => readStorageJson<VisibilityState>(SALES_COLUMNS_STORAGE_KEY, {}),
 	);
+	const [isSummaryVisible, setIsSummaryVisible] = useState(() =>
+		readStorageJson<boolean>(SALES_SUMMARY_VISIBILITY_STORAGE_KEY, true),
+	);
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 	const [bulkStatus, setBulkStatus] = useState<SaleStatus | "">("");
 	const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
@@ -717,6 +724,17 @@ export function SalesDataTable({
 			JSON.stringify(columnVisibility),
 		);
 	}, [columnVisibility]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			SALES_SUMMARY_VISIBILITY_STORAGE_KEY,
+			JSON.stringify(isSummaryVisible),
+		);
+	}, [isSummaryVisible]);
 
 	useEffect(() => {
 		if (!canViewAllCommissions) {
@@ -1846,24 +1864,48 @@ export function SalesDataTable({
 
 	return (
 		<div className="w-full min-w-0 space-y-4">
-			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-				{salesSummaryCards.map((card) => (
-					<Card
-						key={card.id}
-						className="border-border/70 bg-muted/20 p-4 space-y-1.5"
+			<div className="space-y-2">
+				<div className="flex justify-end">
+					<Button
+						variant="ghost"
+						size="icon"
+						className="size-8"
+						type="button"
+						aria-label={isSummaryVisible ? "Esconder resumo" : "Mostrar resumo"}
+						title={isSummaryVisible ? "Esconder resumo" : "Mostrar resumo"}
+						onClick={() => setIsSummaryVisible((currentValue) => !currentValue)}
 					>
-						<div className="flex items-center justify-between gap-2">
-							<span className="text-sm font-medium">{card.label}</span>
-							<span className="text-xs text-muted-foreground">
-								{formatCount(card.data.count)}
-							</span>
-						</div>
-						<p className={`text-lg font-semibold ${card.valueClassName}`}>
-							{formatCurrencyBRL(card.data.amount / 100)}
-						</p>
-						<p className="text-xs text-muted-foreground">{card.subtitle}</p>
-					</Card>
-				))}
+						{isSummaryVisible ? (
+							<ChevronUp className="size-4" />
+						) : (
+							<ChevronDown className="size-4" />
+						)}
+					</Button>
+				</div>
+
+				{isSummaryVisible ? (
+					<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+						{salesSummaryCards.map((card) => (
+							<Card
+								key={card.id}
+								className="border-border/70 bg-muted/20 p-4 space-y-1.5"
+							>
+								<div className="flex items-center justify-between gap-2">
+									<span className="text-sm font-medium">{card.label}</span>
+									<span className="text-xs text-muted-foreground">
+										{formatCount(card.data.count)}
+									</span>
+								</div>
+								<p className={`text-lg font-semibold ${card.valueClassName}`}>
+									{formatCurrencyBRL(card.data.amount / 100)}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									{card.subtitle}
+								</p>
+							</Card>
+						))}
+					</div>
+				) : null}
 			</div>
 
 			{showFilters ? (

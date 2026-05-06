@@ -10,9 +10,18 @@ import { PERMISSION_CATALOG } from "./catalog";
 
 type PrismaContext = Prisma.TransactionClient | typeof prisma;
 type OrganizationRole = (typeof Role)[keyof typeof Role];
-type OverrideEffect = (typeof PermissionOverrideEffect)[keyof typeof PermissionOverrideEffect];
+type OverrideEffect =
+	(typeof PermissionOverrideEffect)[keyof typeof PermissionOverrideEffect];
 
-const ORGANIZATION_ROLES = Object.values(Role) as OrganizationRole[];
+const ACTIVE_PERMISSION_CACHE_TTL_MS = 5 * 60 * 1000;
+
+let activePermissionsCache:
+	| {
+			expiresAt: number;
+			permissions: ActivePermission[];
+	  }
+	| null = null;
+let activePermissionsLoadPromise: Promise<ActivePermission[]> | null = null;
 
 type ActivePermission = {
 	id: string;
@@ -45,9 +54,9 @@ async function syncPermissionCatalog(ctx: PrismaContext) {
 	}
 }
 
-async function getActivePermissions(ctx: PrismaContext): Promise<ActivePermission[]> {
-	await syncPermissionCatalog(ctx);
-
+async function queryActivePermissions(
+	ctx: PrismaContext,
+): Promise<ActivePermission[]> {
 	return ctx.permission.findMany({
 		where: {
 			isActive: true,
@@ -64,26 +73,44 @@ async function getActivePermissions(ctx: PrismaContext): Promise<ActivePermissio
 	});
 }
 
-async function ensureOrganizationRolePermissionRows(
+async function loadAndCacheActivePermissions(
 	ctx: PrismaContext,
-	organizationId: string,
-	activePermissions: ActivePermission[],
-) {
-	if (activePermissions.length === 0) {
-		return;
+): Promise<ActivePermission[]> {
+	await syncPermissionCatalog(ctx);
+
+	const permissions = await queryActivePermissions(ctx);
+
+	if (ctx === prisma) {
+		activePermissionsCache = {
+			expiresAt: Date.now() + ACTIVE_PERMISSION_CACHE_TTL_MS,
+			permissions,
+		};
 	}
 
-	await ctx.organizationRolePermission.createMany({
-		data: ORGANIZATION_ROLES.flatMap((role) =>
-			activePermissions.map((permission) => ({
-				organizationId,
-				role,
-				permissionId: permission.id,
-				allowed: true,
-			})),
-		),
-		skipDuplicates: true,
-	});
+	return permissions;
+}
+
+async function getActivePermissions(ctx: PrismaContext): Promise<ActivePermission[]> {
+	if (ctx === prisma) {
+		if (
+			activePermissionsCache &&
+			activePermissionsCache.expiresAt > Date.now()
+		) {
+			return activePermissionsCache.permissions;
+		}
+
+		if (!activePermissionsLoadPromise) {
+			activePermissionsLoadPromise = loadAndCacheActivePermissions(ctx).finally(
+				() => {
+					activePermissionsLoadPromise = null;
+				},
+			);
+		}
+
+		return activePermissionsLoadPromise;
+	}
+
+	return loadAndCacheActivePermissions(ctx);
 }
 
 function mapPermissionKeysToIds(activePermissions: ActivePermission[]) {
@@ -220,11 +247,6 @@ export async function resolveEffectivePermissions(params: {
 }) {
 	const ctx = params.ctx ?? prisma;
 	const activePermissions = await getActivePermissions(ctx);
-	await ensureOrganizationRolePermissionRows(
-		ctx,
-		params.organizationId,
-		activePermissions,
-	);
 
 	const ownerId =
 		params.ownerId ??
@@ -248,13 +270,13 @@ export async function resolveEffectivePermissions(params: {
 			where: {
 				organizationId: params.organizationId,
 				role: params.role,
-				allowed: true,
 				permissionId: {
 					in: activePermissions.map((permission) => permission.id),
 				},
 			},
 			select: {
 				permissionId: true,
+				allowed: true,
 			},
 		}),
 		ctx.memberPermissionOverride.findMany({
@@ -272,8 +294,15 @@ export async function resolveEffectivePermissions(params: {
 		}),
 	]);
 
+	const deniedRolePermissionIds = new Set(
+		rolePermissions
+			.filter((permission) => !permission.allowed)
+			.map((permission) => permission.permissionId),
+	);
 	const roleAllowedPermissionIds = new Set(
-		rolePermissions.map((permission) => permission.permissionId),
+		activePermissions
+			.filter((permission) => !deniedRolePermissionIds.has(permission.id))
+			.map((permission) => permission.id),
 	);
 	const effectivePermissionIds = resolveEffectivePermissionIds({
 		isOwner: params.userId === ownerId,
@@ -318,7 +347,6 @@ export async function getMemberPermissionDetails(params: {
 	}
 
 	const activePermissions = await getActivePermissions(ctx);
-	await ensureOrganizationRolePermissionRows(ctx, params.organizationId, activePermissions);
 
 	const [presetAssignments, overrides, effectivePermissions] = await Promise.all([
 		loadRolePresetAssignments({
@@ -389,7 +417,6 @@ export async function replaceMemberPermissionOverrides(params: {
 		}
 
 		const activePermissions = await getActivePermissions(tx);
-		await ensureOrganizationRolePermissionRows(tx, params.organizationId, activePermissions);
 		const permissionIdByKey = mapPermissionKeysToIds(activePermissions);
 		const normalizedOverridesByKey = new Map<string, OverrideEffect>();
 

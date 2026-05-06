@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import {
 	CheckCheck,
 	CheckCircle2,
+	ChevronDown,
+	ChevronUp,
 	Eye,
 	MoreHorizontal,
 	Pencil,
@@ -68,6 +70,8 @@ import {
 	canUpdateInstallments,
 	formatDate,
 	INSTALLMENT_STATUS_BADGE_CLASSNAME,
+	COMMISSIONS_SUMMARY_VISIBILITY_STORAGE_KEY,
+	readStorageJson,
 	resolveDirectionSummary,
 } from "./utils";
 
@@ -96,6 +100,9 @@ export function CommissionsDataTable() {
 
 	const [selectedInstallmentsById, setSelectedInstallmentsById] = useState(
 		() => new Map<string, SelectedInstallment>(),
+	);
+	const [isSummaryVisible, setIsSummaryVisible] = useState(() =>
+		readStorageJson<boolean>(COMMISSIONS_SUMMARY_VISIBILITY_STORAGE_KEY, true),
 	);
 
 	function clearSelectedInstallments() {
@@ -196,6 +203,17 @@ export function CommissionsDataTable() {
 			setPage(data.pagination.totalPages);
 		}
 	}, [currentPage, data?.pagination.totalPages, setPage]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		window.localStorage.setItem(
+			COMMISSIONS_SUMMARY_VISIBILITY_STORAGE_KEY,
+			JSON.stringify(isSummaryVisible),
+		);
+	}, [isSummaryVisible]);
 
 	const installments = useMemo(() => data?.items ?? [], [data?.items]);
 	const reversalAmountByOriginInstallmentId = useMemo(() => {
@@ -487,33 +505,57 @@ export function CommissionsDataTable() {
 		isPreparingReversal ||
 		isPaymentActionPending;
 
-	return (
+		return (
 		<>
 			<div className="space-y-4">
-				{canViewAllCommissions ? (
-					<Tabs
-						value={directionFilter}
-						onValueChange={(value) =>
-							handleDirectionChange(
-								value as GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey,
-							)
-						}
-					>
-						<TabsList className="w-fit rounded-sm">
-							<TabsTrigger value="OUTCOME">A pagar</TabsTrigger>
-							<TabsTrigger value="INCOME">A receber</TabsTrigger>
-						</TabsList>
-					</Tabs>
-				) : null}
+				<div className="space-y-2">
+					{canViewAllCommissions ? (
+						<Tabs
+							value={directionFilter}
+							onValueChange={(value) =>
+								handleDirectionChange(
+									value as GetOrganizationsSlugCommissionsInstallmentsQueryParamsDirectionEnumKey,
+								)
+							}
+						>
+							<TabsList className="w-fit rounded-sm">
+								<TabsTrigger value="INCOME">A receber</TabsTrigger>
+								<TabsTrigger value="OUTCOME">A pagar</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					) : null}
 
-				<CommissionsSummaryCards
-					canViewAllCommissions={canViewAllCommissions}
-					paySummary={paySummary}
-					receiveSummary={receiveSummary}
-					pendingSummaryForCurrentUser={pendingSummaryForCurrentUser}
-					paidSummaryForCurrentUser={paidSummaryForCurrentUser}
-					reversedSummaryForCurrentUser={reversedSummaryForCurrentUser}
-				/>
+					<div className="flex justify-end">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-8"
+							type="button"
+							aria-label={
+								isSummaryVisible ? "Esconder resumo" : "Mostrar resumo"
+							}
+							title={isSummaryVisible ? "Esconder resumo" : "Mostrar resumo"}
+							onClick={() => setIsSummaryVisible((currentValue) => !currentValue)}
+						>
+							{isSummaryVisible ? (
+								<ChevronUp className="size-4" />
+							) : (
+								<ChevronDown className="size-4" />
+							)}
+						</Button>
+					</div>
+
+					{isSummaryVisible ? (
+						<CommissionsSummaryCards
+							canViewAllCommissions={canViewAllCommissions}
+							paySummary={paySummary}
+							receiveSummary={receiveSummary}
+							pendingSummaryForCurrentUser={pendingSummaryForCurrentUser}
+							paidSummaryForCurrentUser={paidSummaryForCurrentUser}
+							reversedSummaryForCurrentUser={reversedSummaryForCurrentUser}
+						/>
+					) : null}
+				</div>
 
 				<CommissionsFiltersPanel
 					searchFilter={searchFilter}

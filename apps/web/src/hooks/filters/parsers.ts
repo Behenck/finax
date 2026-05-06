@@ -84,7 +84,7 @@ export const showZeroInstallmentsParser = parseAsBoolean
 export const commissionDirectionParser = parseAsStringLiteral(
 	COMMISSION_DIRECTION_VALUES,
 )
-	.withDefault("OUTCOME")
+	.withDefault("INCOME")
 	.withOptions({ history: "replace" });
 
 export const commissionInstallmentStatusParser = parseAsStringLiteral(

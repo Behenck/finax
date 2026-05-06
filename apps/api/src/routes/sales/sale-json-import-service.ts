@@ -248,9 +248,6 @@ function getJsonField(cota: SaleJsonImportCota, key: string) {
 
 function parseCommissionAmountToCents(rawValue: unknown) {
 	if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
-		if (rawValue < 0) {
-			return null;
-		}
 		return Math.round((rawValue + Number.EPSILON) * 100);
 	}
 
@@ -261,7 +258,7 @@ function parseCommissionAmountToCents(rawValue: unknown) {
 
 	if (/^\d+$/.test(value)) {
 		const parsedInteger = Number(value);
-		if (!Number.isFinite(parsedInteger) || parsedInteger < 0) {
+		if (!Number.isFinite(parsedInteger)) {
 			return null;
 		}
 		return Math.round(parsedInteger * 100);
@@ -277,7 +274,7 @@ function parseCommissionAmountToCents(rawValue: unknown) {
 	}
 
 	const parsedNumber = Number(normalized);
-	if (!Number.isFinite(parsedNumber) || parsedNumber < 0) {
+	if (!Number.isFinite(parsedNumber)) {
 		return null;
 	}
 
@@ -365,21 +362,28 @@ function parseCommissionInstallmentStatus(
 		return SaleCommissionInstallmentStatus.PENDING;
 	}
 
-	const statusByLabel = new Map<string, SaleCommissionInstallmentStatus>([
-		["pendente", SaleCommissionInstallmentStatus.PENDING],
-		["pending", SaleCommissionInstallmentStatus.PENDING],
-		["pago", SaleCommissionInstallmentStatus.PAID],
-		["paga", SaleCommissionInstallmentStatus.PAID],
-		["paid", SaleCommissionInstallmentStatus.PAID],
-		["recebido", SaleCommissionInstallmentStatus.PAID],
-		["recebida", SaleCommissionInstallmentStatus.PAID],
-		["cancelado", SaleCommissionInstallmentStatus.CANCELED],
-		["cancelada", SaleCommissionInstallmentStatus.CANCELED],
-		["canceled", SaleCommissionInstallmentStatus.CANCELED],
-		["cancelled", SaleCommissionInstallmentStatus.CANCELED],
-	]);
+	const includesAny = (terms: string[]) =>
+		terms.some((term) => normalized.includes(term));
 
-	return statusByLabel.get(normalized) ?? null;
+	if (includesAny(["estornado", "estornada", "reversed", "reverse"])) {
+		return SaleCommissionInstallmentStatus.REVERSED;
+	}
+
+	if (
+		includesAny(["cancelado", "cancelada", "canceled", "cancelled"])
+	) {
+		return SaleCommissionInstallmentStatus.CANCELED;
+	}
+
+	if (includesAny(["pago", "paga", "paid", "recebido", "recebida"])) {
+		return SaleCommissionInstallmentStatus.PAID;
+	}
+
+	if (includesAny(["pendente", "pending"])) {
+		return SaleCommissionInstallmentStatus.PENDING;
+	}
+
+	return null;
 }
 
 function parseCommissionInstallment(rawValue: unknown) {
@@ -390,14 +394,16 @@ function parseCommissionInstallment(rawValue: unknown) {
 	const item = rawValue as Record<string, unknown>;
 	const installmentNumber = Number(item.parcela);
 	const percentage = Number(item.porcentagem);
-	const amount = parseCommissionAmountToCents(item.valor);
 	const status = parseCommissionInstallmentStatus(item.situacao);
+	const amount = parseCommissionAmountToCents(item.valor);
 	const preserveNullExpectedPaymentDate =
 		sanitizeTextValue(item.data_vencimento, { maxLength: 40 }) === "0000-00-00";
 	const expectedPaymentDateInput = parseNullableCommissionDate(
 		item.data_vencimento,
 	);
 	const paymentDateInput = parseNullableCommissionDate(item.data_pagamento);
+	const isReversedStatus =
+		status === SaleCommissionInstallmentStatus.REVERSED;
 
 	if (
 		!Number.isInteger(installmentNumber) ||
@@ -405,12 +411,14 @@ function parseCommissionInstallment(rawValue: unknown) {
 		!Number.isFinite(percentage) ||
 		percentage < 0 ||
 		amount === null ||
-		amount < 0 ||
 		!status ||
+		(isReversedStatus ? amount >= 0 : amount < 0) ||
 		(hasCommissionDateValue(item.data_vencimento) &&
 			!expectedPaymentDateInput) ||
 		(hasCommissionDateValue(item.data_pagamento) && !paymentDateInput) ||
-		(status === SaleCommissionInstallmentStatus.PAID && !paymentDateInput)
+		((status === SaleCommissionInstallmentStatus.PAID ||
+			status === SaleCommissionInstallmentStatus.REVERSED) &&
+			!paymentDateInput)
 	) {
 		return null;
 	}

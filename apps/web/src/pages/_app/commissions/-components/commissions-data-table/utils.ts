@@ -12,6 +12,8 @@ import type {
 } from "./types";
 
 export const COMMISSIONS_FILTERS_STORAGE_KEY = "finax:commissions:list:filters";
+export const COMMISSIONS_SUMMARY_VISIBILITY_STORAGE_KEY =
+	"finax:commissions:list:summary-visible";
 
 const EMPTY_DIRECTION_SUMMARY: InstallmentDirectionSummary = {
 	total: {
