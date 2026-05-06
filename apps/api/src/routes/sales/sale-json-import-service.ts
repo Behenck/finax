@@ -549,6 +549,46 @@ function parseDirectUnitCommissionGroup(
 	};
 }
 
+function parseDirectSellerCommissionGroup(
+	cota: SaleJsonImportCota,
+	entries: unknown[],
+): ParsedCommissionGroup | null {
+	const installments = entries
+		.map(parseCommissionInstallment)
+		.filter((installment) => installment !== null);
+
+	if (installments.length === 0) {
+		return null;
+	}
+
+	const sellerName = sanitizeTextValue(cota.vendedor?.nome, {
+		maxLength: 255,
+	});
+	const sellerEmail = normalizeEmail(cota.vendedor?.email);
+	if (!sellerName && !sellerEmail) {
+		return null;
+	}
+
+	const externalType = "Vendedor";
+	const key = buildGroupKey([
+		"vendedor",
+		externalType,
+		null,
+		sellerEmail,
+		sellerName,
+	]);
+
+	return {
+		key,
+		section: "vendedor",
+		externalType,
+		externalId: null,
+		name: sellerName,
+		email: sellerEmail,
+		installments,
+	};
+}
+
 function parseCommissionGroups(cota: SaleJsonImportCota) {
 	const sections = ["unidade", "vendedor", "terceiros"] as const;
 	const commissions = cota.comissoes;
@@ -587,6 +627,25 @@ function parseCommissionGroups(cota: SaleJsonImportCota) {
 			const parsedEntry = parseDirectUnitCommissionGroup(cota, entries);
 			if (!parsedEntry) {
 				errors.push("Comissão inválida em unidade");
+			} else {
+				parsed.push(parsedEntry);
+			}
+			continue;
+		}
+
+		if (
+			section === "vendedor" &&
+			entries.some(
+				(entry) =>
+					hasCommissionInstallmentMaterialSignal(entry) &&
+					parseCommissionInstallment(entry),
+			)
+		) {
+			const parsedEntry = parseDirectSellerCommissionGroup(cota, entries);
+			if (!parsedEntry) {
+				errors.push(
+					"Vendedor da cota é obrigatório para comissão direta em vendedor",
+				);
 			} else {
 				parsed.push(parsedEntry);
 			}

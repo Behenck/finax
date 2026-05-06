@@ -1734,6 +1734,165 @@ describe("sales import", () => {
     ]);
   });
 
+  it("should accept direct seller commission installments in JSON sale import", async () => {
+    const fixture = await createFixture();
+    const payload = {
+      parentProductId: fixture.productConsortiumParent.id,
+      cotas: [
+        {
+          cota: 5204,
+          data_pagamento: "2026-03-14",
+          cliente: {
+            nome: "Cliente Comissão Vendedor Direta",
+            telefone: "51999998887",
+          },
+          vendedor: {
+            nome: fixture.seller.name,
+            email: fixture.seller.email,
+          },
+          unidade: fixture.unit.name,
+          status: "Não confirmada",
+          servico: "imovel",
+          credito: 240_000,
+          comissoes: {
+            unidade: [],
+            vendedor: [
+              { parcela: 1, porcentagem: 1, valor: 2400 },
+              { parcela: 2, porcentagem: 0.5, valor: 1200 },
+              { parcela: 7, porcentagem: 0, valor: 0 },
+            ],
+            terceiros: [],
+          },
+        },
+      ],
+    };
+
+    const previewResponse = await request(app.server)
+      .post(`/organizations/${fixture.org.slug}/sales/json-imports/preview`)
+      .set("Authorization", `Bearer ${fixture.token}`)
+      .send(payload);
+
+    expect(previewResponse.statusCode).toBe(200);
+    expect(previewResponse.body.invalidRows).toBe(0);
+    expect(previewResponse.body.commissionBeneficiaryGroups).toHaveLength(1);
+    expect(previewResponse.body.commissionBeneficiaryGroups[0]).toMatchObject({
+      section: "vendedor",
+      name: fixture.seller.name,
+      email: fixture.seller.email,
+    });
+
+    const unitGroup = previewResponse.body.unitGroups[0];
+    const responsibleGroup = previewResponse.body.responsibleGroups[0];
+    const commissionGroup = previewResponse.body.commissionBeneficiaryGroups[0];
+    const sellerSuggestion = commissionGroup.suggestions.find(
+      (suggestion: { type: string }) => suggestion.type === "SELLER",
+    );
+
+    expect(sellerSuggestion).toMatchObject({
+      id: fixture.seller.id,
+      label: fixture.seller.name,
+      email: fixture.seller.email,
+    });
+
+    const applyResponse = await request(app.server)
+      .post(`/organizations/${fixture.org.slug}/sales/json-imports/apply`)
+      .set("Authorization", `Bearer ${fixture.token}`)
+      .send({
+        ...payload,
+        unitResolutions: [
+          {
+            key: unitGroup.key,
+            companyId: fixture.company.id,
+            unitId: fixture.unit.id,
+          },
+        ],
+        responsibleResolutions: [
+          {
+            key: responsibleGroup.key,
+            sellerId: fixture.seller.id,
+          },
+        ],
+        commissionBeneficiaryResolutions: [
+          {
+            key: commissionGroup.key,
+            recipientType: "SELLER",
+            beneficiaryId: sellerSuggestion.id,
+          },
+        ],
+      });
+
+    expect(applyResponse.statusCode).toBe(200);
+    expect(applyResponse.body.importedRows).toBe(1);
+    expect(applyResponse.body.failedRows).toBe(0);
+
+    const importedSale = await prisma.sale.findUnique({
+      where: { id: applyResponse.body.createdSaleIds[0] },
+      include: {
+        commissions: {
+          include: {
+            installments: {
+              orderBy: { installmentNumber: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    expect(importedSale?.commissions).toHaveLength(1);
+    expect(importedSale?.commissions[0]?.recipientType).toBe("SELLER");
+    expect(importedSale?.commissions[0]?.beneficiarySellerId).toBe(
+      fixture.seller.id,
+    );
+    expect(
+      importedSale?.commissions[0]?.installments.map((installment) => ({
+        installmentNumber: installment.installmentNumber,
+        percentage: installment.percentage,
+        amount: installment.amount,
+      })),
+    ).toEqual([
+      { installmentNumber: 1, percentage: 10_000, amount: 240_000 },
+      { installmentNumber: 2, percentage: 5_000, amount: 120_000 },
+      { installmentNumber: 7, percentage: 0, amount: 0 },
+    ]);
+  });
+
+  it("should mark direct seller commission invalid when cota seller is missing", async () => {
+    const fixture = await createFixture();
+    const payload = {
+      parentProductId: fixture.productConsortiumParent.id,
+      cotas: [
+        {
+          cota: 5205,
+          data_pagamento: "2026-03-14",
+          cliente: {
+            nome: "Cliente Comissão Vendedor Sem Identificação",
+            telefone: "51999998886",
+          },
+          unidade: fixture.unit.name,
+          status: "Não confirmada",
+          servico: "imovel",
+          credito: 240_000,
+          comissoes: {
+            unidade: [],
+            vendedor: [{ parcela: 1, porcentagem: 1, valor: 2400 }],
+            terceiros: [],
+          },
+        },
+      ],
+    };
+
+    const previewResponse = await request(app.server)
+      .post(`/organizations/${fixture.org.slug}/sales/json-imports/preview`)
+      .set("Authorization", `Bearer ${fixture.token}`)
+      .send(payload);
+
+    expect(previewResponse.statusCode).toBe(200);
+    expect(previewResponse.body.invalidRows).toBe(1);
+    expect(previewResponse.body.rows[0].errors).toContain(
+      "Vendedor da cota é obrigatório para comissão direta em vendedor",
+    );
+  });
+
   it("should ignore empty JSON commission placeholders", async () => {
     const fixture = await createFixture();
     const payload = {

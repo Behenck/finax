@@ -190,7 +190,7 @@ export function PartnersPage() {
 			</div>
 
 			<section className="space-y-4">
-				<ListPartners partners={paginatedPartners} />
+				<ListPartners partners={paginatedPartners} allPartners={partners} />
 				<DataTablePagination
 					page={currentPage}
 					pageSize={currentPageSize}

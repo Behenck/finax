@@ -216,34 +216,6 @@ export function CommissionsDataTable() {
 	}, [isSummaryVisible]);
 
 	const installments = useMemo(() => data?.items ?? [], [data?.items]);
-	const reversalAmountByOriginInstallmentId = useMemo(() => {
-		const map = new Map<string, number>();
-
-		for (const installment of installments) {
-			if (!installment.originInstallmentId) {
-				continue;
-			}
-
-			map.set(
-				installment.originInstallmentId,
-				(map.get(installment.originInstallmentId) ?? 0) + installment.amount,
-			);
-		}
-
-		return map;
-	}, [installments]);
-
-	function resolveDisplayInstallmentAmount(
-		installment: CommissionInstallmentRow,
-	) {
-		if (installment.originInstallmentId) {
-			return installment.amount;
-		}
-
-		const totalReversedAmount =
-			reversalAmountByOriginInstallmentId.get(installment.id) ?? 0;
-		return installment.amount + totalReversedAmount;
-	}
 	const summaryByDirection = data?.summaryByDirection;
 	const paySummary = resolveDirectionSummary(summaryByDirection, "OUTCOME");
 	const receiveSummary = resolveDirectionSummary(summaryByDirection, "INCOME");
@@ -686,11 +658,6 @@ export function CommissionsDataTable() {
 											const isSelected = selectedInstallmentsById.has(
 												installment.id,
 											);
-											const displayAmount =
-												resolveDisplayInstallmentAmount(installment);
-											const hasLinkedReversal =
-												!installment.originInstallmentId &&
-												displayAmount !== installment.amount;
 											const productLabel =
 												productPathById.get(installment.product.id) ??
 												installment.product.name;
@@ -743,15 +710,9 @@ export function CommissionsDataTable() {
 															}
 														</Badge>
 														<p className="text-sm font-semibold">
-															{formatCurrencyBRL(displayAmount / 100)}
-														</p>
-													</div>
-													{hasLinkedReversal ? (
-														<p className="text-xs text-muted-foreground">
-															Valor base:{" "}
 															{formatCurrencyBRL(installment.amount / 100)}
 														</p>
-													) : null}
+													</div>
 
 													<div className="grid grid-cols-2 gap-2 text-xs">
 														<div className="space-y-0.5">
@@ -1008,11 +969,6 @@ export function CommissionsDataTable() {
 													const isSelected = selectedInstallmentsById.has(
 														installment.id,
 													);
-													const displayAmount =
-														resolveDisplayInstallmentAmount(installment);
-													const hasLinkedReversal =
-														!installment.originInstallmentId &&
-														displayAmount !== installment.amount;
 													const productLabel =
 														productPathById.get(installment.product.id) ??
 														installment.product.name;
@@ -1094,15 +1050,11 @@ export function CommissionsDataTable() {
 																</p>
 															</TableCell>
 															<TableCell>
-																<p>{formatCurrencyBRL(displayAmount / 100)}</p>
-																{hasLinkedReversal ? (
-																	<p className="text-xs text-muted-foreground">
-																		Valor base:{" "}
-																		{formatCurrencyBRL(
-																			installment.amount / 100,
-																		)}
-																	</p>
-																) : null}
+																<p>
+																	{formatCurrencyBRL(
+																		installment.amount / 100,
+																	)}
+																</p>
 															</TableCell>
 															<TableCell>{installment.percentage}%</TableCell>
 															<TableCell>

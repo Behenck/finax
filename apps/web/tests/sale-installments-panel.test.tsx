@@ -339,6 +339,66 @@ describe("sale-installments-panel", () => {
 		expect(screen.getByLabelText("Selecionar parcela 1")).toBeDisabled();
 	});
 
+	it("should keep the original amount on the base installment when there is a linked reversal", () => {
+		mocks.useSaleCommissionInstallments.mockReturnValue({
+			data: {
+				installments: [
+					{
+						id: "inst-base",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão Base",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: 25000,
+						status: "PAID",
+						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+						paymentDate: "2026-03-10T00:00:00.000Z",
+					},
+					{
+						id: "inst-reversal",
+						saleCommissionId: "commission-1",
+						originInstallmentId: "inst-base",
+						originInstallmentNumber: 1,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão Base",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: -20000,
+						status: "REVERSED",
+						expectedPaymentDate: "2026-03-11T00:00:00.000Z",
+						paymentDate: "2026-03-11T00:00:00.000Z",
+					},
+				],
+			},
+			isLoading: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		expect(screen.getByText("R$ 250,00")).toBeInTheDocument();
+		expect(screen.getByText("-R$ 200,00")).toBeInTheDocument();
+		expect(screen.queryByText(/Valor base:/i)).not.toBeInTheDocument();
+	});
+
 	it("should open reversal dialog immediately and show loading until rule calculation is ready", async () => {
 		const user = userEvent.setup();
 		let productRulesState: {

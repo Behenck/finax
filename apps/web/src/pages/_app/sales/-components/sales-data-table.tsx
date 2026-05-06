@@ -335,6 +335,27 @@ function resolveSaleDynamicFieldDisplayValue(
 	);
 }
 
+function buildSaleDynamicFieldSearchableContent(saleDetail: SaleDetailRow) {
+	return saleDetail.dynamicFieldSchema
+		.map((field) => {
+			const value = Object.hasOwn(saleDetail.dynamicFieldValues, field.fieldId)
+				? saleDetail.dynamicFieldValues[field.fieldId]
+				: null;
+			const renderedValue = formatSaleDynamicFieldValue(
+				{
+					type: field.type as SaleDynamicFieldType,
+					options: field.options,
+				},
+				value,
+			);
+
+			return [field.label, renderedValue].filter(Boolean).join(" ");
+		})
+		.filter(Boolean)
+		.join(" ")
+		.toLocaleLowerCase("pt-BR");
+}
+
 interface SalesDataTableProps {
 	sales: SaleRow[];
 	isLoading: boolean;
@@ -1101,13 +1122,6 @@ export function SalesDataTable({
 			columnA.label.localeCompare(columnB.label, "pt-BR"),
 		);
 	}, [saleDetailQueries]);
-	const visibleDynamicFieldColumns = useMemo(
-		() =>
-			dynamicFieldColumns.filter(
-				(field) => columnVisibility[field.columnId] === true,
-			),
-		[columnVisibility, dynamicFieldColumns],
-	);
 	const dynamicFieldLabelByColumnId = useMemo(
 		() =>
 			new Map(
@@ -1120,11 +1134,8 @@ export function SalesDataTable({
 			dynamicFieldColumns.filter((field) => field.columnId in columnVisibility),
 		[columnVisibility, dynamicFieldColumns],
 	);
-	const searchableVisibleDynamicContentBySaleId = useMemo(() => {
+	const searchableDynamicContentBySaleId = useMemo(() => {
 		const contentBySaleId = new Map<string, string>();
-		if (visibleDynamicFieldColumns.length === 0) {
-			return contentBySaleId;
-		}
 
 		for (const sale of tableData) {
 			const saleDetail = saleDetailsBySaleId.get(sale.id);
@@ -1132,12 +1143,7 @@ export function SalesDataTable({
 				continue;
 			}
 
-			const searchableContent = visibleDynamicFieldColumns
-				.map((field) => resolveSaleDynamicFieldDisplayValue(saleDetail, field))
-				.filter(Boolean)
-				.join(" ")
-				.toLowerCase();
-
+			const searchableContent = buildSaleDynamicFieldSearchableContent(saleDetail);
 			if (!searchableContent) {
 				continue;
 			}
@@ -1146,7 +1152,7 @@ export function SalesDataTable({
 		}
 
 		return contentBySaleId;
-	}, [saleDetailsBySaleId, tableData, visibleDynamicFieldColumns]);
+	}, [saleDetailsBySaleId, tableData]);
 
 	useEffect(() => {
 		if (dynamicFieldColumns.length === 0) {
@@ -1192,13 +1198,13 @@ export function SalesDataTable({
 				.join(" ")
 				.toLowerCase();
 			const dynamicSearchableContent =
-				searchableVisibleDynamicContentBySaleId.get(row.original.id) ?? "";
+				searchableDynamicContentBySaleId.get(row.original.id) ?? "";
 
 			return `${baseSearchableContent} ${dynamicSearchableContent}`.includes(
 				term,
 			);
 		},
-		[searchableVisibleDynamicContentBySaleId],
+		[searchableDynamicContentBySaleId],
 	);
 
 	const columns = useMemo<ColumnDef<SaleTableRow>[]>(
@@ -1917,7 +1923,7 @@ export function SalesDataTable({
 					<div className="space-y-1 xl:col-span-2">
 						<p className="text-xs text-muted-foreground">Busca</p>
 						<Input
-							placeholder="Buscar por cliente, produto (com hierarquia) ou empresa..."
+							placeholder="Buscar por cliente, produto, empresa ou campo personalizado..."
 							value={globalFilter}
 							onChange={(event) => {
 								void setGlobalFilter(event.target.value);

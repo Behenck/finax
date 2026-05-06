@@ -269,32 +269,6 @@ export function SaleInstallmentsPanel({
 				: installments,
 		[installments, saleCommissionId],
 	);
-	const reversalAmountByOriginInstallmentId = useMemo(() => {
-		const map = new Map<string, number>();
-
-		for (const installment of filteredInstallments) {
-			if (!installment.originInstallmentId) {
-				continue;
-			}
-
-			map.set(
-				installment.originInstallmentId,
-				(map.get(installment.originInstallmentId) ?? 0) + installment.amount,
-			);
-		}
-
-		return map;
-	}, [filteredInstallments]);
-
-	function resolveDisplayInstallmentAmount(installment: SaleInstallmentRow) {
-		if (installment.originInstallmentId) {
-			return installment.amount;
-		}
-
-		const totalReversedAmount =
-			reversalAmountByOriginInstallmentId.get(installment.id) ?? 0;
-		return installment.amount + totalReversedAmount;
-	}
 	const summary = useMemo(
 		() => ({
 			total: filteredInstallments.length,
@@ -1194,11 +1168,6 @@ export function SaleInstallmentsPanel({
 															);
 															const canBulkStatusInstallment =
 																selectableInstallmentIds.has(installment.id);
-															const displayAmount =
-																resolveDisplayInstallmentAmount(installment);
-															const hasLinkedReversal =
-																!isReversalMovement &&
-																displayAmount !== installment.amount;
 															const canPayRowAction =
 																canChangeInstallmentStatusBySaleStatus &&
 																canChangeInstallmentStatus &&
@@ -1258,16 +1227,10 @@ export function SaleInstallmentsPanel({
 																	</TableCell>
 																	<TableCell>
 																		<p>
-																			{formatCurrencyBRL(displayAmount / 100)}
+																			{formatCurrencyBRL(
+																				installment.amount / 100,
+																			)}
 																		</p>
-																		{hasLinkedReversal ? (
-																			<p className="text-xs text-muted-foreground">
-																				Valor base:{" "}
-																				{formatCurrencyBRL(
-																					installment.amount / 100,
-																				)}
-																			</p>
-																		) : null}
 																	</TableCell>
 																	<TableCell>
 																		<Badge

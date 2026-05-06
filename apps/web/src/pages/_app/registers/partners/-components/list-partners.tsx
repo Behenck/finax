@@ -49,11 +49,13 @@ import { DeletePartner } from "./delete-partner";
 
 interface ListPartnersProps {
 	partners: GetOrganizationsSlugPartners200["partners"];
+	allPartners?: GetOrganizationsSlugPartners200["partners"];
 	emptyMessage?: string;
 }
 
 export function ListPartners({
 	partners,
+	allPartners = partners,
 	emptyMessage = "Nenhum parceiro encontrado.",
 }: ListPartnersProps) {
 	const { organization } = useApp();
@@ -62,7 +64,7 @@ export function ListPartners({
 		usePutOrganizationsSlugPartnersPartnerid();
 	const [pendingPartnerId, setPendingPartnerId] = useState<string | null>(null);
 
-	const supervisorPartnerCounts = partners.reduce<Record<string, number>>(
+	const supervisorPartnerCounts = allPartners.reduce<Record<string, number>>(
 		(accumulator, currentPartner) => {
 			for (const supervisor of currentPartner.supervisors) {
 				accumulator[supervisor.id] = (accumulator[supervisor.id] ?? 0) + 1;
