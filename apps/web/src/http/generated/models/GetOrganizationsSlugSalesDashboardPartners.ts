@@ -478,6 +478,138 @@ export type GetOrganizationsSlugSalesDashboardPartners200 = {
     };
   }[];
   /**
+   * @type object
+   */
+  supervisorRanking: {
+    /**
+     * @type array
+     */
+    items: {
+      /**
+       * @minLength 1
+       * @type string
+       */
+      supervisorId: string;
+      /**
+       * @type string
+       */
+      supervisorName: string;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      partnersCount: number;
+      /**
+       * @minLength 0
+       * @type number
+       */
+      salesCount: number;
+      /**
+       * @minLength 0
+       * @maxLength 9007199254740991
+       * @type integer
+       */
+      grossAmount: number;
+      /**
+       * @type array
+       */
+      partners: {
+        /**
+         * @type string, uuid
+         */
+        partnerId: string;
+        /**
+         * @type string
+         */
+        partnerName: string;
+        /**
+         * @type string
+         */
+        partnerCompanyName: string;
+        /**
+         * @type string
+         */
+        status: PartnersStatusEnum2Key;
+        /**
+         * @minLength 0
+         * @type number
+         */
+        salesCount: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        grossAmount: number;
+        /**
+         * @minLength 0
+         * @type number
+         */
+        delinquentSalesCount: number;
+        /**
+         * @minLength 0
+         * @maxLength 9007199254740991
+         * @type integer
+         */
+        delinquentGrossAmount: number;
+        /**
+         * @type object
+         */
+        salesBreakdown: {
+          /**
+           * @type object
+           */
+          concluded: {
+            /**
+             * @minLength 0
+             * @type number
+             */
+            salesCount: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+             */
+            grossAmount: number;
+          };
+          /**
+           * @type object
+           */
+          pending: {
+            /**
+             * @minLength 0
+             * @type number
+             */
+            salesCount: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+             */
+            grossAmount: number;
+          };
+          /**
+           * @type object
+           */
+          canceled: {
+            /**
+             * @minLength 0
+             * @type number
+             */
+            salesCount: number;
+            /**
+             * @minLength 0
+             * @maxLength 9007199254740991
+             * @type integer
+             */
+            grossAmount: number;
+          };
+        };
+      }[];
+    }[];
+  };
+  /**
    * @type array
    */
   timeline: {

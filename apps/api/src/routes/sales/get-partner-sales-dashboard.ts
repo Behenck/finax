@@ -73,8 +73,23 @@ type DashboardSaleRow = {
 	totalAmount: number;
 	productId: string;
 	responsibleId: string | null;
+	createdById: string;
 	dynamicFieldSchema: Prisma.JsonValue | null;
 	dynamicFieldValues: Prisma.JsonValue | null;
+};
+
+type SupervisorRankingSaleRow = {
+	id: string;
+	saleDate: Date;
+	totalAmount: number;
+	status: SaleStatus;
+	responsibleId: string | null;
+	createdById: string;
+	commissions: Array<{
+		beneficiarySupervisor: {
+			userId: string;
+		} | null;
+	}>;
 };
 
 type DashboardTimelineSaleByStatusRow = {
@@ -157,6 +172,44 @@ type PartnerCommissionTotals = {
 	income: PartnerCommissionDirectionTotals;
 	outcome: PartnerCommissionDirectionTotals;
 };
+
+type SupervisorRankingSalesBreakdown = {
+	concluded: {
+		salesCount: number;
+		grossAmount: number;
+	};
+	pending: {
+		salesCount: number;
+		grossAmount: number;
+	};
+	canceled: {
+		salesCount: number;
+		grossAmount: number;
+	};
+};
+
+type SupervisorRankingPartnerMetrics = {
+	partnerId: string;
+	partnerName: string;
+	partnerCompanyName: string;
+	status: "ACTIVE" | "INACTIVE";
+	salesCount: number;
+	grossAmount: number;
+	delinquentSalesCount: number;
+	delinquentGrossAmount: number;
+	salesBreakdown: SupervisorRankingSalesBreakdown;
+};
+
+type SupervisorRankingEntry = {
+	supervisorId: string;
+	supervisorName: string;
+	salesCount: number;
+	grossAmount: number;
+	partners: Map<string, SupervisorRankingPartnerMetrics>;
+};
+
+const UNASSIGNED_SUPERVISOR_ID = "UNASSIGNED";
+const UNASSIGNED_SUPERVISOR_NAME = "Sem supervisor";
 
 function createUtcDate(year: number, monthIndex: number, day: number) {
 	return new Date(Date.UTC(year, monthIndex, day));
@@ -666,6 +719,23 @@ function createEmptyRankingSalesBreakdown() {
 	};
 }
 
+function createEmptySupervisorRankingSalesBreakdown(): SupervisorRankingSalesBreakdown {
+	return {
+		concluded: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+		pending: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+		canceled: {
+			salesCount: 0,
+			grossAmount: 0,
+		},
+	};
+}
+
 function createEmptyPartnerCommissionTotals(): PartnerCommissionTotals {
 	return {
 		income: {
@@ -679,6 +749,35 @@ function createEmptyPartnerCommissionTotals(): PartnerCommissionTotals {
 			canceledAmount: 0,
 		},
 	};
+}
+
+function splitAmountAcrossAssignments(
+	totalAmount: number,
+	assignmentsCount: number,
+	index: number,
+) {
+	if (assignmentsCount <= 1) {
+		return totalAmount;
+	}
+
+	const baseAmount = Math.floor(totalAmount / assignmentsCount);
+	const remainder = totalAmount % assignmentsCount;
+	return baseAmount + (index < remainder ? 1 : 0);
+}
+
+function resolveSupervisorRankingBreakdownBucket(
+	breakdown: SupervisorRankingSalesBreakdown,
+	status: SaleStatus,
+) {
+	if (status === SaleStatus.PENDING) {
+		return breakdown.pending;
+	}
+
+	if (status === SaleStatus.CANCELED) {
+		return breakdown.canceled;
+	}
+
+	return breakdown.concluded;
 }
 
 export async function getPartnerSalesDashboard(app: FastifyInstance) {
@@ -816,6 +915,15 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 				const filteredPartnerIds = filteredPartners.map(
 					(partner) => partner.id,
 				);
+				const filteredPartnerById = new Map(
+					filteredPartners.map((partner) => [partner.id, partner]),
+				);
+				const supervisorNameById = new Map(
+					filterSupervisors.map((supervisor) => [
+						supervisor.id,
+						supervisor.name?.trim() || UNASSIGNED_SUPERVISOR_NAME,
+					]),
+				);
 				const salesVisibilityWhere =
 					buildSalesVisibilityWhere(visibilityContext);
 				const dashboardSalesWhere: Prisma.SaleWhereInput = {
@@ -930,6 +1038,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 
 				const [
 					sales,
+					supervisorRankingSalesRows,
 					partnersWithRecentSalesRows,
 					products,
 					statusFunnelRows,
@@ -946,8 +1055,31 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 									totalAmount: true,
 									productId: true,
 									responsibleId: true,
+									createdById: true,
 									dynamicFieldSchema: true,
 									dynamicFieldValues: true,
+								},
+							})
+						: Promise.resolve([]),
+					filteredPartnerIds.length > 0
+						? prisma.sale.findMany({
+								where: statusFunnelSalesWhere,
+								select: {
+									id: true,
+									saleDate: true,
+									totalAmount: true,
+									status: true,
+									responsibleId: true,
+									createdById: true,
+									commissions: {
+										select: {
+											beneficiarySupervisor: {
+												select: {
+													userId: true,
+												},
+											},
+										},
+									},
 								},
 							})
 						: Promise.resolve([]),
@@ -1297,6 +1429,140 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 
 					partnerSalesBreakdownByPartnerId.set(row.responsibleId, current);
 				}
+
+				const supervisorRankingById = new Map<string, SupervisorRankingEntry>();
+				for (const sale of supervisorRankingSalesRows as SupervisorRankingSaleRow[]) {
+					if (!sale.responsibleId) {
+						continue;
+					}
+
+					const partner = filteredPartnerById.get(sale.responsibleId);
+					if (!partner) {
+						continue;
+					}
+
+					const eligibleSupervisorIds = new Set(
+						partner.supervisors.map((supervisor) => supervisor.id),
+					);
+					const commissionSupervisorIds = Array.from(
+						new Set(
+							sale.commissions
+								.map((commission) => commission.beneficiarySupervisor?.userId)
+								.filter(
+									(supervisorUserId): supervisorUserId is string =>
+										typeof supervisorUserId === "string" &&
+										eligibleSupervisorIds.has(supervisorUserId),
+								),
+						),
+					);
+					const assignedSupervisorIds =
+						commissionSupervisorIds.length > 0
+							? commissionSupervisorIds
+							: eligibleSupervisorIds.has(sale.createdById)
+								? [sale.createdById]
+								: [UNASSIGNED_SUPERVISOR_ID];
+					const assignmentsCount = assignedSupervisorIds.length;
+					const delinquencySummary = delinquencySummaryBySaleId.get(sale.id);
+					const hasDelinquency = Boolean(delinquencySummary?.hasOpen);
+					const distributedSalesCount = 1 / assignmentsCount;
+
+					for (const [assignmentIndex, assignedSupervisorId] of assignedSupervisorIds.entries()) {
+						const distributedAmount = splitAmountAcrossAssignments(
+							sale.totalAmount,
+							assignmentsCount,
+							assignmentIndex,
+						);
+						const supervisorName =
+							assignedSupervisorId === UNASSIGNED_SUPERVISOR_ID
+								? UNASSIGNED_SUPERVISOR_NAME
+								: supervisorNameById.get(assignedSupervisorId) ??
+									UNASSIGNED_SUPERVISOR_NAME;
+						const currentSupervisor =
+							supervisorRankingById.get(assignedSupervisorId) ??
+							{
+								supervisorId: assignedSupervisorId,
+								supervisorName,
+								salesCount: 0,
+								grossAmount: 0,
+								partners: new Map<string, SupervisorRankingPartnerMetrics>(),
+							};
+
+						currentSupervisor.salesCount += distributedSalesCount;
+						currentSupervisor.grossAmount += distributedAmount;
+
+						const currentPartner =
+							currentSupervisor.partners.get(partner.id) ??
+							{
+								partnerId: partner.id,
+								partnerName: partner.name,
+								partnerCompanyName: partner.companyName,
+								status: partner.status,
+								salesCount: 0,
+								grossAmount: 0,
+								delinquentSalesCount: 0,
+								delinquentGrossAmount: 0,
+								salesBreakdown:
+									createEmptySupervisorRankingSalesBreakdown(),
+							};
+
+						currentPartner.salesCount += distributedSalesCount;
+						currentPartner.grossAmount += distributedAmount;
+
+						const breakdownBucket = resolveSupervisorRankingBreakdownBucket(
+							currentPartner.salesBreakdown,
+							sale.status,
+						);
+						breakdownBucket.salesCount += distributedSalesCount;
+						breakdownBucket.grossAmount += distributedAmount;
+
+						if (hasDelinquency) {
+							currentPartner.delinquentSalesCount += distributedSalesCount;
+							currentPartner.delinquentGrossAmount += distributedAmount;
+						}
+
+						currentSupervisor.partners.set(partner.id, currentPartner);
+						supervisorRankingById.set(
+							assignedSupervisorId,
+							currentSupervisor,
+						);
+					}
+				}
+
+				const supervisorRanking = {
+					items: [...supervisorRankingById.values()]
+						.filter((supervisor) =>
+							supervisorId
+								? supervisor.supervisorId === supervisorId ||
+									supervisor.supervisorId === UNASSIGNED_SUPERVISOR_ID
+								: true,
+						)
+						.map((supervisor) => {
+							const partners = [...supervisor.partners.values()].sort(
+								(left, right) =>
+									right.grossAmount - left.grossAmount ||
+									right.salesCount - left.salesCount ||
+									left.partnerName.localeCompare(right.partnerName, "pt-BR"),
+							);
+
+							return {
+								supervisorId: supervisor.supervisorId,
+								supervisorName: supervisor.supervisorName,
+								partnersCount: partners.length,
+								salesCount: supervisor.salesCount,
+								grossAmount: supervisor.grossAmount,
+								partners,
+							};
+						})
+						.sort(
+							(left, right) =>
+								right.grossAmount - left.grossAmount ||
+								right.salesCount - left.salesCount ||
+								left.supervisorName.localeCompare(
+									right.supervisorName,
+									"pt-BR",
+								),
+						),
+				};
 
 				const partnerMetrics = filteredPartners.map((partner) => {
 					const partnerSales = salesByPartnerId.get(partner.id) ?? [];
@@ -1661,6 +1927,7 @@ export async function getPartnerSalesDashboard(app: FastifyInstance) {
 						),
 					},
 					ranking,
+					supervisorRanking,
 					timeline,
 					dynamicFieldBreakdown,
 					productBreakdown,

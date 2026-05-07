@@ -282,6 +282,7 @@ async function createSaleSeed(
 		status: SaleStatus;
 		responsibleType: SaleResponsibleType;
 		responsibleId: string;
+		createdById?: string;
 		productId?: string;
 		dynamicFieldValues?: Record<string, unknown>;
 		commissions?: CommissionInstallmentSeed[];
@@ -300,7 +301,7 @@ async function createSaleSeed(
 			responsibleType: input.responsibleType,
 			responsibleId: input.responsibleId,
 			notes: null,
-			createdById: fixture.user.id,
+			createdById: input.createdById ?? fixture.user.id,
 			dynamicFieldSchema: dynamicFieldSchema,
 			dynamicFieldValues: input.dynamicFieldValues ?? {},
 			commissions: input.commissions?.length
@@ -1134,6 +1135,310 @@ describe("partner sales dashboard", () => {
 				items: [],
 			},
 		});
+	});
+
+	it("should attribute supervisor ranking by supervisor commission, creator fallback and unassigned fallback", async () => {
+		const fixture = await createFixture();
+		const secondSupervisorSuffix = randomUUID();
+		const secondSupervisorPassword = "123456";
+		const secondSupervisorUser = await prisma.user.create({
+			data: {
+				name: `Supervisor Secundário ${secondSupervisorSuffix}`,
+				email: `supervisor-second-${secondSupervisorSuffix}@example.com`,
+				passwordHash: await hash(secondSupervisorPassword, 6),
+				emailVerifiedAt: new Date(),
+			},
+		});
+		const secondSupervisorMember = await prisma.member.create({
+			data: {
+				role: Role.SUPERVISOR,
+				organizationId: fixture.org.id,
+				userId: secondSupervisorUser.id,
+				salesScope: MemberDataScope.LINKED_ONLY,
+				partnersScope: MemberDataScope.LINKED_ONLY,
+				customersScope: MemberDataScope.LINKED_ONLY,
+				commissionsScope: MemberDataScope.LINKED_ONLY,
+			},
+		});
+
+		await prisma.partnerSupervisor.create({
+			data: {
+				organizationId: fixture.org.id,
+				partnerId: fixture.partnerAlpha.id,
+				supervisorId: secondSupervisorUser.id,
+			},
+		});
+
+		const commissionSupervisorSale = await createSaleSeed(fixture, {
+			saleDate: "2026-02-10",
+			totalAmount: 120_000,
+			status: SaleStatus.COMPLETED,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerAlpha.id,
+			commissions: [
+				{
+					direction: "OUTCOME",
+					amount: 6_000,
+					status: SaleCommissionInstallmentStatus.PAID,
+					expectedPaymentDate: "2026-02-20",
+					paymentDate: "2026-02-20",
+					recipientType: SaleCommissionRecipientType.SUPERVISOR,
+					beneficiarySupervisorId: fixture.supervisorMember.id,
+				},
+			],
+		});
+
+		await prisma.saleDelinquency.create({
+			data: {
+				saleId: commissionSupervisorSale.id,
+				organizationId: fixture.org.id,
+				dueDate: new Date("2026-03-01T00:00:00.000Z"),
+				createdById: fixture.user.id,
+			},
+		});
+
+		await createSaleSeed(fixture, {
+			saleDate: "2026-02-11",
+			totalAmount: 80_000,
+			status: SaleStatus.PENDING,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerAlpha.id,
+			createdById: secondSupervisorUser.id,
+		});
+
+		await createSaleSeed(fixture, {
+			saleDate: "2026-02-12",
+			totalAmount: 90_000,
+			status: SaleStatus.COMPLETED,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerAlpha.id,
+			commissions: [
+				{
+					direction: "OUTCOME",
+					amount: 4_500,
+					status: SaleCommissionInstallmentStatus.PAID,
+					expectedPaymentDate: "2026-02-25",
+					paymentDate: "2026-02-25",
+					recipientType: SaleCommissionRecipientType.SUPERVISOR,
+					beneficiarySupervisorId: fixture.supervisorMember.id,
+				},
+				{
+					direction: "OUTCOME",
+					amount: 4_500,
+					status: SaleCommissionInstallmentStatus.PAID,
+					expectedPaymentDate: "2026-02-26",
+					paymentDate: "2026-02-26",
+					recipientType: SaleCommissionRecipientType.SUPERVISOR,
+					beneficiarySupervisorId: secondSupervisorMember.id,
+				},
+			],
+		});
+
+		await createSaleSeed(fixture, {
+			saleDate: "2026-02-13",
+			totalAmount: 70_000,
+			status: SaleStatus.COMPLETED,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerAlpha.id,
+		});
+
+		await createSaleSeed(fixture, {
+			saleDate: "2025-12-20",
+			totalAmount: 60_000,
+			status: SaleStatus.CANCELED,
+			responsibleType: SaleResponsibleType.PARTNER,
+			responsibleId: fixture.partnerAlpha.id,
+			commissions: [
+				{
+					direction: "OUTCOME",
+					amount: 3_000,
+					status: SaleCommissionInstallmentStatus.CANCELED,
+					expectedPaymentDate: "2025-12-30",
+					recipientType: SaleCommissionRecipientType.SUPERVISOR,
+					beneficiarySupervisorId: secondSupervisorMember.id,
+				},
+			],
+		});
+
+		const response = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
+			.query({
+				startDate: "2026-02-01",
+				endDate: "2026-02-28",
+				inactiveMonths: 3,
+			})
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body.supervisorRanking.items).toEqual([
+			{
+				supervisorId: fixture.supervisorUser.id,
+				supervisorName: fixture.supervisorUser.name,
+				partnersCount: 1,
+				salesCount: 1.5,
+				grossAmount: 165_000,
+				partners: [
+					{
+						partnerId: fixture.partnerAlpha.id,
+						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
+						status: "ACTIVE",
+						salesCount: 1.5,
+						grossAmount: 165_000,
+						delinquentSalesCount: 1,
+						delinquentGrossAmount: 120_000,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 1.5,
+								grossAmount: 165_000,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+						},
+					},
+				],
+			},
+			{
+				supervisorId: secondSupervisorUser.id,
+				supervisorName: secondSupervisorUser.name,
+				partnersCount: 1,
+				salesCount: 1.5,
+				grossAmount: 125_000,
+				partners: [
+					{
+						partnerId: fixture.partnerAlpha.id,
+						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
+						status: "ACTIVE",
+						salesCount: 1.5,
+						grossAmount: 125_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 0.5,
+								grossAmount: 45_000,
+							},
+							pending: {
+								salesCount: 1,
+								grossAmount: 80_000,
+							},
+							canceled: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+						},
+					},
+				],
+			},
+			{
+				supervisorId: "UNASSIGNED",
+				supervisorName: "Sem supervisor",
+				partnersCount: 1,
+				salesCount: 1,
+				grossAmount: 70_000,
+				partners: [
+					{
+						partnerId: fixture.partnerAlpha.id,
+						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
+						status: "ACTIVE",
+						salesCount: 1,
+						grossAmount: 70_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 1,
+								grossAmount: 70_000,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+						},
+					},
+				],
+			},
+		]);
+
+		const filteredResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
+			.query({
+				startDate: "2026-02-01",
+				endDate: "2026-02-28",
+				inactiveMonths: 3,
+				supervisorId: secondSupervisorUser.id,
+			})
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(filteredResponse.statusCode).toBe(200);
+		expect(filteredResponse.body.supervisorRanking.items).toEqual([
+			expect.objectContaining({
+				supervisorId: secondSupervisorUser.id,
+				grossAmount: 125_000,
+			}),
+			expect.objectContaining({
+				supervisorId: "UNASSIGNED",
+				grossAmount: 70_000,
+			}),
+		]);
+
+		const previousMonthResponse = await request(app.server)
+			.get(`/organizations/${fixture.org.slug}/sales/dashboard/partners`)
+			.query({
+				startDate: "2025-12-01",
+				endDate: "2025-12-31",
+				inactiveMonths: 3,
+			})
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(previousMonthResponse.statusCode).toBe(200);
+		expect(previousMonthResponse.body.supervisorRanking.items).toEqual([
+			{
+				supervisorId: secondSupervisorUser.id,
+				supervisorName: secondSupervisorUser.name,
+				partnersCount: 1,
+				salesCount: 1,
+				grossAmount: 60_000,
+				partners: [
+					{
+						partnerId: fixture.partnerAlpha.id,
+						partnerName: fixture.partnerAlpha.name,
+						partnerCompanyName: fixture.partnerAlpha.companyName,
+						status: "ACTIVE",
+						salesCount: 1,
+						grossAmount: 60_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 1,
+								grossAmount: 60_000,
+							},
+						},
+					},
+				],
+			},
+		]);
 	});
 
 	it("should filter by supervisor and respect supervisor visibility scopes", async () => {

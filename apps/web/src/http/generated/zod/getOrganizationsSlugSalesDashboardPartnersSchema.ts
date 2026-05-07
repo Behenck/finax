@@ -121,6 +121,43 @@ export const getOrganizationsSlugSalesDashboardPartners200Schema = z.object({
       }),
     }),
   ),
+  supervisorRanking: z.object({
+    items: z.array(
+      z.object({
+        supervisorId: z.string().min(1),
+        supervisorName: z.string(),
+        partnersCount: z.int().min(0).max(9007199254740991),
+        salesCount: z.number().min(0),
+        grossAmount: z.int().min(0).max(9007199254740991),
+        partners: z.array(
+          z.object({
+            partnerId: z.uuid(),
+            partnerName: z.string(),
+            partnerCompanyName: z.string(),
+            status: z.enum(["ACTIVE", "INACTIVE"]),
+            salesCount: z.number().min(0),
+            grossAmount: z.int().min(0).max(9007199254740991),
+            delinquentSalesCount: z.number().min(0),
+            delinquentGrossAmount: z.int().min(0).max(9007199254740991),
+            salesBreakdown: z.object({
+              concluded: z.object({
+                salesCount: z.number().min(0),
+                grossAmount: z.int().min(0).max(9007199254740991),
+              }),
+              pending: z.object({
+                salesCount: z.number().min(0),
+                grossAmount: z.int().min(0).max(9007199254740991),
+              }),
+              canceled: z.object({
+                salesCount: z.number().min(0),
+                grossAmount: z.int().min(0).max(9007199254740991),
+              }),
+            }),
+          }),
+        ),
+      }),
+    ),
+  }),
   timeline: z.array(
     z.object({
       label: z.string(),

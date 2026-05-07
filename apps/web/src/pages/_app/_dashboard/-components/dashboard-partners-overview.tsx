@@ -372,6 +372,15 @@ function formatCount(value: number) {
 	return new Intl.NumberFormat("pt-BR").format(value);
 }
 
+function formatSupervisorCount(value: number) {
+	const hasFraction = Math.abs(value - Math.round(value)) > 0.000001;
+
+	return new Intl.NumberFormat("pt-BR", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: hasFraction ? 2 : 0,
+	}).format(value);
+}
+
 function formatAmountFromCents(value: number) {
 	return formatCurrencyBRL(value / 100);
 }
@@ -1762,11 +1771,11 @@ function PartnerRankingSection({
 
 function SupervisorRankingSection({
 	items,
-	canceledByPartnerId,
+	canceledBySupervisorPartnerKey,
 	hasPreviousMonthCanceledData,
 }: {
-	items: PartnerDashboardData["ranking"];
-	canceledByPartnerId: Record<
+	items: PartnerDashboardData["supervisorRanking"]["items"];
+	canceledBySupervisorPartnerKey: Record<
 		string,
 		{
 			grossAmount: number;
@@ -1778,73 +1787,13 @@ function SupervisorRankingSection({
 	const [openSupervisors, setOpenSupervisors] = useState<
 		Record<string, boolean>
 	>({});
-
-	const supervisors = useMemo(() => {
-		type AggregatedSupervisor = {
-			supervisorId: string;
-			supervisorName: string;
-			partnersCount: number;
-			salesCount: number;
-			grossAmount: number;
-			partners: PartnerDashboardData["ranking"];
-		};
-
-		const bySupervisor = new Map<string, AggregatedSupervisor>();
-
-		for (const partner of items) {
-			const concludedAmount = partner.salesBreakdown.concluded.grossAmount;
-			const pendingAmount = partner.salesBreakdown.pending.grossAmount;
-			const canceledAmount = partner.salesBreakdown.canceled.grossAmount;
-			const concludedCount = partner.salesBreakdown.concluded.salesCount;
-			const pendingCount = partner.salesBreakdown.pending.salesCount;
-			const canceledCount = partner.salesBreakdown.canceled.salesCount;
-			const totalTrackedAmount =
-				concludedAmount + pendingAmount + canceledAmount;
-			const totalTrackedCount = concludedCount + pendingCount + canceledCount;
-
-			const partnerSupervisors =
-				partner.supervisors.length > 0
-					? partner.supervisors
-					: [{ id: "UNASSIGNED", name: "Sem supervisor" }];
-
-			for (const supervisor of partnerSupervisors) {
-				const supervisorId = supervisor.id;
-				const supervisorName = supervisor.name?.trim() || "Sem supervisor";
-				const current = bySupervisor.get(supervisorId);
-
-				if (!current) {
-					bySupervisor.set(supervisorId, {
-						supervisorId,
-						supervisorName,
-						partnersCount: 1,
-						salesCount: totalTrackedCount,
-						grossAmount: totalTrackedAmount,
-						partners: [partner],
-					});
-					continue;
-				}
-
-				current.partnersCount += 1;
-				current.salesCount += totalTrackedCount;
-				current.grossAmount += totalTrackedAmount;
-				current.partners.push(partner);
-			}
-		}
-
-		return [...bySupervisor.values()].sort(
-			(left, right) =>
-				right.grossAmount - left.grossAmount ||
-				right.salesCount - left.salesCount ||
-				left.supervisorName.localeCompare(right.supervisorName, "pt-BR"),
-		);
-	}, [items]);
 	const totalSupervisorsGrossAmount = useMemo(
 		() =>
-			supervisors.reduce(
+			items.reduce(
 				(total, supervisor) => total + supervisor.grossAmount,
 				0,
 			),
-		[supervisors],
+		[items],
 	);
 
 	return (
@@ -1860,13 +1809,13 @@ function SupervisorRankingSection({
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				{supervisors.length === 0 ? (
+				{items.length === 0 ? (
 					<div className="rounded-xl border border-dashed bg-muted/20 p-5 text-sm text-muted-foreground">
 						Nenhum supervisor com venda no período filtrado.
 					</div>
 				) : (
 					<div className="space-y-2">
-						{supervisors.map((supervisor, index) => {
+						{items.map((supervisor, index) => {
 							const isOpen = openSupervisors[supervisor.supervisorId] ?? false;
 							const supervisorHasValue =
 								supervisor.grossAmount > 0 || supervisor.salesCount > 0;
@@ -1989,7 +1938,9 @@ function SupervisorRankingSection({
 														<TableBody className="[&_tr]:border-0">
 															{partners.map((partner) => {
 															const canceledMetrics =
-																canceledByPartnerId[partner.partnerId] ??
+																canceledBySupervisorPartnerKey[
+																	`${supervisor.supervisorId}:${partner.partnerId}`
+																] ??
 																(hasPreviousMonthCanceledData
 																	? {
 																			grossAmount: 0,
@@ -2068,7 +2019,7 @@ function SupervisorRankingSection({
 																						: "font-medium",
 																				)}
 																			>
-																				{formatCount(
+																				{formatSupervisorCount(
 																					partner.salesBreakdown.concluded
 																						.salesCount,
 																				)}
@@ -2104,7 +2055,7 @@ function SupervisorRankingSection({
 																						: "font-medium",
 																				)}
 																			>
-																				{formatCount(
+																				{formatSupervisorCount(
 																					partner.salesBreakdown.pending
 																						.salesCount,
 																				)}
@@ -2139,7 +2090,7 @@ function SupervisorRankingSection({
 																						: "font-medium",
 																				)}
 																			>
-																				{formatCount(
+																				{formatSupervisorCount(
 																					partner.delinquentSalesCount,
 																				)}
 																			</span>
@@ -2173,7 +2124,7 @@ function SupervisorRankingSection({
 																						: "font-medium",
 																				)}
 																			>
-																				{formatCount(
+																				{formatSupervisorCount(
 																					canceledMetrics.salesCount,
 																				)}
 																			</span>
@@ -2768,7 +2719,7 @@ export function DashboardPartnersOverview() {
 			: data?.dynamicFieldBreakdown;
 	const productBreakdown =
 		productBreakdownQuery.data?.productBreakdown ?? data?.productBreakdown;
-	const previousMonthCanceledByPartnerId = useMemo(() => {
+	const previousMonthCanceledBySupervisorPartnerKey = useMemo(() => {
 		const map: Record<
 			string,
 			{
@@ -2777,15 +2728,18 @@ export function DashboardPartnersOverview() {
 			}
 		> = {};
 
-		for (const partner of previousMonthCanceledQuery.data?.ranking ?? []) {
-			map[partner.partnerId] = {
-				grossAmount: partner.salesBreakdown.canceled.grossAmount,
-				salesCount: partner.salesBreakdown.canceled.salesCount,
-			};
+		for (const supervisor of previousMonthCanceledQuery.data?.supervisorRanking
+			.items ?? []) {
+			for (const partner of supervisor.partners) {
+				map[`${supervisor.supervisorId}:${partner.partnerId}`] = {
+					grossAmount: partner.salesBreakdown.canceled.grossAmount,
+					salesCount: partner.salesBreakdown.canceled.salesCount,
+				};
+			}
 		}
 
 		return map;
-	}, [previousMonthCanceledQuery.data?.ranking]);
+	}, [previousMonthCanceledQuery.data?.supervisorRanking.items]);
 	const hasPreviousMonthCanceledData = Boolean(previousMonthCanceledQuery.data);
 	const partnerOptions = useMemo(() => {
 		const allPartners = data?.filters.partners ?? [];
@@ -3283,8 +3237,10 @@ export function DashboardPartnersOverview() {
 				</div>
 
 				<SupervisorRankingSection
-					items={data?.ranking ?? []}
-					canceledByPartnerId={previousMonthCanceledByPartnerId}
+					items={data?.supervisorRanking.items ?? []}
+					canceledBySupervisorPartnerKey={
+						previousMonthCanceledBySupervisorPartnerKey
+					}
 					hasPreviousMonthCanceledData={hasPreviousMonthCanceledData}
 				/>
 				<div className="grid grid-cols-1 items-stretch gap-4 2xl:gap-6 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1.45fr)_minmax(450px,500px)_minmax(0,1.2fr)]">

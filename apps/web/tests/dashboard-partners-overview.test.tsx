@@ -115,6 +115,7 @@ function buildRankingItem(item: RankingItem) {
 	return {
 		partnerId: item.partnerId,
 		partnerName: item.partnerName,
+		partnerCompanyName: item.partnerName,
 		status: "ACTIVE",
 		supervisors: [
 			{
@@ -179,6 +180,64 @@ function buildDashboardData(
 		(sum, item) => sum + item.grossAmount,
 		0,
 	);
+	const supervisorRankingMap = new Map<
+		string,
+		{
+			supervisorId: string;
+			supervisorName: string;
+			salesCount: number;
+			grossAmount: number;
+			partners: Array<{
+				partnerId: string;
+				partnerName: string;
+				partnerCompanyName: string;
+				status: string;
+				salesCount: number;
+				grossAmount: number;
+				delinquentSalesCount: number;
+				delinquentGrossAmount: number;
+				salesBreakdown: ReturnType<typeof buildRankingItem>["salesBreakdown"];
+			}>;
+		}
+	>();
+
+	for (const item of rankingItems) {
+		const supervisor = item.supervisors[0];
+		if (!supervisor) {
+			continue;
+		}
+
+		const totalTrackedGrossAmount =
+			item.salesBreakdown.concluded.grossAmount +
+			item.salesBreakdown.pending.grossAmount +
+			item.salesBreakdown.canceled.grossAmount;
+		const totalTrackedSalesCount =
+			item.salesBreakdown.concluded.salesCount +
+			item.salesBreakdown.pending.salesCount +
+			item.salesBreakdown.canceled.salesCount;
+		const currentSupervisor = supervisorRankingMap.get(supervisor.id) ?? {
+			supervisorId: supervisor.id,
+			supervisorName: supervisor.name ?? "Sem supervisor",
+			salesCount: 0,
+			grossAmount: 0,
+			partners: [],
+		};
+
+		currentSupervisor.salesCount += totalTrackedSalesCount;
+		currentSupervisor.grossAmount += totalTrackedGrossAmount;
+		currentSupervisor.partners.push({
+			partnerId: item.partnerId,
+			partnerName: item.partnerName,
+			partnerCompanyName: item.partnerCompanyName,
+			status: item.status,
+			salesCount: totalTrackedSalesCount,
+			grossAmount: totalTrackedGrossAmount,
+			delinquentSalesCount: item.delinquentSalesCount,
+			delinquentGrossAmount: item.delinquentGrossAmount,
+			salesBreakdown: item.salesBreakdown,
+		});
+		supervisorRankingMap.set(supervisor.id, currentSupervisor);
+	}
 
 	return {
 		period: {
@@ -217,12 +276,22 @@ function buildDashboardData(
 			delinquencyRateByAmountPct: 0,
 		},
 		ranking: rankingItems,
+		supervisorRanking: {
+			items: [...supervisorRankingMap.values()].map((supervisor) => ({
+				...supervisor,
+				partnersCount: supervisor.partners.length,
+			})),
+		},
 		timeline: [
 			{
 				label: "01/01",
 				date: "2026-01-01T00:00:00.000Z",
 				salesCount: totalSales,
 				grossAmount,
+				concludedGrossAmount: grossAmount,
+				processedGrossAmount: 0,
+				concludedAndProcessedGrossAmount: grossAmount,
+				canceledGrossAmount: 0,
 			},
 		],
 		dynamicFieldBreakdown: {
@@ -268,6 +337,10 @@ function buildDashboardData(
 		commissionBreakdown: {
 			receivedAmount: 0,
 			pendingAmount: 0,
+			canceledAmount: 0,
+			payablePaidAmount: 0,
+			payablePendingAmount: 0,
+			payableCanceledAmount: 0,
 			netRevenueAmount: 0,
 			pendingByPartner: {
 				items: [],
@@ -590,6 +663,231 @@ describe("DashboardPartnersOverview", () => {
 
 		expect(screen.getAllByText("Parceiro Base").length).toBeGreaterThan(0);
 		expect(screen.getAllByText("Parceiro Alpha").length).toBeGreaterThan(0);
+	});
+
+	it("uses supervisorRanking instead of duplicating the same partner across every linked supervisor", async () => {
+		const user = userEvent.setup();
+		const data = buildDashboardData([
+			buildRankingItem({
+				partnerId: "11111111-1111-1111-1111-111111111111",
+				partnerName: "Parceiro Multi",
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Comissão",
+				concludedCount: 2,
+				concludedAmount: 120_000,
+				pendingCount: 0,
+				pendingAmount: 0,
+				canceledCount: 0,
+				canceledAmount: 0,
+				delinquentCount: 0,
+				delinquentAmount: 0,
+			}),
+		]);
+
+		data.ranking[0].supervisors = [
+			{
+				id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				name: "Supervisor Comissão",
+			},
+			{
+				id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+				name: "Supervisor Secundário",
+			},
+		];
+		data.filters.supervisors = [
+			{
+				id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				name: "Supervisor Comissão",
+			},
+			{
+				id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+				name: "Supervisor Secundário",
+			},
+		];
+		data.supervisorRanking.items = [
+			{
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Comissão",
+				partnersCount: 1,
+				salesCount: 2,
+				grossAmount: 120_000,
+				partners: [
+					{
+						partnerId: "11111111-1111-1111-1111-111111111111",
+						partnerName: "Parceiro Multi",
+						partnerCompanyName: "Parceiro Multi",
+						status: "ACTIVE",
+						salesCount: 2,
+						grossAmount: 120_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 2,
+								grossAmount: 120_000,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+						},
+					},
+				],
+			},
+		];
+
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data,
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		expect(screen.getByText("Supervisor Comissão")).toBeInTheDocument();
+		expect(screen.queryByText("Supervisor Secundário")).not.toBeInTheDocument();
+
+		await user.click(
+			screen.getByRole("button", { name: /Supervisor Comissão/i }),
+		);
+
+		expect(screen.getAllByText("Parceiro Multi").length).toBeGreaterThan(0);
+	});
+
+	it("renders fractional supervisor counts and previous month canceled data from supervisorRanking", async () => {
+		const user = userEvent.setup();
+		const filteredData = buildDashboardData([
+			buildRankingItem({
+				partnerId: "11111111-1111-1111-1111-111111111111",
+				partnerName: "Parceiro Fracionado",
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Base",
+				concludedCount: 1,
+				concludedAmount: 60_000,
+				pendingCount: 0,
+				pendingAmount: 0,
+				canceledCount: 0,
+				canceledAmount: 0,
+				delinquentCount: 0,
+				delinquentAmount: 0,
+			}),
+		]);
+		filteredData.supervisorRanking.items = [
+			{
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Base",
+				partnersCount: 1,
+				salesCount: 0.5,
+				grossAmount: 50_000,
+				partners: [
+					{
+						partnerId: "11111111-1111-1111-1111-111111111111",
+						partnerName: "Parceiro Fracionado",
+						partnerCompanyName: "Parceiro Fracionado",
+						status: "ACTIVE",
+						salesCount: 0.5,
+						grossAmount: 50_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 0.5,
+								grossAmount: 50_000,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+						},
+					},
+				],
+			},
+		];
+		const previousMonthData = buildDashboardData([]);
+		previousMonthData.supervisorRanking.items = [
+			{
+				supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+				supervisorName: "Supervisor Base",
+				partnersCount: 1,
+				salesCount: 0.5,
+				grossAmount: 25_000,
+				partners: [
+					{
+						partnerId: "11111111-1111-1111-1111-111111111111",
+						partnerName: "Parceiro Fracionado",
+						partnerCompanyName: "Parceiro Fracionado",
+						status: "ACTIVE",
+						salesCount: 0.5,
+						grossAmount: 25_000,
+						delinquentSalesCount: 0,
+						delinquentGrossAmount: 0,
+						salesBreakdown: {
+							concluded: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							pending: {
+								salesCount: 0,
+								grossAmount: 0,
+							},
+							canceled: {
+								salesCount: 0.5,
+								grossAmount: 25_000,
+							},
+						},
+					},
+				],
+			},
+		];
+
+		mocks.usePartnerSalesDashboard.mockImplementation(
+			(args: Record<string, unknown>) => {
+				if (
+					args.startDate === PREVIOUS_MONTH_START_DATE &&
+					args.endDate === PREVIOUS_MONTH_END_DATE
+				) {
+					return {
+						isLoading: false,
+						isError: false,
+						data: previousMonthData,
+						refetch: vi.fn(),
+					};
+				}
+
+				return {
+					isLoading: false,
+					isError: false,
+					data: filteredData,
+					refetch: vi.fn(),
+				};
+			},
+		);
+
+		render(<DashboardPartnersOverview />);
+		await user.click(screen.getByRole("button", { name: /Supervisor Base/i }));
+
+		const supervisorTable = screen
+			.getByText("Inadimplentes (R$ + qtd)")
+			.closest("table");
+		expect(supervisorTable).not.toBeNull();
+		expect(
+			within(supervisorTable as HTMLTableElement).getByText(/500,00/),
+		).toBeInTheDocument();
+		expect(
+			within(supervisorTable as HTMLTableElement).getAllByText("0,5").length,
+		).toBeGreaterThan(0);
+		expect(
+			within(supervisorTable as HTMLTableElement).getByText(/250,00/),
+		).toBeInTheDocument();
 	});
 
 	it("renders the full partner ranking inside a scroll area with fixed height", () => {

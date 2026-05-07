@@ -591,6 +591,36 @@ const PartnerSalesDashboardRankingItemSchema = z.object({
   }),
 });
 
+const PartnerSalesDashboardSupervisorRankingSalesBreakdownBucketSchema = z.object({
+  salesCount: z.number().nonnegative(),
+  grossAmount: z.number().int().nonnegative(),
+});
+
+const PartnerSalesDashboardSupervisorRankingPartnerItemSchema = z.object({
+  partnerId: z.uuid(),
+  partnerName: z.string(),
+  partnerCompanyName: z.string(),
+  status: z.enum(["ACTIVE", "INACTIVE"] as const),
+  salesCount: z.number().nonnegative(),
+  grossAmount: z.number().int().nonnegative(),
+  delinquentSalesCount: z.number().nonnegative(),
+  delinquentGrossAmount: z.number().int().nonnegative(),
+  salesBreakdown: z.object({
+    concluded: PartnerSalesDashboardSupervisorRankingSalesBreakdownBucketSchema,
+    pending: PartnerSalesDashboardSupervisorRankingSalesBreakdownBucketSchema,
+    canceled: PartnerSalesDashboardSupervisorRankingSalesBreakdownBucketSchema,
+  }),
+});
+
+const PartnerSalesDashboardSupervisorRankingItemSchema = z.object({
+  supervisorId: z.string().min(1),
+  supervisorName: z.string(),
+  partnersCount: z.number().int().nonnegative(),
+  salesCount: z.number().nonnegative(),
+  grossAmount: z.number().int().nonnegative(),
+  partners: z.array(PartnerSalesDashboardSupervisorRankingPartnerItemSchema),
+});
+
 const PartnerSalesDashboardDynamicFieldTypeSchema = z.enum([
   "SELECT",
   "MULTI_SELECT",
@@ -724,6 +754,9 @@ export const PartnerSalesDashboardResponseSchema = z.object({
   }),
   summary: PartnerSalesDashboardSummarySchema,
   ranking: z.array(PartnerSalesDashboardRankingItemSchema),
+  supervisorRanking: z.object({
+    items: z.array(PartnerSalesDashboardSupervisorRankingItemSchema),
+  }),
   timeline: z.array(PartnerSalesDashboardTimelineItemSchema),
   dynamicFieldBreakdown: z.object({
     availableFields: z.array(PartnerSalesDashboardDynamicFieldSchema),
