@@ -68,7 +68,7 @@ export function ListSellers({ sellers }: ListSellersProps) {
                 <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
                   <div className="space-y-0.5">
                     <p className="text-muted-foreground">Empresa</p>
-                    <p>{seller.companyName}</p>
+                    <p>{seller.companyName ?? "Sem empresa"}</p>
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-muted-foreground">Contato</p>
@@ -165,7 +165,7 @@ export function ListSellers({ sellers }: ListSellersProps) {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{seller.companyName}</TableCell>
+                    <TableCell>{seller.companyName ?? "Sem empresa"}</TableCell>
                     <TableCell>{renderAccessBadge(Boolean(seller.user))}</TableCell>
                     <TableCell>
                       <span className="text-medium text-green-600">R$ 0,00</span>

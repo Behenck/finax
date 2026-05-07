@@ -241,10 +241,10 @@ export type SellerGroupByOutputType = {
   id: string
   name: string
   email: string | null
-  phone: string
+  phone: string | null
   documentType: $Enums.SellerDocumentType | null
   document: string | null
-  companyName: string
+  companyName: string | null
   street: string | null
   number: string | null
   complement: string | null
@@ -285,10 +285,10 @@ export type SellerWhereInput = {
   id?: Prisma.StringFilter<"Seller"> | string
   name?: Prisma.StringFilter<"Seller"> | string
   email?: Prisma.StringNullableFilter<"Seller"> | string | null
-  phone?: Prisma.StringFilter<"Seller"> | string
+  phone?: Prisma.StringNullableFilter<"Seller"> | string | null
   documentType?: Prisma.EnumSellerDocumentTypeNullableFilter<"Seller"> | $Enums.SellerDocumentType | null
   document?: Prisma.StringNullableFilter<"Seller"> | string | null
-  companyName?: Prisma.StringFilter<"Seller"> | string
+  companyName?: Prisma.StringNullableFilter<"Seller"> | string | null
   street?: Prisma.StringNullableFilter<"Seller"> | string | null
   number?: Prisma.StringNullableFilter<"Seller"> | string | null
   complement?: Prisma.StringNullableFilter<"Seller"> | string | null
@@ -316,10 +316,10 @@ export type SellerOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   documentType?: Prisma.SortOrderInput | Prisma.SortOrder
   document?: Prisma.SortOrderInput | Prisma.SortOrder
-  companyName?: Prisma.SortOrder
+  companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
   number?: Prisma.SortOrderInput | Prisma.SortOrder
   complement?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -352,10 +352,10 @@ export type SellerWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SellerWhereInput | Prisma.SellerWhereInput[]
   name?: Prisma.StringFilter<"Seller"> | string
   email?: Prisma.StringNullableFilter<"Seller"> | string | null
-  phone?: Prisma.StringFilter<"Seller"> | string
+  phone?: Prisma.StringNullableFilter<"Seller"> | string | null
   documentType?: Prisma.EnumSellerDocumentTypeNullableFilter<"Seller"> | $Enums.SellerDocumentType | null
   document?: Prisma.StringNullableFilter<"Seller"> | string | null
-  companyName?: Prisma.StringFilter<"Seller"> | string
+  companyName?: Prisma.StringNullableFilter<"Seller"> | string | null
   street?: Prisma.StringNullableFilter<"Seller"> | string | null
   number?: Prisma.StringNullableFilter<"Seller"> | string | null
   complement?: Prisma.StringNullableFilter<"Seller"> | string | null
@@ -383,10 +383,10 @@ export type SellerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   documentType?: Prisma.SortOrderInput | Prisma.SortOrder
   document?: Prisma.SortOrderInput | Prisma.SortOrder
-  companyName?: Prisma.SortOrder
+  companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
   number?: Prisma.SortOrderInput | Prisma.SortOrder
   complement?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -412,10 +412,10 @@ export type SellerScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Seller"> | string
   name?: Prisma.StringWithAggregatesFilter<"Seller"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
-  phone?: Prisma.StringWithAggregatesFilter<"Seller"> | string
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
   documentType?: Prisma.EnumSellerDocumentTypeNullableWithAggregatesFilter<"Seller"> | $Enums.SellerDocumentType | null
   document?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
-  companyName?: Prisma.StringWithAggregatesFilter<"Seller"> | string
+  companyName?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
   street?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
   number?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
   complement?: Prisma.StringNullableWithAggregatesFilter<"Seller"> | string | null
@@ -435,10 +435,10 @@ export type SellerCreateInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -464,10 +464,10 @@ export type SellerUncheckedCreateInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -493,10 +493,10 @@ export type SellerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -522,10 +522,10 @@ export type SellerUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -551,10 +551,10 @@ export type SellerCreateManyInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -574,10 +574,10 @@ export type SellerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -595,10 +595,10 @@ export type SellerUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -900,10 +900,10 @@ export type SellerCreateWithoutUserInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -928,10 +928,10 @@ export type SellerUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -985,10 +985,10 @@ export type SellerScalarWhereInput = {
   id?: Prisma.StringFilter<"Seller"> | string
   name?: Prisma.StringFilter<"Seller"> | string
   email?: Prisma.StringNullableFilter<"Seller"> | string | null
-  phone?: Prisma.StringFilter<"Seller"> | string
+  phone?: Prisma.StringNullableFilter<"Seller"> | string | null
   documentType?: Prisma.EnumSellerDocumentTypeNullableFilter<"Seller"> | $Enums.SellerDocumentType | null
   document?: Prisma.StringNullableFilter<"Seller"> | string | null
-  companyName?: Prisma.StringFilter<"Seller"> | string
+  companyName?: Prisma.StringNullableFilter<"Seller"> | string | null
   street?: Prisma.StringNullableFilter<"Seller"> | string | null
   number?: Prisma.StringNullableFilter<"Seller"> | string | null
   complement?: Prisma.StringNullableFilter<"Seller"> | string | null
@@ -1008,10 +1008,10 @@ export type SellerCreateWithoutOrganizationInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1036,10 +1036,10 @@ export type SellerUncheckedCreateWithoutOrganizationInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1090,10 +1090,10 @@ export type SellerCreateWithoutProductBonusParticipantsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1118,10 +1118,10 @@ export type SellerUncheckedCreateWithoutProductBonusParticipantsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1162,10 +1162,10 @@ export type SellerUpdateWithoutProductBonusParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1190,10 +1190,10 @@ export type SellerUncheckedUpdateWithoutProductBonusParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1218,10 +1218,10 @@ export type SellerCreateWithoutBonusSettlementResultsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1246,10 +1246,10 @@ export type SellerUncheckedCreateWithoutBonusSettlementResultsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1290,10 +1290,10 @@ export type SellerUpdateWithoutBonusSettlementResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1318,10 +1318,10 @@ export type SellerUncheckedUpdateWithoutBonusSettlementResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1346,10 +1346,10 @@ export type SellerCreateWithoutBonusInstallmentsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1374,10 +1374,10 @@ export type SellerUncheckedCreateWithoutBonusInstallmentsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1418,10 +1418,10 @@ export type SellerUpdateWithoutBonusInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1446,10 +1446,10 @@ export type SellerUncheckedUpdateWithoutBonusInstallmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1474,10 +1474,10 @@ export type SellerCreateWithoutProductCommissionScenarioConditionsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1502,10 +1502,10 @@ export type SellerUncheckedCreateWithoutProductCommissionScenarioConditionsInput
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1546,10 +1546,10 @@ export type SellerUpdateWithoutProductCommissionScenarioConditionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1574,10 +1574,10 @@ export type SellerUncheckedUpdateWithoutProductCommissionScenarioConditionsInput
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1602,10 +1602,10 @@ export type SellerCreateWithoutProductCommissionsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1630,10 +1630,10 @@ export type SellerUncheckedCreateWithoutProductCommissionsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1674,10 +1674,10 @@ export type SellerUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1702,10 +1702,10 @@ export type SellerUncheckedUpdateWithoutProductCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1730,10 +1730,10 @@ export type SellerCreateWithoutSaleCommissionsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1758,10 +1758,10 @@ export type SellerUncheckedCreateWithoutSaleCommissionsInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1802,10 +1802,10 @@ export type SellerUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1830,10 +1830,10 @@ export type SellerUncheckedUpdateWithoutSaleCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1858,10 +1858,10 @@ export type SellerCreateManyUserInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1880,10 +1880,10 @@ export type SellerUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1908,10 +1908,10 @@ export type SellerUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1936,10 +1936,10 @@ export type SellerUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1958,10 +1958,10 @@ export type SellerCreateManyOrganizationInput = {
   id?: string
   name: string
   email?: string | null
-  phone: string
+  phone?: string | null
   documentType?: $Enums.SellerDocumentType | null
   document?: string | null
-  companyName: string
+  companyName?: string | null
   street?: string | null
   number?: string | null
   complement?: string | null
@@ -1980,10 +1980,10 @@ export type SellerUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2008,10 +2008,10 @@ export type SellerUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2036,10 +2036,10 @@ export type SellerUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   documentType?: Prisma.NullableEnumSellerDocumentTypeFieldUpdateOperationsInput | $Enums.SellerDocumentType | null
   document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2272,10 +2272,10 @@ export type $SellerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     name: string
     email: string | null
-    phone: string
+    phone: string | null
     documentType: $Enums.SellerDocumentType | null
     document: string | null
-    companyName: string
+    companyName: string | null
     street: string | null
     number: string | null
     complement: string | null

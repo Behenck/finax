@@ -49,11 +49,11 @@ export type GetOrganizationsSlugSellers200 = {
     /**
      * @type string
      */
-    phone: string;
+    phone: string | null;
     /**
      * @type string
      */
-    companyName: string;
+    companyName: string | null;
     /**
      * @type string
      */

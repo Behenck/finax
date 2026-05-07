@@ -145,7 +145,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 					</FieldGroup>
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>Empresa *</FieldLabel>
+							<FieldLabel>Empresa</FieldLabel>
 							<Input
 								placeholder="Ex: Silva LTDA"
 								{...register("companyName")}
@@ -167,7 +167,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 					</FieldGroup>
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>Telefone para contato *</FieldLabel>
+							<FieldLabel>Telefone para contato</FieldLabel>
 							<Controller
 								control={control}
 								name="phone"

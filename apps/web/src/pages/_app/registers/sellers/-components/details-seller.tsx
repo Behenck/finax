@@ -21,6 +21,8 @@ interface DetailsSellerProps {
 }
 
 export function DetailsSeller({ seller }: DetailsSellerProps) {
+  const companyLabel = seller.companyName ?? "Sem empresa"
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -42,7 +44,7 @@ export function DetailsSeller({ seller }: DetailsSellerProps) {
           </Avatar>
           <div className="flex flex-col gap-1 flex-1">
             <h2 className="font-bold text-xl">{seller.name}</h2>
-            <span>{seller.companyName}</span>
+            <span>{companyLabel}</span>
             <Badge>
               {seller.status === "ACTIVE" ? "Ativo" : "Inativo"}
             </Badge>

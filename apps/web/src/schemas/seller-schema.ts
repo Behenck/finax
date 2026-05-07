@@ -12,8 +12,8 @@ export const sellerSchema = z
 	.object({
 		name: z.string().min(1, "Nome obrigatório"),
 		email: optionalEmailSchema,
-		phone: z.string({ error: "Telefone inválido" }),
-		companyName: z.string({ error: "Nome da empresa inválida" }),
+		phone: z.string().optional(),
+		companyName: z.string().optional(),
 		documentType: z.enum(["CPF", "CNPJ"]).optional(),
 		document: z.string().optional(),
 		country: z.string(),

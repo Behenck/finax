@@ -46,13 +46,13 @@ export type PostOrganizationsSlugSellersMutationRequest = {
    */
   email?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  phone: string;
+  phone?: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  companyName: string;
+  companyName?: string;
   /**
    * @type string | undefined
    */

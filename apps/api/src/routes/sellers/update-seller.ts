@@ -27,8 +27,8 @@ export async function updateSeller(app: FastifyInstance) {
         body: z.object({
           name: z.string(),
           email: z.string().optional(),
-          phone: z.string(),
-          companyName: z.string(),
+          phone: z.string().optional(),
+          companyName: z.string().optional(),
           documentType: z.enum(SellerDocumentType).optional(),
           document: z.string().optional(),
           country: z.string(),
@@ -77,6 +77,8 @@ export async function updateSeller(app: FastifyInstance) {
 
         const normalizedDocument = normalizeOptionalText(data.document)
         const normalizedEmail = normalizeOptionalText(data.email)?.toLowerCase() ?? null
+        const normalizedPhone = normalizeOptionalText(data.phone)
+        const normalizedCompanyName = normalizeOptionalText(data.companyName)
 
         await db(() => prisma.seller.update({
           where: {
@@ -85,8 +87,8 @@ export async function updateSeller(app: FastifyInstance) {
           data: {
             name: data.name,
             email: normalizedEmail,
-            phone: data.phone,
-            companyName: data.companyName,
+            phone: normalizedPhone,
+            companyName: normalizedCompanyName,
             documentType: normalizedDocument ? data.documentType ?? null : null,
             document: normalizedDocument,
             country: data.country,

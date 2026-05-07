@@ -25,7 +25,7 @@ describe("seller write routes", () => {
 		await app.close();
 	});
 
-	it("should create a seller without email and document fields", async () => {
+	it("should create a seller without optional contact and document fields", async () => {
 		const { user, org } = await makeUser();
 		const token = await authenticate(user.email, user.password);
 
@@ -35,8 +35,8 @@ describe("seller write routes", () => {
 			.send({
 				name: "Vendedor Sem Documento",
 				email: "",
-				phone: "55999999999",
-				companyName: "Empresa Sem Documento LTDA",
+				phone: "",
+				companyName: "",
 				documentType: undefined,
 				document: "",
 				country: "BR",
@@ -54,6 +54,8 @@ describe("seller write routes", () => {
 
 		expect(seller).not.toBeNull();
 		expect(seller?.email).toBeNull();
+		expect(seller?.phone).toBeNull();
+		expect(seller?.companyName).toBeNull();
 		expect(seller?.documentType).toBeNull();
 		expect(seller?.document).toBeNull();
 
@@ -67,6 +69,8 @@ describe("seller write routes", () => {
 				expect.objectContaining({
 					id: response.body.sellerId,
 					email: null,
+					phone: null,
+					companyName: null,
 					documentType: null,
 					document: null,
 				}),
@@ -82,13 +86,15 @@ describe("seller write routes", () => {
 			expect.objectContaining({
 				id: response.body.sellerId,
 				email: null,
+				phone: null,
+				companyName: null,
 				documentType: null,
 				document: null,
 			}),
 		);
 	});
 
-	it("should update a seller clearing email and document fields", async () => {
+	it("should update a seller clearing optional contact and document fields", async () => {
 		const { user, org } = await makeUser();
 		const token = await authenticate(user.email, user.password);
 		const suffix = `${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
@@ -113,8 +119,8 @@ describe("seller write routes", () => {
 			.send({
 				name: `Seller ${suffix}`,
 				email: "",
-				phone: "55999999999",
-				companyName: `Empresa ${suffix}`,
+				phone: "",
+				companyName: "",
 				documentType: "CPF",
 				document: "",
 				country: "BR",
@@ -131,6 +137,8 @@ describe("seller write routes", () => {
 
 		expect(updatedSeller).not.toBeNull();
 		expect(updatedSeller?.email).toBeNull();
+		expect(updatedSeller?.phone).toBeNull();
+		expect(updatedSeller?.companyName).toBeNull();
 		expect(updatedSeller?.documentType).toBeNull();
 		expect(updatedSeller?.document).toBeNull();
 		expect(updatedSeller?.state).toBe("SC");

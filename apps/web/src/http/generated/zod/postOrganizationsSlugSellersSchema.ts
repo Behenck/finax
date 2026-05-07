@@ -19,8 +19,8 @@ export const postOrganizationsSlugSellers201Schema = z.object({
 export const postOrganizationsSlugSellersMutationRequestSchema = z.object({
   name: z.string(),
   email: z.optional(z.string()),
-  phone: z.string(),
-  companyName: z.string(),
+  phone: z.optional(z.string()),
+  companyName: z.optional(z.string()),
   documentType: z.optional(z.enum(["CPF", "CNPJ"])),
   document: z.optional(z.string()),
   country: z.string(),

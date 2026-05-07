@@ -1,0 +1,3 @@
+ALTER TABLE "sellers"
+  ALTER COLUMN "phone" DROP NOT NULL,
+  ALTER COLUMN "company_name" DROP NOT NULL;

@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { sellerSchema } from "../src/schemas/seller-schema";
 
 describe("sellerSchema", () => {
-	it("accepts seller without email and document", () => {
+	it("accepts seller without optional contact and document fields", () => {
 		const result = sellerSchema.safeParse({
 			name: "Vendedor Opcional",
 			email: "",
-			phone: "55999999999",
-			companyName: "Empresa LTDA",
+			phone: "",
+			companyName: "",
 			documentType: undefined,
 			document: "",
 			country: "BR",

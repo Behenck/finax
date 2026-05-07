@@ -650,12 +650,12 @@ model Seller {
 
   name  String
   email String?
-  phone String
+  phone String?
 
   documentType SellerDocumentType?
   document     String?
 
-  companyName String @map("company_name")
+  companyName String? @map("company_name")
 
   street       String?
   number       String?
