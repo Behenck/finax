@@ -475,6 +475,67 @@ describe("DashboardPartnersOverview", () => {
 		expect(mocks.values.get("partnerIds")).toBe(partnerId);
 	});
 
+	it("filters partner options by search inside the partner selector", async () => {
+		const user = userEvent.setup();
+
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData([
+				buildRankingItem({
+					partnerId: "33333333-3333-4333-8333-333333333333",
+					partnerName: "João & Cia",
+					supervisorId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+					supervisorName: "Supervisor Norte",
+					concludedCount: 1,
+					concludedAmount: 100_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+				buildRankingItem({
+					partnerId: "44444444-4444-4444-8444-444444444444",
+					partnerName: "Parceiro Beta",
+					supervisorId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+					supervisorName: "Supervisor Sul",
+					concludedCount: 1,
+					concludedAmount: 100_000,
+					pendingCount: 0,
+					pendingAmount: 0,
+					canceledCount: 0,
+					canceledAmount: 0,
+					delinquentCount: 0,
+					delinquentAmount: 0,
+				}),
+			]),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		await user.click(screen.getByRole("button", { name: "Filtros" }));
+		await user.click(screen.getByRole("button", { name: /Todos os parceiros/i }));
+
+		const menu = screen.getByRole("menu");
+		await user.type(
+			within(menu).getByPlaceholderText("Buscar parceiro..."),
+			"joao",
+		);
+
+		expect(within(menu).getByText("João & Cia")).toBeInTheDocument();
+		expect(within(menu).queryByText("Parceiro Beta")).not.toBeInTheDocument();
+
+		await user.clear(within(menu).getByPlaceholderText("Buscar parceiro..."));
+		await user.type(within(menu).getByPlaceholderText("Buscar parceiro..."), "zzz");
+
+		expect(
+			within(menu).getByText("Nenhum parceiro encontrado."),
+		).toBeInTheDocument();
+	});
+
 	it("renders supervisors and linked partners from the same filtered ranking data", async () => {
 		const user = userEvent.setup();
 		mocks.usePartnerSalesDashboard.mockReturnValue({

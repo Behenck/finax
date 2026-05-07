@@ -73,6 +73,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -411,6 +412,16 @@ function getPartnerSecondaryName(partner: PartnerDashboardIdentity) {
 	}
 
 	return partner.partnerName;
+}
+
+function normalizeDashboardPartnerSearchValue(value: string) {
+	return value
+		.normalize("NFD")
+		.replace(/\p{Diacritic}/gu, "")
+		.normalize("NFKC")
+		.toLowerCase()
+		.trim()
+		.replace(/\s+/g, " ");
 }
 
 function buildBreakdownPieData(items: DashboardBreakdownItem[]) {
@@ -789,11 +800,38 @@ function PartnerMultiSelectFilter({
 	onChange: (ids: string[]) => void;
 	disabled?: boolean;
 }) {
+	const [open, setOpen] = useState(false);
+	const [search, setSearch] = useState("");
 	const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 	const selectedPartners = useMemo(
 		() => options.filter((option) => selectedIdSet.has(option.id)),
 		[options, selectedIdSet],
 	);
+	const filteredOptions = useMemo(() => {
+		const normalizedSearch = normalizeDashboardPartnerSearchValue(search);
+
+		if (!normalizedSearch) {
+			return options;
+		}
+
+		return options.filter((option) => {
+			const searchableContent = [
+				getPartnerPrimaryName(option),
+				getPartnerSecondaryName(option),
+				option.supervisors.length > 0
+					? option.supervisors
+							.map((supervisor) => supervisor.name ?? "Supervisor sem nome")
+							.join(" ")
+					: "Sem supervisor",
+			]
+				.filter(Boolean)
+				.join(" ");
+
+			return normalizeDashboardPartnerSearchValue(searchableContent).includes(
+				normalizedSearch,
+			);
+		});
+	}, [options, search]);
 	const hasAllPartnersSelected =
 		options.length > 0 && selectedPartners.length === options.length;
 	const triggerLabel =
@@ -815,7 +853,16 @@ function PartnerMultiSelectFilter({
 	}
 
 	return (
-		<DropdownMenu>
+		<DropdownMenu
+			open={open}
+			onOpenChange={(nextOpen) => {
+				setOpen(nextOpen);
+
+				if (!nextOpen) {
+					setSearch("");
+				}
+			}}
+		>
 			<DropdownMenuTrigger asChild>
 				<Button
 					type="button"
@@ -836,6 +883,18 @@ function PartnerMultiSelectFilter({
 					</DropdownMenuItem>
 				) : (
 					<>
+						<div className="px-1 pb-1">
+							<Input
+								value={search}
+								onChange={(event) => setSearch(event.target.value)}
+								onKeyDown={(event) => {
+									if (event.key !== "Escape") {
+										event.stopPropagation();
+									}
+								}}
+								placeholder="Buscar parceiro..."
+							/>
+						</div>
 						<DropdownMenuItem
 							onSelect={(event) => {
 								event.preventDefault();
@@ -845,39 +904,45 @@ function PartnerMultiSelectFilter({
 							Todos os parceiros
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						{options.map((option) => {
-							const secondaryName = getPartnerSecondaryName(option);
-							return (
-								<DropdownMenuCheckboxItem
-									key={option.id}
-									checked={selectedIdSet.has(option.id)}
-									onCheckedChange={(checked) =>
-										togglePartner(option.id, Boolean(checked))
-									}
-								>
-									<div className="flex flex-col gap-0.5">
-										<span className="font-medium">
-											{getPartnerPrimaryName(option)}
-										</span>
-										{secondaryName ? (
-											<span className="text-xs text-muted-foreground">
-												{secondaryName}
+						{filteredOptions.length === 0 ? (
+							<div className="px-2 py-3 text-sm text-muted-foreground">
+								Nenhum parceiro encontrado.
+							</div>
+						) : (
+							filteredOptions.map((option) => {
+								const secondaryName = getPartnerSecondaryName(option);
+								return (
+									<DropdownMenuCheckboxItem
+										key={option.id}
+										checked={selectedIdSet.has(option.id)}
+										onCheckedChange={(checked) =>
+											togglePartner(option.id, Boolean(checked))
+										}
+									>
+										<div className="flex flex-col gap-0.5">
+											<span className="font-medium">
+												{getPartnerPrimaryName(option)}
 											</span>
-										) : null}
-										<span className="text-xs text-muted-foreground">
-											{option.supervisors.length > 0
-												? option.supervisors
-														.map(
-															(supervisor) =>
-																supervisor.name ?? "Supervisor sem nome",
-														)
-														.join(", ")
-												: "Sem supervisor"}
-										</span>
-									</div>
-								</DropdownMenuCheckboxItem>
-							);
-						})}
+											{secondaryName ? (
+												<span className="text-xs text-muted-foreground">
+													{secondaryName}
+												</span>
+											) : null}
+											<span className="text-xs text-muted-foreground">
+												{option.supervisors.length > 0
+													? option.supervisors
+															.map(
+																(supervisor) =>
+																	supervisor.name ?? "Supervisor sem nome",
+															)
+															.join(", ")
+													: "Sem supervisor"}
+											</span>
+										</div>
+									</DropdownMenuCheckboxItem>
+								);
+							})
+						)}
 					</>
 				)}
 				{selectedIds.length > 0 ? (

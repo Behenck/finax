@@ -15,6 +15,8 @@ const mocks = vi.hoisted(() => ({
 	deleteInstallment: vi.fn().mockResolvedValue(undefined),
 	useProductCommissionReversalRules: vi.fn(),
 	canMock: vi.fn(),
+	showZeroInstallments: false,
+	setShowZeroInstallments: vi.fn(),
 }));
 
 vi.mock("@/hooks/sales", () => ({
@@ -62,9 +64,25 @@ vi.mock("nuqs", async (importOriginal) => {
 
 	return {
 		...actual,
-		useQueryState: () => [false, vi.fn()],
+		useQueryState: () => [
+			mocks.showZeroInstallments,
+			mocks.setShowZeroInstallments,
+		],
 	};
 });
+
+function expectCurrentTableTotals(params: {
+	percentage: string;
+	amount: string;
+}) {
+	const percentageCard = screen.getByText("Total percentual").parentElement;
+	const amountCard = screen.getByText("Total comissão").parentElement;
+
+	expect(percentageCard).not.toBeNull();
+	expect(amountCard).not.toBeNull();
+	expect(within(percentageCard as HTMLElement).getByText(params.percentage)).toBeInTheDocument();
+	expect(within(amountCard as HTMLElement).getByText(params.amount)).toBeInTheDocument();
+}
 
 describe("sale-installments-panel", () => {
 	beforeEach(() => {
@@ -77,6 +95,8 @@ describe("sale-installments-panel", () => {
 		mocks.deleteInstallment.mockReset();
 		mocks.useProductCommissionReversalRules.mockReset();
 		mocks.canMock.mockReset();
+		mocks.setShowZeroInstallments.mockReset();
+		mocks.showZeroInstallments = false;
 		mocks.patchInstallmentsStatusBulk.mockResolvedValue({
 			updatedCount: 0,
 			skipped: [],
@@ -155,6 +175,10 @@ describe("sale-installments-panel", () => {
 				"Resumo: 1/1 pagas, 0 pendentes, 0 canceladas, 0 estornadas.",
 			),
 		).toBeInTheDocument();
+		expectCurrentTableTotals({
+			percentage: "2%",
+			amount: "R$ 20,00",
+		});
 		expect(screen.getAllByText("10/03/2026").length).toBeGreaterThan(0);
 	});
 
@@ -174,6 +198,34 @@ describe("sale-installments-panel", () => {
 				"Resumo: 1/2 pagas, 1 pendentes, 0 canceladas, 0 estornadas.",
 			),
 		).toBeInTheDocument();
+		expectCurrentTableTotals({
+			percentage: "2%",
+			amount: "R$ 20,00",
+		});
+	});
+
+	it("should update totals when changing the active beneficiary tab", async () => {
+		const user = userEvent.setup();
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		expectCurrentTableTotals({
+			percentage: "2%",
+			amount: "R$ 20,00",
+		});
+
+		await user.click(screen.getByRole("tab", { name: "Comissão B" }));
+
+		expectCurrentTableTotals({
+			percentage: "3%",
+			amount: "R$ 30,00",
+		});
 	});
 
 	it("should update selected installments in bulk from sales panel", async () => {
@@ -293,6 +345,119 @@ describe("sale-installments-panel", () => {
 		expect(screen.getByText("Comissão Positiva")).toBeInTheDocument();
 		expect(screen.getByText("Comissão Estornada")).toBeInTheDocument();
 		expect(screen.queryByText("Comissão Zerada")).not.toBeInTheDocument();
+		expectCurrentTableTotals({
+			percentage: "2%",
+			amount: "R$ 20,00",
+		});
+	});
+
+	it("should include zero installments in totals when show-zero filter is enabled", () => {
+		mocks.showZeroInstallments = true;
+		mocks.useSaleCommissionInstallments.mockReturnValue({
+			data: {
+				installments: [
+					{
+						id: "inst-1",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão A",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: 2000,
+						status: "PAID",
+						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+						paymentDate: "2026-03-10T00:00:00.000Z",
+					},
+					{
+						id: "inst-2",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "MANUAL",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão A",
+						installmentNumber: 2,
+						percentage: 0.5,
+						amount: 0,
+						status: "PENDING",
+						expectedPaymentDate: "2026-03-11T00:00:00.000Z",
+						paymentDate: null,
+					},
+				],
+			},
+			isLoading: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		expect(screen.getByText("Comissão A")).toBeInTheDocument();
+		expectCurrentTableTotals({
+			percentage: "2,5%",
+			amount: "R$ 20,00",
+		});
+	});
+
+	it("should show zero totals when there are no visible installments in the current table", () => {
+		mocks.useSaleCommissionInstallments.mockReturnValue({
+			data: {
+				installments: [
+					{
+						id: "inst-zero",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão Zerada",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: 0,
+						status: "PENDING",
+						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+						paymentDate: null,
+					},
+				],
+			},
+			isLoading: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		expect(
+			screen.getByText("Nenhuma parcela encontrada para o filtro atual."),
+		).toBeInTheDocument();
+		expectCurrentTableTotals({
+			percentage: "0%",
+			amount: "R$ 0,00",
+		});
 	});
 
 	it("should keep reversed installment checkbox disabled in bulk selection", () => {

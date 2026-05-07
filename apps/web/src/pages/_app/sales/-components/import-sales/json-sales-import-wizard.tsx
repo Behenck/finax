@@ -46,6 +46,7 @@ import {
   parseJsonSalesImportContent,
   type ParsedJsonSalesImportPayload,
 } from "./json-sales-import-helpers";
+import { SearchableResponsibleSelect } from "./searchable-responsible-select";
 
 const NONE_VALUE = "__NONE__";
 const COMMISSION_RECIPIENT_TYPES = [
@@ -740,10 +741,11 @@ export function JsonSalesImportWizard() {
                             placeholder="Nome do responsável"
                           />
                         ) : (
-                          <Select
-                            value={resolution?.responsibleId ?? NONE_VALUE}
+                          <SearchableResponsibleSelect
+                            ariaLabel="Responsável"
+                            value={resolution?.responsibleId}
                             disabled={!resolution?.responsibleType}
-                            onValueChange={(value) =>
+                            onChange={(value) =>
                               setUnitResolutions((current) => ({
                                 ...current,
                                 [group.key]: {
@@ -751,33 +753,18 @@ export function JsonSalesImportWizard() {
                                   companyId:
                                     current[group.key]?.companyId ?? "",
                                   unitId: current[group.key]?.unitId,
-                                  responsibleId:
-                                    value === NONE_VALUE ? undefined : value,
+                                  responsibleId: value,
                                 },
                               }))
                             }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o responsável" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={NONE_VALUE}>
-                                Selecionar...
-                              </SelectItem>
-                              {(
-                                saleResponsibleOptionsByType[
-                                  resolution?.responsibleType ?? "SELLER"
-                                ] ?? []
-                              ).map((responsible) => (
-                                <SelectItem
-                                  key={responsible.id}
-                                  value={responsible.id}
-                                >
-                                  {responsible.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            options={
+                              saleResponsibleOptionsByType[
+                                resolution?.responsibleType ?? "SELLER"
+                              ] ?? []
+                            }
+                            placeholder="Selecione o responsável"
+                            emptyLabel="Nenhum responsável encontrado."
+                          />
                         )}
                       </div>
                     </div>

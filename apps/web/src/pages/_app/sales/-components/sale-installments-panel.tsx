@@ -174,6 +174,13 @@ function formatInstallmentAmountInput(value: string, forceNegative: boolean) {
 	return `-${formattedValue}`;
 }
 
+function formatInstallmentPercentage(value: number) {
+	return `${value.toLocaleString("pt-BR", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 2,
+	})}%`;
+}
+
 interface SaleInstallmentsPanelProps {
 	saleId: string;
 	saleStatus: SaleStatus;
@@ -378,6 +385,19 @@ export function SaleInstallmentsPanel({
 			)?.installments ?? [],
 		[activeBeneficiaryTabValue, installmentsByBeneficiary],
 	);
+	const activeGroupTotals = useMemo(
+		() => ({
+			percentage: activeGroupInstallments.reduce(
+				(sum, installment) => sum + installment.percentage,
+				0,
+			),
+			amount: activeGroupInstallments.reduce(
+				(sum, installment) => sum + installment.amount,
+				0,
+			),
+		}),
+		[activeGroupInstallments],
+	);
 	const installmentsMultiSelect = useCheckboxMultiSelect<string>({
 		visibleIds: activeGroupInstallments.map((installment) => installment.id),
 		isSelectable: (installmentId) =>
@@ -387,7 +407,10 @@ export function SaleInstallmentsPanel({
 		onClearSelection: clearSelectedInstallments,
 		enabled: canBulkStatusInstallments,
 	});
-	const productReversalRules = productReversalRulesData?.rules ?? [];
+	const productReversalRules = useMemo(
+		() => productReversalRulesData?.rules ?? [],
+		[productReversalRulesData?.rules],
+	);
 	const productReversalMode = productReversalRulesData?.mode ?? null;
 	const productReversalTotalPercentage =
 		productReversalRulesData?.totalPaidPercentage ?? null;
@@ -1030,6 +1053,21 @@ export function SaleInstallmentsPanel({
 						>
 							Mostrar parcelas zeradas
 						</label>
+					</div>
+				</div>
+
+				<div className="grid gap-3 sm:grid-cols-2">
+					<div className="rounded-md border bg-muted/20 p-3">
+						<p className="text-xs text-muted-foreground">Total percentual</p>
+						<p className="text-sm font-semibold">
+							{formatInstallmentPercentage(activeGroupTotals.percentage)}
+						</p>
+					</div>
+					<div className="rounded-md border bg-muted/20 p-3">
+						<p className="text-xs text-muted-foreground">Total comissão</p>
+						<p className="text-sm font-semibold">
+							{formatCurrencyBRL(activeGroupTotals.amount / 100)}
+						</p>
 					</div>
 				</div>
 
