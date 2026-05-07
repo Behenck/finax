@@ -10,6 +10,7 @@ import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -328,30 +329,25 @@ function BonusPreviewPage() {
 				<div className="grid gap-3 lg:grid-cols-[minmax(220px,1.4fr)_repeat(4,minmax(140px,1fr))]">
 					<Field className="gap-1">
 						<FieldLabel>Produto</FieldLabel>
-						<Select
+						<SearchableSelect
+							options={productOptions.map((option) => ({
+								value: option.id,
+								label: option.label,
+							}))}
 							value={productId}
 							onValueChange={(value) => {
 								resetPreview();
 								setProductId(value);
 							}}
-						>
-							<SelectTrigger>
-								<SelectValue
-									placeholder={
-										isLoadingProducts
-											? "Carregando produtos..."
-											: "Selecione um produto"
-									}
-								/>
-							</SelectTrigger>
-							<SelectContent>
-								{productOptions.map((option) => (
-									<SelectItem key={option.id} value={option.id}>
-										{option.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+							placeholder={
+								isLoadingProducts
+									? "Carregando produtos..."
+									: "Selecione um produto"
+							}
+							searchPlaceholder="Buscar produto..."
+							emptyMessage="Nenhum produto encontrado."
+							disabled={isLoadingProducts}
+						/>
 					</Field>
 
 					<Field className="gap-1">

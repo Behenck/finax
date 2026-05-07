@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -174,7 +174,9 @@ describe("quick-sale-form", () => {
 		const addButton = screen.getByRole("button", { name: "Adicionar item" });
 		await user.click(addButton);
 
-		expect(screen.getAllByText(/Item \d+/)).toHaveLength(2);
+		expect(screen.getAllByRole("heading", { name: /Item \d+/ })).toHaveLength(
+			2,
+		);
 		expect(addButton).toBeDisabled();
 
 		const removeSecondItemButton = screen.getByRole("button", {
@@ -233,7 +235,9 @@ describe("quick-sale-form", () => {
 		await user.click(screen.getByRole("button", { name: "Duplicar item 1" }));
 		await user.click(screen.getByRole("button", { name: "Salvar vendas" }));
 
-		expect(screen.getAllByText(/Item \d+/)).toHaveLength(2);
+		expect(screen.getAllByRole("heading", { name: /Item \d+/ })).toHaveLength(
+			2,
+		);
 		expect(screen.getAllByDisplayValue("R$ 1.000,00")).toHaveLength(2);
 		await waitFor(() => {
 			expect(onSubmitBatch).toHaveBeenCalledTimes(1);
@@ -241,6 +245,75 @@ describe("quick-sale-form", () => {
 		const payload = onSubmitBatch.mock.calls[0]?.[0];
 		expect(payload.items[0]?.customerId).toBe(CUSTOMER_ID);
 		expect(payload.items[1]?.customerId).toBe(CUSTOMER_ID);
+	});
+
+	it("should search and select dependent company and unit fields", async () => {
+		const user = userEvent.setup();
+
+		renderQuickSaleForm({
+			companies: [
+				{
+					id: COMPANY_ID,
+					name: "Empresa Norte",
+					units: [{ id: UNIT_ID, name: "Unidade Centro" }],
+				},
+				{
+					id: "99999999-9999-4999-8999-999999999999",
+					name: "Empresa Sul",
+					units: [
+						{
+							id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+							name: "Unidade Sul",
+						},
+					],
+				},
+			],
+			initialValues: {
+				parentProductId: ROOT_PRODUCT_ID,
+				companyId: "",
+				unitId: "",
+				responsibleType: "SELLER",
+				responsibleId: SELLER_ID,
+				items: [
+					{
+						customerId: CUSTOMER_ID,
+						productId: CHILD_PRODUCT_A_ID,
+						quantity: "1",
+						saleDate: "2026-03-10",
+						totalAmount: "R$ 1.000,00",
+						dynamicFields: {},
+					},
+				],
+			},
+		});
+
+		await user.click(
+			screen.getByRole("combobox", { name: "Selecione uma empresa" }),
+		);
+		let dialog = screen.getByRole("dialog");
+		await user.type(
+			within(dialog).getByPlaceholderText("Buscar empresa..."),
+			"sul",
+		);
+		await user.click(within(dialog).getByRole("button", { name: "Empresa Sul" }));
+
+		expect(
+			screen.getByRole("combobox", { name: "Selecione uma empresa" }),
+		).toHaveTextContent("Empresa Sul");
+
+		await user.click(
+			screen.getByRole("combobox", { name: "Selecione uma unidade" }),
+		);
+		dialog = screen.getByRole("dialog");
+		await user.type(
+			within(dialog).getByPlaceholderText("Buscar unidade..."),
+			"sul",
+		);
+		await user.click(within(dialog).getByRole("button", { name: "Unidade Sul" }));
+
+		expect(
+			screen.getByRole("combobox", { name: "Selecione uma unidade" }),
+		).toHaveTextContent("Unidade Sul");
 	});
 
 	it("should disable copy when duplicating would exceed total limit", () => {

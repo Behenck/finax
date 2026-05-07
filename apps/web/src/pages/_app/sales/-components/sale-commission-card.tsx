@@ -1,5 +1,5 @@
 import { format, parse } from "date-fns";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
 	type Control,
@@ -16,13 +16,11 @@ import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
-	SelectGroup,
 	SelectItem,
-	SelectLabel,
-	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -304,7 +302,7 @@ export function SaleCommissionCard({
 				</Button>
 			</div>
 
-			<div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[170px_170px_200px_minmax(252px,1fr)_132px_120px_120px] xl:items-end">
+			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6 2xl:grid-cols-[170px_170px_200px_minmax(252px,1fr)_132px_120px_120px] 2xl:items-end">
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Tipo</FieldLabel>
@@ -485,7 +483,7 @@ export function SaleCommissionCard({
 				</FieldGroup>
 
 				{recipientType === "OTHER" ? (
-					<FieldGroup>
+					<FieldGroup className="min-w-0 xl:col-span-2 2xl:col-span-1">
 						<Field className="gap-1">
 							<FieldLabel className="font-normal">Beneficiário</FieldLabel>
 							<Controller
@@ -513,59 +511,40 @@ export function SaleCommissionCard({
 								control={control}
 								render={({ field, fieldState }) => (
 									<>
-										<Select
+										<SearchableSelect
+											options={
+												recipientType === "PARTNER"
+													? [
+															...activePartnerBeneficiaries.map((option) => ({
+																value: option.id,
+																label: option.label,
+																group: "Ativos",
+															})),
+															...inactivePartnerBeneficiaries.map((option) => ({
+																value: option.id,
+																label: option.label,
+																group: "Inativos",
+															})),
+														]
+													: beneficiaryOptionsWithFallback.map((option) => ({
+															value: option.id,
+															label: option.label,
+														}))
+											}
 											value={field.value ?? OPTIONAL_NONE_VALUE}
 											onValueChange={(value) =>
 												field.onChange(
 													value === OPTIONAL_NONE_VALUE ? undefined : value,
 												)
 											}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Selecione" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value={OPTIONAL_NONE_VALUE}>
-													Selecione
-												</SelectItem>
-												{recipientType === "PARTNER" ? (
-													<>
-														<SelectGroup>
-															<SelectLabel>Ativos</SelectLabel>
-															{activePartnerBeneficiaries.map((option) => (
-																<SelectItem key={option.id} value={option.id}>
-																	{option.label}
-																</SelectItem>
-															))}
-														</SelectGroup>
-														{inactivePartnerBeneficiaries.length > 0 ? (
-															<>
-																<SelectSeparator />
-																<SelectGroup>
-																	<SelectLabel>Inativos</SelectLabel>
-																	{inactivePartnerBeneficiaries.map(
-																		(option) => (
-																			<SelectItem
-																				key={option.id}
-																				value={option.id}
-																			>
-																				{option.label}
-																			</SelectItem>
-																		),
-																	)}
-																</SelectGroup>
-															</>
-														) : null}
-													</>
-												) : (
-													beneficiaryOptionsWithFallback.map((option) => (
-														<SelectItem key={option.id} value={option.id}>
-															{option.label}
-														</SelectItem>
-													))
-												)}
-											</SelectContent>
-										</Select>
+											placeholder="Selecione"
+											searchPlaceholder="Buscar beneficiário..."
+											emptyMessage="Nenhum beneficiário encontrado."
+											clearOption={{
+												value: OPTIONAL_NONE_VALUE,
+												label: "Selecione",
+											}}
+										/>
 										<FormFieldError error={fieldState.error} />
 									</>
 								)}
@@ -626,35 +605,24 @@ export function SaleCommissionCard({
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Parcelas</FieldLabel>
-						<div className="flex gap-2">
-							<Input
-								type="number"
-								min={1}
-								step={1}
-								value={installments.length}
-								onChange={(event) => {
-									const parsedValue = Number(event.target.value);
-									if (!Number.isFinite(parsedValue)) {
-										return;
-									}
-
-									onInstallmentCountChange(
-										index,
-										Math.max(1, Math.trunc(parsedValue)),
-									);
-								}}
-							/>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() =>
-									onInstallmentCountChange(index, installments.length + 1)
+						<Input
+							type="number"
+							min={1}
+							step={1}
+							aria-label="Parcelas"
+							value={installments.length}
+							onChange={(event) => {
+								const parsedValue = Number(event.target.value);
+								if (!Number.isFinite(parsedValue)) {
+									return;
 								}
-							>
-								<Plus className="size-4" />
-								Adicionar parcela
-							</Button>
-						</div>
+
+								onInstallmentCountChange(
+									index,
+									Math.max(1, Math.trunc(parsedValue)),
+								);
+							}}
+						/>
 					</Field>
 				</FieldGroup>
 			</div>

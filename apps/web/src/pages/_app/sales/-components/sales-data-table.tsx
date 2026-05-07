@@ -77,6 +77,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -1935,50 +1936,42 @@ export function SalesDataTable({
 
 					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Empresa</p>
-						<Select
+						<SearchableSelect
+							options={companies.map((company) => ({
+								value: company.id,
+								label: company.name,
+							}))}
 							value={companyIdFilter || "ALL"}
 							onValueChange={(value) => {
 								void setCompanyIdFilter(value === "ALL" ? "" : value);
 								void setUnitIdFilter("");
 								void setPage(1);
 							}}
-						>
-							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Todas as empresas" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="ALL">Todas as empresas</SelectItem>
-								{companies.map((company) => (
-									<SelectItem key={company.id} value={company.id}>
-										{company.name}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+							placeholder="Todas as empresas"
+							searchPlaceholder="Buscar empresa..."
+							emptyMessage="Nenhuma empresa encontrada."
+							clearOption={{ value: "ALL", label: "Todas as empresas" }}
+						/>
 					</div>
 
 					<div className="space-y-1">
 						<p className="text-xs text-muted-foreground">Unidade</p>
-						<Select
+						<SearchableSelect
+							options={unitsBySelectedCompany.map((unit) => ({
+								value: unit.id,
+								label: unit.name,
+							}))}
 							value={unitIdFilter || "ALL"}
 							onValueChange={(value) => {
 								void setUnitIdFilter(value === "ALL" ? "" : value);
 								void setPage(1);
 							}}
 							disabled={!companyIdFilter}
-						>
-							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Todas as unidades" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="ALL">Todas as unidades</SelectItem>
-								{unitsBySelectedCompany.map((unit) => (
-									<SelectItem key={unit.id} value={unit.id}>
-										{unit.name}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+							placeholder="Todas as unidades"
+							searchPlaceholder="Buscar unidade..."
+							emptyMessage="Nenhuma unidade encontrada."
+							clearOption={{ value: "ALL", label: "Todas as unidades" }}
+						/>
 					</div>
 
 					<div className="space-y-1">
@@ -2073,48 +2066,41 @@ export function SalesDataTable({
 									]
 								}
 							</p>
-							<Select
+							<SearchableSelect
+								options={responsibleOptions.map((responsibleOption) => ({
+									value: responsibleOption.id,
+									label: responsibleOption.name,
+								}))}
 								value={responsibleIdFilter || "ALL"}
 								onValueChange={(value) => {
 									void setResponsibleIdFilter(value === "ALL" ? "" : value);
 									void setPage(1);
 								}}
-							>
-								<SelectTrigger
-									className="w-full"
-									aria-label={
+								placeholder={`Todos: ${
+									SALE_RESPONSIBLE_TYPE_LABEL[
+										responsibleTypeFilter as SaleResponsibleType
+									]
+								}`}
+								searchPlaceholder={`Buscar ${
+									SALE_RESPONSIBLE_TYPE_LABEL[
+										responsibleTypeFilter as SaleResponsibleType
+									]
+								}...`}
+								emptyMessage="Nenhum responsável encontrado."
+								clearOption={{
+									value: "ALL",
+									label: `Todos: ${
 										SALE_RESPONSIBLE_TYPE_LABEL[
 											responsibleTypeFilter as SaleResponsibleType
 										]
-									}
-								>
-									<SelectValue
-										placeholder={`Todos: ${
-											SALE_RESPONSIBLE_TYPE_LABEL[
-												responsibleTypeFilter as SaleResponsibleType
-											]
-										}`}
-									/>
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="ALL">
-										Todos:{" "}
-										{
-											SALE_RESPONSIBLE_TYPE_LABEL[
-												responsibleTypeFilter as SaleResponsibleType
-											]
-										}
-									</SelectItem>
-									{responsibleOptions.map((responsibleOption) => (
-										<SelectItem
-											key={responsibleOption.id}
-											value={responsibleOption.id}
-										>
-											{responsibleOption.name}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+									}`,
+								}}
+								ariaLabel={
+									SALE_RESPONSIBLE_TYPE_LABEL[
+										responsibleTypeFilter as SaleResponsibleType
+									]
+								}
+							/>
 						</div>
 					) : null}
 

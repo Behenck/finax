@@ -1,5 +1,4 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 import { SaleCommissionCard } from "@/pages/_app/sales/-components/sale-commission-card";
@@ -66,8 +65,7 @@ function SaleCommissionCardHarness(props: {
 }
 
 describe("sale-commission-card", () => {
-	it("should request one more installment when clicking add installment", async () => {
-		const user = userEvent.setup();
+	it("should request a new installment count when editing the installments field", async () => {
 		const onInstallmentCountChange = vi.fn();
 
 		render(
@@ -76,9 +74,9 @@ describe("sale-commission-card", () => {
 			/>,
 		);
 
-		await user.click(
-			screen.getByRole("button", { name: "Adicionar parcela" }),
-		);
+		fireEvent.change(screen.getByRole("spinbutton", { name: "Parcelas" }), {
+			target: { value: "3" },
+		});
 
 		expect(onInstallmentCountChange).toHaveBeenCalledWith(0, 3);
 	});

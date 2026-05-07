@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { useApp } from "@/context/app-context";
 import {
   useGetOrganizationsSlugCategories,
@@ -60,19 +60,17 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel className="font-normal">Empresa</FieldLabel>
-                <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {companies.map((company) => (
-                      <SelectItem key={company.id} value={company.id}>
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={companies.map((company) => ({
+                    value: company.id,
+                    label: company.name,
+                  }))}
+                  value={field.value ?? undefined}
+                  onValueChange={field.onChange}
+                  placeholder="Selecione"
+                  searchPlaceholder="Buscar empresa..."
+                  emptyMessage="Nenhuma empresa encontrada."
+                />
                 {fieldState.invalid && (
                   <FieldError id="companyId-error" errors={[fieldState.error]} />
                 )}
@@ -87,19 +85,18 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel className="font-normal">Unidade</FieldLabel>
-                <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!selectedCompanyId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {units.map((unit) => (
-                      <SelectItem key={unit.id} value={unit.id}>
-                        {unit.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={units.map((unit) => ({
+                    value: unit.id,
+                    label: unit.name,
+                  }))}
+                  value={field.value ?? undefined}
+                  onValueChange={field.onChange}
+                  disabled={!selectedCompanyId}
+                  placeholder="Selecione"
+                  searchPlaceholder="Buscar unidade..."
+                  emptyMessage="Nenhuma unidade encontrada."
+                />
                 {fieldState.invalid && (
                   <FieldError id="unitId-error" errors={[fieldState.error]} />
                 )}
@@ -117,19 +114,17 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} className="gap-1">
               <FieldLabel className="font-normal">Centro de Custo</FieldLabel>
-              <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  {costCenters.map((costCenter) => (
-                    <SelectItem key={costCenter.id} value={costCenter.id}>
-                      {costCenter.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                options={costCenters.map((costCenter) => ({
+                  value: costCenter.id,
+                  label: costCenter.name,
+                }))}
+                value={field.value ?? undefined}
+                onValueChange={field.onChange}
+                placeholder="Selecione"
+                searchPlaceholder="Buscar centro de custo..."
+                emptyMessage="Nenhum centro de custo encontrado."
+              />
               {fieldState.invalid && (
                 <FieldError id="costCenterId-error" errors={[fieldState.error]} />
               )}
@@ -147,19 +142,17 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel className="font-normal">Categoria</FieldLabel>
-                <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={categories.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                  }))}
+                  value={field.value ?? undefined}
+                  onValueChange={field.onChange}
+                  placeholder="Selecione"
+                  searchPlaceholder="Buscar categoria..."
+                  emptyMessage="Nenhuma categoria encontrada."
+                />
                 {fieldState.invalid && (
                   <FieldError id="categoryId-error" errors={[fieldState.error]} />
                 )}
@@ -174,19 +167,18 @@ export function ClassificationField({ control }: ClassificationFieldProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel className="font-normal">Sub Categoria</FieldLabel>
-                <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!selectedCategoryId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {subCategories.map((subCategory) => (
-                      <SelectItem key={subCategory.id} value={subCategory.id}>
-                        {subCategory.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={subCategories.map((subCategory) => ({
+                    value: subCategory.id,
+                    label: subCategory.name,
+                  }))}
+                  value={field.value ?? undefined}
+                  onValueChange={field.onChange}
+                  disabled={!selectedCategoryId}
+                  placeholder="Selecione"
+                  searchPlaceholder="Buscar subcategoria..."
+                  emptyMessage="Nenhuma subcategoria encontrada."
+                />
                 {fieldState.invalid && (
                   <FieldError id="subCategoryId-error" errors={[fieldState.error]} />
                 )}

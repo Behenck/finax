@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ListPageSkeleton } from "@/components/loading-skeletons";
 import { PageHeader } from "@/components/page-header";
 import { ResponsiveDataView } from "@/components/responsive-data-view";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -659,7 +660,11 @@ function TransactionsPage() {
 
 				<div className="space-y-1">
 					<p className="text-xs text-muted-foreground">Empresa</p>
-					<Select
+					<SearchableSelect
+						options={companies.map((company) => ({
+							value: company.id,
+							label: company.name,
+						}))}
 						value={companyId || "ALL"}
 						onValueChange={(value) => {
 							clearSelectedTransactions();
@@ -669,24 +674,20 @@ function TransactionsPage() {
 							}
 							void setPage(1);
 						}}
-					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Todas" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ALL">Todas as empresas</SelectItem>
-							{companies.map((company) => (
-								<SelectItem key={company.id} value={company.id}>
-									{company.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+						placeholder="Todas"
+						searchPlaceholder="Buscar empresa..."
+						emptyMessage="Nenhuma empresa encontrada."
+						clearOption={{ value: "ALL", label: "Todas as empresas" }}
+					/>
 				</div>
 
 				<div className="space-y-1">
 					<p className="text-xs text-muted-foreground">Unidade</p>
-					<Select
+					<SearchableSelect
+						options={unitsBySelectedCompany.map((unit) => ({
+							value: unit.id,
+							label: unit.name,
+						}))}
 						value={unitId || "ALL"}
 						onValueChange={(value) => {
 							clearSelectedTransactions();
@@ -694,19 +695,11 @@ function TransactionsPage() {
 							void setPage(1);
 						}}
 						disabled={!companyId}
-					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Todas" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ALL">Todas as unidades</SelectItem>
-							{unitsBySelectedCompany.map((unit) => (
-								<SelectItem key={unit.id} value={unit.id}>
-									{unit.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+						placeholder="Todas"
+						searchPlaceholder="Buscar unidade..."
+						emptyMessage="Nenhuma unidade encontrada."
+						clearOption={{ value: "ALL", label: "Todas as unidades" }}
+					/>
 				</div>
 
 				<div className="space-y-1">

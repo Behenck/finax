@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -2412,7 +2413,11 @@ export function ImportSalesWizard({
 							<div className="grid gap-3 md:grid-cols-2">
 								<div className="space-y-1">
 									<Label>Empresa *</Label>
-									<Select
+									<SearchableSelect
+										options={companies.map((company) => ({
+											value: company.id,
+											label: company.name,
+										}))}
 										value={mapping.fixedValues.companyId || NONE_VALUE}
 										onValueChange={(value) => {
 											const companyId = value === NONE_VALUE ? "" : value;
@@ -2424,48 +2429,46 @@ export function ImportSalesWizard({
 												unitId: selectedCompanyOption?.units?.[0]?.id,
 											});
 										}}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione a empresa" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={NONE_VALUE}>Selecionar...</SelectItem>
-											{companies.map((company) => (
-												<SelectItem key={company.id} value={company.id}>
-													{company.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione a empresa"
+										searchPlaceholder="Buscar empresa..."
+										emptyMessage="Nenhuma empresa encontrada."
+										clearOption={{
+											value: NONE_VALUE,
+											label: "Selecionar...",
+										}}
+									/>
 								</div>
 
 								<div className="space-y-1">
 									<Label>Unidade</Label>
-									<Select
+									<SearchableSelect
+										options={companyUnits.map((unit) => ({
+											value: unit.id,
+											label: unit.name,
+										}))}
 										value={toOptionalSelectValue(mapping.fixedValues.unitId)}
 										onValueChange={(value) =>
 											updateFixedValues({
 												unitId: fromOptionalSelectValue(value),
 											})
 										}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Sem unidade" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={NONE_VALUE}>Sem unidade</SelectItem>
-											{companyUnits.map((unit) => (
-												<SelectItem key={unit.id} value={unit.id}>
-													{unit.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Sem unidade"
+										searchPlaceholder="Buscar unidade..."
+										emptyMessage="Nenhuma unidade encontrada."
+										clearOption={{
+											value: NONE_VALUE,
+											label: "Sem unidade",
+										}}
+									/>
 								</div>
 
 								<div className="space-y-1">
 									<Label>Produto da Importação *</Label>
-									<Select
+									<SearchableSelect
+										options={productOptions.map((product) => ({
+											value: product.id,
+											label: product.label,
+										}))}
 										value={mapping.fixedValues.parentProductId || NONE_VALUE}
 										onValueChange={(value) => {
 											if (value === NONE_VALUE) {
@@ -2473,23 +2476,10 @@ export function ImportSalesWizard({
 											}
 											updateSelectedImportProduct(value);
 										}}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione o produto da importação" />
-										</SelectTrigger>
-										<SelectContent>
-											{productOptions.length === 0 ? (
-												<SelectItem value={NONE_VALUE} disabled>
-													Nenhum produto disponível
-												</SelectItem>
-											) : null}
-											{productOptions.map((product) => (
-												<SelectItem key={product.id} value={product.id}>
-													{product.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione o produto da importação"
+										searchPlaceholder="Buscar produto..."
+										emptyMessage="Nenhum produto disponível."
+									/>
 									<p className="text-muted-foreground text-xs">
 										Este produto é aplicado em todas as linhas e usado como
 										fallback quando não houver match confiável de filho.
@@ -2547,7 +2537,11 @@ export function ImportSalesWizard({
 
 								<div className="space-y-1">
 									<Label>Responsável</Label>
-									<Select
+									<SearchableSelect
+										options={responsibleOptions.map((responsible) => ({
+											value: responsible.id,
+											label: responsible.label,
+										}))}
 										value={mapping.fixedValues.responsible?.id || NONE_VALUE}
 										disabled={!mapping.fixedValues.responsible}
 										onValueChange={(value) => {
@@ -2571,19 +2565,14 @@ export function ImportSalesWizard({
 												},
 											});
 										}}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione o responsável" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={NONE_VALUE}>Selecionar...</SelectItem>
-											{responsibleOptions.map((responsible) => (
-												<SelectItem key={responsible.id} value={responsible.id}>
-													{responsible.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione o responsável"
+										searchPlaceholder="Buscar responsável..."
+										emptyMessage="Nenhum responsável encontrado."
+										clearOption={{
+											value: NONE_VALUE,
+											label: "Selecionar...",
+										}}
+									/>
 								</div>
 							</div>
 						</Card>

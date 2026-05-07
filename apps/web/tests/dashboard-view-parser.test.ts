@@ -6,9 +6,9 @@ describe("dashboardViewParser", () => {
 		expect(dashboardViewParser.parseServerSide("partners")).toBe("partners");
 	});
 
-	it("should fallback to commercial for invalid values", () => {
+	it("should fallback to partners for invalid values", () => {
 		expect(dashboardViewParser.parseServerSide("unknown-view")).toBe(
-			"commercial",
+			"partners",
 		);
 	});
 });

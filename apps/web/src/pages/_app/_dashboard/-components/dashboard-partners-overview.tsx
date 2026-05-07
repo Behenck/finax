@@ -75,6 +75,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -102,7 +103,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
 	dashboardInactiveMonthsParser,
 	dateFilterParser,
-	dashboardViewParser,
 	entityFilterParser,
 	productBreakdownDepthParser,
 } from "@/hooks/filters/parsers";
@@ -2604,10 +2604,6 @@ function DashboardPartnersSkeleton() {
 }
 
 export function DashboardPartnersOverview() {
-	const [dashboardView, setDashboardView] = useQueryState(
-		"dashboard",
-		dashboardViewParser,
-	);
 	const [startDate, setStartDate] = useQueryState(
 		"startDate",
 		dateFilterParser,
@@ -2673,12 +2669,6 @@ export function DashboardPartnersOverview() {
 			void setEndDate(defaultEndDate);
 		}
 	}, [defaultEndDate, endDate, setEndDate]);
-
-	useEffect(() => {
-		if (dashboardView !== "partners") {
-			void setDashboardView("partners");
-		}
-	}, [dashboardView, setDashboardView]);
 
 	useEffect(() => {
 		if (effectiveStartDate <= effectiveEndDate) {
@@ -2986,24 +2976,21 @@ export function DashboardPartnersOverview() {
 					</div>
 					<div className="space-y-2">
 						<Label>Supervisor</Label>
-						<Select
+						<SearchableSelect
+							options={(data?.filters.supervisors ?? []).map((supervisor) => ({
+								value: supervisor.id,
+								label: supervisor.name ?? "Supervisor sem nome",
+							}))}
 							value={effectiveSupervisorId || "ALL"}
 							onValueChange={(value) => {
 								void setSupervisorId(value === "ALL" ? "" : value);
 							}}
-						>
-							<SelectTrigger className="w-full rounded-full">
-								<SelectValue placeholder="Todos os supervisores" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="ALL">Todos os supervisores</SelectItem>
-								{(data?.filters.supervisors ?? []).map((supervisor) => (
-									<SelectItem key={supervisor.id} value={supervisor.id}>
-										{supervisor.name ?? "Supervisor sem nome"}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+							placeholder="Todos os supervisores"
+							searchPlaceholder="Buscar supervisor..."
+							emptyMessage="Nenhum supervisor encontrado."
+							clearOption={{ value: "ALL", label: "Todos os supervisores" }}
+							className="rounded-full"
+						/>
 					</div>
 					<div className="space-y-2">
 						<Label>Parceiros</Label>
@@ -3297,28 +3284,25 @@ export function DashboardPartnersOverview() {
 							items={dynamicFieldBreakdown?.items ?? []}
 							emptyMessage="Nenhum valor preenchido para o campo selecionado neste período."
 							headerAction={
-								<Select
+								<SearchableSelect
+									options={availableDynamicFieldOptions.map((field) => ({
+										value: field.fieldId,
+										label: field.label,
+									}))}
 									value={dynamicFieldBreakdown?.selectedFieldId ?? "NONE"}
 									disabled={!data || availableDynamicFieldOptions.length === 0}
 									onValueChange={(value) =>
 										void setDynamicFieldId(value === "NONE" ? "" : value)
 									}
-								>
-									<SelectTrigger className="w-[220px] rounded-full">
-										<SelectValue placeholder="Sem campos elegíveis" />
-									</SelectTrigger>
-									<SelectContent>
-										{availableDynamicFieldOptions.length === 0 ? (
-											<SelectItem value="NONE">Sem campos elegíveis</SelectItem>
-										) : (
-											availableDynamicFieldOptions.map((field) => (
-												<SelectItem key={field.fieldId} value={field.fieldId}>
-													{field.label}
-												</SelectItem>
-											))
-										)}
-									</SelectContent>
-								</Select>
+									placeholder="Sem campos elegíveis"
+									searchPlaceholder="Buscar campo..."
+									emptyMessage="Nenhum campo encontrado."
+									clearOption={{
+										value: "NONE",
+										label: "Sem campos elegíveis",
+									}}
+									className="w-[220px] rounded-full"
+								/>
 							}
 						/>
 					</LoadingReveal>

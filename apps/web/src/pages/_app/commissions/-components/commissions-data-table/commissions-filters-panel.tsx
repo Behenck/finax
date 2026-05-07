@@ -4,6 +4,7 @@ import { FilterPanel } from "@/components/filter-panel";
 import { Button } from "@/components/ui/button";
 import { CalendarDateInput } from "@/components/ui/calendar-date-input";
 import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -75,69 +76,57 @@ export function CommissionsFiltersPanel({
 
 			<div className="space-y-1">
 				<p className="text-xs text-muted-foreground">Empresa</p>
-				<Select
+				<SearchableSelect
+					options={companies.map((company) => ({
+						value: company.id,
+						label: company.name,
+					}))}
 					value={companyIdFilter || "ALL"}
 					onValueChange={(value) =>
 						onCompanyIdChange(value === "ALL" ? "" : value)
 					}
-				>
-					<SelectTrigger className="w-full">
-						<SelectValue placeholder="Todas as empresas" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="ALL">Todas as empresas</SelectItem>
-						{companies.map((company) => (
-							<SelectItem key={company.id} value={company.id}>
-								{company.name}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					placeholder="Todas as empresas"
+					searchPlaceholder="Buscar empresa..."
+					emptyMessage="Nenhuma empresa encontrada."
+					clearOption={{ value: "ALL", label: "Todas as empresas" }}
+				/>
 			</div>
 
 			<div className="space-y-1">
 				<p className="text-xs text-muted-foreground">Unidade</p>
-				<Select
+				<SearchableSelect
+					options={unitsBySelectedCompany.map((unit) => ({
+						value: unit.id,
+						label: unit.name,
+					}))}
 					value={unitIdFilter || "ALL"}
 					onValueChange={(value) =>
 						onUnitIdChange(value === "ALL" ? "" : value)
 					}
 					disabled={!companyIdFilter}
-				>
-					<SelectTrigger className="w-full">
-						<SelectValue placeholder="Todas as unidades" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="ALL">Todas as unidades</SelectItem>
-						{unitsBySelectedCompany.map((unit) => (
-							<SelectItem key={unit.id} value={unit.id}>
-								{unit.name}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					placeholder="Todas as unidades"
+					searchPlaceholder="Buscar unidade..."
+					emptyMessage="Nenhuma unidade encontrada."
+					clearOption={{ value: "ALL", label: "Todas as unidades" }}
+				/>
 			</div>
 
 			<div className="space-y-1">
 				<p className="text-xs text-muted-foreground">Produto</p>
-				<Select
+				<SearchableSelect
+					options={productOptions.map((product) => ({
+						value: product.id,
+						label: product.label,
+					}))}
 					value={productIdFilter || "ALL"}
 					onValueChange={(value) =>
 						onProductIdChange(value === "ALL" ? "" : value)
 					}
-				>
-					<SelectTrigger className="w-full">
-						<SelectValue placeholder="Todos os produtos" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="ALL">Todos os produtos</SelectItem>
-						{productOptions.map((product) => (
-							<SelectItem key={product.id} value={product.id}>
-								{product.label}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					placeholder="Todos os produtos"
+					searchPlaceholder="Buscar produto..."
+					emptyMessage="Nenhum produto encontrado."
+					clearOption={{ value: "ALL", label: "Todos os produtos" }}
+				/>
 			</div>
 
 			<div className="space-y-1">

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Switch } from "@/components/ui/switch";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugEmployees } from "@/http/generated";
@@ -40,19 +40,17 @@ export function RefundField({ control }: RefundFieldProps) {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid} className="gap-2">
                   <FieldLabel className="font-normal">Funcionário para reembolso</FieldLabel>
-                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {employees.map((employee) => (
-                        <SelectItem key={employee.id} value={employee.id}>
-                          {employee.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <SearchableSelect
+                    options={employees.map((employee) => ({
+                      value: employee.id,
+                      label: employee.name,
+                    }))}
+                    value={field.value ?? undefined}
+                    onValueChange={field.onChange}
+                    placeholder="Selecione"
+                    searchPlaceholder="Buscar funcionário..."
+                    emptyMessage="Nenhum funcionário encontrado."
+                  />
                   {fieldState.invalid && (
                     <FieldError id="userIdReimbursement-error" errors={[fieldState.error]} />
                   )}

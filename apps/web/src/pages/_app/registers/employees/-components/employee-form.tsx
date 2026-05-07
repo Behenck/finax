@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { MobileBottomActionBar } from "@/components/mobile-bottom-action-bar";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -376,21 +377,17 @@ export function EmployeeForm({
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid} className="gap-1">
 									<FieldLabel>Empresa</FieldLabel>
-									<Select
-										value={field.value ?? ""}
+									<SearchableSelect
+										options={(data?.companies ?? []).map((company) => ({
+											value: company.id,
+											label: company.name,
+										}))}
+										value={field.value ?? undefined}
 										onValueChange={field.onChange}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione" />
-										</SelectTrigger>
-										<SelectContent>
-											{data?.companies.map((company) => (
-												<SelectItem key={company.id} value={company.id}>
-													{company.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione"
+										searchPlaceholder="Buscar empresa..."
+										emptyMessage="Nenhuma empresa encontrada."
+									/>
 									{fieldState.invalid && (
 										<FieldError id="companyId-error" errors={[fieldState.error]} />
 									)}
@@ -405,31 +402,28 @@ export function EmployeeForm({
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid} className="gap-1">
 									<FieldLabel>Unidade</FieldLabel>
-									<Select
+									<SearchableSelect
+										options={(selectedCompany?.units ?? []).map((unit) => ({
+											value: unit.id,
+											label: unit.name,
+										}))}
 										value={field.value ?? "__none__"}
 										onValueChange={(value) =>
 											field.onChange(value === "__none__" ? undefined : value)
 										}
 										disabled={!selectedCompanyId}
-									>
-										<SelectTrigger>
-											<SelectValue
-												placeholder={
-													selectedCompanyId
-														? "Selecione uma unidade (opcional)"
-														: "Selecione uma empresa primeiro"
-												}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="__none__">Nenhuma vinculada</SelectItem>
-											{selectedCompany?.units.map((unit) => (
-												<SelectItem key={unit.id} value={unit.id}>
-													{unit.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder={
+											selectedCompanyId
+												? "Selecione uma unidade (opcional)"
+												: "Selecione uma empresa primeiro"
+										}
+										searchPlaceholder="Buscar unidade..."
+										emptyMessage="Nenhuma unidade encontrada."
+										clearOption={{
+											value: "__none__",
+											label: "Nenhuma vinculada",
+										}}
+									/>
 									{fieldState.invalid && (
 										<FieldError id="unitId-error" errors={[fieldState.error]} />
 									)}

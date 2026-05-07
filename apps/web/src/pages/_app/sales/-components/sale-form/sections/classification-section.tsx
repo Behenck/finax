@@ -1,13 +1,11 @@
 import { Controller, type Control } from "react-hook-form";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
-	SelectGroup,
 	SelectItem,
-	SelectLabel,
-	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -48,12 +46,16 @@ export function ClassificationSection({
 	selectedResponsibleType,
 	isLoadingOptions,
 }: ClassificationSectionProps) {
-	const activePartnerResponsibles = responsibles.filter(
-		(responsible) => responsible.status !== "INACTIVE",
-	);
-	const inactivePartnerResponsibles = responsibles.filter(
-		(responsible) => responsible.status === "INACTIVE",
-	);
+	const responsibleOptions = responsibles.map((responsible) => ({
+		value: responsible.id,
+		label: responsible.name,
+		group:
+			selectedResponsibleType === "PARTNER"
+				? responsible.status === "INACTIVE"
+					? "Inativos"
+					: "Ativos"
+				: undefined,
+	}));
 
 	return (
 		<Card className="rounded-sm gap-4 p-5">
@@ -68,22 +70,18 @@ export function ClassificationSection({
 							name="companyId"
 							render={({ field, fieldState }) => (
 								<>
-									<Select
+									<SearchableSelect
+										options={companies.map((company) => ({
+											value: company.id,
+											label: company.name,
+										}))}
 										value={field.value || undefined}
 										onValueChange={field.onChange}
 										disabled={isLoadingOptions}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione uma empresa" />
-										</SelectTrigger>
-										<SelectContent>
-											{companies.map((company) => (
-												<SelectItem key={company.id} value={company.id}>
-													{company.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione uma empresa"
+										searchPlaceholder="Buscar empresa..."
+										emptyMessage="Nenhuma empresa encontrada."
+									/>
 									<FieldError error={fieldState.error} />
 								</>
 							)}
@@ -99,7 +97,11 @@ export function ClassificationSection({
 							name="unitId"
 							render={({ field, fieldState }) => (
 								<>
-									<Select
+									<SearchableSelect
+										options={companyUnits.map((unit) => ({
+											value: unit.id,
+											label: unit.name,
+										}))}
 										value={
 											(field.value as string | undefined) || OPTIONAL_NONE_VALUE
 										}
@@ -109,21 +111,14 @@ export function ClassificationSection({
 											)
 										}
 										disabled={isLoadingOptions || !selectedCompanyId}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione uma unidade" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={OPTIONAL_NONE_VALUE}>
-												Sem unidade
-											</SelectItem>
-											{companyUnits.map((unit) => (
-												<SelectItem key={unit.id} value={unit.id}>
-													{unit.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione uma unidade"
+										searchPlaceholder="Buscar unidade..."
+										emptyMessage="Nenhuma unidade encontrada."
+										clearOption={{
+											value: OPTIONAL_NONE_VALUE,
+											label: "Sem unidade",
+										}}
+									/>
 									<FieldError error={fieldState.error} />
 								</>
 							)}
@@ -177,57 +172,19 @@ export function ClassificationSection({
 							name="responsibleId"
 							render={({ field, fieldState }) => (
 								<>
-									<Select
+									<SearchableSelect
+										options={responsibleOptions}
 										value={field.value || undefined}
 										onValueChange={field.onChange}
 										disabled={isLoadingOptions}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione o responsável" />
-										</SelectTrigger>
-										<SelectContent>
-											{selectedResponsibleType === "PARTNER" ? (
-												<>
-													<SelectGroup>
-														<SelectLabel>Ativos</SelectLabel>
-														{activePartnerResponsibles.map((responsible) => (
-															<SelectItem
-																key={responsible.id}
-																value={responsible.id}
-															>
-																{responsible.name}
-															</SelectItem>
-														))}
-													</SelectGroup>
-													{inactivePartnerResponsibles.length > 0 ? (
-														<>
-															<SelectSeparator />
-															<SelectGroup>
-																<SelectLabel>Inativos</SelectLabel>
-																{inactivePartnerResponsibles.map((responsible) => (
-																	<SelectItem
-																		key={responsible.id}
-																		value={responsible.id}
-																	>
-																		{responsible.name}
-																	</SelectItem>
-																))}
-															</SelectGroup>
-														</>
-													) : null}
-												</>
-											) : (
-												responsibles.map((responsible) => (
-													<SelectItem
-														key={responsible.id}
-														value={responsible.id}
-													>
-														{responsible.name}
-													</SelectItem>
-												))
-											)}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione o responsável"
+										searchPlaceholder={`Buscar ${
+											selectedResponsibleType === "PARTNER"
+												? "parceiro"
+												: "vendedor"
+										}...`}
+										emptyMessage="Nenhum responsável encontrado."
+									/>
 									<FieldError error={fieldState.error} />
 								</>
 							)}

@@ -83,6 +83,8 @@ Aplica-se a tudo dentro de `apps/web`.
 - Reaproveitar `src/components/ui` antes de criar novos componentes base.
 - Componentes compartilhados devem ir para `src/components`.
 - Componentes especificos de pagina/fluxo devem ficar colocalizados em `src/pages/**/-components`.
+- Para listas dinamicas ou potencialmente grandes (empresa, unidade, produto, parceiro, supervisor, responsavel, centro de custo, categoria, subcategoria e equivalentes), preferir o select pesquisavel compartilhado em vez do `Select` simples.
+- Manter `Select` simples para enums curtos e estaveis (status, tipo, direcao, periodicidade, paginacao e afins).
 - Manter consistencia de classes Tailwind com o padrao existente no modulo.
 - Quando um arquivo de pagina/componente crescer e acumular responsabilidades (ex.: filtros + summary + dialogs + tabela), separar por funcionalidade em componentes e hooks locais.
 - Preferir `index.tsx` como orquestrador da feature (wiring de dados e handlers) e mover detalhes para `-components`/hooks colocalizados.

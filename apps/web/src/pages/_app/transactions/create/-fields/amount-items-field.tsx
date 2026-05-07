@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Switch } from "@/components/ui/switch";
 import { useApp } from "@/context/app-context";
 import { useGetOrganizationsSlugCategories } from "@/http/generated";
@@ -134,19 +134,17 @@ export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-1">
                       <FieldLabel className="font-normal">Categoria</FieldLabel>
-                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <SearchableSelect
+                        options={categories.map((category) => ({
+                          value: category.id,
+                          label: category.name,
+                        }))}
+                        value={field.value ?? undefined}
+                        onValueChange={field.onChange}
+                        placeholder="Selecione"
+                        searchPlaceholder="Buscar categoria..."
+                        emptyMessage="Nenhuma categoria encontrada."
+                      />
                       {fieldState.invalid && (
                         <FieldError id="categoryId-error" errors={[fieldState.error]} />
                       )}
@@ -161,19 +159,18 @@ export function AmountItemsField({ isItems = false }: AmountItemsFieldProps) {
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-1">
                       <FieldLabel className="font-normal">Sub Categoria</FieldLabel>
-                      <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={!selectedCategoryId}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {subCategories.map((subCategory) => (
-                            <SelectItem key={subCategory.id} value={subCategory.id}>
-                              {subCategory.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <SearchableSelect
+                        options={subCategories.map((subCategory) => ({
+                          value: subCategory.id,
+                          label: subCategory.name,
+                        }))}
+                        value={field.value ?? undefined}
+                        onValueChange={field.onChange}
+                        disabled={!selectedCategoryId}
+                        placeholder="Selecione"
+                        searchPlaceholder="Buscar subcategoria..."
+                        emptyMessage="Nenhuma subcategoria encontrada."
+                      />
                       {fieldState.invalid && (
                         <FieldError id="subCategoryId-error" errors={[fieldState.error]} />
                       )}

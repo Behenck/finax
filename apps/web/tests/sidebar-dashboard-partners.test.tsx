@@ -97,27 +97,22 @@ describe("AppSidebar dashboard partners item", () => {
 		mocks.canMock.mockReturnValue(true);
 		mocks.useLocation.mockReturnValue({
 			pathname: "/",
-			search: {
-				dashboard: "partners",
-			},
+			search: {},
 		});
 	});
 
-	it("should render dashboard partners link with querystring and active state", () => {
+	it("should render dashboard partners link and active state", () => {
 		render(<AppSidebar />);
 
 		const partnerLinks = screen.getAllByRole("link", {
 			name: "Parceiros",
 		});
-		const dashboardPartnersLink = partnerLinks.find((link) =>
-			link.getAttribute("href")?.includes("?dashboard=partners"),
+		const dashboardPartnersLink = partnerLinks.find(
+			(link) => link.getAttribute("href") === "/",
 		);
 
 		expect(dashboardPartnersLink).toBeDefined();
-		expect(dashboardPartnersLink).toHaveAttribute(
-			"href",
-			"/?dashboard=partners",
-		);
+		expect(dashboardPartnersLink).toHaveAttribute("href", "/");
 
 		const parentWithActiveState = dashboardPartnersLink?.closest("[data-active]");
 		expect(parentWithActiveState).toHaveAttribute("data-active", "true");

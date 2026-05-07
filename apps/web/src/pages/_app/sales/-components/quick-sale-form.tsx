@@ -17,13 +17,11 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
-	SelectGroup,
 	SelectItem,
-	SelectLabel,
-	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -667,21 +665,6 @@ export function QuickSaleForm({
 				: sellers,
 		[selectedResponsibleType, partners, sellers],
 	);
-	const activePartnerResponsibleOptions = useMemo(
-		() =>
-			responsibleOptions.filter(
-				(responsible) => responsible.status !== "INACTIVE",
-			),
-		[responsibleOptions],
-	);
-	const inactivePartnerResponsibleOptions = useMemo(
-		() =>
-			responsibleOptions.filter(
-				(responsible) => responsible.status === "INACTIVE",
-			),
-		[responsibleOptions],
-	);
-
 	useEffect(() => {
 		itemCardRefs.current = itemCardRefs.current.slice(0, fields.length);
 	}, [fields.length]);
@@ -1092,23 +1075,19 @@ export function QuickSaleForm({
 							name="parentProductId"
 							render={({ field, fieldState }) => (
 								<>
-									<Select
+									<SearchableSelect
+										options={rootProducts.map((product) => ({
+											value: product.id,
+											label: product.label,
+										}))}
 										value={field.value || undefined}
 										onValueChange={(nextParentProductId) => {
 											field.onChange(nextParentProductId);
 										}}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Selecione o produto pai" />
-										</SelectTrigger>
-										<SelectContent>
-											{rootProducts.map((product) => (
-												<SelectItem key={product.id} value={product.id}>
-													{product.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										placeholder="Selecione o produto pai"
+										searchPlaceholder="Buscar produto pai..."
+										emptyMessage="Nenhum produto encontrado."
+									/>
 									<FieldError error={fieldState.error} />
 								</>
 							)}
@@ -1129,21 +1108,17 @@ export function QuickSaleForm({
 								name="companyId"
 								render={({ field, fieldState }) => (
 									<>
-										<Select
+										<SearchableSelect
+											options={companies.map((company) => ({
+												value: company.id,
+												label: company.name,
+											}))}
 											value={field.value || undefined}
 											onValueChange={field.onChange}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Selecione uma empresa" />
-											</SelectTrigger>
-											<SelectContent>
-												{companies.map((company) => (
-													<SelectItem key={company.id} value={company.id}>
-														{company.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+											placeholder="Selecione uma empresa"
+											searchPlaceholder="Buscar empresa..."
+											emptyMessage="Nenhuma empresa encontrada."
+										/>
 										<FieldError error={fieldState.error} />
 									</>
 								)}
@@ -1159,7 +1134,11 @@ export function QuickSaleForm({
 								name="unitId"
 								render={({ field, fieldState }) => (
 									<>
-										<Select
+										<SearchableSelect
+											options={companyUnits.map((unit) => ({
+												value: unit.id,
+												label: unit.name,
+											}))}
 											value={
 												(field.value as string | undefined) ||
 												OPTIONAL_NONE_VALUE
@@ -1170,21 +1149,14 @@ export function QuickSaleForm({
 												)
 											}
 											disabled={!selectedCompanyId}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Selecione uma unidade" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value={OPTIONAL_NONE_VALUE}>
-													Sem unidade
-												</SelectItem>
-												{companyUnits.map((unit) => (
-													<SelectItem key={unit.id} value={unit.id}>
-														{unit.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+											placeholder="Selecione uma unidade"
+											searchPlaceholder="Buscar unidade..."
+											emptyMessage="Nenhuma unidade encontrada."
+											clearOption={{
+												value: OPTIONAL_NONE_VALUE,
+												label: "Sem unidade",
+											}}
+										/>
 										<FieldError error={fieldState.error} />
 									</>
 								)}
@@ -1241,60 +1213,27 @@ export function QuickSaleForm({
 								name="responsibleId"
 								render={({ field, fieldState }) => (
 									<>
-										<Select
+										<SearchableSelect
+											options={responsibleOptions.map((responsible) => ({
+												value: responsible.id,
+												label: responsible.name,
+												group:
+													selectedResponsibleType === "PARTNER"
+														? responsible.status === "INACTIVE"
+															? "Inativos"
+															: "Ativos"
+														: undefined,
+											}))}
 											value={field.value || undefined}
 											onValueChange={field.onChange}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Selecione o responsável" />
-											</SelectTrigger>
-											<SelectContent>
-												{selectedResponsibleType === "PARTNER" ? (
-													<>
-														<SelectGroup>
-															<SelectLabel>Ativos</SelectLabel>
-															{activePartnerResponsibleOptions.map(
-																(responsible) => (
-																	<SelectItem
-																		key={responsible.id}
-																		value={responsible.id}
-																	>
-																		{responsible.name}
-																	</SelectItem>
-																),
-															)}
-														</SelectGroup>
-														{inactivePartnerResponsibleOptions.length > 0 ? (
-															<>
-																<SelectSeparator />
-																<SelectGroup>
-																	<SelectLabel>Inativos</SelectLabel>
-																	{inactivePartnerResponsibleOptions.map(
-																		(responsible) => (
-																			<SelectItem
-																				key={responsible.id}
-																				value={responsible.id}
-																			>
-																				{responsible.name}
-																			</SelectItem>
-																		),
-																	)}
-																</SelectGroup>
-															</>
-														) : null}
-													</>
-												) : (
-													responsibleOptions.map((responsible) => (
-														<SelectItem
-															key={responsible.id}
-															value={responsible.id}
-														>
-															{responsible.name}
-														</SelectItem>
-													))
-												)}
-											</SelectContent>
-										</Select>
+											placeholder="Selecione o responsável"
+											searchPlaceholder={`Buscar ${
+												selectedResponsibleType === "PARTNER"
+													? "parceiro"
+													: "vendedor"
+											}...`}
+											emptyMessage="Nenhum responsável encontrado."
+										/>
 										<FieldError error={fieldState.error} />
 									</>
 								)}
@@ -1455,7 +1394,18 @@ export function QuickSaleForm({
 																name={`items.${index}.productId`}
 																render={({ field, fieldState }) => (
 																	<>
-																		<Select
+																		<SearchableSelect
+																			options={scopedItemProducts.map(
+																				(productOption) => ({
+																					value: productOption.id,
+																					label: `${
+																						productOption.depth > 0 ? "-> " : ""
+																					}${productOption.label}`,
+																					searchText:
+																						productOption.fullLabel ??
+																						productOption.label,
+																				}),
+																			)}
 																			value={field.value || undefined}
 																			onValueChange={(value) => {
 																				field.onChange(value);
@@ -1468,26 +1418,10 @@ export function QuickSaleForm({
 																				);
 																			}}
 																			disabled={!selectedParentProductId}
-																		>
-																			<SelectTrigger>
-																				<SelectValue placeholder="Selecione o produto do item" />
-																			</SelectTrigger>
-																			<SelectContent>
-																				{scopedItemProducts.map(
-																					(productOption) => (
-																						<SelectItem
-																							key={productOption.id}
-																							value={productOption.id}
-																						>
-																							{productOption.depth > 0
-																								? "-> "
-																								: ""}
-																							{productOption.label}
-																						</SelectItem>
-																					),
-																				)}
-																			</SelectContent>
-																		</Select>
+																			placeholder="Selecione o produto do item"
+																			searchPlaceholder="Buscar produto..."
+																			emptyMessage="Nenhum produto encontrado."
+																		/>
 																		<FieldError error={fieldState.error} />
 																	</>
 																)}

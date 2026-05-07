@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
 	Select,
 	SelectContent,
@@ -1596,7 +1597,11 @@ export function ProductForm({
 										name="salesTransactionCategoryId"
 										render={({ field, fieldState }) => (
 											<>
-												<Select
+												<SearchableSelect
+													options={salesCategoryOptions.map((category) => ({
+														value: category.id,
+														label: category.label,
+													}))}
 													value={field.value ?? "none"}
 													onValueChange={(value) => {
 														field.onChange(
@@ -1604,19 +1609,11 @@ export function ProductForm({
 														);
 														clearErrors("salesTransactionCategoryId");
 													}}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Selecione" />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="none">Sem categoria</SelectItem>
-														{salesCategoryOptions.map((category) => (
-															<SelectItem key={category.id} value={category.id}>
-																{category.label}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
+													placeholder="Selecione"
+													searchPlaceholder="Buscar categoria..."
+													emptyMessage="Nenhuma categoria encontrada."
+													clearOption={{ value: "none", label: "Sem categoria" }}
+												/>
 												<FormFieldError error={fieldState.error} />
 											</>
 										)}
@@ -1632,7 +1629,11 @@ export function ProductForm({
 										name="salesTransactionCostCenterId"
 										render={({ field, fieldState }) => (
 											<>
-												<Select
+												<SearchableSelect
+													options={salesCostCenterOptions.map((costCenter) => ({
+														value: costCenter.id,
+														label: costCenter.label,
+													}))}
 													value={field.value ?? "none"}
 													onValueChange={(value) => {
 														field.onChange(
@@ -1640,24 +1641,14 @@ export function ProductForm({
 														);
 														clearErrors("salesTransactionCostCenterId");
 													}}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Selecione" />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="none">
-															Sem centro de custo
-														</SelectItem>
-														{salesCostCenterOptions.map((costCenter) => (
-															<SelectItem
-																key={costCenter.id}
-																value={costCenter.id}
-															>
-																{costCenter.label}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
+													placeholder="Selecione"
+													searchPlaceholder="Buscar centro de custo..."
+													emptyMessage="Nenhum centro de custo encontrado."
+													clearOption={{
+														value: "none",
+														label: "Sem centro de custo",
+													}}
+												/>
 												<FormFieldError error={fieldState.error} />
 											</>
 										)}

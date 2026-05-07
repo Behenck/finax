@@ -48,7 +48,6 @@ interface SidebarChildItem {
 	url: string;
 	icon: LucideIcon;
 	match?: "exact" | "prefix";
-	dashboardView?: "commercial" | "operational" | "partners";
 	requiredPermission?: string;
 	requiredAnyPermissions?: string[];
 }
@@ -90,25 +89,10 @@ export function AppSidebar() {
 			icon: Home,
 			children: [
 				{
-					title: "Comercial",
-					url: "/",
-					icon: Home,
-					match: "exact",
-					dashboardView: "commercial",
-				},
-				{
-					title: "Operacional",
-					url: "/",
-					icon: Building2,
-					match: "exact",
-					dashboardView: "operational",
-				},
-				{
 					title: "Parceiros",
 					url: "/",
 					icon: UserRound,
 					match: "exact",
-					dashboardView: "partners",
 				},
 			],
 		},
@@ -266,31 +250,9 @@ export function AppSidebar() {
 		},
 		[pathname],
 	);
-	const dashboardView = React.useMemo(() => {
-		const dashboardSearchValue = (location.search as { dashboard?: unknown })
-			?.dashboard;
-		if (
-			dashboardSearchValue === "commercial" ||
-			dashboardSearchValue === "operational" ||
-			dashboardSearchValue === "partners"
-		) {
-			return dashboardSearchValue;
-		}
-
-		return "commercial";
-	}, [location.search]);
 	const isChildActive = React.useCallback(
-		(child: SidebarChildItem) => {
-			if (child.dashboardView) {
-				return (
-					isPathActive(child.url, child.match ?? "exact") &&
-					dashboardView === child.dashboardView
-				);
-			}
-
-			return isPathActive(child.url, child.match);
-		},
-		[dashboardView, isPathActive],
+		(child: SidebarChildItem) => isPathActive(child.url, child.match),
+		[isPathActive],
 	);
 
 	const dashboardItem = visibleItems.find(
@@ -440,14 +402,10 @@ export function AppSidebar() {
 																asChild
 																isActive={isChildActive(child)}
 															>
-																<Link
-																	to={
-																		child.dashboardView
-																			? `${child.url}?dashboard=${child.dashboardView}`
-																			: child.url
-																	}
-																	className="h-8 px-2"
-																>
+												<Link
+													to={child.url}
+													className="h-8 px-2"
+												>
 																	<child.icon className="size-4" />
 																	<span>{child.title}</span>
 																</Link>

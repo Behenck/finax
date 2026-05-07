@@ -13,6 +13,10 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 		ResizeObserverMock as unknown as typeof ResizeObserver;
 }
 
+if (typeof HTMLElement !== "undefined" && !HTMLElement.prototype.scrollTo) {
+	HTMLElement.prototype.scrollTo = () => {};
+}
+
 afterEach(() => {
 	cleanup();
 });

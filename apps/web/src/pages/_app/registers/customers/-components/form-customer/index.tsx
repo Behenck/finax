@@ -14,6 +14,7 @@ import {
 import { useCustomerForm } from './hooks/use-customer-form'
 import { useApp } from '@/context/app-context'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Select,
   SelectContent,
@@ -130,33 +131,26 @@ export function FormCustomer({
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <>
-                      <Select
+                      <SearchableSelect
+                        options={responsibleOptions.map((option) => ({
+                          value: option.id,
+                          label: option.name,
+                        }))}
                         value={field.value ?? "NONE"}
                         onValueChange={(value) =>
                           field.onChange(value === "NONE" ? undefined : value)
                         }
                         disabled={!responsibleType}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue
-                            placeholder={
-                              responsibleType
-                                ? "Selecione o responsável"
-                                : "Selecione o tipo primeiro"
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="NONE">Nenhum</SelectItem>
-                            {responsibleOptions.map((option) => (
-                              <SelectItem key={option.id} value={option.id}>
-                                {option.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                        className="w-full"
+                        placeholder={
+                          responsibleType
+                            ? "Selecione o responsável"
+                            : "Selecione o tipo primeiro"
+                        }
+                        searchPlaceholder="Buscar responsável..."
+                        emptyMessage="Nenhum responsável encontrado."
+                        clearOption={{ value: "NONE", label: "Nenhum" }}
+                      />
                       <FieldError error={fieldState.error} />
                     </>
                   )}
