@@ -183,7 +183,7 @@ const SaleJsonImportGroupSuggestionSchema = z
     unitName: z.string().optional(),
     sellerId: z.uuid().optional(),
     sellerName: z.string().optional(),
-    sellerEmail: z.string().optional(),
+    sellerEmail: z.string().nullable().optional(),
   })
   .strict();
 

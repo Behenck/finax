@@ -1,20 +1,40 @@
-import { z } from "zod"
+import { z } from "zod";
 
-export const sellerSchema = z.object({
-  name: z.string().min(1, "Nome obrigatório"),
-  email: z.email("Email inválido"),
-  phone: z.string({ error: "Telefone inválido" }),
-  companyName: z.string({ error: "Nome da empresa inválida" }),
-  documentType: z.enum(["CPF", "CNPJ"]),
-  document: z.string({ error: "Documento inválido" }),
-  country: z.string(),
-  state: z.string(),
-  city: z.string().optional(),
-  street: z.string().optional(),
-  zipCode: z.string().optional(),
-  neighborhood: z.string().optional(),
-  number: z.string().optional(),
-  complement: z.string().optional(),
-})
+const optionalEmailSchema = z
+	.string()
+	.trim()
+	.refine(
+		(value) => value.length === 0 || z.email().safeParse(value).success,
+		"Email inválido",
+	);
 
-export type SellerForm = z.input<typeof sellerSchema>
+export const sellerSchema = z
+	.object({
+		name: z.string().min(1, "Nome obrigatório"),
+		email: optionalEmailSchema,
+		phone: z.string({ error: "Telefone inválido" }),
+		companyName: z.string({ error: "Nome da empresa inválida" }),
+		documentType: z.enum(["CPF", "CNPJ"]).optional(),
+		document: z.string().optional(),
+		country: z.string(),
+		state: z.string(),
+		city: z.string().optional(),
+		street: z.string().optional(),
+		zipCode: z.string().optional(),
+		neighborhood: z.string().optional(),
+		number: z.string().optional(),
+		complement: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		const hasDocument = Boolean(data.document?.trim());
+
+		if (hasDocument && !data.documentType) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["documentType"],
+				message: "Selecione o tipo do documento",
+			});
+		}
+	});
+
+export type SellerForm = z.input<typeof sellerSchema>;

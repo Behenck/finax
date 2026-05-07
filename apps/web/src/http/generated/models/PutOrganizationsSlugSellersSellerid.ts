@@ -48,9 +48,9 @@ export type PutOrganizationsSlugSellersSelleridMutationRequest = {
    */
   name: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  email: string;
+  email?: string;
   /**
    * @type string
    */
@@ -60,13 +60,13 @@ export type PutOrganizationsSlugSellersSelleridMutationRequest = {
    */
   companyName: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  documentType: PutOrganizationsSlugSellersSelleridMutationRequestDocumentTypeEnumKey;
+  documentType?: PutOrganizationsSlugSellersSelleridMutationRequestDocumentTypeEnumKey;
   /**
-   * @type string
+   * @type string | undefined
    */
-  document: string;
+  document?: string;
   /**
    * @type string
    */

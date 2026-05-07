@@ -498,11 +498,11 @@ export type EnumPartnerStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPartnerStatusFilter<$PrismaModel>
 }
 
-export type EnumSellerDocumentTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel> | $Enums.SellerDocumentType
+export type EnumSellerDocumentTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel> | $Enums.SellerDocumentType | null
 }
 
 export type EnumSellerStatusFilter<$PrismaModel = never> = {
@@ -512,14 +512,14 @@ export type EnumSellerStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSellerStatusFilter<$PrismaModel> | $Enums.SellerStatus
 }
 
-export type EnumSellerDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSellerDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.SellerDocumentType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel>
+export type EnumSellerDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSellerDocumentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.SellerDocumentType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel>
 }
 
 export type EnumSellerStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -1403,11 +1403,11 @@ export type NestedEnumPartnerStatusWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumPartnerStatusFilter<$PrismaModel>
 }
 
-export type NestedEnumSellerDocumentTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel> | $Enums.SellerDocumentType
+export type NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel> | $Enums.SellerDocumentType | null
 }
 
 export type NestedEnumSellerStatusFilter<$PrismaModel = never> = {
@@ -1417,14 +1417,14 @@ export type NestedEnumSellerStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSellerStatusFilter<$PrismaModel> | $Enums.SellerStatus
 }
 
-export type NestedEnumSellerDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSellerDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.SellerDocumentType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSellerDocumentTypeFilter<$PrismaModel>
+export type NestedEnumSellerDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SellerDocumentType | Prisma.EnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SellerDocumentType[] | Prisma.ListEnumSellerDocumentTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSellerDocumentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.SellerDocumentType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSellerDocumentTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumSellerStatusWithAggregatesFilter<$PrismaModel = never> = {

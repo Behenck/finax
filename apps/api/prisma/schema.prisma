@@ -649,11 +649,11 @@ model Seller {
   id String @id @default(uuid())
 
   name  String
-  email String
+  email String?
   phone String
 
-  documentType SellerDocumentType
-  document     String
+  documentType SellerDocumentType?
+  document     String?
 
   companyName String @map("company_name")
 

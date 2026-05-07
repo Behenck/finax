@@ -7,6 +7,11 @@ import { BadRequestError } from "../_errors/bad-request-error";
 import { db } from "@/lib/db";
 import { SellerDocumentType, SellerStatus } from "generated/prisma/enums";
 
+function normalizeOptionalText(value: string | undefined) {
+	const normalizedValue = value?.trim();
+	return normalizedValue ? normalizedValue : null;
+}
+
 export async function updateSeller(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>()
     .register(auth)
@@ -21,11 +26,11 @@ export async function updateSeller(app: FastifyInstance) {
         }),
         body: z.object({
           name: z.string(),
-          email: z.string(),
+          email: z.string().optional(),
           phone: z.string(),
           companyName: z.string(),
-          documentType: z.enum(SellerDocumentType),
-          document: z.string(),
+          documentType: z.enum(SellerDocumentType).optional(),
+          document: z.string().optional(),
           country: z.string(),
           state: z.string(),
           city: z.string().optional(),
@@ -70,17 +75,20 @@ export async function updateSeller(app: FastifyInstance) {
           throw new BadRequestError("Seller not found")
         }
 
+        const normalizedDocument = normalizeOptionalText(data.document)
+        const normalizedEmail = normalizeOptionalText(data.email)?.toLowerCase() ?? null
+
         await db(() => prisma.seller.update({
           where: {
             id: sellerId,
           },
           data: {
             name: data.name,
-            email: data.email,
+            email: normalizedEmail,
             phone: data.phone,
             companyName: data.companyName,
-            documentType: data.documentType,
-            document: data.document,
+            documentType: normalizedDocument ? data.documentType ?? null : null,
+            document: normalizedDocument,
             country: data.country,
             state: data.state,
             city: data.city,

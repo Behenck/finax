@@ -20,11 +20,11 @@ export const putOrganizationsSlugSellersSellerid204Schema = z
 export const putOrganizationsSlugSellersSelleridMutationRequestSchema =
   z.object({
     name: z.string(),
-    email: z.string(),
+    email: z.optional(z.string()),
     phone: z.string(),
     companyName: z.string(),
-    documentType: z.enum(["CPF", "CNPJ"]),
-    document: z.string(),
+    documentType: z.optional(z.enum(["CPF", "CNPJ"])),
+    document: z.optional(z.string()),
     country: z.string(),
     state: z.string(),
     city: z.optional(z.string()),

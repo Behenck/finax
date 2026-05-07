@@ -49,7 +49,7 @@ export type GetOrganizationsSlugSellersSellerid200 = {
     /**
      * @type string
      */
-    email: string;
+    email: string | null;
     /**
      * @type string
      */
@@ -61,11 +61,11 @@ export type GetOrganizationsSlugSellersSellerid200 = {
     /**
      * @type string
      */
-    documentType: SellerDocumentTypeEnumKey;
+    documentType: SellerDocumentTypeEnumKey | null;
     /**
      * @type string
      */
-    document: string;
+    document: string | null;
     /**
      * @type string
      */

@@ -160,7 +160,9 @@ export function ListSellers({ sellers }: ListSellersProps) {
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-semibold">{seller.name}</span>
-                        <span className="text-xs text-muted-foreground">{seller.email}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {seller.email ?? "Sem e-mail"}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>{seller.companyName}</TableCell>

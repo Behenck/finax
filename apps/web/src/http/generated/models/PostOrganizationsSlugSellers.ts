@@ -42,9 +42,9 @@ export type PostOrganizationsSlugSellersMutationRequest = {
    */
   name: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  email: string;
+  email?: string;
   /**
    * @type string
    */
@@ -54,13 +54,13 @@ export type PostOrganizationsSlugSellersMutationRequest = {
    */
   companyName: string;
   /**
-   * @type string
+   * @type string | undefined
    */
-  documentType: PostOrganizationsSlugSellersMutationRequestDocumentTypeEnumKey;
+  documentType?: PostOrganizationsSlugSellersMutationRequestDocumentTypeEnumKey;
   /**
-   * @type string
+   * @type string | undefined
    */
-  document: string;
+  document?: string;
   /**
    * @type string
    */

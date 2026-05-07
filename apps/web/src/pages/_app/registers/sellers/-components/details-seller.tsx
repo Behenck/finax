@@ -69,7 +69,7 @@ export function DetailsSeller({ seller }: DetailsSellerProps) {
               <span className="text-sm font-light">{seller.companyName}</span>
             </div>
           )}
-          {seller.document && (
+          {seller.document && seller.documentType && (
             <div className="flex items-center gap-2">
               <BookUser className="size-4" />
               <span className="text-sm font-light">{formatDocument({ type: seller.documentType, value: seller.document })}</span>

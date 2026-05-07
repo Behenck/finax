@@ -86,9 +86,9 @@ export type PostOrganizationsSlugSalesJsonImportsPreview200 = {
        */
       sellerName?: string;
       /**
-       * @type string | undefined
+       * @type string
        */
-      sellerEmail?: string;
+      sellerEmail?: string | null;
     }[];
   }[];
   /**
@@ -140,9 +140,9 @@ export type PostOrganizationsSlugSalesJsonImportsPreview200 = {
        */
       sellerName?: string;
       /**
-       * @type string | undefined
+       * @type string
        */
-      sellerEmail?: string;
+      sellerEmail?: string | null;
     }[];
   }[];
   /**

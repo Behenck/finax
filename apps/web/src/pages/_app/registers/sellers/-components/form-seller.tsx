@@ -52,9 +52,9 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 			email: seller?.email ?? "",
 			phone: formatPhone(seller?.phone ?? ""),
 			companyName: seller?.companyName ?? "",
-			documentType: seller?.documentType ?? "CNPJ",
+			documentType: seller?.documentType ?? undefined,
 			document: formatDocument({
-				type: seller?.documentType ?? "CNPJ",
+				type: seller?.documentType ?? undefined,
 				value: seller?.document ?? "",
 			}),
 			country: seller?.country ?? "BR",
@@ -157,7 +157,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup>
 						<Field className="gap-1">
-							<FieldLabel>email *</FieldLabel>
+							<FieldLabel>email</FieldLabel>
 							<Input
 								placeholder="Ex: joao.silva@empresa.com"
 								{...register("email")}
@@ -190,18 +190,18 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<FieldGroup className="w-40">
 						<Field className="gap-1">
-							<FieldLabel>Tipo de documento *</FieldLabel>
+							<FieldLabel>Tipo de documento</FieldLabel>
 							<Controller
 								name="documentType"
 								control={control}
 								render={({ field, fieldState }) => (
 									<>
 										<Select
-											value={field.value ?? ""}
+											value={field.value}
 											onValueChange={field.onChange}
 										>
 											<SelectTrigger className="w-full">
-												<SelectValue placeholder="Selecione" />
+												<SelectValue placeholder="Opcional" />
 											</SelectTrigger>
 											<SelectContent>
 												<SelectGroup>
@@ -218,7 +218,7 @@ export function FormSeller({ type = "CREATE", seller }: FormSellerProps) {
 					</FieldGroup>
 					<FieldGroup className="flex-1">
 						<Field className="gap-1">
-							<FieldLabel>CNPJ / CPF *</FieldLabel>
+							<FieldLabel>CNPJ / CPF</FieldLabel>
 							<Controller
 								control={control}
 								name="document"

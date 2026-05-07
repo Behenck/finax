@@ -1,0 +1,4 @@
+ALTER TABLE "sellers"
+  ALTER COLUMN "email" DROP NOT NULL,
+  ALTER COLUMN "documentType" DROP NOT NULL,
+  ALTER COLUMN "document" DROP NOT NULL;
