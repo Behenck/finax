@@ -307,6 +307,7 @@ const BREAKDOWN_PIE_COLORS = [
 	"#ef4444",
 	"#84cc16",
 ] as const;
+const PARTNER_SALES_SHARE_LABEL_LIMIT = 10;
 const DELINQUENCY_PIE_COLORS = [
 	"#f87171",
 	"#ef4444",
@@ -1224,6 +1225,8 @@ function PartnerSalesSharePieCard({
 }) {
 	const [activeSliceIndex, setActiveSliceIndex] = useState<number | null>(null);
 	const pieData = useMemo(() => buildPartnerSalesSharePieData(items), [items]);
+	const shouldHideLabels =
+		pieData.length > PARTNER_SALES_SHARE_LABEL_LIMIT;
 
 	return (
 		<Card className="h-full border-border/70">
@@ -1301,7 +1304,11 @@ function PartnerSalesSharePieCard({
 										outerRadius={78}
 										paddingAngle={3}
 										labelLine={false}
-										label={renderPartnerSalesSharePieLabel}
+										label={
+											shouldHideLabels
+												? false
+												: renderPartnerSalesSharePieLabel
+										}
 										activeIndex={activeSliceIndex ?? undefined}
 										isAnimationActive={false}
 										onMouseEnter={(_entry, index) => setActiveSliceIndex(index)}

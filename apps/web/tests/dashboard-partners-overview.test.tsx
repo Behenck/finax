@@ -59,6 +59,27 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 	};
 });
 
+vi.mock("recharts", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("recharts")>();
+	const React = await import("react");
+
+	return {
+		...actual,
+		ResponsiveContainer: ({
+			children,
+		}: React.ComponentProps<typeof actual.ResponsiveContainer>) => {
+			if (!React.isValidElement(children)) {
+				return null;
+			}
+
+			return React.cloneElement(children, {
+				width: 960,
+				height: 340,
+			});
+		},
+	};
+});
+
 vi.mock("nuqs", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("nuqs")>();
 	const React = await import("react");
@@ -465,8 +486,8 @@ describe("DashboardPartnersOverview", () => {
 
 		render(<DashboardPartnersOverview />);
 
-		expect(screen.getByText("1 inadimplência")).toBeInTheDocument();
-		expect(screen.getByText("2 inadimplências")).toBeInTheDocument();
+		expect(screen.getAllByText("1 inadimplência").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("2 inadimplências").length).toBeGreaterThan(0);
 		expect(screen.getAllByText("Pré-cancelamento").length).toBeGreaterThan(0);
 		expect(screen.getByText("A partir de 3 inadimplências")).toBeInTheDocument();
 	});
@@ -1141,6 +1162,89 @@ describe("DashboardPartnersOverview", () => {
 		).toBeNull();
 		expect(
 			within(shareCard as HTMLElement).queryByText("Parceiro Sem Valor"),
+		).not.toBeInTheDocument();
+	});
+
+	it("keeps partner labels visible in the sales share chart when there are up to 10 sold partners", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData(
+				Array.from({ length: 10 }, (_, index) =>
+					buildRankingItem({
+						partnerId: `31000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
+						partnerName: `Parceiro Rótulo ${index + 1}`,
+						supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+						supervisorName: "Supervisor Base",
+						concludedCount: 1,
+						concludedAmount: (10 - index) * 100_000,
+						pendingCount: 0,
+						pendingAmount: 0,
+						canceledCount: 0,
+						canceledAmount: 0,
+						delinquentCount: 0,
+						delinquentAmount: 0,
+					}),
+				),
+			),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		const shareCard = screen
+			.getByText("Participação por parceiro")
+			.closest('[data-slot="card"]');
+		expect(shareCard).not.toBeNull();
+		expect(
+			within(shareCard as HTMLElement).getByText("Parceiro Rótulo 1"),
+		).toBeInTheDocument();
+		expect(
+			within(shareCard as HTMLElement).getByText("Parceiro Rótulo 10"),
+		).toBeInTheDocument();
+	});
+
+	it("hides partner labels in the sales share chart when there are more than 10 sold partners", () => {
+		mocks.usePartnerSalesDashboard.mockReturnValue({
+			isLoading: false,
+			isError: false,
+			data: buildDashboardData(
+				Array.from({ length: 11 }, (_, index) =>
+					buildRankingItem({
+						partnerId: `32000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
+						partnerName: `Parceiro Sem Rótulo ${index + 1}`,
+						supervisorId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+						supervisorName: "Supervisor Base",
+						concludedCount: 1,
+						concludedAmount: (11 - index) * 100_000,
+						pendingCount: 0,
+						pendingAmount: 0,
+						canceledCount: 0,
+						canceledAmount: 0,
+						delinquentCount: 0,
+						delinquentAmount: 0,
+					}),
+				),
+			),
+			refetch: vi.fn(),
+		});
+
+		render(<DashboardPartnersOverview />);
+
+		const shareCard = screen
+			.getByText("Participação por parceiro")
+			.closest('[data-slot="card"]');
+		expect(shareCard).not.toBeNull();
+		expect(
+			(shareCard as HTMLElement).querySelector(
+				'[data-slot="chart"].h-\\[340px\\]',
+			),
+		).toBeInTheDocument();
+		expect(
+			within(shareCard as HTMLElement).queryByText("Parceiro Sem Rótulo 1"),
+		).not.toBeInTheDocument();
+		expect(
+			within(shareCard as HTMLElement).queryByText("Parceiro Sem Rótulo 11"),
 		).not.toBeInTheDocument();
 	});
 
