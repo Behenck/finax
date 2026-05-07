@@ -4,6 +4,7 @@ import {
 	CheckCircle2,
 	MoreHorizontal,
 	Pencil,
+	Plus,
 	RotateCcw,
 	Trash2,
 	Undo2,
@@ -66,6 +67,7 @@ import { useProductCommissionReversalRules } from "@/hooks/commissions";
 import { showZeroInstallmentsParser } from "@/hooks/filters/parsers";
 import { useCheckboxMultiSelect } from "@/hooks/use-checkbox-multi-select";
 import {
+	useCreateSaleCommissionInstallment,
 	useDeleteSaleCommissionInstallment,
 	usePatchCommissionInstallmentsStatusBulk,
 	usePatchSaleCommissionInstallmentStatus,
@@ -129,6 +131,12 @@ type InstallmentReversalState = {
 	rulePercentage: number | null;
 	totalPaidAmount: number | null;
 	calculatedAmount: number | null;
+};
+
+type CreateInstallmentState = {
+	percentage: string;
+	amount: string;
+	expectedPaymentDate: string;
 };
 
 const INSTALLMENT_STATUS_BADGE_CLASSNAME: Record<
@@ -201,6 +209,8 @@ export function SaleInstallmentsPanel({
 		useQueryState("showZeroInstallments", showZeroInstallmentsParser);
 	const [activeBeneficiaryTab, setActiveBeneficiaryTab] = useState("");
 	const [payAction, setPayAction] = useState<InstallmentPayAction | null>(null);
+	const [createInstallmentState, setCreateInstallmentState] =
+		useState<CreateInstallmentState | null>(null);
 	const [editingInstallment, setEditingInstallment] =
 		useState<InstallmentEditState | null>(null);
 	const [reversalState, setReversalState] =
@@ -225,6 +235,10 @@ export function SaleInstallmentsPanel({
 	);
 	const { mutateAsync: patchInstallmentStatus, isPending: isPatchingStatus } =
 		usePatchSaleCommissionInstallmentStatus();
+	const {
+		mutateAsync: createInstallment,
+		isPending: isCreatingInstallment,
+	} = useCreateSaleCommissionInstallment();
 	const { mutateAsync: updateInstallment, isPending: isUpdatingInstallment } =
 		useUpdateSaleCommissionInstallment();
 	const { mutateAsync: reverseInstallment, isPending: isReversingInstallment } =
@@ -398,6 +412,10 @@ export function SaleInstallmentsPanel({
 		}),
 		[activeGroupInstallments],
 	);
+	const targetSaleCommissionId = useMemo(
+		() => saleCommissionId ?? activeGroupInstallments[0]?.saleCommissionId ?? null,
+		[activeGroupInstallments, saleCommissionId],
+	);
 	const installmentsMultiSelect = useCheckboxMultiSelect<string>({
 		visibleIds: activeGroupInstallments.map((installment) => installment.id),
 		isSelectable: (installmentId) =>
@@ -552,6 +570,18 @@ export function SaleInstallmentsPanel({
 			paymentDate:
 				toDateInputValue(installment.paymentDate) || getTodayDateInputValue(),
 			amount: formatCurrencyBRL(installment.amount / 100),
+		});
+	}
+
+	function requestInstallmentCreation() {
+		if (!targetSaleCommissionId) {
+			return;
+		}
+
+		setCreateInstallmentState({
+			percentage: "",
+			amount: "",
+			expectedPaymentDate: getTodayDateInputValue(),
 		});
 	}
 
@@ -768,6 +798,50 @@ export function SaleInstallmentsPanel({
 				paymentDate: payAction.paymentDate || undefined,
 			});
 			setPayAction(null);
+		} catch {
+			// erro tratado no hook
+		}
+	}
+
+	async function handleConfirmInstallmentCreation() {
+		if (!createInstallmentState) {
+			return;
+		}
+
+		if (!targetSaleCommissionId) {
+			toast.error("Nenhuma comissão disponível para adicionar a parcela.");
+			return;
+		}
+
+		const parsedPercentage = Number(
+			createInstallmentState.percentage.replace(",", ".").trim(),
+		);
+		if (!Number.isFinite(parsedPercentage)) {
+			toast.error("Informe um percentual válido.");
+			return;
+		}
+
+		if (!createInstallmentState.amount.trim()) {
+			toast.error("Informe o valor da parcela.");
+			return;
+		}
+
+		if (!createInstallmentState.expectedPaymentDate) {
+			toast.error("Informe a data prevista.");
+			return;
+		}
+
+		try {
+			await createInstallment({
+				saleId,
+				data: {
+					saleCommissionId: targetSaleCommissionId,
+					percentage: parsedPercentage,
+					amount: parseBRLCurrencyToCents(createInstallmentState.amount),
+					expectedPaymentDate: createInstallmentState.expectedPaymentDate,
+				},
+			});
+			setCreateInstallmentState(null);
 		} catch {
 			// erro tratado no hook
 		}
@@ -1025,6 +1099,7 @@ export function SaleInstallmentsPanel({
 
 	const isBulkStatusPending = isApplyingBulkStatus || isPatchingBulkStatus;
 	const isAnyInstallmentActionPending =
+		isCreatingInstallment ||
 		isPatchingStatus ||
 		isBulkStatusPending ||
 		isUpdatingInstallment ||
@@ -1041,18 +1116,21 @@ export function SaleInstallmentsPanel({
 						pendentes, {summary.canceled} canceladas, {summary.reversed}{" "}
 						estornadas.
 					</p>
-					<div className="flex items-center gap-2">
-						<Switch
-							id="show-zero-installments"
-							checked={showZeroValueInstallments}
-							onCheckedChange={setShowZeroValueInstallments}
-						/>
-						<label
-							htmlFor="show-zero-installments"
-							className="text-sm text-muted-foreground"
+					<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={requestInstallmentCreation}
+							disabled={
+								!canEditInstallmentsBySaleStatus ||
+								!canEditInstallment ||
+								!targetSaleCommissionId ||
+								isAnyInstallmentActionPending
+							}
 						>
-							Mostrar parcelas zeradas
-						</label>
+							<Plus className="size-4" />
+							Adicionar parcela
+						</Button>
 					</div>
 				</div>
 
@@ -1127,6 +1205,21 @@ export function SaleInstallmentsPanel({
 								value={activeBeneficiaryTabValue}
 								onValueChange={setActiveBeneficiaryTab}
 							>
+								<div className="flex justify-end">
+									<div className="flex items-center gap-2">
+										<Switch
+											id="show-zero-installments"
+											checked={showZeroValueInstallments}
+											onCheckedChange={setShowZeroValueInstallments}
+										/>
+										<label
+											htmlFor="show-zero-installments"
+											className="text-sm text-muted-foreground"
+										>
+											Mostrar parcelas zeradas
+										</label>
+									</div>
+								</div>
 								<TabsList className="w-full justify-start overflow-x-auto rounded-sm">
 									{installmentsByBeneficiary.map((group) => (
 										<TabsTrigger key={group.key} value={group.key}>
@@ -1385,15 +1478,15 @@ export function SaleInstallmentsPanel({
 																						<DropdownMenuItem
 																							onSelect={(event) => {
 																								event.preventDefault();
-																								requestInstallmentReversal(
-																									installment,
-																								);
-																							}}
-																						>
-																							<Undo2 className="size-4" />
-																							Estornar parcela
-																						</DropdownMenuItem>
-																					) : null}
+																							requestInstallmentReversal(
+																								installment,
+																							);
+																						}}
+																					>
+																						<Undo2 className="size-4" />
+																						Adicionar estorno vinculado
+																					</DropdownMenuItem>
+																				) : null}
 																					{canUndoReversalRowAction ? (
 																						<DropdownMenuItem
 																							onSelect={(event) => {
@@ -1526,6 +1619,95 @@ export function SaleInstallmentsPanel({
 			</Dialog>
 
 			<AlertDialog
+				open={Boolean(createInstallmentState)}
+				onOpenChange={(open) => {
+					if (!open) {
+						setCreateInstallmentState(null);
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Adicionar parcela</AlertDialogTitle>
+						<AlertDialogDescription>
+							Crie uma nova parcela pendente para a comissão selecionada.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+
+					<div className="space-y-3">
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Percentual</p>
+							<Input
+								type="number"
+								step="0.0001"
+								min={0}
+								max={100}
+								placeholder="0,00"
+								value={createInstallmentState?.percentage ?? ""}
+								onChange={(event) => {
+									setCreateInstallmentState((current) =>
+										current
+											? {
+													...current,
+													percentage: event.target.value,
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
+
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Valor</p>
+							<Input
+								placeholder="R$ 0,00"
+								value={createInstallmentState?.amount ?? ""}
+								onChange={(event) => {
+									setCreateInstallmentState((current) =>
+										current
+											? {
+													...current,
+													amount: formatCurrencyBRL(event.target.value),
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
+
+						<div className="space-y-1">
+							<p className="text-sm font-medium">Data prevista</p>
+							<CalendarDateInput
+								value={createInstallmentState?.expectedPaymentDate ?? ""}
+								onChange={(value) => {
+									setCreateInstallmentState((current) =>
+										current
+											? {
+													...current,
+													expectedPaymentDate: value,
+												}
+											: current,
+									);
+								}}
+							/>
+						</div>
+					</div>
+
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isCreatingInstallment}>
+							Cancelar
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleConfirmInstallmentCreation}
+							disabled={isCreatingInstallment || !targetSaleCommissionId}
+						>
+							{isCreatingInstallment ? "Salvando..." : "Adicionar parcela"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			<AlertDialog
 				open={Boolean(payAction)}
 				onOpenChange={(open) => {
 					if (!open) {
@@ -1641,9 +1823,9 @@ export function SaleInstallmentsPanel({
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Estornar parcela</DialogTitle>
+						<DialogTitle>Adicionar estorno vinculado</DialogTitle>
 						<DialogDescription>
-							Confirme o estorno da parcela{" "}
+							Confirme a criação do estorno vinculado à parcela{" "}
 							{reversalState
 								? `P${reversalState.installment.installmentNumber}`
 								: ""}

@@ -32,6 +32,7 @@ import { patchSalesStatusBulk } from "./patch-sales-status-bulk";
 import { patchBonusInstallmentStatus } from "./patch-bonus-installment-status";
 import { postBonusSettlements } from "./post-bonus-settlements";
 import { postBonusSettlementsPreview } from "./post-bonus-settlements-preview";
+import { postSaleCommissionInstallment } from "./post-sale-commission-installment";
 import { postSaleCommissionInstallmentReversal } from "./post-sale-commission-installment-reversal";
 import { postSaleCommissionInstallmentReversalUndo } from "./post-sale-commission-installment-reversal-undo";
 import { postSaleDelinquencyImportApply } from "./post-sale-delinquency-import-apply";
@@ -74,7 +75,15 @@ function resolveSalesPermission(params: { method: string; routeUrl: string }) {
 	}
 
 	if (
-		routeUrl === "/organizations/:slug/sales/:saleId/commission-installments"
+		routeUrl === "/organizations/:slug/sales/:saleId/commission-installments" &&
+		method === "POST"
+	) {
+		return "sales.commissions.installments.update" as const;
+	}
+
+	if (
+		routeUrl === "/organizations/:slug/sales/:saleId/commission-installments" &&
+		method === "GET"
 	) {
 		return "sales.view" as const;
 	}
@@ -239,6 +248,7 @@ export async function saleRoutes(app: FastifyInstance) {
 	await app.register(patchSalesStatusBulk);
 	await app.register(patchSalesDeleteBulk);
 	await app.register(getSaleCommissionInstallments);
+	await app.register(postSaleCommissionInstallment);
 	await app.register(patchSaleCommissionInstallmentStatus);
 	await app.register(patchCommissionInstallmentsStatusBulk);
 	await app.register(patchBonusInstallmentStatus);

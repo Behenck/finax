@@ -5,6 +5,7 @@ import { SaleInstallmentsPanel } from "@/pages/_app/sales/-components/sale-insta
 
 const mocks = vi.hoisted(() => ({
 	useSaleCommissionInstallments: vi.fn(),
+	createInstallment: vi.fn().mockResolvedValue(undefined),
 	patchInstallmentStatus: vi.fn().mockResolvedValue(undefined),
 	patchInstallmentsStatusBulk: vi
 		.fn()
@@ -22,6 +23,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/hooks/sales", () => ({
 	useSaleCommissionInstallments: (...args: unknown[]) =>
 		mocks.useSaleCommissionInstallments(...args),
+	useCreateSaleCommissionInstallment: () => ({
+		mutateAsync: mocks.createInstallment,
+		isPending: false,
+	}),
 	usePatchSaleCommissionInstallmentStatus: () => ({
 		mutateAsync: mocks.patchInstallmentStatus,
 		isPending: false,
@@ -87,6 +92,7 @@ function expectCurrentTableTotals(params: {
 describe("sale-installments-panel", () => {
 	beforeEach(() => {
 		mocks.useSaleCommissionInstallments.mockReset();
+		mocks.createInstallment.mockReset();
 		mocks.patchInstallmentStatus.mockReset();
 		mocks.patchInstallmentsStatusBulk.mockReset();
 		mocks.updateInstallment.mockReset();
@@ -101,6 +107,7 @@ describe("sale-installments-panel", () => {
 			updatedCount: 0,
 			skipped: [],
 		});
+		mocks.createInstallment.mockResolvedValue(undefined);
 		mocks.useSaleCommissionInstallments.mockReturnValue({
 			data: {
 				installments: [
@@ -226,6 +233,199 @@ describe("sale-installments-panel", () => {
 			percentage: "3%",
 			amount: "R$ 30,00",
 		});
+	});
+
+	it("should open create installment modal and create installment in scoped commission", async () => {
+		const user = userEvent.setup();
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.commissions.installments.update",
+		);
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+				saleCommissionId="commission-1"
+			/>,
+		);
+
+		await user.click(
+			screen.getByRole("button", { name: "Adicionar parcela" }),
+		);
+
+		const createDialog = screen.getByRole("alertdialog");
+		expect(
+			within(createDialog).getByRole("heading", {
+				name: "Adicionar parcela",
+			}),
+		).toBeInTheDocument();
+
+		await user.type(within(createDialog).getByRole("spinbutton"), "0.25");
+		await user.type(
+			within(createDialog).getByPlaceholderText("R$ 0,00"),
+			"43,21",
+		);
+		await user.click(within(createDialog).getByRole("button", { name: "Adicionar parcela" }));
+
+		await waitFor(() => {
+			expect(mocks.createInstallment).toHaveBeenCalledWith({
+				saleId: "sale-1",
+				data: {
+					saleCommissionId: "commission-1",
+					percentage: 0.25,
+					amount: 4321,
+					expectedPaymentDate: expect.any(String),
+				},
+			});
+		});
+	});
+
+	it("should create installment in the first visible commission of the active tab", async () => {
+		const user = userEvent.setup();
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.commissions.installments.update",
+		);
+		mocks.useSaleCommissionInstallments.mockReturnValue({
+			data: {
+				installments: [
+					{
+						id: "inst-1",
+						saleCommissionId: "commission-2",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "PARTNER",
+						sourceType: "MANUAL",
+						direction: "OUTCOME",
+						beneficiaryId: "partner-1",
+						beneficiaryKey: "PARTNER:partner-1",
+						beneficiaryLabel: "Comissão B",
+						installmentNumber: 1,
+						percentage: 1.5,
+						amount: 1500,
+						status: "PENDING",
+						expectedPaymentDate: "2026-03-11T00:00:00.000Z",
+						paymentDate: null,
+					},
+					{
+						id: "inst-2",
+						saleCommissionId: "commission-2b",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "PARTNER",
+						sourceType: "MANUAL",
+						direction: "OUTCOME",
+						beneficiaryId: "partner-1",
+						beneficiaryKey: "PARTNER:partner-1",
+						beneficiaryLabel: "Comissão B",
+						installmentNumber: 2,
+						percentage: 1.5,
+						amount: 1500,
+						status: "PENDING",
+						expectedPaymentDate: "2026-03-12T00:00:00.000Z",
+						paymentDate: null,
+					},
+					{
+						id: "inst-3",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão A",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: 2000,
+						status: "PAID",
+						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+						paymentDate: "2026-03-10T00:00:00.000Z",
+					},
+				],
+			},
+			isLoading: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		await user.click(screen.getByRole("tab", { name: "Comissão B" }));
+		await user.click(
+			screen.getByRole("button", { name: "Adicionar parcela" }),
+		);
+		const createDialog = screen.getByRole("alertdialog");
+		await user.type(within(createDialog).getByRole("spinbutton"), "0.4");
+		await user.type(within(createDialog).getByPlaceholderText("R$ 0,00"), "50");
+		await user.click(within(createDialog).getByRole("button", { name: "Adicionar parcela" }));
+
+		await waitFor(() => {
+			expect(mocks.createInstallment).toHaveBeenCalledWith({
+				saleId: "sale-1",
+				data: {
+					saleCommissionId: "commission-2",
+					percentage: 0.4,
+					amount: 50,
+					expectedPaymentDate: expect.any(String),
+				},
+			});
+		});
+	});
+
+	it("should disable create installment button when active tab has no visible installment", () => {
+		mocks.canMock.mockImplementation(
+			(_action: string, permission: string) =>
+				permission === "sales.commissions.installments.update",
+		);
+		mocks.useSaleCommissionInstallments.mockReturnValue({
+			data: {
+				installments: [
+					{
+						id: "inst-zero",
+						saleCommissionId: "commission-1",
+						originInstallmentId: null,
+						originInstallmentNumber: null,
+						recipientType: "SELLER",
+						sourceType: "PULLED",
+						direction: "OUTCOME",
+						beneficiaryId: "seller-1",
+						beneficiaryKey: "SELLER:seller-1",
+						beneficiaryLabel: "Comissão Zerada",
+						installmentNumber: 1,
+						percentage: 2,
+						amount: 0,
+						status: "PENDING",
+						expectedPaymentDate: "2026-03-10T00:00:00.000Z",
+						paymentDate: null,
+					},
+				],
+			},
+			isLoading: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+
+		render(
+			<SaleInstallmentsPanel
+				saleId="sale-1"
+				saleStatus="COMPLETED"
+				saleProductId="product-1"
+			/>,
+		);
+
+		expect(
+			screen.getByRole("button", { name: "Adicionar parcela" }),
+		).toBeDisabled();
 	});
 
 	it("should update selected installments in bulk from sales panel", async () => {
@@ -632,7 +832,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		await user.click(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		);
 
 		expect(
@@ -725,7 +925,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		await user.click(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		);
 
 		expect(
@@ -799,7 +999,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		await user.click(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		);
 
 		const amountInput = screen.getByPlaceholderText("-130.00");
@@ -893,7 +1093,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		await user.click(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		);
 
 		await waitFor(() => {
@@ -1000,7 +1200,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		await user.click(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		);
 
 		await waitFor(() => {
@@ -1130,7 +1330,7 @@ describe("sale-installments-panel", () => {
 			screen.getByRole("menuitem", { name: "Pagar hoje" }),
 		).toBeEnabled();
 		expect(
-			screen.getByRole("menuitem", { name: "Estornar parcela" }),
+			screen.getByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		).toBeEnabled();
 		expect(
 			screen.queryByRole("menuitem", { name: "Reverter estorno" }),
@@ -1370,7 +1570,7 @@ describe("sale-installments-panel", () => {
 
 		await user.click(actionsTrigger as HTMLButtonElement);
 		expect(
-			screen.queryByRole("menuitem", { name: "Estornar parcela" }),
+			screen.queryByRole("menuitem", { name: "Adicionar estorno vinculado" }),
 		).not.toBeInTheDocument();
 		expect(
 			screen.queryByRole("menuitem", { name: "Pagar parcela" }),

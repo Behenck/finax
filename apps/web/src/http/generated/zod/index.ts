@@ -612,6 +612,12 @@ export {
   postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndoMutationResponseSchema,
 } from "./postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndoSchema.ts";
 export {
+  postOrganizationsSlugSalesSaleidCommissionInstallmentsPathParamsSchema,
+  postOrganizationsSlugSalesSaleidCommissionInstallments204Schema,
+  postOrganizationsSlugSalesSaleidCommissionInstallmentsMutationRequestSchema,
+  postOrganizationsSlugSalesSaleidCommissionInstallmentsMutationResponseSchema,
+} from "./postOrganizationsSlugSalesSaleidCommissionInstallmentsSchema.ts";
+export {
   postOrganizationsSlugSalesSaleidDelinquenciesPathParamsSchema,
   postOrganizationsSlugSalesSaleidDelinquencies201Schema,
   postOrganizationsSlugSalesSaleidDelinquenciesMutationRequestSchema,

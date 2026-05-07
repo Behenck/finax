@@ -1,5 +1,5 @@
 import { format, parse } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
 	type Control,
@@ -234,18 +234,28 @@ export function SaleCommissionCard({
 		totalPercentage,
 	]);
 
-	const beneficiaryOptions =
-		recipientType === "COMPANY"
-			? companyOptions
-			: recipientType === "UNIT"
-				? unitOptions
-				: recipientType === "SELLER"
-					? sellerOptions
-					: recipientType === "PARTNER"
-						? partnerOptions
-						: recipientType === "SUPERVISOR"
-							? supervisorOptions
-							: [];
+	const beneficiaryOptions = useMemo(
+		() =>
+			recipientType === "COMPANY"
+				? companyOptions
+				: recipientType === "UNIT"
+					? unitOptions
+					: recipientType === "SELLER"
+						? sellerOptions
+						: recipientType === "PARTNER"
+							? partnerOptions
+							: recipientType === "SUPERVISOR"
+								? supervisorOptions
+								: [],
+		[
+			companyOptions,
+			partnerOptions,
+			recipientType,
+			sellerOptions,
+			supervisorOptions,
+			unitOptions,
+		],
+	);
 	const beneficiaryOptionsWithFallback = useMemo(() => {
 		if (
 			!beneficiaryId ||
@@ -616,23 +626,35 @@ export function SaleCommissionCard({
 				<FieldGroup>
 					<Field className="gap-1">
 						<FieldLabel className="font-normal">Parcelas</FieldLabel>
-						<Input
-							type="number"
-							min={1}
-							step={1}
-							value={installments.length}
-							onChange={(event) => {
-								const parsedValue = Number(event.target.value);
-								if (!Number.isFinite(parsedValue)) {
-									return;
-								}
+						<div className="flex gap-2">
+							<Input
+								type="number"
+								min={1}
+								step={1}
+								value={installments.length}
+								onChange={(event) => {
+									const parsedValue = Number(event.target.value);
+									if (!Number.isFinite(parsedValue)) {
+										return;
+									}
 
-								onInstallmentCountChange(
-									index,
-									Math.max(1, Math.trunc(parsedValue)),
-								);
-							}}
-						/>
+									onInstallmentCountChange(
+										index,
+										Math.max(1, Math.trunc(parsedValue)),
+									);
+								}}
+							/>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() =>
+									onInstallmentCountChange(index, installments.length + 1)
+								}
+							>
+								<Plus className="size-4" />
+								Adicionar parcela
+							</Button>
+						</div>
 					</Field>
 				</FieldGroup>
 			</div>

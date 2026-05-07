@@ -157,6 +157,7 @@ export type { PostOrganizationsSlugSalesImportsMutationKey } from "./usePostOrga
 export type { PostOrganizationsSlugSalesImportTemplatesMutationKey } from "./usePostOrganizationsSlugSalesImportTemplates.ts";
 export type { PostOrganizationsSlugSalesJsonImportsApplyMutationKey } from "./usePostOrganizationsSlugSalesJsonImportsApply.ts";
 export type { PostOrganizationsSlugSalesJsonImportsPreviewMutationKey } from "./usePostOrganizationsSlugSalesJsonImportsPreview.ts";
+export type { PostOrganizationsSlugSalesSaleidCommissionInstallmentsMutationKey } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export type { PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalMutationKey } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal.ts";
 export type { PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndoMutationKey } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndo.ts";
 export type { PostOrganizationsSlugSalesSaleidDelinquenciesMutationKey } from "./usePostOrganizationsSlugSalesSaleidDelinquencies.ts";
@@ -666,6 +667,9 @@ export { usePostOrganizationsSlugSalesJsonImportsApply } from "./usePostOrganiza
 export { postOrganizationsSlugSalesJsonImportsPreviewMutationKey } from "./usePostOrganizationsSlugSalesJsonImportsPreview.ts";
 export { postOrganizationsSlugSalesJsonImportsPreviewMutationOptions } from "./usePostOrganizationsSlugSalesJsonImportsPreview.ts";
 export { usePostOrganizationsSlugSalesJsonImportsPreview } from "./usePostOrganizationsSlugSalesJsonImportsPreview.ts";
+export { postOrganizationsSlugSalesSaleidCommissionInstallmentsMutationKey } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { postOrganizationsSlugSalesSaleidCommissionInstallmentsMutationOptions } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export { usePostOrganizationsSlugSalesSaleidCommissionInstallments } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalMutationKey } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal.ts";
 export { postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalMutationOptions } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal.ts";
 export { usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal } from "./usePostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal.ts";

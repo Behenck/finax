@@ -3821,6 +3821,238 @@ describe("sales crud", () => {
 		);
 	});
 
+	it("should create a manual commission installment and sync total percentage", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(installmentsResponse.statusCode).toBe(200);
+
+		const targetInstallment = installmentsResponse.body.installments[0] as {
+			saleCommissionId: string;
+		};
+
+		const createInstallmentResponse = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleCommissionId: targetInstallment.saleCommissionId,
+				percentage: 0.25,
+				amount: 4321,
+				expectedPaymentDate: "2026-05-20",
+			});
+
+		expect(createInstallmentResponse.statusCode).toBe(204);
+
+		const commissionInstallments =
+			await prisma.saleCommissionInstallment.findMany({
+				where: {
+					saleCommissionId: targetInstallment.saleCommissionId,
+				},
+				orderBy: [{ installmentNumber: "asc" }, { createdAt: "asc" }],
+				select: {
+					installmentNumber: true,
+					percentage: true,
+					amount: true,
+					status: true,
+					originInstallmentId: true,
+					expectedPaymentDate: true,
+					paymentDate: true,
+				},
+			});
+
+		expect(commissionInstallments).toHaveLength(3);
+		expect(commissionInstallments[2]).toMatchObject({
+			installmentNumber: 3,
+			percentage: 2500,
+			amount: 4321,
+			status: "PENDING",
+			originInstallmentId: null,
+			paymentDate: null,
+		});
+		expect(
+			commissionInstallments[2]?.expectedPaymentDate
+				?.toISOString()
+				.slice(0, 10),
+		).toBe("2026-05-20");
+
+		const updatedCommission = await prisma.saleCommission.findUniqueOrThrow({
+			where: {
+				id: targetInstallment.saleCommissionId,
+			},
+			select: {
+				totalPercentage: true,
+			},
+		});
+
+		expect(updatedCommission.totalPercentage).toBe(12_500);
+
+		const history = await getSaleHistoryEvents(fixture, saleId);
+		const createHistoryEvent = history.find(
+			(event) =>
+				event.action === "COMMISSION_INSTALLMENT_UPDATED" &&
+				event.changes.some(
+					(change) =>
+						change.path.includes(".installments[") &&
+						change.after === 4321,
+				),
+		);
+
+		expect(createHistoryEvent).toBeDefined();
+	});
+
+	it("should reject creating a manual commission installment for a commission from another sale", async () => {
+		const fixture = await createFixture();
+		const firstSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+		const secondSaleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				saleDate: "2026-03-06",
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		const secondInstallmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${secondSaleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(secondInstallmentsResponse.statusCode).toBe(200);
+
+		const foreignSaleCommissionId = (
+			secondInstallmentsResponse.body.installments[0] as {
+				saleCommissionId: string;
+			}
+		).saleCommissionId;
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${firstSaleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleCommissionId: foreignSaleCommissionId,
+				percentage: 0.25,
+				amount: 4321,
+				expectedPaymentDate: "2026-05-20",
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe("Sale commission not found");
+	});
+
+	it("should reject creating a manual commission installment for a commission from another organization", async () => {
+		const fixture = await createFixture();
+		const foreignFixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+		const foreignSaleId = await createSaleUsingApi(
+			foreignFixture,
+			buildCreatePayload(foreignFixture, {
+				commissions: buildCommissionsPayload(foreignFixture),
+			}),
+		);
+
+		const foreignInstallmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${foreignFixture.org.slug}/sales/${foreignSaleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${foreignFixture.token}`);
+
+		expect(foreignInstallmentsResponse.statusCode).toBe(200);
+
+		const foreignSaleCommissionId = (
+			foreignInstallmentsResponse.body.installments[0] as {
+				saleCommissionId: string;
+			}
+		).saleCommissionId;
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleCommissionId: foreignSaleCommissionId,
+				percentage: 0.25,
+				amount: 4321,
+				expectedPaymentDate: "2026-05-20",
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe("Sale commission not found");
+	});
+
+	it("should reject creating a manual commission installment for a canceled sale", async () => {
+		const fixture = await createFixture();
+		const saleId = await createSaleUsingApi(
+			fixture,
+			buildCreatePayload(fixture, {
+				commissions: buildCommissionsPayload(fixture),
+			}),
+		);
+
+		await prisma.sale.update({
+			where: {
+				id: saleId,
+			},
+			data: {
+				status: SaleStatus.CANCELED,
+			},
+		});
+
+		const installmentsResponse = await request(app.server)
+			.get(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`);
+
+		expect(installmentsResponse.statusCode).toBe(200);
+
+		const targetInstallment = installmentsResponse.body.installments[0] as {
+			saleCommissionId: string;
+		};
+
+		const response = await request(app.server)
+			.post(
+				`/organizations/${fixture.org.slug}/sales/${saleId}/commission-installments`,
+			)
+			.set("Authorization", `Bearer ${fixture.token}`)
+			.send({
+				saleCommissionId: targetInstallment.saleCommissionId,
+				percentage: 0.25,
+				amount: 4321,
+				expectedPaymentDate: "2026-05-20",
+			});
+
+		expect(response.statusCode).toBe(400);
+		expect(response.body.message).toBe(
+			"Cannot update commission installments for canceled sale",
+		);
+	});
+
 	it("should support commission installments without expected payment date and keep nulls last in organization list", async () => {
 		const fixture = await createFixture();
 		const saleId = await createSaleUsingApi(

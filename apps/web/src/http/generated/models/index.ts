@@ -917,6 +917,14 @@ export type {
   PostOrganizationsSlugSalesJsonImportsPreviewMutation,
 } from "./PostOrganizationsSlugSalesJsonImportsPreview.ts";
 export type {
+  PostOrganizationsSlugSalesSaleidCommissionInstallmentsPathParams,
+  PostOrganizationsSlugSalesSaleidCommissionInstallments204EnumKey,
+  PostOrganizationsSlugSalesSaleidCommissionInstallments204,
+  PostOrganizationsSlugSalesSaleidCommissionInstallmentsMutationRequest,
+  PostOrganizationsSlugSalesSaleidCommissionInstallmentsMutationResponse,
+  PostOrganizationsSlugSalesSaleidCommissionInstallmentsMutation,
+} from "./PostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
+export type {
   PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalPathParams,
   PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal204EnumKey,
   PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal204,
@@ -1408,6 +1416,7 @@ export { responsibleTypeEnum14 } from "./PostOrganizationsSlugSalesImportTemplat
 export { responsibleResolutionsTypeEnum } from "./PostOrganizationsSlugSalesJsonImportsApply.ts";
 export { commissionBeneficiaryResolutionsRecipientTypeEnum } from "./PostOrganizationsSlugSalesJsonImportsApply.ts";
 export { commissionBeneficiaryGroupsSectionEnum } from "./PostOrganizationsSlugSalesJsonImportsPreview.ts";
+export { postOrganizationsSlugSalesSaleidCommissionInstallments204Enum } from "./PostOrganizationsSlugSalesSaleidCommissionInstallments.ts";
 export { postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal204Enum } from "./PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversal.ts";
 export { postOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndo204Enum } from "./PostOrganizationsSlugSalesSaleidCommissionInstallmentsInstallmentidReversalUndo.ts";
 export { postOrganizationsSlugSellersMutationRequestDocumentTypeEnum } from "./PostOrganizationsSlugSellers.ts";

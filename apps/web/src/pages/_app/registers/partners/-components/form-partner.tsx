@@ -33,41 +33,12 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { PartnerStateSelect } from "./partner-state-select";
 
 interface FormPartnerProps {
 	type?: "CREATE" | "UPDATE";
 	partner?: GetOrganizationsSlugPartnersPartnerid200["partner"];
 }
-
-const BRAZILIAN_STATE_OPTIONS = [
-	{ value: "AC", label: "Acre" },
-	{ value: "AL", label: "Alagoas" },
-	{ value: "AP", label: "Amapá" },
-	{ value: "AM", label: "Amazonas" },
-	{ value: "BA", label: "Bahia" },
-	{ value: "CE", label: "Ceará" },
-	{ value: "DF", label: "Distrito Federal" },
-	{ value: "ES", label: "Espírito Santo" },
-	{ value: "GO", label: "Goiás" },
-	{ value: "MA", label: "Maranhão" },
-	{ value: "MT", label: "Mato Grosso" },
-	{ value: "MS", label: "Mato Grosso do Sul" },
-	{ value: "MG", label: "Minas Gerais" },
-	{ value: "PA", label: "Pará" },
-	{ value: "PB", label: "Paraíba" },
-	{ value: "PR", label: "Paraná" },
-	{ value: "PE", label: "Pernambuco" },
-	{ value: "PI", label: "Piauí" },
-	{ value: "RJ", label: "Rio de Janeiro" },
-	{ value: "RN", label: "Rio Grande do Norte" },
-	{ value: "RS", label: "Rio Grande do Sul" },
-	{ value: "RO", label: "Rondônia" },
-	{ value: "RR", label: "Roraima" },
-	{ value: "SC", label: "Santa Catarina" },
-	{ value: "SP", label: "São Paulo" },
-	{ value: "SE", label: "Sergipe" },
-	{ value: "TO", label: "Tocantins" },
-] as const;
 
 type CompanyLookupField = keyof Pick<
 	PartnerForm,
@@ -561,23 +532,10 @@ export function FormPartner({ type = "CREATE", partner }: FormPartnerProps) {
 									control={control}
 									render={({ field, fieldState }) => (
 										<>
-											<Select
+											<PartnerStateSelect
 												value={field.value ?? ""}
-												onValueChange={field.onChange}
-											>
-												<SelectTrigger className="w-full">
-													<SelectValue placeholder="Selecione" />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectGroup>
-														{BRAZILIAN_STATE_OPTIONS.map((state) => (
-															<SelectItem key={state.value} value={state.value}>
-																{state.label}
-															</SelectItem>
-														))}
-													</SelectGroup>
-												</SelectContent>
-											</Select>
+												onChange={field.onChange}
+											/>
 											<FieldError error={fieldState.error} />
 										</>
 									)}

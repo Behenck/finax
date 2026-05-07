@@ -1028,6 +1028,15 @@ export const PatchSaleCommissionInstallmentBodySchema = z
     }
   });
 
+export const PostSaleCommissionInstallmentBodySchema = z
+  .object({
+    saleCommissionId: z.uuid(),
+    percentage: CommissionPercentageSchema,
+    amount: z.number().int().nonnegative(),
+    expectedPaymentDate: SaleDateInputSchema,
+  })
+  .strict();
+
 export const PostBonusSettlementsBodySchema = z
   .object({
     productId: z.uuid(),
@@ -1283,6 +1292,9 @@ export type PatchSaleCommissionInstallmentStatusBody = z.infer<
 >;
 export type PatchSaleCommissionInstallmentBody = z.infer<
   typeof PatchSaleCommissionInstallmentBodySchema
+>;
+export type PostSaleCommissionInstallmentBody = z.infer<
+  typeof PostSaleCommissionInstallmentBodySchema
 >;
 export type PostBonusSettlementsBody = z.infer<
   typeof PostBonusSettlementsBodySchema
